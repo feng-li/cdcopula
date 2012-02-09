@@ -1,0 +1,62 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Dec  2 13:39:05 2011
+;; Desktop file format version 206
+;; Emacs version 24.0.91.2
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/workspace/copulas/CovarDependCopula/R/models/logPri.R" "~/workspace/copulas/CovarDependCopula/R/models/logCplPri.R" "~/workspace/copulas/CovarDependCopula/R/models/" "/home/fli/workspace/copulas/CovarDependCopula/R/models/logPost.R" "~/workspace/copulas/CovarDependCopula/R/setup/setup.R" "/home/fli/workspace/copulas/CovarDependCopula/R/models/chainFracCplGrad.R" "~/workspace/" "/home/fli/.emacs" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/parLinkFun.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/logCplPriGrad.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/logPost.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/logCplGrad.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/logPostGrad.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/logCplPri.R" "~/Dropbox/workspace/MovingKnots/R/examples/rajan_s_moving_2_plus_a_moving_2.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/setup/setup.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/chainFracMargisGrad.R" "~/Dropbox/workspace/copulas/CovarDependCopula/R/models/" "/home/fli/Dropbox/workspace/MovingKnots/R/examples/rajan_s_moving_2_plus_a_moving_2.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/setup/setup.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/logCplGrad.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/logPostGrad.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/logCplPriGrad.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/logPost.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/parLinkFun.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/models/parMeanFun.R" "/home/fli/Dropbox/workspace/copulas/CovarDependCopula/R/mcmc/logPri.R" "/home/fli/workspace/copulas/CovarDependCopula/R/mcmc/logPri.R" "~/workspace/copulas/CovarDependCopula/R/models/logCplPri.R" "/home/fli/workspace/copulas/CovarDependCopula/R/models/chainFracCplGrad.R" "~/Dropbox/system/emacs.d/.emacs" "~/Dropbox/workspace/copulas/CovarDependCopula"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/fli/workspace/copulas/CovarDependCopula/R/setup/setup.R"
+  "setup.R"
+  'ess-mode
+  '(auto-fill-mode auto-complete-mode highlight-parentheses-mode auto-highlight-symbol-mode flyspell-mode eldoc-mode ess-roxy-mode)
+  1747
+  '(1747 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/fli/workspace/copulas/CovarDependCopula/R/models/logPri.R"
+  "logPri.R"
+  'ess-mode
+  '(auto-fill-mode auto-complete-mode highlight-parentheses-mode auto-highlight-symbol-mode flyspell-mode eldoc-mode ess-roxy-mode)
+  1809
+  '(1801 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/fli/workspace/copulas/CovarDependCopula/R/models/logPost.R"
+  "logPost.R"
+  'ess-mode
+  '(auto-fill-mode auto-complete-mode highlight-parentheses-mode auto-highlight-symbol-mode flyspell-mode eldoc-mode ess-roxy-mode)
+  1077
+  '(714 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/fli/workspace/copulas/CovarDependCopula/R/models/logCplPri.R"
+  "logCplPri.R"
+  'ess-mode
+  '(auto-fill-mode auto-complete-mode highlight-parentheses-mode auto-highlight-symbol-mode flyspell-mode eldoc-mode ess-roxy-mode)
+  941
+  '(1463 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+

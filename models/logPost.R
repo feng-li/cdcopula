@@ -1,0 +1,109 @@
+##' The log posterior of the copula model.
+##'
+##' The structure of the input are constructed via the design of variable
+##' "MdlDataStuc" in the main setting file. See the individual description for
+##' each variable in the setting files.
+##' @title The log posterior function of the copula model
+##' 
+##' @param CplNM "character".
+##'        The copula name.
+##' 
+##' @param Mdl.Y ""
+##' 
+##' @param Mdl.X "list".
+##'        The covariate used in each parameter components. The structure is
+##'        designed by "MdlDataStruc" variable in the main file. The intercept
+##'        is included if called in the data construction procedure.
+##' 
+##' @param priArgs "list".
+##'        The prior settings for each parameter components.
+##' 
+##' @param MdlCurr.beta "list".
+##'        The beta coefficients for each parameter. Note that the length
+##'        should be same as the length of covariates in the covariates.
+##' 
+##' @param MdlCurr.betaIdx "list".
+##'        The variable selection index. For each parameter. The second column
+##'        shows the proposal results, i.e. 1 for selected and 0 for not
+##'        selection in current MCMC draw. 
+##' 
+##' @param Mdl.parLink "list".
+##'        The link function used in the MCMC procedure. See the main setting
+##'        file for details.
+##' 
+##' @param MargisTypes "list".
+##'        The model type in each marginal distribution.
+##' 
+##' @param parCurrUpdate "list".
+##'        The parameters list to be updated. In the MCMC draw. Most time we
+##'        are doing conditional posterior which means some components are kept
+##'        uncaged. This can reduce computing time.
+##' 
+##' @param tauTabular "list".
+##'        The extra input for numerical dictionary looking up in the inverse
+##'        calculation for the inverse Kendall's tau. See the documentation for
+##'        "kendalltauTabular()" for details.
+##' 
+##' @return "list".
+##'        The list should contain the updated components.
+##'        
+##' @references 
+##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
+##'       Current: Tue Jan 10 17:10:10 CET 2012.
+logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
+                    Mdl.parLink, parCurrUpdate,
+                    logPriCurr, MdlCurr.par, uCurr, dCurr,  
+                    varSelArgs, MargisTypes, priArgs, tauTabular)
+{
+###----------------------------------------------------------------------------
+### THE MARGINAL LIKELIHOOD
+###----------------------------------------------------------------------------
+  CompNM <- names(MdlCurr.par)
+  MargisNM <- CompNM[CompNM != CplNM]
+  for(i in CompNM)
+    {
+      parUpdateNM <- names(parCurrUpdate[[i]] == TRUE) 
+      for(j in parUpdateNM)
+        {
+          ## Update the parameters for the updated part
+          MdlCurr.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
+                                              beta = MdlCurr.beta[[i]][[j]],
+                                              link = Mdl.parLink[[i]][[j]])
+        }
+
+      ## Marginal Update available 
+      if(length(parUpdateNM)>0 &&
+         tolower(i) != tolower(CompNM)) # updating marginal parameters
+        {
+          MargisOut <- MargisModles(Mdl.Y = Mdl.Y,
+                                    MargisTypes = MargisTypes,
+                                    parMargis = MdlCurr.par[MargisNM],
+                                    whichMargis = i)
+          u[, i] <- MargisOut[["u"]] # the marginal cdf
+          d[, i] <- MargisOut[["d"]] # the marginal pdf
+        }
+    }
+
+###----------------------------------------------------------------------------
+### THE COPULA LIKELIHOOD 
+###----------------------------------------------------------------------------
+  logLikCplOut <- logLikCpl(u = u, CplNM = CplNM, parCpl = parCpl)
+
+###----------------------------------------------------------------------------
+### THE PRIOR CONSTRUCTIONS
+###----------------------------------------------------------------------------
+  logPriCurrOut <- logPriors(Mdl.X, Mdl.parLink, MdlCurr.beta, MdlCurr.betaIdx,
+                             varSelArgs, priArgs, logPriCurr, parCurrUpdate)
+  
+###----------------------------------------------------------------------------
+### THE FINAL LOG POSTERIOR
+###----------------------------------------------------------------------------
+  logPostOut <- sum(unlist(logPriCurrOut)) + logLikCplOut + sum(d)
+
+  out <- list(logPostOut = logPostOut,
+              MdlCurr.par = MdlCurr.par,
+              logPriCurr = logPriCurrOut, 
+              uCurr = u, dCurr = d)
+  return(out)
+}
