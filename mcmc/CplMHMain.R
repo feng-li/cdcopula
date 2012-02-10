@@ -117,6 +117,9 @@ CplMHMain <- function(setupfile)
             }
         }
     }
-  out <- list
-  return(NA)
+
+  ## Fetch everything at current environment to a list
+  ## Use list2env() to extract the entries
+  out <- as.list(environment())
+  return(out)
 }

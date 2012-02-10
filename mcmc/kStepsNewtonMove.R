@@ -33,9 +33,10 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
 ##'       Current: Thu Feb 09 14:59:27 CET 2012.
-kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod,
-                             varSelArgs, priArgs, 
-                             betaIdxProp, parUpdate, ...) 
+kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod, varSelArgs,
+                             priArgs, betaIdxProp, parUpdate, CplNM, Mdl.Y,
+                             Mdl.X, Mdl.par, Mdl.parLink, Mdl.beta,
+                             Mdl.betaIdx, parUpdate, u)   
 {
   ## The updating component parameter chain
   cp <- parCaller(parCurrUpdate)
