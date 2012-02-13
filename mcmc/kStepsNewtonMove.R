@@ -36,10 +36,10 @@
 kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod, varSelArgs,
                              priArgs, betaIdxProp, parUpdate, CplNM, Mdl.Y,
                              Mdl.X, Mdl.par, Mdl.parLink, Mdl.beta,
-                             Mdl.betaIdx, parUpdate, u)   
+                             Mdl.betaIdx,u)   
 {
   ## The updating component parameter chain
-  cp <- parCaller(parCurrUpdate)
+  cp <- parCaller(parUpdate)
   CompCurr <- cp[1]
   parCurr <- cp[2]
   
@@ -59,7 +59,7 @@ kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod, varSelArgs,
       
       ## Obtain the gradient and Hessian information
       gradHess.prop <- gradHessFun(CplNM, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
-                              Mdl.beta, Mdl.betaIdx, parCurrUpdate, u)
+                              Mdl.beta, Mdl.betaIdx, parUpdate, u)
       
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp

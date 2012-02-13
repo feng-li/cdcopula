@@ -9,7 +9,7 @@
 ##' @param varSelArgs 
 ##' @param priArgs "list"
 ##' @param priCurr "list"
-##' @param parCurrUpdate 
+##' @param parUpdate 
 ##' @return "list" synced 
 ##' @references 
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.

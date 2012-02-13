@@ -17,9 +17,7 @@ CplMHMain <- function(setupfile)
 ###----------------------------------------------------------------------------
 ### Load user setup file
 ###----------------------------------------------------------------------------  
-  
   source(setupfile, local = TRUE)
-  browser()
 
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE 
@@ -69,26 +67,25 @@ CplMHMain <- function(setupfile)
   Mdl.beta <- initParOut[["MdlCurr.beta"]]
 
   ## Switch all the updating indicators ON
-  parCurrUpdate <- MdlDataStruc
-  parCurrUpdate <- rapply(parCurrUpdate, function(x) TRUE, how = "replace")
+  parUpdate <- MdlDataStruc
+  parUpdate <- rapply(parUpdate, function(x) TRUE, how = "replace")
 
   ## Initialize the prior
   priCurr <- MdlDataStruc
   priCurr <- logPriors(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                       varSelArgs, priArgs, priCurr, parCurrUpdate)
+                       varSelArgs, priArgs, priCurr, MCMCUpdate)
 
   ## Switch all the updating indicators OFF
-  parCurrUpdate <- rapply(parCurrUpdate, function(x) FALSE, how = "replace")
+  parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
 
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC 
 ###----------------------------------------------------------------------------
-
   for(iCross in nCrossFold) ## TODO: Parallel computing 
     {
       CompNM <- names(MdlDataStruc)
       ## The MCMC loops
-      for(iterCurr in 1:nIter)
+      for(iIter in 1:nIter)
         { 
           ## The Gibbs loop
           for(CompCurr in CompNM)
@@ -96,15 +93,18 @@ CplMHMain <- function(setupfile)
               parNM <- names(MdlDataStruc[[CompCurr]])
               for(parCurr in parNM)
                 {
-                  if (parCurrUpdate[[CompCurr]][[parCurr]] == TRUE)
+                  if (MCMCUpdate[[CompCurr]][[parCurr]] == TRUE)
                     {
                       ## Switch current updating parameter indicator on
-                      parCurrUpdate[[CompCurr]][[parCurr]] <- TRUE
-                      
-                      ## This is the mail MH file,                        
-                      if(tolower(propMethod) == "kstepnewton")
+                      parUpdate[[CompCurr]][[parCurr]] <- TRUE
+
+                      ## Call the mail Metropolis--Hastings
+                      if(tolower(propArgs[[CompCurr]][[parCurr]][["algorithm"]])
+                         == "kstepsnewtonmove")
                         {
-                          out <- MHPropWithKStepNewton()
+                          out <- MHPropWithKStepNewton(Mdl.Y, Mdl.X, parUpdate,
+                                priorArgs, varSelArgs, propArgs)   
+                          
                         }
                       else
                         {
@@ -112,7 +112,7 @@ CplMHMain <- function(setupfile)
                         }                      
                     }
                   ## Switch current updating parameter indicator off
-                  parCurrUpdate[[CompCurr]][[parCurr]] <- FALSE
+                  parUpdate[[CompCurr]][[parCurr]] <- FALSE
                 }
             }
         }
@@ -121,5 +121,5 @@ CplMHMain <- function(setupfile)
   ## Fetch everything at current environment to a list
   ## Use list2env() to extract the entries
   out <- as.list(environment())
-  return(out)
+  ## return(out)
 }

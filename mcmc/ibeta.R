@@ -22,7 +22,7 @@ ibeta <- function(x, a, b, log = FALSE)
   
   out.log <- pbeta(x, a, b,  log = TRUE) + lbeta(a, b)
 
-  if(log = TRUE)
+  if(log == TRUE)
     {
       out <- out.log
     }

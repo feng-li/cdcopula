@@ -171,39 +171,45 @@ save.output <- FALSE # "save.output = FALSE" will not save anything
 track.MCMC = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
-parUpdate <- MdlDataStruc
-parUpdate[[1]][[1]] <- TRUE
-parUpdate[[1]][[2]] <- TRUE
-parUpdate[[2]][[1]] <- TRUE
-parUpdate[[2]][[2]] <- TRUE
-parUpdate[[3]][[1]] <- TRUE
-parUpdate[[3]][[2]] <- TRUE
+MCMCUpdate <- MdlDataStruc
+MCMCUpdate[[1]][[1]] <- TRUE
+MCMCUpdate[[1]][[2]] <- TRUE
+MCMCUpdate[[2]][[1]] <- TRUE
+MCMCUpdate[[2]][[2]] <- TRUE
+MCMCUpdate[[3]][[1]] <- TRUE
+MCMCUpdate[[3]][[2]] <- TRUE
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS 
 propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
-       "indicators" = list(type = "binom", prob = 0.2))
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"),
+       "indicators" = list(type = "binom", prob = 0.2)) 
 propArgs[[1]][[2]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[1]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[2]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[1]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[2]] <-
-  list("beta" = list(type = "mvt", df = 6, kstep = 3, hess = "outer"), 
+  list("algorithm" = "kStepsNewtonMove", 
+       "beta" = list(type = "mvt", df = 6, ksteps = 3, hess = "outer"), 
        "indicators" = list(type = "binom", prob = 0.2))
 
 ## CROSS-VALIDATION
 crossValidArgs <- list(N.subsets = 0,           # Folds for cross-validation. 
-                   partiMethod = "time-series", # How to partition the data
-                   testRatio = 0.2)         # Testing percent if "time-series"
+                       partiMethod = "time-series", # How to partition the data
+                       testRatio = 0.2)         # Testing percent if "time-series"
 
 ## Indices for training and testing sample according to cross-validation
 ## settings 

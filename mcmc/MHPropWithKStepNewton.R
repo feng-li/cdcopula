@@ -22,21 +22,41 @@
 ##'       Current: Wed Feb 01 16:09:04 CET 2012.
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
-MHPropWithKStepNewton <- function(param.cur, nNewtonStep, Params, hessMethod,
-                                  Y, x, callParam, splineArgs, priorArgs, prop.df) 
+MHPropWithKStepNewton <- function(Mdl.Y, Mdl.X, parUpdate,
+                                  priorArgs, varSelArgs, propArgs)   
 {
+
+###----------------------------------------------------------------------------
+### Variable Selection proposal 
+###----------------------------------------------------------------------------
+
+  ## The updating component parameter chain
+  cp <- parCaller(parUpdate)
+  CompCurr <- cp[1]
+  parCurr <- cp[2]
+
+  ## Randomly propose a subset TODO: A general proposal function
+  betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
+  varSelCand <- varSelArgs[[CompCurr]][[parCurr]]$cand
+  IdxArgs <- propArgs[[CompCurr]][[parCurr]][["indicators"]]
+  
+  betaIdxProp <- betaIdxCurr # The proposal base line 
+  betaIdxPropCand <- rbinom(n = length(varSelCand) , size = 1,
+                            prob = IdxArgs$prob)
+  
+  betaIdxProp[betaIdxPropCand] <- 1 - betaIdxCurr[betaIdxPropCand]
 
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
 ###----------------------------------------------------------------------------  
-
+  
   ## Newton method to approach the posterior for the current draw 
   KStepNewton1 <- kStepsNewtonMove() 
 
   ## The information for proposed density via K-step Newton's method
-  param.cur.prop <- KStepNewton1$param.cur # mean information 
-  HessObs.cur.prop <- KStepNewton1$hessObs.cur # variance information
-  invHessObs.cur.prop <- KStepNewton1$invHessObs.cur
+  param.cur.prop <- KStepNewton1$param # mean information 
+  HessObs.cur.prop <- KStepNewton1$hessObs # variance information
+  invHessObs.cur.prop <- KStepNewton1$invHessObs
 
   ## Check if it is a good proposal
   if(any(is.na(HessObs.cur.prop)) ||
@@ -54,7 +74,7 @@ MHPropWithKStepNewton <- function(param.cur, nNewtonStep, Params, hessMethod,
       logjump.cur2prop <- DensMultiT(param.prop, param.cur.prop, -HessObs.cur.prop, prop.df)
                                         
     }
-
+  
 ###----------------------------------------------------------------------------
 ### 
 ###----------------------------------------------------------------------------  

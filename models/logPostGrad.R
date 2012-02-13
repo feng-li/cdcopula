@@ -7,7 +7,7 @@
 ##' @param CplNM 
 ##' @param Mdl.Y 
 ##' @param Mdl.par 
-##' @param parCurrUpdate 
+##' @param parUpdate 
 ##' @param u 
 ##' @return 
 ##' @references 
@@ -15,11 +15,11 @@
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
 logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
-                        Mdl.beta, Mdl.betaIdx, parCurrUpdate, u)
+                        Mdl.beta, Mdl.betaIdx, parUpdate, u)
 {
 
   ## The updating chain
-  chainCaller <- parCaller(parCurrUpdate)
+  chainCaller <- parCaller(parUpdate)
   
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD

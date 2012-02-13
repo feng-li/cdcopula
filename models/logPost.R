@@ -34,7 +34,7 @@
 ##' @param MargisTypes "list".
 ##'        The model type in each marginal distribution.
 ##' 
-##' @param parCurrUpdate "list".
+##' @param parUpdate "list".
 ##'        The parameters list to be updated. In the MCMC draw. Most time we
 ##'        are doing conditional posterior which means some components are kept
 ##'        uncaged. This can reduce computing time.
@@ -52,7 +52,7 @@
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
 ##'       Current: Tue Jan 10 17:10:10 CET 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
-                    Mdl.parLink, parCurrUpdate,
+                    Mdl.parLink, parUpdate,
                     logPriCurr, MdlCurr.par, uCurr, dCurr,  
                     varSelArgs, MargisTypes, priArgs, tauTabular)
 {
@@ -63,7 +63,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
   MargisNM <- CompNM[CompNM != CplNM]
   for(i in CompNM)
     {
-      parUpdateNM <- names(parCurrUpdate[[i]] == TRUE) 
+      parUpdateNM <- names(parUpdate[[i]] == TRUE) 
       for(j in parUpdateNM)
         {
           ## Update the parameters for the updated part
@@ -94,7 +94,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
 ### THE PRIOR CONSTRUCTIONS
 ###----------------------------------------------------------------------------
   logPriCurrOut <- logPriors(Mdl.X, Mdl.parLink, MdlCurr.beta, MdlCurr.betaIdx,
-                             varSelArgs, priArgs, logPriCurr, parCurrUpdate)
+                             varSelArgs, priArgs, logPriCurr, parUpdate)
   
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR
