@@ -207,9 +207,10 @@ propArgs[[3]][[2]] <-
        "indicators" = list(type = "binom", prob = 0.2))
 
 ## CROSS-VALIDATION
-crossValidArgs <- list(N.subsets = 0,           # Folds for cross-validation. 
+## If N.subsets  =  0, no cross-validation 
+crossValidArgs <- list(N.subsets = 1,    # Folds for cross-validation. 
                        partiMethod = "time-series", # How to partition the data
-                       testRatio = 0.2)         # Testing percent if "time-series"
+                       testRatio = 0.2)   # Testing percent if "time-series"
 
 ## Indices for training and testing sample according to cross-validation
 ## settings 

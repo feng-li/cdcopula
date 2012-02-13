@@ -63,13 +63,12 @@ CplMHMain <- function(setupfile)
 
   ## Assign the initial values FIXME:
   initParOut <- initPar(varSelArgs, betaInit, Mdl.X)
-  Mdl.betaIdx <- initParOut[["MdlCurr.betaIdx"]]
-  Mdl.beta <- initParOut[["MdlCurr.beta"]]
-
+  Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
+  Mdl.beta <- initParOut[["Mdl.beta"]]
+  
   ## Switch all the updating indicators ON
-  parUpdate <- MdlDataStruc
-  parUpdate <- rapply(parUpdate, function(x) TRUE, how = "replace")
-
+  parUpdate <- MCMCUpdate
+  
   ## Initialize the prior
   priCurr <- MdlDataStruc
   priCurr <- logPriors(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
@@ -97,18 +96,23 @@ CplMHMain <- function(setupfile)
                     {
                       ## Switch current updating parameter indicator on
                       parUpdate[[CompCurr]][[parCurr]] <- TRUE
-
+                      
                       ## Call the mail Metropolis--Hastings
                       if(tolower(propArgs[[CompCurr]][[parCurr]][["algorithm"]])
                          == "kstepsnewtonmove")
                         {
-                          out <- MHPropWithKStepNewton(Mdl.Y, Mdl.X, parUpdate,
-                                priorArgs, varSelArgs, propArgs)   
+                          ## Cross validation subsets 
+                          subset <- crossValidIdx[["training"]][[iCross]]
                           
+                          out <- MHPropWithKStepNewton(Mdl.Y, Mdl.X, Mdl.beta,
+                                                       Mdl.betaIdx, parUpdate,
+                                                       priorArgs, varSelArgs,
+                                                       propArgs) 
+ 
                         }
                       else
                         {
-                          stop("Wrong argument for propDensity!")
+                          stop("Unknown proposal algorithm!")
                         }                      
                     }
                   ## Switch current updating parameter indicator off

@@ -22,30 +22,42 @@
 ##'       Current: Wed Feb 01 16:09:04 CET 2012.
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
-MHPropWithKStepNewton <- function(Mdl.Y, Mdl.X, parUpdate,
+MHPropWithKStepNewton <- function(Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
+                                  parUpdate,
                                   priorArgs, varSelArgs, propArgs)   
 {
 
 ###----------------------------------------------------------------------------
 ### Variable Selection proposal 
 ###----------------------------------------------------------------------------
-
+  
   ## The updating component parameter chain
   cp <- parCaller(parUpdate)
   CompCurr <- cp[1]
   parCurr <- cp[2]
 
-  ## Randomly propose a subset TODO: A general proposal function
+  ## The current variable selection indicators
   betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
+
+  ## Randomly propose a subset TODO: A general proposal function
   varSelCand <- varSelArgs[[CompCurr]][[parCurr]]$cand
   IdxArgs <- propArgs[[CompCurr]][[parCurr]][["indicators"]]
   
-  betaIdxProp <- betaIdxCurr # The proposal base line 
-  betaIdxPropCand <- rbinom(n = length(varSelCand) , size = 1,
-                            prob = IdxArgs$prob)
-  
-  betaIdxProp[betaIdxPropCand] <- 1 - betaIdxCurr[betaIdxPropCand]
+  betaIdxProp <- betaIdxCurr # The proposal base line
 
+  ## Binomial proposal a small subset
+  betaIdxPropCand <- which(rbinom(n = length(varSelCand) , size = 1,
+                             prob = IdxArgs$prob) == 1)
+
+  ## Special case to make sure at least one variable is proposed a change
+  if(length(betaIdxPropCand) == 0)
+    {
+      betaIdxPropCand <- sample(varSelCand, 1)
+    }
+
+  ## The proposed variable selection indicators 
+  betaIdxProp[betaIdxPropCand] <- 1 - betaIdxCurr[betaIdxPropCand]
+  
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
 ###----------------------------------------------------------------------------  

@@ -14,11 +14,10 @@
 initPar <- function(varSelArgs, betaInit, Mdl.X)
   {
     ## The output structure.
-    MdlCurr.betaIdx <- betaInit
-    MdlCurr.beta <- betaInit
+    Mdl.betaIdx <- betaInit
+    Mdl.beta <- betaInit
     
     ## Loop to assign the initial values
-
     CompNM <- names(Mdl.X)
     for(i in CompNM)
       {
@@ -37,30 +36,30 @@ initPar <- function(varSelArgs, betaInit, Mdl.X)
             if(class(varSelInitCurr) == "character" &&
                tolower(varSelInitCurr) == "all-in")
               {
-                MdlCurr.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
+                Mdl.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
               }
             else if(class(varSelInitCurr) == "character" &&
                     tolower(varSelInitCurr) == "all-out")
               {
-                MdlCurr.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
+                Mdl.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
 
                 varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
-                MdlCurr.betaIdx[[i]][[j]][varSelCandCurr] <- 0
+                Mdl.betaIdx[[i]][[j]][varSelCandCurr] <- 0
               }
             else if(class(varSelInitCurr) == "character" &&
                     tolower(varSelInitCurr) == "random")
               {
-                MdlCurr.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
+                Mdl.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
                 varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
                 ## Randomly pick up half in
                 betaIdxCurrSubOut <- sample(varSelCandCurr,
                                             round(length(varSelCandCurr)/2))
-                MdlCurr.betaIdx[[i]][[j]][betaIdxCurrSubOut] <- 0
+                Mdl.betaIdx[[i]][[j]][betaIdxCurrSubOut] <- 0
               }     
             else # Do nothing, use user input
               {
-                MdlCurr.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
-                MdlCurr.betaIdx[[i]][[j]][varSelInitCurr] <- 1
+                Mdl.betaIdx[[i]][[j]] <- array(1, c(ncolX.ij, 1))
+                Mdl.betaIdx[[i]][[j]][varSelInitCurr] <- 1
 
               }
             
@@ -72,21 +71,21 @@ initPar <- function(varSelArgs, betaInit, Mdl.X)
                tolower(betaInitCurr) == "random")
               {
                 betaInitCurr = runif(ncolX.ij, -1, 1)
-                MdlCurr.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, 1))
-                MdlCurr.beta[[i]][[j]][MdlCurr.betaIdx[[i]][[j]] == 0] <- 0
+                Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, 1))
+                Mdl.beta[[i]][[j]][Mdl.betaIdx[[i]][[j]] == 0] <- 0
                 ## let beta  =  0 for nu-selected variables NOTE: is this
                 ## needed? -- YES.
               }
             else # Do nothing and use user input
               {
-                MdlCurr.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, 1))
+                Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, 1))
               }  
 
           }
       }
     
     
-    out <- list(MdlCurr.beta = MdlCurr.beta,
-                MdlCurr.betaIdx = MdlCurr.betaIdx)
+    out <- list(Mdl.beta = Mdl.beta,
+                Mdl.betaIdx = Mdl.betaIdx)
     return(out)
   }

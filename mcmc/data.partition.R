@@ -13,7 +13,8 @@
 data.partition <- function(n.obs, args) 
 {
 
-  if(n.obs < args$N.subsets || args$N.subsets < 2) 
+  if(n.obs < args$N.subsets ||
+     (args$N.subsets < 2 & tolower(args$partiMethod) != "time-series")) 
     {
       # Observation smaller than subsets. 
       stop("No. of subsets should be equal or smaller than no. of obs and greater than 1.")
@@ -64,7 +65,7 @@ data.partition <- function(n.obs, args)
 
   else
     {
-      stop("The partition method is not implemented!")
+      stop("The partitioning method is not implemented!")
     }    
   names(out) <- NULL # remove the name. I don't like it.
   return(out)

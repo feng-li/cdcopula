@@ -28,7 +28,6 @@ set.crossvalid <- function(n.obs, crossValidArgs)
       out <- list(training = Data.training.sub,
                   testing = Data.testing.sub)
     }
-  
 
   ## Do cross-validation also include a full run. NOTE: Not very useful
   ## if(crossvalidArgs$full.run == TRUE && crossValidArgs$N.subsets != 1)
