@@ -1,27 +1,19 @@
 ##' This is the Newton move with dimension changes for the copula model. 
 ##'
-##' 
 ##' @title Generalized Newton method for the copula model
+##' @param propArgs 
+##' @param varSelArgs 
+##' @param priArgs 
+##' @param betaIdxProp 
+##' @param parUpdate 
+##' @param CplNM 
+##' @param Mdl.Y 
+##' @param Mdl.X 
+##' @param Mdl.beta 
+##' @param Mdl.betaIdx 
+##' @param staticArgs 
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
-##' @param gradhess.fun.name 
-##' @param KStep 
-##' @param Params 
-##' @param hessMethod 
-##' @param Y 
-##' @param x 
-##' @param callParam 
-##' @param splineArgs
-##' @param priorArgs
-##'        priorArgs$prior_type:
-##'        priorArgs$ka0:
-##'        priorArgs$M:
-##'        priorArgs$S0:
-##'        priorArgs$n0:
-##'        priorArgs$mu0:
-##'        priorArgs$Sigma0:
-##'        priorArgs$ka.mu0:
-##'        priorArgs$ka.Sigma0:
 ##' @return "list". See bellow.
 ##' \item   {gradObs.cur}
 ##'         {"matrix". The gradient}
@@ -33,11 +25,11 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
 ##'       Current: Thu Feb 09 14:59:27 CET 2012.
-kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod, varSelArgs,
-                             priArgs, betaIdxProp, parUpdate, CplNM, Mdl.Y,
-                             Mdl.X, Mdl.par, Mdl.parLink, Mdl.beta,
-                             Mdl.betaIdx,u)   
+kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
+                             parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
+                             Mdl.betaIdx, staticArgs)    
 {
+
   ## The updating component parameter chain
   cp <- parCaller(parUpdate)
   CompCurr <- cp[1]
@@ -46,20 +38,31 @@ kStepsNewtonMove <- function(kSteps, gradHessFun, hessMethod, varSelArgs,
   ## The current parameters 
   X <- Mdl.X[[CompCurr]][[parCurr]]
  
-  param <- Mdl.beta[[CompCurr]][[parCurr]]
+  betaCurr <- Mdl.beta[[CompCurr]][[parCurr]]
   betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
 
   ## Initialize the Newton move 
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
   
   ## Finite Newton move. K steps to approach the mode plus one more step to
-  ## update the gradient and Hessian at i:th step. 
+  ## update the gradient and Hessian at i:th step.
+  kSteps <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["ksteps"]]
+  hessMethod <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["hess"]]
+  
   for(iStep in 1:(kSteps+1))
     {
+
+      browser()
       
       ## Obtain the gradient and Hessian information
-      gradHess.prop <- gradHessFun(CplNM, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
-                              Mdl.beta, Mdl.betaIdx, parUpdate, u)
+      gradHess.prop <- logPostGrad(CplNM = CplNM,
+                                   Mdl.Y = Mdl.Y,
+                                   Mdl.X = Mdl.X,
+                                   Mdl.parLink = Mdl.parLink,
+                                   Mdl.beta = Mdl.beta,
+                                   Mdl.betaIdx = Mdl.betaIdx,
+                                   parUpdate = parUpdate,
+                                   staticArgs = staticArgs)
       
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp

@@ -18,7 +18,7 @@ CplMHMain <- function(setupfile)
 ### Load user setup file
 ###----------------------------------------------------------------------------  
   source(setupfile, local = TRUE)
-
+  
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE 
 ###----------------------------------------------------------------------------
@@ -98,17 +98,27 @@ CplMHMain <- function(setupfile)
                       parUpdate[[CompCurr]][[parCurr]] <- TRUE
                       
                       ## Call the mail Metropolis--Hastings
-                      if(tolower(propArgs[[CompCurr]][[parCurr]][["algorithm"]])
-                         == "kstepsnewtonmove")
+                      algArgs <- propArgs[[CompCurr]][[parCurr]][["algorithm"]]
+                      if(tolower(algArgs[["type"]]) == "kstepsnewtonmove")
                         {
                           ## Cross validation subsets 
                           subset <- crossValidIdx[["training"]][[iCross]]
-                          
-                          out <- MHPropWithKStepNewton(Mdl.Y, Mdl.X, Mdl.beta,
-                                                       Mdl.betaIdx, parUpdate,
-                                                       priorArgs, varSelArgs,
-                                                       propArgs) 
- 
+                          ## staticArgs <- list(u = u, Mdl.par = Mdl.par) 
+
+                          out <- MHPropWithKStepNewton(
+                                                       CplNM = CplNM,
+                                                       propArgs = propArgs,
+                                                       varSelArgs = varSelArgs,
+                                                       priArgs = priArgs,
+                                                       betaIdxProp = betaIdxProp,
+                                                       parUpdate = parUpdate,
+                                                       Mdl.Y = Mdl.Y,
+                                                       Mdl.X = Mdl.X,
+                                                       Mdl.beta = Mdl.beta,
+                                                       Mdl.betaIdx = Mdl.betaIdx,
+                                                       staticArgs = staticArgs
+                                                       )   
+
                         }
                       else
                         {
