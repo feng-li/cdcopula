@@ -27,13 +27,13 @@ logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
   {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior
-    i <- chainCaller[[1]]
-    j <- chainCaller[[2]]
+    CompCurr <- chainCaller[[1]]
+    parCurr <- chainCaller[[2]]
 
     ## Gradient for the intercept as a special case
-    priArgsCurr <- priArgs[[i]][[j]][["beta"]][["intercept"]]
-    xCurr <- MdlCurr.beta[[i]][[j]][1] # the intercept
-    linkCurr <- Mdl.parLink[[i]][[j]]
+    priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
+    xCurr <- MdlCurr.beta[[CompCurr]][[parCurr]][1] # the intercept
+    linkCurr <- Mdl.parLink[[CompCurr]][[parCurr]]
     
     if(tolower(priArgsCurr[["type"]]) == "custom")
       {
@@ -47,9 +47,9 @@ logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
       }
                         
     ## Gradient for the coefficients conditional on variable selection indicators
-    priArgsCurr <- priArgs[[i]][[j]][["beta"]][["slopes"]]
-    xCurr <- MdlCurr.beta[[i]][[j]][-1] # Slopes(taking away intercept)
-    betaIdxNoIntCurr <- MdlCurr.betaIdx[[i]][[j]][-1] # Variable section
+    priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
+    xCurr <- MdlCurr.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
+    betaIdxNoIntCurr <- MdlCurr.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
                                         # indicator without intercept
 
     if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
@@ -78,7 +78,7 @@ logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
         ## The covariance matrix for the whole beta vector
         if(tolower(covariance) == "g-prior")
           {
-            X <- Mdl.X[[i]][[j]][, -1, drop = FALSE]
+            X <- Mdl.X[[CompCurr]][[parCurr]][, -1, drop = FALSE]
             coVar <- qr.solve(crossprod(X)) 
           }
         else if(tolower(covariance) == "identity")

@@ -25,18 +25,14 @@ CplMHMain <- function(setupfile)
   
   ## Storage for the beta coefficients
   MdlData.beta <- MdlDataStruc
-  MdlCurr.beta <- MdlDataStruc
   MdlDataAccP.beta <- MdlDataStruc
 
   ## Storage for the variable selection index vector
   MdlData.betaIdx <- MdlDataStruc
-  MdlCurr.betaIdx <- MdlDataStruc
   MdlDataAccP.betaIdx <- MdlDataStruc
 
   ## Storage for the parameters
   MdlData.par <- MdlDataStruc  
-  MdlCurr.par <- MdlDataStruc  
-  MdlDataAccP.par <- MdlDataStruc
 
   ## Allocate the storage
   for(i in 1:length(MdlDataStruc))
@@ -65,18 +61,32 @@ CplMHMain <- function(setupfile)
   initParOut <- initPar(varSelArgs, betaInit, Mdl.X)
   Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
   Mdl.beta <- initParOut[["Mdl.beta"]]
-  
+
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
   
   ## Initialize the prior
   priCurr <- MdlDataStruc
-  priCurr <- logPriors(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                       varSelArgs, priArgs, priCurr, MCMCUpdate)
+  priCurr <- logPriors(Mdl.X = Mdl.X,
+                       Mdl.parLink = Mdl.parLink,
+                       Mdl.beta = Mdl.beta,
+                       Mdl.betaIdx = Mdl.betaIdx,
+                       varSelArgs = varSelArgs,
+                       priArgs = priArgs,
+                       priCurr = priCurr,
+                       parUpdate = MCMCUpdate)
 
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
 
+
+  ## Update static argument
+  staticArgs <- list()
+  staticArgs[["priCurr"]] <- priCurr
+  staticArgs[["u"]] <- NA
+  staticArgs[["Mdl.par"]] <- Mdl.par
+  staticArgs[["tauTabular"]] <- tauTabular
+  
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC 
 ###----------------------------------------------------------------------------
@@ -116,6 +126,7 @@ CplMHMain <- function(setupfile)
                                                        Mdl.X = Mdl.X,
                                                        Mdl.beta = Mdl.beta,
                                                        Mdl.betaIdx = Mdl.betaIdx,
+                                                       MargisTypes = MargisTypes, 
                                                        staticArgs = staticArgs
                                                        )   
 

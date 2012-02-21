@@ -51,15 +51,14 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
 ##'       Current: Tue Jan 10 17:10:10 CET 2012.
-logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
-                    Mdl.parLink, parUpdate,
-                    logPriCurr, MdlCurr.par, uCurr, dCurr,  
-                    varSelArgs, MargisTypes, priArgs, tauTabular)
+logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                    varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 {
 ###----------------------------------------------------------------------------
 ### THE MARGINAL LIKELIHOOD
 ###----------------------------------------------------------------------------
-  CompNM <- names(MdlCurr.par)
+
+  CompNM <- names(Mdl.beta)
   MargisNM <- CompNM[CompNM != CplNM]
   for(i in CompNM)
     {
@@ -67,8 +66,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
       for(j in parUpdateNM)
         {
           ## Update the parameters for the updated part
-          MdlCurr.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
-                                              beta = MdlCurr.beta[[i]][[j]],
+          Mdl.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
+                                              beta = Mdl.beta[[i]][[j]],
                                               link = Mdl.parLink[[i]][[j]])
         }
 
@@ -78,8 +77,9 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
         {
           MargisOut <- MargisModles(Mdl.Y = Mdl.Y,
                                     MargisTypes = MargisTypes,
-                                    parMargis = MdlCurr.par[MargisNM],
+                                    parMargis = Mdl.par[MargisNM],
                                     whichMargis = i)
+
           u[, i] <- MargisOut[["u"]] # the marginal cdf
           d[, i] <- MargisOut[["d"]] # the marginal pdf
         }
@@ -91,19 +91,24 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, MdlCurr.beta, MdlCurr.betaIdx,
   logLikCplOut <- logLikCpl(u = u, CplNM = CplNM, parCpl = parCpl)
 
 ###----------------------------------------------------------------------------
-### THE PRIOR CONSTRUCTIONS
+### THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  logPriCurrOut <- logPriors(Mdl.X, Mdl.parLink, MdlCurr.beta, MdlCurr.betaIdx,
-                             varSelArgs, priArgs, logPriCurr, parUpdate)
+  logPriOut <- logPriors(Mdl.X = Mdl.X,
+                         Mdl.parLink = Mdl.parLink,
+                         Mdl.beta = Mdl.beta,
+                         Mdl.betaIdx = Mdl.betaIdx,
+                         varSelArgs = varSelArgs,
+                         priArgs = priArgs,
+                         logPriCurr = logPriCurr,
+                         parUpdate = parUpdate)
   
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR
 ###----------------------------------------------------------------------------
+  
   logPostOut <- sum(unlist(logPriCurrOut)) + logLikCplOut + sum(d)
 
   out <- list(logPostOut = logPostOut,
-              MdlCurr.par = MdlCurr.par,
-              logPriCurr = logPriCurrOut, 
-              uCurr = u, dCurr = d)
+              staticArgs = staticArgs)
   return(out)
 }

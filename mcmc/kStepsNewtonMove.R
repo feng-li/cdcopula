@@ -48,7 +48,9 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   ## update the gradient and Hessian at i:th step.
   kSteps <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["ksteps"]]
   hessMethod <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["hess"]]
-  
+
+  staticArgsOld <- staticArgs
+
   for(iStep in 1:(kSteps+1))
     {
 
@@ -86,7 +88,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
         {
           ## update the parameters
           param <- solve(HessObs.pp)%*%(HessObs.pc%*%param -
-                                             gradObs.prop)
+                                        gradObs.prop)
           
           ## Update the parameter with current updated results.
           Mdl.beta[[CompCurr]][[parCurr]] <- param

@@ -16,7 +16,7 @@
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 ##'       Current: Thu Dec 15 10:46:05 CET 2011.
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      varSelArgs, priArgs, priCurr, parUpdate)
+                      varSelArgs, priArgs, parUpdate, priCurr)
 {
   ## Loop over all updated parameter candidates
   
@@ -147,10 +147,9 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                   stop("Debug me: Unknown situation for conditional priors.")
                 }
             }
-          
 ###----------------------------------------------------------------------------
 ### Update the output for prior
-###----------------------------------------------------------------------------            
+###----------------------------------------------------------------------------    
           priCurr[[i]][[j]] <- outCurr
           
         }

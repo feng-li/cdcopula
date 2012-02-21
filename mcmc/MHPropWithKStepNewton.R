@@ -23,9 +23,8 @@
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
 MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                                  Mdl.parLink 
-                                  parUpdate,
-                                  priorArgs, varSelArgs, propArgs, staticArgs)   
+                                  Mdl.parLink parUpdate, priorArgs, varSelArgs,
+                                  propArgs, MargisTypes, staticArgs)          
 {
 
 ###----------------------------------------------------------------------------
@@ -75,7 +74,7 @@ MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                    Mdl.parLink = Mdl.parLink,
                                    Mdl.beta = Mdl.beta,
                                    Mdl.betaId = Mdl.betaIdx,
-                                   staticArgs)   
+                                   staticArgs = staticArgs)   
  
   ## The information for proposed density via K-step Newton's method
   param.cur.prop <- KStepNewton1$param # mean information 
@@ -110,7 +109,18 @@ MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else # all are right
     {
       ## Newton method to approach the posterior for the proposed draw 
-      KStepNewton2 <- KStepNewtonMove()  
+      KStepNewton2 <- kStepsNewtonMove(propArgs = propArgs,
+                                   varSelArgs = varSelArgs,
+                                   priArgs = priArgs,
+                                   betaIdxProp = betaIdxProp,
+                                   parUpdate = parUpdate,
+                                   CplNM = CplNM,
+                                   Mdl.Y = Mdl.Y,
+                                   Mdl.X = Mdl.X,
+                                   Mdl.parLink = Mdl.parLink,
+                                   Mdl.beta = Mdl.beta,
+                                   Mdl.betaId = Mdl.betaIdx,
+                                   staticArgs = staticArgs)     
 
       ## The information for proposed density via K-step Newton's method
       param.prop.prop <- KStepNewton2$param.cur 

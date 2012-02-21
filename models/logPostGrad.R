@@ -14,12 +14,13 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
-logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
-                        Mdl.beta, Mdl.betaIdx, parUpdate, u)
+logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
+                        Mdl.beta, Mdl.betaIdx, parUpdate, staticArgs)
 {
 
   ## The updating chain
   chainCaller <- parCaller(parUpdate)
+  Mdl.par <- staticArgs$Mdl.par
   
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
@@ -32,7 +33,7 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
       ## Update the current CDF margin for the marginal model.
       parMargis <- Mdl.par[names(MargisTypes)]
       
-      u[, cplCaller] <-
+      staticArgs$u[, cplCaller] <-
         MargisModels(Mdl.Y = Mdl.Y, MargisTypes = MargisTypes,
                      parMargis = parMargis, whichMargis = cplCaller)
 
@@ -52,7 +53,10 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
     }
 
   ## The gradient for the copula function. n-by-1
-  logCplGradOut <- logCplGrad(CplNM, u, parCpl, cplCaller)
+  logCplGradOut <- logCplGrad(CplNM = CplNM,
+                              u = staticArgs$u,
+                              parCpl = parCpl,
+                              cplCaller = cplCaller)
 
   ## The gradient for the link function n-by-1
   LinkGradOut <-
@@ -65,9 +69,16 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### GRADIENT IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
+
   ## p-by-1
-  logPriGradOut <- logPriGrad(Mdl.X, Mdl.parLink, MdlCurr.beta, MdlCurr.betaIdx,
-                              varSelArgs, priArgs, priCurr, chainCaller)
+  logPriGradOut <- logPriGrad(Mdl.X = Mdl.X,
+                              Mdl.parLink = Mdl.parLink,
+                              MdlCurr.beta = MdlCurr.beta,
+                              MdlCurr.betaIdx = MdlCurr.betaIdx,
+                              varSelArgs = varSelArgs,
+                              priArgs = priArgs,
+                              parUpdate = parUpdate, 
+                              chainCaller = chainCaller)
   
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
@@ -75,6 +86,6 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.par, Mdl.parLink,
   
   out <- list(logLikGrad = logLikGradOut,
               logPriGrad = logPriGradOut, 
-              u = u) 
+              staticArgs = staticArgs) 
   return(out)
 }
