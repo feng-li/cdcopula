@@ -52,7 +52,7 @@ CplMHMain <- function(setupfile)
 ### Initialize the MCMC  
 ###----------------------------------------------------------------------------
 
-  ## Assign the initial values FIXME:
+  ## Assign the initial values FIXME: nObs is not right 
   initParOut <- initPar(varSelArgs, betaInit, Mdl.X)
   Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
   Mdl.beta <- initParOut[["Mdl.beta"]]
