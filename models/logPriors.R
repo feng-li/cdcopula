@@ -16,7 +16,7 @@
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 ##'       Current: Thu Dec 15 10:46:05 CET 2011.
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      varSelArgs, priArgs, parUpdate, priCurr)
+                      varSelArgs, priArgs, parUpdate, Mdl.logPri)
 {
   ## Loop over all updated parameter candidates
   
@@ -150,9 +150,9 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### Update the output for prior
 ###----------------------------------------------------------------------------    
-          priCurr[[i]][[j]] <- outCurr
+          Mdl.logPri[[i]][[j]] <- outCurr
           
         }
     }
-  return(priCurr)
+  return(Mdl.logPri)
 }
