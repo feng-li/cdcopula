@@ -16,17 +16,17 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Jan 17 19:27:25 CET 2012;
 ##'       Current: Tue Jan 17 19:27:30 CET 2012.
-MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis = names(Mdl.Y))
+MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
+                         names(Mdl.Y),  staticArgs)
   {
     ## The marginal name to be updated.
     MargisUpNM <- names(parMargis)[whichMargis]
-    ## No. of observations
-    nObs <- length(Mdl.Y[[1]]) 
 
-    ## Reserve storages for output
-    u <- matrix(NA, nObs, length(whichMargis),
-                  dimnames = list(NULL, MargisUpNM)) # The out matrix.
-    d <- u
+    ## No. of observations
+    ## nObs <- length(Mdl.Y[[1]]) 
+
+    ## Fetch previous values for u and d.
+    Mdl.ud <- staticArgs[[c("Mdl.u", "Mdl.d")]]
 
     ## Loop over all possible marginal models
     for(i in MargisUpNM)
@@ -41,10 +41,10 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis = names(Mdl.
             sigma <- parMargis[[i]][["sigma"]]   # scaler     
             
             ## The percentile representation 
-            u[, i] <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
+            Mdl.ud[["Mdl.u"]][, i] <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
 
             ## The quantile representation
-            d[, i] <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
+            Mdl.ud[["Mdl.u"]][, i] <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
           }
         else if (tolower(margiType) == "student-t")
           {
@@ -57,6 +57,5 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis = names(Mdl.
       }
     
     ## The output
-    out <- list(u = u, d = d)
-    return(out)
+    return(Mdl.ud)
   }

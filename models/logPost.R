@@ -55,6 +55,9 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 {
 
+
+  Mdl.par <- staticArgs[["Mdl.par"]]
+  Mdl.u <- staticArgs[["Mdl.u"]]
 ###----------------------------------------------------------------------------
 ### THE MARGINAL LIKELIHOOD
 ### The idea is to make even staticArgs is not available,  the log posterior is
@@ -70,8 +73,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         {
           ## Update the parameters for the updated part
           Mdl.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
-                                              beta = Mdl.beta[[i]][[j]],
-                                              link = Mdl.parLink[[i]][[j]])
+                                          beta = Mdl.beta[[i]][[j]],
+                                          link = Mdl.parLink[[i]][[j]])
         }
 
       ## Marginal Update available 
@@ -83,34 +86,42 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                                     parMargis = Mdl.par[MargisNM],
                                     whichMargis = i)
 
-          u[, i] <- MargisOut[["u"]] # the marginal cdf
-          d[, i] <- MargisOut[["d"]] # the marginal pdf
+          Mdl.u[, i] <- MargisOut[["Mdl.u"]] # the marginal cdf
+          Mdl.d[, i] <- MargisOut[["Mdl.d"]] # the marginal pdf
         }
     }
 
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD 
 ###----------------------------------------------------------------------------
-  logLikCplOut <- logLikCpl(u = u, CplNM = CplNM, parCpl = parCpl)
+  logLikCplOut <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = parCpl)
 
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  logPriOut <- logPriors(Mdl.X = Mdl.X,
+  Mdl.logPriOut <- logPriors(Mdl.X = Mdl.X,
                          Mdl.parLink = Mdl.parLink,
                          Mdl.beta = Mdl.beta,
                          Mdl.betaIdx = Mdl.betaIdx,
                          varSelArgs = varSelArgs,
                          priArgs = priArgs,
-                         logPriCurr = logPriCurr,
+                         Mdl.logPri = Mdl.logPri,
                          parUpdate = parUpdate)
   
+
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR
 ###----------------------------------------------------------------------------
   
-  logPostOut <- sum(unlist(logPriCurrOut)) + logLikCplOut + sum(d)
+  logPostOut <- sum(unlist(logPriOut)) + logLikCplOut + sum(Mdl.d)
 
+
+  staticArgs[["Mdl.logPri"]] <- Mdl.logPriOut
+  staticArgs[["Mdl.par"]] <- Mdl.par
+  staticArgs[["Mdl.u"]] <- Mdl.u
+  staticArgs[["Mdl.d"]] <- Mdl.d
+
+  
   out <- list(logPostOut = logPostOut,
               staticArgs = staticArgs)
   return(out)

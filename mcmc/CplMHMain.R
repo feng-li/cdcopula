@@ -54,38 +54,23 @@ CplMHMain <- function(setupfile)
   initParOut <- initPar(varSelArgs, betaInit, Mdl.X)
   Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
   Mdl.beta <- initParOut[["Mdl.beta"]]
-  Mdl.par <- MdlDataStruc
 
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
   
-  ## Initialize the prior
-  Mdl.logPri <- MdlDataStruc
-  Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
-                          Mdl.parLink = Mdl.parLink,
-                          Mdl.beta = Mdl.beta,
-                          Mdl.betaIdx = Mdl.betaIdx,
-                          varSelArgs = varSelArgs,
-                          priArgs = priArgs,
-                          Mdl.logPri = Mdl.logPri,
-                          parUpdate = MCMCUpdate)
-
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
 
-  browser()
-  ## Update static argument
-  staticArgs <- list()
-  staticArgs[["Mdl.logPri"]] <- Mdl.logPri
-  staticArgs[["u"]] <- NA
-  staticArgs[["Mdl.par"]] <- Mdl.par
-  staticArgs[["tauTabular"]] <- tauTabular
+  ## Initialize the static argument
+  staticArgs <- list(Mdl.logPri =  MdlDataStruc,
+                     Mdl.par = MdlDataStruc,
+                     Mdl.u = matrix(NA, nObs, length(Mdl.Y)), 
+                     tauTabular = tauTabular)
 
-
-  ## Using optimization routine to get good initial values
-
-  
-  
+  ## FIXME: Using optimization routine to get good initial values
+  test <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                  varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
+    
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC 
 ###----------------------------------------------------------------------------

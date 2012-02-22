@@ -120,7 +120,6 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                   coVar <- diag(length(Idx1))
                 }
 
-
               ## Consider three situations:
               if(Idx0Len == 0 || Idx0Len == betaLen)
                 {
