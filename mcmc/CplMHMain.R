@@ -47,9 +47,7 @@ CplMHMain <- function(setupfile)
           MdlData.par[[i]][[j]] <- array(NA, c(nObs, nIter, nCrossFold))
 
           ## The Metropolis-Hasting acceptance rate
-          MdlDataAccP.betaIdx[[i]][[j]] <- array(NA, c(nIter, nCrossFold))
           MdlDataAccP.beta[[i]][[j]] <- array(NA, c(nIter, nCrossFold))
-          MdlDataAccP.par[[i]][[j]] <- array(NA, c(nIter, nCrossFold))
         } 
     }
 

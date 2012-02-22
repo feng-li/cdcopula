@@ -54,8 +54,11 @@
 logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 {
+
 ###----------------------------------------------------------------------------
 ### THE MARGINAL LIKELIHOOD
+### The idea is to make even staticArgs is not available,  the log posterior is
+### still working. 
 ###----------------------------------------------------------------------------
 
   CompNM <- names(Mdl.beta)
