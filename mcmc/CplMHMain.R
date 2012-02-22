@@ -34,6 +34,8 @@ CplMHMain <- function(setupfile)
     {
       for(j in 1:length(MdlDataStruc[[i]]))
         {
+
+          nrowX.ij <- length(crossValidIdx[[i]][["training"]])
           ncolX.ij <- ncol(Mdl.X[[i]][[j]])
 
           ## The MCMC storage
@@ -54,19 +56,23 @@ CplMHMain <- function(setupfile)
   initParOut <- initPar(varSelArgs, betaInit, Mdl.X)
   Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
   Mdl.beta <- initParOut[["Mdl.beta"]]
-
+  
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
   
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
-
+  
   ## Initialize the static argument
+  u <- matrix(NA, nObs, length(Mdl.Y), dimnames = list(NULL, names(Mdl.Y)))
+  
   staticArgs <- list(Mdl.logPri =  MdlDataStruc,
                      Mdl.par = MdlDataStruc,
-                     Mdl.u = matrix(NA, nObs, length(Mdl.Y)), 
+                     Mdl.u = u,
+                     Mdl.d = u, 
                      tauTabular = tauTabular)
 
+  browser()
   ## FIXME: Using optimization routine to get good initial values
   test <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                   varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  

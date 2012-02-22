@@ -94,35 +94,33 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD 
 ###----------------------------------------------------------------------------
-  logLikCplOut <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = parCpl)
+  logLikCpl <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = Mdl.par,
+                         staticArgs = staticArgs) # n-by-1
 
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  Mdl.logPriOut <- logPriors(Mdl.X = Mdl.X,
-                         Mdl.parLink = Mdl.parLink,
-                         Mdl.beta = Mdl.beta,
-                         Mdl.betaIdx = Mdl.betaIdx,
-                         varSelArgs = varSelArgs,
-                         priArgs = priArgs,
-                         Mdl.logPri = Mdl.logPri,
-                         parUpdate = parUpdate)
+  Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
+                             Mdl.parLink = Mdl.parLink,
+                             Mdl.beta = Mdl.beta,
+                             Mdl.betaIdx = Mdl.betaIdx,
+                             varSelArgs = varSelArgs,
+                             priArgs = priArgs,
+                             Mdl.logPri = staticArgs[["Mdl.logPri"]],
+                             parUpdate = parUpdate)
   
-
 ###----------------------------------------------------------------------------
-### THE FINAL LOG POSTERIOR
+### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
   
-  logPostOut <- sum(unlist(logPriOut)) + logLikCplOut + sum(Mdl.d)
+  logPost <- sum(unlist(Mdl.logPri)) + sum(logLikCpl) + sum(Mdl.d)
 
 
-  staticArgs[["Mdl.logPri"]] <- Mdl.logPriOut
+  staticArgs[["Mdl.logPri"]] <- Mdl.logPri
   staticArgs[["Mdl.par"]] <- Mdl.par
   staticArgs[["Mdl.u"]] <- Mdl.u
   staticArgs[["Mdl.d"]] <- Mdl.d
 
-  
-  out <- list(logPostOut = logPostOut,
-              staticArgs = staticArgs)
+  out <- list(logPost = logPost, staticArgs = staticArgs)
   return(out)
 }

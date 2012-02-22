@@ -11,7 +11,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
 ##'       Current: Thu Oct 20 18:19:34 CEST 2011. 
-logLikCpl <- function(u, CplNM, parCpl, extArgs)
+logLikCpl <- function(u, CplNM, parCpl, staticArgs)
 {
   ## The sum of log copula density
   if(tolower(CplNM) == "bb7")
@@ -26,7 +26,7 @@ logLikCpl <- function(u, CplNM, parCpl, extArgs)
       ## Transform the parameters into the standard form
       ## FIXME: Consider to speed it up if it is really slow
       parOut <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
-                              tauTabular = extArgs[["tauTabular"]])
+                              tauTabular = staticArgs[["tauTabular"]])
       delta <- parOut[["delta"]]
       theta <- parOut[["theta"]]
 
@@ -56,9 +56,10 @@ logLikCpl <- function(u, CplNM, parCpl, extArgs)
           2*(1+delta)/delta*log(L5)+
             (-2+1/theta)*log(L6)+
               log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta)
-      loglik <- sum(logCpl)
+
+      ## loglik <- sum(logCpl)
       
-      out <- loglik
+      out <- logCpl
       ## if(is.infinite(out)) browser()
       
       }
