@@ -27,9 +27,9 @@ logLikCpl <- function(u, CplNM, parCpl, staticArgs)
       ## FIXME: Consider to speed it up if it is really slow
       parOut <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
                               tauTabular = staticArgs[["tauTabular"]])
-      delta <- parOut[["delta"]]
-      theta <- parOut[["theta"]]
-
+      delta <- as.vector(parOut[["delta"]])
+      theta <- as.vector(parOut[["theta"]])
+        
       ## delta <- -log(2)/log(lambda_L)
       ## theta <- log(2)/log(2-lambda_U)
       

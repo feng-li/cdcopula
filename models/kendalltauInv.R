@@ -49,7 +49,7 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
         lambdaUIdx <- max.col(tauAbsDev)
         
         ## The upper tail dependence via dictionary search.
-        lambdaU <- lambdaUGrid[lambdaUIdx]
+        lambdaU <- matrix(lambdaUGrid[lambdaUIdx])
         
         ## The cross ponding theta
         theta <- log(2)/log(2-lambdaU)

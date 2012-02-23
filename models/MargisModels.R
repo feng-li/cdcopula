@@ -1,4 +1,4 @@
-##' Calculate the CDF of the marginal distribution.
+##' Calculate the CDF and PDF of the marginal distribution.
 ##'
 ##' The detailed description can be found in the main setting file for each
 ##' input variable.
@@ -20,16 +20,16 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
                          names(Mdl.Y),  staticArgs)
   {
     ## The marginal name to be updated.
-    MargisUpNM <- names(parMargis)[whichMargis]
+    ## MargisUpNM <- names(parMargis)[whichMargis]
 
     ## No. of observations
     ## nObs <- length(Mdl.Y[[1]]) 
 
     ## Fetch previous values for u and d.
-    Mdl.ud <- staticArgs[[c("Mdl.u", "Mdl.d")]]
+    Mdl.ud <- staticArgs[c("Mdl.u", "Mdl.d")]
 
     ## Loop over all possible marginal models
-    for(i in MargisUpNM)
+    for(i in whichMargis)
       {
         if(tolower(MargisTypes[i]) == "gaussian")
           {
@@ -44,7 +44,7 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
             Mdl.ud[["Mdl.u"]][, i] <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
 
             ## The quantile representation
-            Mdl.ud[["Mdl.u"]][, i] <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
+            Mdl.ud[["Mdl.d"]][, i] <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
           }
         else if (tolower(margiType) == "student-t")
           {

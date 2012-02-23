@@ -54,10 +54,10 @@
 logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 {
-
-
   Mdl.par <- staticArgs[["Mdl.par"]]
   Mdl.u <- staticArgs[["Mdl.u"]]
+  Mdl.d <- staticArgs[["Mdl.d"]]
+
 ###----------------------------------------------------------------------------
 ### THE MARGINAL LIKELIHOOD
 ### The idea is to make even staticArgs is not available,  the log posterior is
@@ -79,22 +79,24 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
       ## Marginal Update available 
       if(length(parUpdateNM)>0 &&
-         tolower(i) != tolower(CompNM)) # updating marginal parameters
+         tolower(i) != tolower(CplNM)) # updating marginal parameters
         {
-          MargisOut <- MargisModles(Mdl.Y = Mdl.Y,
+          MargisOut <- MargisModels(Mdl.Y = Mdl.Y,
                                     MargisTypes = MargisTypes,
                                     parMargis = Mdl.par[MargisNM],
-                                    whichMargis = i)
+                                    whichMargis = i,
+                                    staticArgs = staticArgs)
 
-          Mdl.u[, i] <- MargisOut[["Mdl.u"]] # the marginal cdf
-          Mdl.d[, i] <- MargisOut[["Mdl.d"]] # the marginal pdf
+          Mdl.u[, i] <- MargisOut[["Mdl.u"]][, i] # the marginal cdf
+          Mdl.d[, i] <- MargisOut[["Mdl.d"]][, i] # the marginal pdf
         }
     }
 
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD 
 ###----------------------------------------------------------------------------
-  logLikCpl <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = Mdl.par,
+  
+  logLikCpl <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = Mdl.par[[CplNM]],
                          staticArgs = staticArgs) # n-by-1
 
 ###----------------------------------------------------------------------------
@@ -112,15 +114,20 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
-  
-  logPost <- sum(unlist(Mdl.logPri)) + sum(logLikCpl) + sum(Mdl.d)
 
+  logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
+  logPost <- sum(unlist(logPri)) + sum(logLikCpl) + sum(Mdl.d)
 
   staticArgs[["Mdl.logPri"]] <- Mdl.logPri
   staticArgs[["Mdl.par"]] <- Mdl.par
   staticArgs[["Mdl.u"]] <- Mdl.u
   staticArgs[["Mdl.d"]] <- Mdl.d
 
-  out <- list(logPost = logPost, staticArgs = staticArgs)
+  out <- list(logPost = logPost,
+              staticArgs = staticArgs)
+
+
+  browser()
+  
   return(out)
 }
