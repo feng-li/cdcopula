@@ -53,9 +53,6 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
   for(iStep in 1:(kSteps+1))
     {
-
-      browser()
-      
       ## Obtain the gradient and Hessian information
       gradHess.prop <- logPostGrad(CplNM = CplNM,
                                    Mdl.Y = Mdl.Y,

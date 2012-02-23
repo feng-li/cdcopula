@@ -69,10 +69,10 @@ CplMHMain <- function(setupfile)
 
   ## FIXME: Using optimization routine to get good initial values
   
-  logPot <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+  logPostOut <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                   varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 
-  staticArgs <- logPost[["staticArgs"]]  # Dry run to initialize staticArgs.
+  staticArgs <- logPostOut[["staticArgs"]]  # Dry run to initialize staticArgs.
   
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")

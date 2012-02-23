@@ -23,7 +23,7 @@
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
 MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                                  Mdl.parLink parUpdate, priorArgs, varSelArgs,
+                                  Mdl.parLink, parUpdate, priorArgs, varSelArgs,
                                   propArgs, MargisTypes, staticArgs)          
 {
 
