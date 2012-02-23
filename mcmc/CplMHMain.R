@@ -58,7 +58,7 @@ CplMHMain <- function(setupfile)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
     
-  ## Initialize the static argument
+  ## Allocate and initialize the static argument
   u <- matrix(NA, nObs, length(Mdl.Y), dimnames = list(NULL, names(Mdl.Y)))
   
   staticArgs <- list(Mdl.logPri =  MdlDataStruc,
@@ -69,11 +69,14 @@ CplMHMain <- function(setupfile)
 
   ## FIXME: Using optimization routine to get good initial values
   
-  test <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+  logPot <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                   varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)  
 
+  staticArgs <- logPost[["staticArgs"]]  # Dry run to initialize staticArgs.
+  
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
+  
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC 
 ###----------------------------------------------------------------------------

@@ -174,10 +174,10 @@ track.MCMC = TRUE
 MCMCUpdate <- MdlDataStruc
 MCMCUpdate[[1]][[1]] <- TRUE
 MCMCUpdate[[1]][[2]] <- TRUE
-MCMCUpdate[[2]][[1]] <- FALSE
+MCMCUpdate[[2]][[1]] <- TRUE
 MCMCUpdate[[2]][[2]] <- TRUE
 MCMCUpdate[[3]][[1]] <- TRUE
-MCMCUpdate[[3]][[2]] <- FALSE
+MCMCUpdate[[3]][[2]] <- TRUE
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS 
 propArgs <- MdlDataStruc
