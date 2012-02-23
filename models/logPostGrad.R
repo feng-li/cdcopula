@@ -29,13 +29,16 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
     {
       cplCaller <- chainCaller[1] # The Copula parameter caller is the
                                         # marginal CDF
-      
+
       ## Update the current CDF margin for the marginal model.
       parMargis <- Mdl.par[names(MargisTypes)]
       
-      staticArgs$u[, cplCaller] <-
-        MargisModels(Mdl.Y = Mdl.Y, MargisTypes = MargisTypes,
-                     parMargis = parMargis, whichMargis = cplCaller)
+      staticArgs[["Mdl.u"]] <-
+        MargisModels(Mdl.Y = Mdl.Y,
+                     MargisTypes = MargisTypes,
+                     parMargis = parMargis,
+                     whichMargis = cplCaller,
+                     staticArgs = staticArgs)[["Mdl.u"]]
 
       ## Gradient Fraction in the marginal component. n-by-1
       FracGradOut <-
@@ -44,19 +47,17 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
   else
     {
       cplCaller <- chainCaller[2]
-
-      ## The copula parameters
-      parCpl <- Mdl.par[[CplNM]]
-
+      
       ## Gradient Fraction in the copula component.
       FracGradOut <- 1
     }
 
   ## The gradient for the copula function. n-by-1
   logCplGradOut <- logCplGrad(CplNM = CplNM,
-                              u = staticArgs$u,
-                              parCpl = parCpl,
-                              cplCaller = cplCaller)
+                              u = staticArgs$Mdl.u,
+                              parCpl = Mdl.par[[CplNM]],
+                              cplCaller = cplCaller,
+                              staticArgs = staticArgs)
 
   ## The gradient for the link function n-by-1
   LinkGradOut <-

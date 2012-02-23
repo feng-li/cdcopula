@@ -110,13 +110,13 @@ CplMHMain <- function(setupfile)
                                                        propArgs = propArgs,
                                                        varSelArgs = varSelArgs,
                                                        priArgs = priArgs,
-                                                       betaIdxProp = betaIdxProp,
                                                        parUpdate = parUpdate,
                                                        Mdl.Y = Mdl.Y,
                                                        Mdl.X = Mdl.X,
                                                        Mdl.beta = Mdl.beta,
                                                        Mdl.betaIdx = Mdl.betaIdx,
                                                        MargisTypes = MargisTypes, 
+                                                       Mdl.parLink = Mdl.parLink, 
                                                        staticArgs = staticArgs
                                                        )   
 

@@ -23,7 +23,7 @@
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
 MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                                  Mdl.parLink, parUpdate, priorArgs, varSelArgs,
+                                  Mdl.parLink, parUpdate, priArgs, varSelArgs,
                                   propArgs, MargisTypes, staticArgs)          
 {
 
@@ -61,7 +61,7 @@ MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
 ###----------------------------------------------------------------------------  
-  
+
   ## Newton method to approach the posterior for the current draw 
   KStepNewton1 <- kStepsNewtonMove(propArgs = propArgs,
                                    varSelArgs = varSelArgs,
@@ -74,6 +74,7 @@ MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                    Mdl.parLink = Mdl.parLink,
                                    Mdl.beta = Mdl.beta,
                                    Mdl.betaId = Mdl.betaIdx,
+                                   MargisTypes = MargisTypes, 
                                    staticArgs = staticArgs)   
  
   ## The information for proposed density via K-step Newton's method

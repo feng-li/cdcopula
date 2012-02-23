@@ -12,13 +12,14 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri Oct 21 18:17:01 CEST 2011;
 ##'       Current: Tue Nov 22 17:27:28 CET 2011.
-chainFracMargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
+MargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
   {
     ## Name of marginal model
     MargisNM <- names(Mdl.Y)
 
     ## Which marginal model is calling
-    margiCaller <- chainCaller[1]
+    CompCaller <- chainCaller[1]
+    parCaller <- chainCaller[2]
 
     ## Check if the inputs are all matched.
     if(length(MargisNM) != length(MargisTypes))
@@ -26,11 +27,8 @@ chainFracMargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
         stop("The length of marginal input does not match the length of marginal types. I suspected you have screwed things up.")
       }
     
-    ## Which marginal model is calling
-    margiCaller <- chainCaller[1]
-
     ## Types of marginal density
-    margiType <- MargisTypes[[margiCaller == MargisNM]]
+    margiType <- MargisTypes[[CompCaller]]
 
 ###----------------------------------------------------------------------------
 ### The gradient of the marginal density
@@ -39,18 +37,18 @@ chainFracMargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
     if(tolower(margiType) == "gaussian")
       {
         ## Subtract parameters and data  
-        mu <- parMargis[[margiCaller]][["mu"]]
-        sigma <- parMargis[[margiCaller]][["sigma"]]
-        y <- Mdl.Y[[margiCaller]]
+        mu <- parMargis[[CompCaller]][["mu"]]
+        sigma <- parMargis[[CompCaller]][["sigma"]]
+        y <- Mdl.Y[[CompCaller]]
 
         ## Calculate the log density TODO: call from log likelihood? 
         logMargiDens <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
         
-        if(tolower(parMargiCaller) == "mu")
+        if(tolower(parCaller) == "mu")
           {
             out <- -exp(logMargiDens)
           }
-        else if(tolower(parMargiCaller) == "sigma")
+        else if(tolower(parCaller) == "sigma")
           {
             ## Calculate the fractions in the log form and transform back to
             ## avoid overflow/underflow.
@@ -72,3 +70,4 @@ chainFracMargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
     ## The output
     return(out)
   }
+   

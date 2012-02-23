@@ -27,7 +27,7 @@
 ##'       Current: Thu Feb 09 14:59:27 CET 2012.
 kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                              parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
-                             Mdl.betaIdx, staticArgs)    
+                             Mdl.betaIdx, Mdl.parLink, MargisTypes, staticArgs)    
 {
 
   ## The updating component parameter chain
@@ -59,6 +59,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                                    Mdl.X = Mdl.X,
                                    Mdl.parLink = Mdl.parLink,
                                    Mdl.beta = Mdl.beta,
+                                   MargisTypes = MargisTypes, 
                                    Mdl.betaIdx = Mdl.betaIdx,
                                    parUpdate = parUpdate,
                                    staticArgs = staticArgs)
