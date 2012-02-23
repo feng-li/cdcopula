@@ -5,8 +5,8 @@
 ##' 
 ##' @param Mdl.X 
 ##' @param Mdl.parLink 
-##' @param MdlCurr.beta 
-##' @param MdlCurr.betaIdx 
+##' @param Mdl.beta 
+##' @param Mdl.betaIdx 
 ##' @param varSelArgs 
 ##' @param priArgs 
 ##' @param priCurr 
@@ -22,7 +22,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current:       Mon Jan 16 14:44:11 CET 2012.
-logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
+logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                        varSelArgs, priArgs, chainCaller)
   {
     ## Only update priors for parameters that need to update.
@@ -32,7 +32,7 @@ logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
 
     ## Gradient for the intercept as a special case
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
-    xCurr <- MdlCurr.beta[[CompCurr]][[parCurr]][1] # the intercept
+    xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
     linkCurr <- Mdl.parLink[[CompCurr]][[parCurr]]
     
     if(tolower(priArgsCurr[["type"]]) == "custom")
@@ -48,8 +48,8 @@ logPriGrad <- function(Mdl.X, MdlCurr.beta, MdlCurr.betaIdx, Mdl.parLink,
                         
     ## Gradient for the coefficients conditional on variable selection indicators
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
-    xCurr <- MdlCurr.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
-    betaIdxNoIntCurr <- MdlCurr.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
+    xCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
+    betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
                                         # indicator without intercept
 
     if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")

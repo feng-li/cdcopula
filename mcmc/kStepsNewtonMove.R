@@ -62,6 +62,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                                    MargisTypes = MargisTypes, 
                                    Mdl.betaIdx = Mdl.betaIdx,
                                    parUpdate = parUpdate,
+                                   priArgs = priArgs, 
                                    staticArgs = staticArgs)
       
       ## Gradient and Hessian for the likelihood

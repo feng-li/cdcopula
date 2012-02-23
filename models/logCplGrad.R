@@ -3,7 +3,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
     if(tolower(CplNM) == "bb7")
       {
         ## The name of marginal model
-        MargisNM <- names(u)
+        MargisNM <- dimnames(u)[[2]]
   
         ## Subtract the parameters list. 
         tau <- parCpl[["tau"]]
@@ -67,7 +67,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are
             ## exchangeable which means the expression for the gradient w.r.t u
             ## and v are the same.
-            browser()
+
             if(tolower(cplCaller) == tolower(MargisNM[1]) ||
                tolower(cplCaller) == tolower(MargisNM[2]))
               {

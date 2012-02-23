@@ -15,7 +15,7 @@
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
 logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
-                        Mdl.beta, Mdl.betaIdx, parUpdate, staticArgs)
+                        Mdl.beta, Mdl.betaIdx, parUpdate, priArgs, staticArgs)
 {
 
   ## The updating chain
@@ -71,14 +71,14 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 ### GRADIENT IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
 
+  browser()
   ## p-by-1
   logPriGradOut <- logPriGrad(Mdl.X = Mdl.X,
                               Mdl.parLink = Mdl.parLink,
-                              MdlCurr.beta = MdlCurr.beta,
-                              MdlCurr.betaIdx = MdlCurr.betaIdx,
+                              Mdl.beta = Mdl.beta,
+                              Mdl.betaIdx = Mdl.betaIdx,
                               varSelArgs = varSelArgs,
                               priArgs = priArgs,
-                              parUpdate = parUpdate, 
                               chainCaller = chainCaller)
   
 ###----------------------------------------------------------------------------
