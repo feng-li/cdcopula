@@ -22,7 +22,7 @@ CplMHMain <- function(setupfile)
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE 
 ###----------------------------------------------------------------------------
-  
+
   ## Storage for the final parameters
   MdlData.beta <- MdlDataStruc
   MdlData.betaIdx <- MdlDataStruc
