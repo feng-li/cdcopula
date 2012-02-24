@@ -73,13 +73,18 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logPriGrad.prop <- gradHess.prop[["logPriGrad"]] # pp-by-1
       logPriHess.prop <- hessApprox(logPriGrad.prop, hessMethod)
 
+
+      ## The logical indices for the covariates
+      betaIdxPropL <- as.vector(betaIdxProp == 1)
+      betaIdxCurrL <- as.vector(betaIdxCurr == 1)
+      
       X.prop <- X[, as.vector(betaIdxProp == 1), drop = FALSE] # n-by-pc
       X.curr <- X[, as.vector(betaIdxCurr == 1), drop = FALSE] # n-by-pp
 
       browser()
 
       ## The gradient in the general Newton's update
-      gradObs.prop <- Md(t(X.prop), logLikGrad.prop) + logPriGrad.prop
+      gradObs.prop <- rowSums(Md(t(X.prop), logLikGrad.prop)) + logPriGrad.prop
       
       ## The Hessian in the general Newton's update
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.prop
