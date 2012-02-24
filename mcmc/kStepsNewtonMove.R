@@ -53,6 +53,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
   for(iStep in 1:(kSteps+1))
     {
+      browser()
       ## Obtain the gradient and Hessian information
       gradHess.prop <- logPostGrad(CplNM = CplNM,
                                    Mdl.Y = Mdl.Y,
@@ -67,14 +68,14 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp
-      logLikHess.prop <- hessApprox(logLikGrad.pror, hessMethod)
+      logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
       ## Gradient Hessian for the prior
       logPriGrad.prop <- gradHess.prop[["logPriGrad"]] # pp-by-1
-      logLikHess.prop <- hessApprox(logPriGrad.pror, hessMethod)
+      logPriHess.prop <- hessApprox(logPriGrad.pror, hessMethod)
 
-      X.prop <- X[, betaIdxProp, drop = FALSE] # n-by-pc
-      X.curr <- X[, betaIdxCurr, drop = FALSE] # n-by-pp
+      X.prop <- X[, as.vector(betaIdxProp == 1), drop = FALSE] # n-by-pc
+      X.curr <- X[, as.vector(betaIdxCurr == 1), drop = FALSE] # n-by-pp
       
       ## The gradient in the general Newton's update
       gradObs.prop <- Md(t(X.prop), logLikGrad.prop) + logPriGrad.prop

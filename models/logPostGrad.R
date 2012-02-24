@@ -71,7 +71,6 @@ logPostGrad <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 ### GRADIENT IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
 
-  browser()
   ## p-by-1
   logPriGradOut <- logPriGrad(Mdl.X = Mdl.X,
                               Mdl.parLink = Mdl.parLink,
