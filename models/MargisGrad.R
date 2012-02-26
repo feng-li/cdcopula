@@ -16,7 +16,7 @@ MargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
   {
     ## Name of marginal model
     MargisNM <- names(Mdl.Y)
-
+    
     ## Which marginal model is calling
     CompCaller <- chainCaller[1]
     parCaller <- chainCaller[2]
