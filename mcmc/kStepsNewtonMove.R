@@ -69,23 +69,27 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
-      ## Gradient Hessian for the prior
-      logPriGrad.prop <- gradHess.prop[["logPriGrad"]] # pp-by-1
-      logPriHess.prop <- hessApprox(logPriGrad.prop, hessMethod)
+      ## NOTE: The Hessian matrix of the prior is also approximated,  we should
+      ## use the explicit Hessian. 
 
-      ## The logical indices for the covariates
+      ## The logical variable selection indices for the covariates
       betaIdxPropL <- as.vector(betaIdxProp == 1)
       betaIdxCurrL <- as.vector(betaIdxCurr == 1)
       
+      ## Gradient Hessian for the prior
+      logPriGrad.prop <- gradHess.prop[["logPriGrad"]][betaIdxPropL] # pp-by-1
+      logPriHess.prop <- diag(hessApprox(logPriGrad.prop, hessMethod),
+                              sum(betaIdxProp)) # pp-by-pp
+      
+
       X.prop <- X[, as.vector(betaIdxProp == 1), drop = FALSE] # n-by-pc
       X.curr <- X[, as.vector(betaIdxCurr == 1), drop = FALSE] # n-by-pp
 
       browser()
 
       ## The gradient in the general Newton's update
-      gradObs.prop <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop))) +
-        logPriGrad.prop[betaIdxPropL]
-
+      gradObs.prop <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop)) +
+                             logPriGrad.prop) # pp-by-1
 
       ## The Hessian in the general Newton's update
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.prop

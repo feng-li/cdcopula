@@ -17,11 +17,10 @@
 ##' 
 ##' \item   {hessObsPri}
 ##'         {"matrix". A squre matrix. Dimension same as prior_type$Sigma0.}
-##' 
 ##' @references 
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
-##'       Current:       Mon Jan 16 14:44:11 CET 2012.
+##'       Current: Mon Feb 27 15:22:27 CET 2012.
 logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                        varSelArgs, priArgs, chainCaller)
   {
@@ -98,9 +97,11 @@ logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
           {
             ## 2. some are selected
             ## The conditional prior
-            A <- coVar[Idx1, Idx0]%*%solve(coVar[Idx0, Idx0])
+            A <- coVar[Idx1, Idx0, drop = FALSE]%*%
+              solve(coVar[Idx0, Idx0, drop = FALSE])
             condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
-            condCovar <- coVar[Idx1, Idx1] - A%*%coVar[Idx0, Idx1]
+            condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
+              A%*%coVar[Idx0, Idx1, drop = FALSE]
             
             GradSlopOut <- - solve(condCovar*shrinkage)*(xCurr-condMean) 
           }
