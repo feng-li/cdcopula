@@ -29,9 +29,7 @@ logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     CompCurr <- chainCaller[[1]]
     parCurr <- chainCaller[[2]]
 
-
-
-    
+       
     ## Gradient for the intercept as a special case
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
