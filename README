@@ -17,10 +17,8 @@
 ** Load the package to R
 
 
-* Run the model
+* Run the copula model
 
-     #+BEGIN_SRC emacs-lisp
-       (defun org-xor (a b)
-          "Exclusive or."
-          (if a (not b) b))
-     #+END_SRC))))
+     #+BEGIN_SRC R
+       CplMain(setupfile="setup.R")
+     #+END_SRC
