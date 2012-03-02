@@ -112,7 +112,6 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           ## Update the parameter with current updated results.
           Mdl.beta[[CompCurr]][[parCurr]] <- param
           betaIdxCurr <- betaIdxProp
-         
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output 
         {

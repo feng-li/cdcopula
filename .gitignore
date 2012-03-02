@@ -1,6 +1,7 @@
 *~
 .dropbox
-.Rc
 .Rhistory
-#*#
+\#*\#
+.\#*
 *.asv
+*.Rc
