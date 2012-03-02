@@ -21,15 +21,19 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
-logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                       varSelArgs, priArgs, chainCaller)
+logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                           varSelArgs, priArgs, chainCaller)
   {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior
     CompCurr <- chainCaller[[1]]
     parCurr <- chainCaller[[2]]
 
-       
+    ## Reserve the storage of gradient
+    betaLen <- length(Mdl.beta[[CompCurr]][[parCurr]])
+    gradObs <- matrix(NA,  betaLen, 1)
+    HessObs <- matrix(NA, betaLen, ObsLen)
+    
     ## Gradient for the intercept as a special case
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
@@ -43,7 +47,15 @@ logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         variance <- densOutput$variance
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
         
-        GradInitOut <- - 1/(variance*shrinkage)*(xCurr-mean)
+        ## Gradient
+        GradIntOut <- -1/(variance*shrinkage)*(xCurr-mean)
+
+        ## Hessian
+        HessIntOut <- -1/(variance*shrinkage)
+
+        ## The output 
+        gradObs[1] <- GradIntOut
+        HessObs[1] <- HessIntOut
       }
                         
     ## Gradient for the coefficients conditional on variable selection indicators
@@ -104,7 +116,15 @@ logPriGrad <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
               A%*%coVar[Idx0, Idx1, drop = FALSE]
             
-            GradSlopOut <- - solve(condCovar*shrinkage)*(xCurr-condMean) 
+            ## Gradient
+            GradSlopOut <- -solve(condCovar*shrinkage)*(xCurr-condMean)
+            
+            ## Hessian
+            HessSlopOut <- -1/solve(variance*shrinkage)
+            
+            ## The output 
+            gradObs[2:betaLen] <- GradSlopOut
+            HessObs[2:betaLen, 2:betaLen] <- HessSlopOut
           }
         else
           {
