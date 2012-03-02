@@ -47,15 +47,13 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         variance <- densOutput$variance
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
         
-        ## Gradient
-        GradIntOut <- -1/(variance*shrinkage)*(xCurr-mean)
-
-        ## Hessian
-        HessIntOut <- -1/(variance*shrinkage)
+        ## Gradient and Hessian
+        GradHess <- DensGradHess(B = xCurr, mean = mean, covariance =
+                                 variance*shrinkage, Hess = TRUE) 
 
         ## The output 
-        gradObs[1] <- GradIntOut
-        HessObs[1] <- HessIntOut
+        gradObs[1] <- GradHess[["grad"]]
+        HessObs[1] <- GradHess[["Hess"]]
       }
                         
     ## Gradient for the coefficients conditional on variable selection indicators
@@ -115,23 +113,25 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
             condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
               A%*%coVar[Idx0, Idx1, drop = FALSE]
-            
-            ## Gradient
-            GradSlopOut <- -solve(condCovar*shrinkage)*(xCurr-condMean)
-            
-            ## Hessian
-            HessSlopOut <- -1/solve(variance*shrinkage)
-            
+
+
+            ## Gradient and Hessian
+            GradHess <- DensGradHess(B = xCurr, mean = condMean, covariance =
+                                     condCovar*shrinkage, Hess = TRUE) 
+
             ## The output 
-            gradObs[2:betaLen] <- GradSlopOut
-            HessObs[2:betaLen, 2:betaLen] <- HessSlopOut
+            gradObs[2:betaLen] <- GradHess[["grad"]]
+            HessObs[2:betaLen, 2:betaLen] <- GradHess[["Hess"]]
           }
         else
           {
             stop("Debug me: Unknown situation for conditional priors.")
           }
-        ## The final gradient output. 
-        out <- matrix(c(GradInitOut, GradSlopOut))
       }
+
+
+    ## The final gradient output. 
+    out <- list(gradObs = gradObs, HessObs = HessObs)
+    
     return(out)
   }
