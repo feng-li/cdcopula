@@ -1,0 +1,3 @@
+[submodule "ruitils"]
+	path = ruitils
+	url = git@bitbucket.org:fli/rutils.git
