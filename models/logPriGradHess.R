@@ -33,8 +33,9 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     betaLen <- length(Mdl.beta[[CompCurr]][[parCurr]])
     gradObs <- matrix(NA,  betaLen, 1)
     HessObs <- matrix(NA, betaLen, ObsLen)
-    
-    ## Gradient for the intercept as a special case
+###----------------------------------------------------------------------------
+### Gradient for the intercept as a special case
+###----------------------------------------------------------------------------
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
     linkCurr <- Mdl.parLink[[CompCurr]][[parCurr]]
@@ -47,16 +48,19 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         variance <- densOutput$variance
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
         
-        ## Gradient and Hessian
+        ## Gradient and Hessian for the intercept
         GradHess <- DensGradHess(B = xCurr, mean = mean, covariance =
-                                 variance*shrinkage, Hess = TRUE) 
+                                 variance*shrinkage, grad = TRUE, Hess = TRUE) 
 
         ## The output 
-        gradObs[1] <- GradHess[["grad"]]
-        HessObs[1] <- GradHess[["Hess"]]
+        gradIntObs[1] <- GradHess[["grad"]]
+        HessIntObs[1] <- GradHess[["Hess"]]
       }
-                        
-    ## Gradient for the coefficients conditional on variable selection indicators
+
+###----------------------------------------------------------------------------
+### Gradient for beta|I and Hessian for beta (unconditional) 
+###----------------------------------------------------------------------------
+    
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
     betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
@@ -117,7 +121,7 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
             ## Gradient and Hessian
             GradHess <- DensGradHess(B = xCurr, mean = condMean, covariance =
-                                     condCovar*shrinkage, Hess = TRUE) 
+                                     condCovar*shrinkage, grad = TRUE, Hess = FALSE) 
 
             ## The output 
             gradObs[2:betaLen] <- GradHess[["grad"]]
@@ -130,7 +134,12 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
       }
 
 
-    ## The final gradient output. 
+    
+###----------------------------------------------------------------------------
+### The output
+###----------------------------------------------------------------------------    
+    ## The final gradient output.
+    ## The intercept and the conditional gradient; The unconditional Hessian 
     out <- list(gradObs = gradObs, HessObs = HessObs)
     
     return(out)
