@@ -29,12 +29,8 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     CompCurr <- chainCaller[[1]]
     parCurr <- chainCaller[[2]]
 
-    ## Reserve the storage of gradient
-    betaLen <- length(Mdl.beta[[CompCurr]][[parCurr]])
-    gradObs <- matrix(NA,  betaLen, 1)
-    HessObs <- matrix(NA, betaLen, ObsLen)
 ###----------------------------------------------------------------------------
-### Gradient for the intercept as a special case
+### Gradient and Hess for the intercept as a special case
 ###----------------------------------------------------------------------------
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
@@ -53,14 +49,12 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                                  variance*shrinkage, grad = TRUE, Hess = TRUE) 
 
         ## The output 
-        gradIntObs[1] <- GradHess[["grad"]]
-        HessIntObs[1] <- GradHess[["Hess"]]
+        gradIntObs <- GradHess[["grad"]]
+        HessIntObs <- GradHess[["Hess"]]
       }
-
 ###----------------------------------------------------------------------------
 ### Gradient for beta|I and Hessian for beta (unconditional) 
 ###----------------------------------------------------------------------------
-    
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
     betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
@@ -68,22 +62,29 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
     if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
       {
-        ## Normal distribution condition normal The full beta
-        ## vector is assumed as normal. Since variable selection is
-        ## included in the MCMC, The final proposed beta are those
-        ## non zeros. We need to using the conditional normal
-        ## density See Mardia p. 63
+        ## Normal distribution condition normal The full beta vector is assumed
+        ## as normal. Since variable selection is included in the MCMC, The
+        ## final proposed beta are those non zeros. We need to using the
+        ## gradient for the conditional normal density See Mardia p. 63
 
         ## Subtract the prior information for the full beta
         mean <- priArgsCurr[["mean"]] # mean of density
         covariance <- priArgsCurr[["covariance"]] # Covariates
         shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
-        
+
         ## Split the beta vector by zero and nonzero.
         Idx1 <- which(betaIdxNoIntCurr == 1)
         Idx0 <- which(betaIdxNoIntCurr == 0)
         
         Idx0Len <- length(Idx0)
+        Idx1Len <- length(Idx1)
+        
+        ## The unconditional Hessian
+        HessSlopFullObs <- DensGradHess(B = xCurr,
+                                        mean = matrix(mean, Idx0Len+Idx1Len, 1),
+                                        covariance = covariance*shrinkage,
+                                        grad = TRUE, Hess = FALSE) 
+
         betaLen <- length(betaIdxNoIntCurr)                
         
         ## The mean vector (recycled if necessary)
@@ -118,7 +119,6 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
               A%*%coVar[Idx0, Idx1, drop = FALSE]
 
-
             ## Gradient and Hessian
             GradHess <- DensGradHess(B = xCurr, mean = condMean, covariance =
                                      condCovar*shrinkage, grad = TRUE, Hess = FALSE) 
@@ -132,9 +132,6 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             stop("Debug me: Unknown situation for conditional priors.")
           }
       }
-
-
-    
 ###----------------------------------------------------------------------------
 ### The output
 ###----------------------------------------------------------------------------    
