@@ -54,16 +54,16 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   for(iStep in 1:(kSteps+1))
     {
       ## Obtain the gradient and Hessian information
-      gradHess.prop <- logPostGrad(CplNM = CplNM,
-                                   Mdl.Y = Mdl.Y,
-                                   Mdl.X = Mdl.X,
-                                   Mdl.parLink = Mdl.parLink,
-                                   Mdl.beta = Mdl.beta,
-                                   MargisTypes = MargisTypes, 
-                                   Mdl.betaIdx = Mdl.betaIdx,
-                                   parUpdate = parUpdate,
-                                   priArgs = priArgs, 
-                                   staticArgs = staticArgs)
+      gradHess.prop <- logPostGradHess(CplNM = CplNM,
+                                       Mdl.Y = Mdl.Y,
+                                       Mdl.X = Mdl.X,
+                                       Mdl.parLink = Mdl.parLink,
+                                       Mdl.beta = Mdl.beta,
+                                       MargisTypes = MargisTypes, 
+                                       Mdl.betaIdx = Mdl.betaIdx,
+                                       parUpdate = parUpdate,
+                                       priArgs = priArgs, 
+                                       staticArgs = staticArgs)
       
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp
