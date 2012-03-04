@@ -14,10 +14,9 @@
 ##' @return "list". The gradient and hessian matrix, see below.
 ##' \item   {gradObsPri}
 ##'         {"matrix". One-column.}
-##' 
 ##' \item   {hessObsPri}
 ##'         {"matrix". A squre matrix. Dimension same as prior_type$Sigma0.}
-##' @references 
+##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
@@ -29,6 +28,10 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     CompCurr <- chainCaller[[1]]
     parCurr <- chainCaller[[2]]
 
+    ## Reserve list structure of the gradient and Hessian
+    gradObsLst <- list(NULL)
+    HessObsOutLst <- list(NULL)
+    
 ###----------------------------------------------------------------------------
 ### Gradient and Hess for the intercept as a special case
 ###----------------------------------------------------------------------------
@@ -49,12 +52,13 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                                  variance*shrinkage, grad = TRUE, Hess = TRUE) 
 
         ## The output 
-        gradIntObs <- GradHess[["grad"]]
-        HessIntObs <- GradHess[["Hess"]]
+        gradObsLst[["Int"]] <- GradHess[["grad"]]
+        HessObsLst[["Int"]] <- GradHess[["Hess"]]
       }
 ###----------------------------------------------------------------------------
 ### Gradient for beta|I and Hessian for beta (unconditional) 
 ###----------------------------------------------------------------------------
+
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
     betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
@@ -75,19 +79,11 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         ## Split the beta vector by zero and nonzero.
         Idx1 <- which(betaIdxNoIntCurr == 1)
         Idx0 <- which(betaIdxNoIntCurr == 0)
-        
         Idx0Len <- length(Idx0)
         Idx1Len <- length(Idx1)
-        
-        ## The unconditional Hessian
-        HessSlopFullObs <- DensGradHess(B = xCurr,
-                                        mean = matrix(mean, Idx0Len+Idx1Len, 1),
-                                        covariance = covariance*shrinkage,
-                                        grad = TRUE, Hess = FALSE) 
+        betaLen <- length(betaIdxNoIntCurr)                        
 
-        betaLen <- length(betaIdxNoIntCurr)                
-        
-        ## The mean vector (recycled if necessary)
+        ## The mean vector for the whole beta vector (recycled if necessary)
         meanVec <- matrix(mean, betaLen, 1) 
         
         ## The covariance matrix for the whole beta vector
@@ -101,17 +97,21 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             coVar <- diag(length(Idx1))
           }
 
+        ##--------------------The conditional gradient--------------------------
+        
         ## Consider three situations for gradient:
-        if(Idx0Len == 0 || Idx0Len == betaLen)
+        if(Idx0Len == 0)
           {
-            ## 1. all are selected,  2. non are selected:
-            ## FIXME: The situation 2. need to reconsider.
-            ## Switch to unconditional prior.
-            outCurr <- - solve(condCovar*shrinkage)*(xCurr-condMean)
+            ## 1. all are selected. Switch to unconditional prior.
+            ## The conditional gradient
+            gradObsLst[["SlopCond"]] <- DensGradHess(B = xCurr,
+                                                     mean = meanVec,
+                                                     covariance = coVar*shrinkage,
+                                                     grad = TRUE, Hess = FALSE)
           }
         else if(Idx0Len > 0 && Idx0Len < betaLen)
           {
-            ## 2. some are selected
+            ## 2. some are selected (the most common situation)
             ## The conditional prior
             A <- coVar[Idx1, Idx0, drop = FALSE]%*%
               solve(coVar[Idx0, Idx0, drop = FALSE])
@@ -119,25 +119,35 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
               A%*%coVar[Idx0, Idx1, drop = FALSE]
 
-            ## Gradient and Hessian
-            GradHess <- DensGradHess(B = xCurr, mean = condMean, covariance =
-                                     condCovar*shrinkage, grad = TRUE, Hess = FALSE) 
+            ## The conditional gradient
+            gradObsLst[["SlopCond"]] <- DensGradHess(B = xCurr[Idx1],
+                                            mean = condMean,
+                                            covariance = condCovar*shrinkage,
+                                            grad = TRUE, Hess = FALSE) 
 
-            ## The output 
-            gradObs[2:betaLen] <- GradHess[["grad"]]
-            HessObs[2:betaLen, 2:betaLen] <- GradHess[["Hess"]]
           }
-        else
+        else 
           {
-            stop("Debug me: Unknown situation for conditional priors.")
+            ## 3. non are selected
+            gradSlopCondObs <- NULL
           }
+
+        ## -------------The unconditional full Hessian matrix-------------------
+
+        HessObsLst[["SlopFull"]] <- DensGradHess(B = xCurr,
+                                                 mean = meanVec,
+                                                 covariance = coVar*shrinkage,
+                                                 grad = FALSE, Hess = TRUE) 
       }
+    
 ###----------------------------------------------------------------------------
 ### The output
 ###----------------------------------------------------------------------------    
     ## The final gradient output.
-    ## The intercept and the conditional gradient; The unconditional Hessian 
-    out <- list(gradObs = gradObs, HessObs = HessObs)
+    ## The intercept and the conditional gradient; The unconditional Hessian
+    gradObs <- matrix(unlist(gradObsLst))
+    HessObs <- block.diag(HessObsLst)
     
+    out <- list(gradObs = gradObs, HessObs = HessObs)
     return(out)
   }

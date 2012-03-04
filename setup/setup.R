@@ -28,9 +28,6 @@
 
 ## rm(list = ls()); gc()
 
-## PATH TO THE ROOT DIRECTORY OF DEPENDENCY  
-pathUtilsRoot <- "~/workspace/rutils"
-
 ## PATH TO THE ROOT DIRECTORY OF THE MODEL LIBRARY
 pathLibRoot <- "~/workspace/copulas/CovarDepenCopula/R/"
 

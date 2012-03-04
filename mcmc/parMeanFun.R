@@ -1,14 +1,14 @@
 ##' Transform the mean function in the GLM framework.
 ##'
-##' <details>
-##' @title <short tile>
+##' @title GLM mean function
 ##' @param X "matrix" 
 ##' @param beta "one-col-matrix" 
 ##' @param link "character" Type of link function
 ##' @return "one-col-matrix" of the same dimension as the linear predictor
-##' @references 
+##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: ; Current: .
+##' @note Created: Sun Mar 04 14:45:22 CET 2012;
+##'       Current: Sun Mar 04 14:45:29 CET 2012.
 parMeanFun <- function(X, beta, link)
   {
     ## Input each observation x'b  -> l(phi) = x'b -> phi
