@@ -11,6 +11,8 @@
 ##' @param Mdl.X 
 ##' @param Mdl.beta 
 ##' @param Mdl.betaIdx 
+##' @param Mdl.parLink 
+##' @param MargisTypes 
 ##' @param staticArgs 
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
@@ -83,9 +85,8 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
       
-      logPriGrad.prop <- gradHess.prop[["logPriGradHess"]] # pp-by-1
-      logPriHess.prop <- diag(hessApprox(logPriGrad.prop, hessMethod),
-                            length(betaIdxProp))
+      logPriGrad.prop <- gradHess.prop[["logPriGradHess"]][["gradObs"]] # pp-by-1
+      logPriHess.prop <- gradHess.prop[["logPriGradHess"]][["HessObs"]] # p-by-p
 
       ## The gradient and Hessian subsets due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp2] # scaler
@@ -101,13 +102,13 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
         logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr)+
         logPriHess.pc # pp-by-pc
-      HessObsInv.pp <- solve(HessObs.pp)
-      
-      if((iStep <= kSteps)) ## The general Newton's Update
+      HessObsInv.pp <- solve(HessObs.pp) # pp-by-pp
+
+      ## The general Newton's Update
+      if((iStep <= kSteps)) 
         {
           ## update the proposed parameters
-          param <- HessObsInv.pp%*%(HessObs.pc%*%param -
-                                        gradObs.prop)
+          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
           
           ## Update the parameter with current updated results.
           Mdl.beta[[CompCurr]][[parCurr]] <- param
