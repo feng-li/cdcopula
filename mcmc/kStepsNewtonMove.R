@@ -83,7 +83,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
       
-      logPriGrad.prop <- gradHess.prop[["logPriGrad"]] # pp-by-1
+      logPriGrad.prop <- gradHess.prop[["logPriGradHess"]] # pp-by-1
       logPriHess.prop <- diag(hessApprox(logPriGrad.prop, hessMethod),
                             length(betaIdxProp))
 
