@@ -12,7 +12,7 @@
 ##' 
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012;
 ##'       Current: Wed Feb 08 15:35:52 CET 2012.
-CplMHMain <- function(setupfile)
+CplMain <- function(setupfile)
 {
 ###----------------------------------------------------------------------------
 ### Load user setup file

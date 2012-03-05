@@ -20,7 +20,6 @@
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011;
 ##'       Current: Wed Feb 01 16:09:04 CET 2012.
 ##' DEPENDS: mvtnorm
-##' TODO: replace the old multivariate t functions to mvtnorm functions
 MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink, parUpdate, priArgs, varSelArgs,
                           propArgs, MargisTypes, staticArgs)          
