@@ -1,6 +1,6 @@
-====================================
+================================
 Covariate-dependent copula model
-====================================
+================================
 
 Copyright 
 =========
@@ -19,20 +19,17 @@ Preparations
 Installations
 =============
 
-    Clone the repository
-    --------------------
+Clone the repository
+--------------------
 
-    Update the submodules
-    ---------------------
+Update the submodules
+---------------------
 
-    Load the package to R
-    ---------------------
+Load the package to R
+---------------------
 
 
 Run the copula model
 ====================
 
-    ```
     CplMain(setupfile="setup.R")
-
-    ```
