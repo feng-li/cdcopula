@@ -22,7 +22,7 @@
 ##' \item   {HessObsInv}
 ##'         {"matrix". The inverse Hessian matrix.}
 ##' \item   {param}
-##'         {"matrix". The updated paramters after K step Newton integrations.}
+##'         {"matrix". The updated parameters after K step Newton integrations.}
 ##' @references Li Villani Kohn 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
@@ -31,7 +31,6 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                              parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                              Mdl.betaIdx, Mdl.parLink, MargisTypes, staticArgs)    
 {
-
   ## The updating component parameter chain
   cp <- parCaller(parUpdate)
   CompCurr <- cp[1]
@@ -39,20 +38,28 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   
   ## The current parameters 
   X <- Mdl.X[[CompCurr]][[parCurr]]
- 
-  betaCurr <- Mdl.beta[[CompCurr]][[parCurr]]
-  betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
-
-  ## Initialize the Newton move 
-  Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
+  betaCurr <- Mdl.beta[[CompCurr]][[parCurr]] # p-by-1
+  betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]] # p-by-1
   
   ## Finite Newton move. K steps to approach the mode plus one more step to
   ## update the gradient and Hessian at i:th step.
   kSteps <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["ksteps"]]
   hessMethod <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["hess"]]
 
+  ##-----------------------Initialize the Newton move---------------------------
+
+  ## Initialize the Newton move 
+  Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
+  
+  ## Update the parameter with current updated results.
+  betaProp <- matrix(0, length(betaIdxProp), 1)
+
+  
+  Mdl.beta[[CopmCurr]][[parCurr]] <- betaProp
+
   staticArgsOld <- staticArgs
 
+  ##--------------------The k-step Generalized Newton Move---------------------- 
   for(iStep in 1:(kSteps+1))
     {
       ## Obtain the gradient and Hessian information
@@ -105,6 +112,7 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## The general Newton's Update
       if((iStep <= kSteps)) 
         {
+          browser()
           ## update the proposed parameters
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
           
