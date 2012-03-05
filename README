@@ -8,7 +8,7 @@ Feng Li <feng.li@stat.su.se>
 Preparations
 ------------
 
-Build a fast R with BLAS (options)
+### Build a fast R with BLAS (options)
 
   See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
