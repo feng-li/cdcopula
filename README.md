@@ -3,14 +3,21 @@ Covariate-dependent copula model
 
 Copyright 
 ---------
+
 Feng Li <feng.li@stat.su.se>
 
 Preparations
 ------------
 
-### Build a fast R with BLAS (options)
+### Environment requirements
 
-  See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
+*    git tools
+*    R > 2.14.0
+*    R compiler package (optional)
+
+### Build a fast R with BLAS (optional)
+
+*  See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
 Installations
 -------------
