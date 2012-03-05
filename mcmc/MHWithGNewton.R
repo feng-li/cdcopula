@@ -2,19 +2,18 @@
 ##' selection.
 ##'
 ##' @title 
-##' @param param.cur 
-##' @param gradhess.fun.name 
-##' @param logpost.fun.name 
-##' @param nNewtonStep 
-##' @param Params 
-##' @param hessMethod 
-##' @param Y 
-##' @param x 
-##' @param callParam 
-##' @param splineArgs 
-##' @param priorArgs 
-##' @param prop.df 
-##' @param Params_Transform 
+##' @param CplNM 
+##' @param Mdl.Y 
+##' @param Mdl.X 
+##' @param Mdl.beta 
+##' @param Mdl.betaIdx 
+##' @param Mdl.parLink 
+##' @param parUpdate 
+##' @param priArgs 
+##' @param varSelArgs 
+##' @param propArgs 
+##' @param MargisTypes 
+##' @param staticArgs 
 ##' @return 
 ##' @references 
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
@@ -22,9 +21,9 @@
 ##'       Current: Wed Feb 01 16:09:04 CET 2012.
 ##' DEPENDS: mvtnorm
 ##' TODO: replace the old multivariate t functions to mvtnorm functions
-MHPropWithKStepNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                                  Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                                  propArgs, MargisTypes, staticArgs)          
+MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
+                          Mdl.parLink, parUpdate, priArgs, varSelArgs,
+                          propArgs, MargisTypes, staticArgs)          
 {
 
 ###----------------------------------------------------------------------------
