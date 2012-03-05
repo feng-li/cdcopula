@@ -17,16 +17,16 @@
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
 ##' @return "list". See bellow.
-##' \item   {gradObs.cur}
+##' \item   {gradObs}
 ##'         {"matrix". The gradient}
-##' \item   {invHessObs.cur}
+##' \item   {HessObsInv}
 ##'         {"matrix". The inverse Hessian matrix.}
-##' \item   {param.cur}
+##' \item   {param}
 ##'         {"matrix". The updated paramters after K step Newton integrations.}
-##' @references 
+##' @references Li Villani Kohn 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
-##'       Current: Thu Feb 09 14:59:27 CET 2012.
+##'       Current: Mon Mar 05 10:33:29 CET 2012.
 kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                              parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                              Mdl.betaIdx, Mdl.parLink, MargisTypes, staticArgs)    

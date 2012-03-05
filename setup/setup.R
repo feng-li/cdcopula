@@ -32,14 +32,12 @@
 pathLibRoot <- "~/workspace/copulas/CovarDepenCopula/R/"
 
 ## Load the sourceDir tool
-sys.source(file.path(pathUtilsRoot, "/stable/sourceDir.R"),
+sys.source(file.path(pathLibRoot, "rutils/stable/sourceDir.R"),
            envir = attach(NULL, name = "sourceDir"))
 
 ## Load the whole library
-sourceDir(file.path(pathUtilsRoot, "stable"), 
-          file.path(pathLibRoot, c("mcmc", "models", "simul")),
-          byte.compile = FALSE,
-          ignore.error = TRUE)        
+sourceDir(file.path(pathLibRoot, c("rutils/stable", "mcmc", "models", "simul")),
+          byte.compile = FALSE, ignore.error = TRUE)        
 
 ## LOAD DEPENDENCES
 require("mvtnorm")

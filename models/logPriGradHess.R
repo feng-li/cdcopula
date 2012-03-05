@@ -29,8 +29,8 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     parCurr <- chainCaller[[2]]
 
     ## Reserve list structure of the gradient and Hessian
-    gradObsLst <- list(NULL)
-    HessObsOutLst <- list(NULL)
+    gradObsLst <- list()
+    HessObsLst <- list()
     
 ###----------------------------------------------------------------------------
 ### Gradient and Hess for the intercept as a special case
@@ -145,6 +145,8 @@ logPriGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------    
     ## The final gradient output.
     ## The intercept and the conditional gradient; The unconditional Hessian
+    browser()
+    
     gradObs <- matrix(unlist(gradObsLst))
     HessObs <- block.diag(HessObsLst)
     

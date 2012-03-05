@@ -41,7 +41,7 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                      staticArgs = staticArgs)[["Mdl.u"]]
 
       ## Gradient Fraction in the marginal component. n-by-1
-      FracGradOut <-
+      FracGradObs <-
         MargisGrad(parMargis, Mdl.Y, MargisTypes, chainCaller)
     }
   else
@@ -49,43 +49,42 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       cplCaller <- chainCaller[2]
       
       ## Gradient Fraction in the copula component.
-      FracGradOut <- 1
+      FracGradObs <- 1
     }
 
   ## The gradient for the copula function. n-by-1
-  logCplGradOut <- logCplGrad(CplNM = CplNM,
+  logCplGradObs <- logCplGrad(CplNM = CplNM,
                               u = staticArgs$Mdl.u,
                               parCpl = Mdl.par[[CplNM]],
                               cplCaller = cplCaller,
                               staticArgs = staticArgs)
 
   ## The gradient for the link function n-by-1
-  LinkGradOut <-
+  LinkGradObs <-
     parMeanFunGrad(par = Mdl.par[[chainCaller[1]]][[chainCaller[2]]],
                    link = Mdl.parLink[[chainCaller[1]]][[chainCaller[2]]])
 
   ## The gradient and Hessian for the likelihood
-  logLikGradOut <- (logCplGradOut*FracGradOut)*LinkGradOut
+  logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
 
 ###----------------------------------------------------------------------------
-### GRADIENT IN THE PRIOR COMPONENT
+### GRADIENT AND HESSIAN IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
 
-  ## p-by-1
-  logPriGradHessOut <- logPriGrad(Mdl.X = Mdl.X,
-                                  Mdl.parLink = Mdl.parLink,
-                                  Mdl.beta = Mdl.beta,
-                                  Mdl.betaIdx = Mdl.betaIdx,
-                                  varSelArgs = varSelArgs,
-                                  priArgs = priArgs,
-                                  chainCaller = chainCaller)
+  logPriGradHessObs <- logPriGradHess(Mdl.X = Mdl.X,
+                                      Mdl.parLink = Mdl.parLink,
+                                      Mdl.beta = Mdl.beta,
+                                      Mdl.betaIdx = Mdl.betaIdx,
+                                      varSelArgs = varSelArgs,
+                                      priArgs = priArgs,
+                                      chainCaller = chainCaller)
   
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------    
   
-  out <- list(logLikGrad = logLikGradOut,
-              logPriGradHess = logPriGradHessOut, 
+  out <- list(logLikGradObs = logLikGradObs,
+              logPriGradHessObs = logPriGradHessObs, 
               staticArgs = staticArgs) 
   return(out)
 }
