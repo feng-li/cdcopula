@@ -50,15 +50,9 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
   ## Initialize the Newton move 
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
-  
-  ## Update the parameter with current updated results.
-  betaProp <- matrix(0, length(betaIdxProp), 1)
-
-  
-  Mdl.beta[[CopmCurr]][[parCurr]] <- betaProp
 
   staticArgsOld <- staticArgs
-
+  
   ##--------------------The k-step Generalized Newton Move---------------------- 
   for(iStep in 1:(kSteps+1))
     {
@@ -112,20 +106,23 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## The general Newton's Update
       if((iStep <= kSteps)) 
         {
-          browser()
-          ## update the proposed parameters
-          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
+          ## update the proposed parameters via the general Newton formula
+          betaCurr <- HessObsInv.pp%*%(HessObs.pc%*%betaCurr - gradObs.prop)
           
           ## Update the parameter with current updated results.
-          Mdl.beta[[CompCurr]][[parCurr]] <- param
-          betaIdxCurr <- betaIdxProp
+          betaIdxCurr <- betaIdxProp 
+          betaTmp <- matrix(0, length(betaIdxCurr), 1) # Temporary with all zeros. 
+          betaTmp[betaIdxCurr] <- betaCurr
+          Mdl.beta[[CompCurr]][[parCurr]] <- betaTmp
+          staticArgs <- gradHess.prop[["staticArgs"]]
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output 
         {
           out <- list(gradObs = gradObs.prop,
-                      HessObs = HessObs.prop,
-                      HessObsInv = HessObsInv,
-                      param = param) 
+                      HessObs = HessObs.pp,
+                      HessObsInv = HessObsInv.pp,
+                      betaCurr = betaCurr, 
+                      staticArgs = staticArgs) 
         }
        
     }
