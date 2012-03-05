@@ -177,27 +177,27 @@ MCMCUpdate[[3]][[2]] <- TRUE
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS 
 propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2)) 
 propArgs[[1]][[2]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
        "beta" = list(type = "mvt", df = 6), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[1]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
        "beta" = list(type = "mvt", df = 6), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[2]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
        "beta" = list(type = "mvt", df = 6), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[1]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
        "beta" = list(type = "mvt", df = 6), 
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[2]] <-
-  list("algorithm" = list(type = "kStepsNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
        "beta" = list(type = "mvt", df = 6), 
        "indicators" = list(type = "binom", prob = 0.2))
 
