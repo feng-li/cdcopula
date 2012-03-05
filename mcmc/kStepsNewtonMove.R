@@ -66,9 +66,9 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                                        parUpdate = parUpdate,
                                        priArgs = priArgs, 
                                        staticArgs = staticArgs)
-      
+
       ## Gradient and Hessian for the likelihood
-      logLikGrad.prop <- gradHess.prop[["logLikGrad"]] # n-by-pp
+      logLikGrad.prop <- gradHess.prop[["logLikGradObs"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
       ## The alternative variable selection indices for the covariates
@@ -78,15 +78,13 @@ kStepsNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## The selected covariates
       X.prop <- X[ , betaIdxProp2, drop = FALSE] # n-by-pp
       X.curr <- X[ , betaIdxCurr2, drop = FALSE] # n-by-pc
-
-      browser()
-      
+    
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
       
-      logPriGrad.prop <- gradHess.prop[["logPriGradHess"]][["gradObs"]] # pp-by-1
-      logPriHess.prop <- gradHess.prop[["logPriGradHess"]][["HessObs"]] # p-by-p
+      logPriGrad.prop <- gradHess.prop[["logPriGradHessObs"]][["gradObs"]] # pp-by-1
+      logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # p-by-p
 
       ## The gradient and Hessian subsets due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp2] # scaler
