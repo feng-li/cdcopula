@@ -99,26 +99,27 @@ CplMain <- function(setupfile)
                       
                       ## Call the mail Metropolis--Hastings
                       algArgs <- propArgs[[CompCurr]][[parCurr]][["algorithm"]]
-                      if(tolower(algArgs[["type"]]) == "kstepsnewtonmove")
+   
+                      if(tolower(algArgs[["type"]]) == "gnewtonmove")
                         {
                           ## Cross validation subsets 
                           subset <- crossValidIdx[["training"]][[iCross]]
                           ## staticArgs <- list(u = u, Mdl.par = Mdl.par) 
 
-                          out <- MHPropWithKStepNewton(
-                                                       CplNM = CplNM,
-                                                       propArgs = propArgs,
-                                                       varSelArgs = varSelArgs,
-                                                       priArgs = priArgs,
-                                                       parUpdate = parUpdate,
-                                                       Mdl.Y = Mdl.Y,
-                                                       Mdl.X = Mdl.X,
-                                                       Mdl.beta = Mdl.beta,
-                                                       Mdl.betaIdx = Mdl.betaIdx,
-                                                       MargisTypes = MargisTypes, 
-                                                       Mdl.parLink = Mdl.parLink, 
-                                                       staticArgs = staticArgs
-                                                       )   
+                          out <- MHWithGNewton(
+                                               CplNM = CplNM,
+                                               propArgs = propArgs,
+                                               varSelArgs = varSelArgs,
+                                               priArgs = priArgs,
+                                               parUpdate = parUpdate,
+                                               Mdl.Y = Mdl.Y,
+                                               Mdl.X = Mdl.X,
+                                               Mdl.beta = Mdl.beta,
+                                               Mdl.betaIdx = Mdl.betaIdx,
+                                               MargisTypes = MargisTypes, 
+                                               Mdl.parLink = Mdl.parLink, 
+                                               staticArgs = staticArgs
+                                               )   
 
                         }
                       else
@@ -138,3 +139,8 @@ CplMain <- function(setupfile)
   out <- as.list(environment())
   ## return(out)
 }
+
+
+###----------------------------------------------------------------------------
+### Testing
+###----------------------------------------------------------------------------
