@@ -140,9 +140,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     }
   else # all are right
     {
-      # The jump density from propose draw to current draw.
-      logjump.prop2cur <- DensMultiT(param.cur, param.prop.prop, -invHessObs.prop.prop,
-                                     prop.df)  
+      ## The jump density from propose draw to current draw.
+      logjump.prop2cur <- dmvt(x = param.cur, delta = param.prop.prop,
+                               sigma = -invHessObs.prop.prop, df = prop.df)
+
       Params.prop <- Params
       Params.prop[[callParam$id]][callParam$subset] <- param.prop
       Params.cur <- Params
