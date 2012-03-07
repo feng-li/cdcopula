@@ -61,7 +61,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------  
 
   ## Newton method to approach the posterior for the current draw 
-  KStepNewton1 <- GNewtonMove(propArgs = propArgs,
+  GNewton1 <- GNewtonMove(propArgs = propArgs,
                               varSelArgs = varSelArgs,
                               priArgs = priArgs,
                               betaIdxProp = betaIdxProp,
@@ -76,9 +76,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               staticArgs = staticArgs)   
  
   ## The information for proposed density via K-step Newton's method
-  param.cur.prop <- KStepNewton1$param # mean information 
-  HessObs.cur.prop <- KStepNewton1$hessObs # variance information
-  invHessObs.cur.prop <- KStepNewton1$invHessObs
+  param.cur.prop <- GNewton1$param # mean information 
+  HessObs.cur.prop <- GNewton1$hessObs # variance information
+  invHessObs.cur.prop <- GNewton1$invHessObs
 
   ## Check if it is a good proposal
   if(any(is.na(HessObs.cur.prop)) ||
@@ -108,7 +108,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else # all are right
     {
       ## Newton method to approach the posterior for the proposed draw 
-      KStepNewton2 <- GNewtonMove(propArgs = propArgs,
+      GNewton2 <- GNewtonMove(propArgs = propArgs,
                                   varSelArgs = varSelArgs,
                                   priArgs = priArgs,
                                   betaIdxProp = betaIdxProp,
@@ -122,12 +122,12 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                   staticArgs = staticArgs)     
 
       ## The information for proposed density via K-step Newton's method
-      param.prop.prop <- KStepNewton2$param.cur 
-      HessObs.prop.prop <- KStepNewton2$hessObs.cur
-      invHessObs.prop.prop <- KStepNewton2$invHessObs.cur
+      param.prop.prop <- GNewton2$param.cur 
+      HessObs.prop.prop <- GNewton2$hessObs.cur
+      invHessObs.prop.prop <- GNewton2$invHessObs.cur
     }
 
-  if(any(is.na(HessObs.prop.prop))) # Something is wrong at KStepNewton2,  reject it.
+  if(any(is.na(HessObs.prop.prop))) # Something is wrong at GNewton2,  reject it.
     {
       logpost.cur <- NaN
       logpost.prop <- NaN
