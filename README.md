@@ -15,16 +15,16 @@ Preparations
 
 * R > 2.14.0
      
-  * Build a fast R with BLAS (optional)
+   * Build a fast R with BLAS (optional)
 
-     * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
+      * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
-  * Required packages
-     * `mvtnorm` 
+   * Required R packages
+      * `mvtnorm` 
 
-  * Optional packages
-     * `compiler`
-     * `parallel`
+   * Optional R packages
+      * `compiler`
+      * `parallel`
 
 Installations
 -------------
