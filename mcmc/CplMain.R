@@ -6,18 +6,18 @@
 ##' 
 ##' @return
 ##' 
-##' @references
+##' @references Li, F., 2012 Covariate-dependent copula
 ##' 
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' 
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012;
-##'       Current: Wed Feb 08 15:35:52 CET 2012.
-CplMain <- function(setupfile)
+##'       Current: Wed Mar 07 16:56:30 CET 2012.
+CplMain <- function(configfile)
 {
 ###----------------------------------------------------------------------------
 ### Load user setup file
 ###----------------------------------------------------------------------------  
-  source(setupfile, local = TRUE)
+  source(configfile, local = TRUE)
   
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE 
@@ -106,20 +106,20 @@ CplMain <- function(setupfile)
                           subset <- crossValidIdx[["training"]][[iCross]]
                           ## staticArgs <- list(u = u, Mdl.par = Mdl.par) 
 
-                          out <- MHWithGNewton(
-                                               CplNM = CplNM,
-                                               propArgs = propArgs,
-                                               varSelArgs = varSelArgs,
-                                               priArgs = priArgs,
-                                               parUpdate = parUpdate,
-                                               Mdl.Y = Mdl.Y,
-                                               Mdl.X = Mdl.X,
-                                               Mdl.beta = Mdl.beta,
-                                               Mdl.betaIdx = Mdl.betaIdx,
-                                               MargisTypes = MargisTypes, 
-                                               Mdl.parLink = Mdl.parLink, 
-                                               staticArgs = staticArgs
-                                               )   
+                          MHOut <- MHWithGNewton(
+                                                 CplNM = CplNM,
+                                                 propArgs = propArgs,
+                                                 varSelArgs = varSelArgs,
+                                                 priArgs = priArgs,
+                                                 parUpdate = parUpdate,
+                                                 Mdl.Y = Mdl.Y,
+                                                 Mdl.X = Mdl.X,
+                                                 Mdl.beta = Mdl.beta,
+                                                 Mdl.betaIdx = Mdl.betaIdx,
+                                                 MargisTypes = MargisTypes, 
+                                                 Mdl.parLink = Mdl.parLink, 
+                                                 staticArgs = staticArgs
+                                                 )   
 
                         }
                       else
