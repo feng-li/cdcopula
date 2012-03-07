@@ -1,6 +1,6 @@
 ###############################################################################
 ### TITLE
-###        BIVARIATE COPULA MODEL WITH COVARIATES--DEPENDENT
+###        BIVARIATE COPULA MODEL WITH COVARIATE--DEPENDENT
 ###
 ### SYSTEM REQUIREMENTS
 ###        R > = 2.14.0 with packages ``mvtnorm'' 
