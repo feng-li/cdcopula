@@ -4,25 +4,32 @@ Covariate-dependent copula model
 Copyright 
 ---------
 
-Feng Li <feng.li@stat.su.se>
+Feng Li  <feng.li@stat.su.se>
 
 Preparations
 ------------
 
 ### Environment requirements
 
-*    git tools (for downloading the library)
-*    R > 2.14.0
-*    R compiler package (optional)
+* git tools (for downloading the library)
 
-### Build a fast R with BLAS (optional)
+* R > 2.14.0
+     
+  * Build a fast R with BLAS (optional)
 
-*  See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
+     * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
+
+  * Required packages
+     * `mvtnorm` 
+
+  * Optional packages
+     * `compiler`
+     * `parallel`
 
 Installations
 -------------
 
-### Clone the repository
+### Clone the repository and submodules
     
     git clone git@bitbucket.org:fli/copula.git
     cd copula
@@ -32,15 +39,17 @@ Installations
 
     source("CplMain.R")
 
-Update the library (post-installation)
---------------------------------------
+Post-installation
+-----------------
     
-    cd copula
-    git pull
-    git submodule sync 
-    git submodule foreach git checkout master
-    git submodule foreach git pull
-    git submodule update
+* Sync with the remote repository and submodules 
+    
+        cd copula
+        git pull
+        git submodule sync 
+        git submodule foreach git checkout master
+        git submodule foreach git pull
+        git submodule update
 
 Run the copula model
 --------------------
@@ -51,5 +60,5 @@ Run the copula model
 References
 ----------
 
-*  Li, F. 2012 Copula paper (manuscript)
-*  Li, F., Villani, M., Kohn, R. 2010 
+* Li, F. 2012 Copula paper (manuscript)
+* Villani, M., Kohn, R., Nott, D., (2012) _Generalized Smooth Finite Mixtures_, Journal of Econometrics, forthcoming.
