@@ -19,12 +19,9 @@ Preparations
 
       * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
-   * Required R packages
-      * `mvtnorm` 
+   * Required R packages: `mvtnorm` 
 
-   * Optional R packages
-      * `compiler`
-      * `parallel`
+   * Optional R packages: `compiler` `parallel`
 
 Installations
 -------------
