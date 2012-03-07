@@ -53,7 +53,6 @@ Run the copula model
 
     CplMain(setupfile="setup.R")
 
-    
 References
 ----------
 
