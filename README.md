@@ -11,7 +11,7 @@ Preparations
 
 ### Environment requirements
 
-*    git tools
+*    git tools (for downloading the library)
 *    R > 2.14.0
 *    R compiler package (optional)
 
@@ -28,15 +28,28 @@ Installations
     cd copula
     git submodule update --init --recursive
 
-### Update the submodules
-
-    git submodule foreach git pull
-
 ### Load the package to R
 
     source("CplMain.R")
+
+Update the library (post-installation)
+--------------------------------------
+    
+    cd copula
+    git pull
+    git submodule sync 
+    git submodule foreach git checkout master
+    git submodule foreach git pull
+    git submodule update
 
 Run the copula model
 --------------------
 
     CplMain(setupfile="setup.R")
+
+    
+References
+----------
+
+*  Li, F. 2012 Copula paper (manuscript)
+*  Li, F., Villani, M., Kohn, R. 2010 
