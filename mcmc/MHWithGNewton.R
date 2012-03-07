@@ -63,18 +63,18 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   ## Newton method to approach the posterior for the current draw 
   GNewton1 <- GNewtonMove(propArgs = propArgs,
-                              varSelArgs = varSelArgs,
-                              priArgs = priArgs,
-                              betaIdxProp = betaIdxProp,
-                              parUpdate = parUpdate,
-                              CplNM = CplNM,
-                              Mdl.Y = Mdl.Y,
-                              Mdl.X = Mdl.X,
-                              Mdl.parLink = Mdl.parLink,
-                              Mdl.beta = Mdl.beta,
-                              Mdl.betaId = Mdl.betaIdx,
-                              MargisTypes = MargisTypes, 
-                              staticArgs = staticArgs)   
+                          varSelArgs = varSelArgs,
+                          priArgs = priArgs,
+                          betaIdxProp = betaIdxProp,
+                          parUpdate = parUpdate,
+                          CplNM = CplNM,
+                          Mdl.Y = Mdl.Y,
+                          Mdl.X = Mdl.X,
+                          Mdl.parLink = Mdl.parLink,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaId = Mdl.betaIdx,
+                          MargisTypes = MargisTypes, 
+                          staticArgs = staticArgs)   
 
   ## The information for proposed density via K-step Newton's method
   param.cur.prop <- GNewton1$param # mean information 
@@ -91,19 +91,13 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else # Continues with the Metropolis-Hastings
     {
       ## Propose a draw from multivariate t-distribution based on the proposed
-      ## information param.prop <- RndMultiT(param.cur.prop,
-      ## -invHessObs.cur.prop, prop.df)
-
       ## An idea (out of loud) : Generate a ## matrix of param. Select the one
       ## that give max acceptance probability 
-      
-      
+      prop.df = NA
       param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop, df = prop.df,
                          delta = param.cur.prop)
       
       ## The jump density from the proposed draw 
-      ## logjump.cur2prop <- DensMultiT(param.prop, param.cur.prop, -HessObs.cur.prop, prop.df)
-
       logjump.cur2prop <- dmvt(x = param.prop, delta = param.cur.prop,
                                sigma = -HessObs.cur.prop, df = prop.df)
     }
@@ -120,17 +114,17 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       ## Newton method to approach the posterior for the proposed draw 
       GNewton2 <- GNewtonMove(propArgs = propArgs,
-                                  varSelArgs = varSelArgs,
-                                  priArgs = priArgs,
-                                  betaIdxProp = betaIdxProp,
-                                  parUpdate = parUpdate,
-                                  CplNM = CplNM,
-                                  Mdl.Y = Mdl.Y,
-                                  Mdl.X = Mdl.X,
-                                  Mdl.parLink = Mdl.parLink,
-                                  Mdl.beta = Mdl.beta,
-                                  Mdl.betaId = Mdl.betaIdx,
-                                  staticArgs = staticArgs)     
+                              varSelArgs = varSelArgs,
+                              priArgs = priArgs,
+                              betaIdxProp = betaIdxProp,
+                              parUpdate = parUpdate,
+                              CplNM = CplNM,
+                              Mdl.Y = Mdl.Y,
+                              Mdl.X = Mdl.X,
+                              Mdl.parLink = Mdl.parLink,
+                              Mdl.beta = Mdl.beta,
+                              Mdl.betaId = Mdl.betaIdx,
+                              staticArgs = staticArgs)     
 
       ## The information for proposed density via K-step Newton's method
       param.prop.prop <- GNewton2$param 
@@ -155,16 +149,30 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       Params.cur[[callParam$id]][callParam$subset] <- param.cur
 
       ## The log posterior for the proposed draw
-      caller.prop <- call(logpost.fun.name,Y = Y, x = x, Params = Params.prop,callParam =
-                          callParam ,  priorArgs = priorArgs, splineArgs = splineArgs,
-                          Params_Transform = Params_Transform)
-      logpost.prop <-  eval(caller.prop) 
-      
+      logpost.prop <- logPost(CplNM = CplNM,
+                              Mdl.Y = Mdl.Y,
+                              Mdl.X = Mdl.X,
+                              Mdl.beta = Mdl.beta,
+                              Mdl.betaIdx = Mdl.betaIdx,
+                              Mdl.parLink = Mdl.parLink,
+                              varSelArgs = varSelArgs,
+                              MargisTypes = MargisTypes,
+                              priArgs = priArgs,
+                              parUpdate = parUpdate,
+                              staticArgs = staticArgs)
+
       ## The log posterior for the current draw
-      caller.cur <- call(logpost.fun.name, Y = Y,  x = x, Params = Params.cur,callParam =
-                         callParam, priorArgs = priorArgs, splineArgs = splineArgs,
-                         Params_Transform = Params_Transform) 
-      logpost.cur <- eval(caller.cur)
+      logpost.cur <- logPost(CplNM = CplNM,
+                              Mdl.Y = Mdl.Y,
+                              Mdl.X = Mdl.X,
+                              Mdl.beta = Mdl.beta,
+                              Mdl.betaIdx = Mdl.betaIdx,
+                              Mdl.parLink = Mdl.parLink,
+                              varSelArgs = varSelArgs,
+                              MargisTypes = MargisTypes,
+                              priArgs = priArgs,
+                              parUpdate = parUpdate,
+                              staticArgs = staticArgs)
     }
   
 ###----------------------------------------------------------------------------

@@ -41,12 +41,12 @@ Post-installation
     
 ### Sync with the remote repository and submodules 
     
-        cd copula
-        git pull
-        git submodule sync 
-        git submodule foreach git checkout master
-        git submodule foreach git pull
-        git submodule update
+    cd copula
+    git pull
+    git submodule sync 
+    git submodule foreach git checkout master
+    git submodule foreach git pull
+    git submodule update
 
 Run the copula model
 --------------------
