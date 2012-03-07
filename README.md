@@ -39,7 +39,7 @@ Installations
 Post-installation
 -----------------
     
-* Sync with the remote repository and submodules 
+### Sync with the remote repository and submodules 
     
         cd copula
         git pull

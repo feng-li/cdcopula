@@ -26,7 +26,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 {
 
 ###----------------------------------------------------------------------------
-### Variable Selection proposal 
+### Variable Selection proposal
+### TODO: Write a general variable selection scheme
 ###----------------------------------------------------------------------------
   
   ## The updating component parameter chain
@@ -74,11 +75,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               Mdl.betaId = Mdl.betaIdx,
                               MargisTypes = MargisTypes, 
                               staticArgs = staticArgs)   
- 
+
   ## The information for proposed density via K-step Newton's method
   param.cur.prop <- GNewton1$param # mean information 
-  HessObs.cur.prop <- GNewton1$hessObs # variance information
-  invHessObs.cur.prop <- GNewton1$invHessObs
+  HessObs.cur.prop <- GNewton1$HessObs # variance information
+  invHessObs.cur.prop <- GNewton1$HessObsInv
 
   ## Check if it is a good proposal
   if(any(is.na(HessObs.cur.prop)) ||
@@ -89,12 +90,22 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     }
   else # Continues with the Metropolis-Hastings
     {
-      ## Propose a draw from multivariate t-distribution based on the proposed information
-      param.prop <- RndMultiT(param.cur.prop, -invHessObs.cur.prop, prop.df)
+      ## Propose a draw from multivariate t-distribution based on the proposed
+      ## information param.prop <- RndMultiT(param.cur.prop,
+      ## -invHessObs.cur.prop, prop.df)
+
+      ## An idea (out of loud) : Generate a ## matrix of param. Select the one
+      ## that give max acceptance probability 
+      
+      
+      param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop, df = prop.df,
+                         delta = param.cur.prop)
       
       ## The jump density from the proposed draw 
-      logjump.cur2prop <- DensMultiT(param.prop, param.cur.prop, -HessObs.cur.prop, prop.df)
-                                        
+      ## logjump.cur2prop <- DensMultiT(param.prop, param.cur.prop, -HessObs.cur.prop, prop.df)
+
+      logjump.cur2prop <- dmvt(x = param.prop, delta = param.cur.prop,
+                               sigma = -HessObs.cur.prop, df = prop.df)
     }
   
 ###----------------------------------------------------------------------------
@@ -122,9 +133,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                   staticArgs = staticArgs)     
 
       ## The information for proposed density via K-step Newton's method
-      param.prop.prop <- GNewton2$param.cur 
-      HessObs.prop.prop <- GNewton2$hessObs.cur
-      invHessObs.prop.prop <- GNewton2$invHessObs.cur
+      param.prop.prop <- GNewton2$param 
+      HessObs.prop.prop <- GNewton2$hessObs
+      invHessObs.prop.prop <- GNewton2$invHessObs
     }
 
   if(any(is.na(HessObs.prop.prop))) # Something is wrong at GNewton2,  reject it.
@@ -182,6 +193,5 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------  
   out <- list(param.out = param.out, accept.prob = accept.prob)
 
-  ##cat("prop:", param.prop, "cur:", param.cur, "\n")
   return(out)
 }

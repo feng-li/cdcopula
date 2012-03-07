@@ -50,8 +50,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
   ## Initialize the Newton move 
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
-
-  staticArgsOld <- staticArgs
+  
+  param <- betaCurr[betaIdxCurr]
   
   ##--------------------The k-step Generalized Newton Move---------------------- 
   for(iStep in 1:(kSteps+1))
