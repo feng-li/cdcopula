@@ -107,13 +107,13 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       if((iStep <= kSteps)) 
         {
           ## update the proposed parameters via the general Newton formula
-          betaCurr <- HessObsInv.pp%*%(HessObs.pc%*%betaCurr - gradObs.prop)
+          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
           
           ## Update the parameter with current updated results.
           betaIdxCurr <- betaIdxProp 
-          betaTmp <- matrix(0, length(betaIdxCurr), 1) # Temporary with all zeros. 
-          betaTmp[betaIdxCurr] <- betaCurr
-          Mdl.beta[[CompCurr]][[parCurr]] <- betaTmp
+          paramTmp <- matrix(0, length(betaIdxCurr), 1) # Temporary with all zeros. 
+          paramTmp[betaIdxCurr] <- param
+          Mdl.beta[[CompCurr]][[parCurr]] <- paramTmp
           staticArgs <- gradHess.prop[["staticArgs"]]
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output 
@@ -121,7 +121,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           out <- list(gradObs = gradObs.prop,
                       HessObs = HessObs.pp,
                       HessObsInv = HessObsInv.pp,
-                      betaCurr = betaCurr, 
+                      param = param, 
                       staticArgs = staticArgs) 
         }
        
