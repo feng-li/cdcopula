@@ -26,6 +26,15 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 ## NO. OF OBSERVATIONS
 nObs <- 15
 
+## THE LINK FUNCTION USED IN THE MODEL
+Mdl.parLink <- MdlDataStruc
+Mdl.parLink[[1]][[1]] <- "identity"
+Mdl.parLink[[1]][[2]] <- "log"
+Mdl.parLink[[2]][[1]] <- "identity"
+Mdl.parLink[[2]][[2]] <- "log"
+Mdl.parLink[[3]][[1]] <- "logit"
+Mdl.parLink[[3]][[2]] <- "logit"
+
 ## THE TRUE PARAMETER VALUES IN THE DGP
 DGP.betaTRUE <- MdlDataStruc
 DGP.betaTRUE[[1]][[1]] <- c(0.2, 0.6, 0.7)
