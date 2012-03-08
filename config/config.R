@@ -97,7 +97,6 @@ Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
 
 
-
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)

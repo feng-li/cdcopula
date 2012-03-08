@@ -30,7 +30,7 @@ DGPCpl <- function(configfile, export = "list")
     Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
     Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
     Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]]) ##FIXME:
-        
+    
     ## PARAMETERS IN COPULA FUNCTION
     DGP.par <- MdlDataStruc
     for(i in 1:length(MdlDataStruc))
@@ -54,7 +54,6 @@ DGPCpl <- function(configfile, export = "list")
     Mdl.Y <- u2qtl(u = uOut$u, parMargis = DGP.par[MargisNM],
                    MargisTypes = MargisTypes)
 
-    
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X)
     if(is.character(export) && tolower(export)  == "list")
       {
