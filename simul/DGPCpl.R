@@ -21,6 +21,7 @@ DGPCpl <- function(configfile, export = "list")
     ## COVARIATES USED IN THE MODEL
     X <- list(matrix(runif(nObs*2), nObs),
               matrix(runif(nObs*3), nObs))
+    names(X) <- MargisNM
     
     ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
     Mdl.X <- MdlDataStruc

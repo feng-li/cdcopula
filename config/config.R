@@ -76,7 +76,7 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 
 ## THE DATASET
 DGPCpl(configfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
-       export = "list")
+       export = sys.frame())
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
@@ -87,7 +87,6 @@ Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
 Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
 Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
 
-
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
 Mdl.parLink[[1]][[1]] <- "identity"
@@ -96,7 +95,6 @@ Mdl.parLink[[2]][[1]] <- "identity"
 Mdl.parLink[[2]][[2]] <- "log"
 Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
-
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
