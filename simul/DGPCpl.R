@@ -8,7 +8,7 @@
 ##' \item {character string "list"}{Return a list containing the DGP results} 
 ##' \item {environment class}{The DGP ouput are written to the given
 ##' environment directly} 
-##' @return See export argument
+##' @return See "export" argument.
 ##' @references Li, F., 2012 
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Mar 07 17:33:13 CET 2012;
