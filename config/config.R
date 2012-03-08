@@ -75,7 +75,8 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 ###----------------------------------------------------------------------------
 
 ## THE DATASET
-DGPCpl(configfile = "config/config.DGPCpl.R", export = "list")
+DGPCpl(configfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
+       export = "list")
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc

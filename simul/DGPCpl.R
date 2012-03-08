@@ -54,7 +54,7 @@ DGPCpl <- function(configfile, export = "list")
     Mdl.Y <- u2qtl(u = uOut$u, parMargis = DGP.par[MargisNM],
                    MargisTypes = MargisTypes)
 
-    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X)
+    out <- list(Mdl.Y = Mdl.Y, X = X)
     if(is.character(export) && tolower(export)  == "list")
       {
         return(out)
