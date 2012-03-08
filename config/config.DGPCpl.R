@@ -2,34 +2,29 @@
 ### Configuration file for the copula data generating process 
 ###############################################################################
 
+## COPULA DENSITY NAME AND PARAMETERS
+CplNM <- "BB7"
+CplParNM <- list(c("tau", "lambdaL"))
+
+## MARGINAL MODELS NAME, TYPE AND PARAMETERS
+MargisNM <- c("SP500", "NASDAQ100")
+MargisTypes <- c("GAUSSIAN", "GAUSSIAN")
+MargisParNM <- list(c("mu", "sigma"), 
+                    c("mu", "sigma"))
+
+## Attribute name on the arguments 
+names(CplParNM) <- CplNM
+names(MargisTypes) <- MargisNM
+names(MargisParNM) <- MargisNM
+
+## The object structure for the model components
+MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
+
+## Generating the numerical tabular for the inverse Kendall's tau
+tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
+
 ## NO. OF OBSERVATIONS
 nObs <- 15
-
-## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
-## Variable selection candidates, NULL: no variable selection use full
-## covariates. ("all-in", "all-out", "random", or user-input)
-varSelArgs <- MdlDataStruc
-varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
-                             init = "all-in") 
-varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
-                             init = "all-out")
-varSelArgs[[2]][[1]] <- list(cand = c(2, 4),
-                             init = "random")
-varSelArgs[[2]][[2]] <- list(cand = c(2, 4),
-                             init = "all-out")
-varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 5, 6),
-                             init = c(2, 3))
-varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
-                             init = "random")
-
-## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MdlDataStruc
-Mdl.parLink[[1]][[1]] <- "identity"
-Mdl.parLink[[1]][[2]] <- "log"
-Mdl.parLink[[2]][[1]] <- "identity"
-Mdl.parLink[[2]][[2]] <- "log"
-Mdl.parLink[[3]][[1]] <- "logit"
-Mdl.parLink[[3]][[2]] <- "logit"
 
 ## THE TRUE PARAMETER VALUES IN THE DGP
 DGP.betaTRUE <- MdlDataStruc

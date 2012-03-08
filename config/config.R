@@ -71,10 +71,50 @@ MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 
 ###----------------------------------------------------------------------------
-### THE DATA (OR DGP)
-### TODO: Write DGP in a separate function.
+### THE DATA AND MODEL
 ###----------------------------------------------------------------------------
 
+## THE DATASET
+DGPCpl(configfile = "config/config.DGPCpl.R", export = "list")
+
+## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
+Mdl.X <- MdlDataStruc
+Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
+Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
+Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
+Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
+Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
+Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+
+
+## THE LINK FUNCTION USED IN THE MODEL
+Mdl.parLink <- MdlDataStruc
+Mdl.parLink[[1]][[1]] <- "identity"
+Mdl.parLink[[1]][[2]] <- "log"
+Mdl.parLink[[2]][[1]] <- "identity"
+Mdl.parLink[[2]][[2]] <- "log"
+Mdl.parLink[[3]][[1]] <- "logit"
+Mdl.parLink[[3]][[2]] <- "logit"
+
+
+
+## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
+## Variable selection candidates, NULL: no variable selection use full
+## covariates. ("all-in", "all-out", "random", or user-input)
+
+varSelArgs <- MdlDataStruc
+varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
+                             init = "all-in") 
+varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
+                             init = "all-out")
+varSelArgs[[2]][[1]] <- list(cand = c(2, 4),
+                             init = "random")
+varSelArgs[[2]][[2]] <- list(cand = c(2, 4),
+                             init = "all-out")
+varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 5, 6),
+                             init = c(2, 3))
+varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
+                             init = "random")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION 

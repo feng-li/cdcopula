@@ -53,17 +53,9 @@ DGPCpl <- function(configfile, export = "list")
     ## THE RESPONSE VARIABLE
     Mdl.Y <- u2qtl(u = uOut$u, parMargis = DGP.par[MargisNM],
                    MargisTypes = MargisTypes)
-    
-    ## ## DATA COVARIATES for the marginal distrib 
-    ## covarNoInt <- list(matrix(runif(nObs*4), nObs),
-    ##                    matrix(runif(nObs*5), nObs))
-    
-    ## ## Covariates with intercept
-    ## covar <- lapply(covarNoInt, function(x) cbind(1, x))
 
     
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X)
-    
     if(is.character(export) && tolower(export)  == "list")
       {
         return(out)
