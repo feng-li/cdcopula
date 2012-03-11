@@ -76,7 +76,9 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 
 ## THE DATASET
 DGPCpl(configfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
-       export = sys.frame())
+       export = as.environment(-1))
+
+browser()
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
@@ -113,6 +115,9 @@ varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 5, 6),
                              init = c(2, 3))
 varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
                              init = "random")
+
+## Generating the numerical tabular for the inverse Kendall's tau
+tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION 

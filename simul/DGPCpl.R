@@ -19,10 +19,12 @@ DGPCpl <- function(configfile, export = "list")
     source(file = configfile, local = TRUE)
     
     ## COVARIATES USED IN THE MODEL
-    X <- list(matrix(runif(nObs*2), nObs),
-              matrix(runif(nObs*3), nObs))
-    names(X) <- MargisNM
-    
+    X <- list()
+    for(j in 1:length(MargisNM))
+      {
+        X[[MargisNM[j]]] <- matrix(runif(nObs*2), nObs)
+      }
+        
     ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
     Mdl.X <- MdlDataStruc
     Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
@@ -30,8 +32,9 @@ DGPCpl <- function(configfile, export = "list")
     Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
     Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
     Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
-    Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]]) ##FIXME:
-    
+    Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+
+    browser()
     ## PARAMETERS IN COPULA FUNCTION
     DGP.par <- MdlDataStruc
     for(i in 1:length(MdlDataStruc))

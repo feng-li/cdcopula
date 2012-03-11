@@ -20,9 +20,6 @@ names(MargisParNM) <- MargisNM
 ## The object structure for the model components
 MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 
-## Generating the numerical tabular for the inverse Kendall's tau
-tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
-
 ## NO. OF OBSERVATIONS
 nObs <- 15
 
@@ -35,11 +32,14 @@ Mdl.parLink[[2]][[2]] <- "log"
 Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
 
-## THE TRUE PARAMETER VALUES IN THE DGP
+## THE TRUE PARAMETER VALUES IN THE DGP (INCLUDING INTERCEPTS)
 DGP.betaTRUE <- MdlDataStruc
-DGP.betaTRUE[[1]][[1]] <- c(0.2, 0.6, 0.7)
+DGP.betaTRUE[[1]][[1]] <- c(0.2,  0.6, 0.7)
 DGP.betaTRUE[[1]][[2]] <- c(0.2, -0.6, 0.7)
-DGP.betaTRUE[[2]][[1]] <- c(0.2, 0.6, 0.7, 0.9)
+DGP.betaTRUE[[2]][[1]] <- c(0.2,  0.6, 0.7,  0.9)
 DGP.betaTRUE[[2]][[2]] <- c(0.2, -0.6, 0.7, -0.9)
-DGP.betaTRUE[[3]][[1]] <- c(0.2, 0.6, 0.7, 0.2, 0.6, 0.7)
-DGP.betaTRUE[[3]][[2]] <- c(0.2, 0.6, 0.7, 0.2, 0.6, 0.7)
+DGP.betaTRUE[[3]][[1]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
+DGP.betaTRUE[[3]][[2]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
+
+## Generating the numerical tabular for the inverse Kendall's tau
+tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
