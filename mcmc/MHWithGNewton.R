@@ -94,12 +94,13 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## An idea (out of loud) : Generate a ## matrix of param. Select the one
       ## that give max acceptance probability 
       prop.df = NA
-      param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop, df = prop.df,
-                         delta = param.cur.prop)
+      param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop,
+                         df = prop.df) + param.cur.prop  
       
       ## The jump density from the proposed draw 
-      logjump.cur2prop <- dmvt(x = param.prop, delta = param.cur.prop,
-                               sigma = -HessObs.cur.prop, df = prop.df)
+      logjump.cur2prop <- dmvt(x = param.prop - param.cur.prop,
+                               sigma = -HessObs.cur.prop,
+                               df = prop.df)  
     }
   
 ###----------------------------------------------------------------------------
@@ -141,8 +142,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else # all are right
     {
       ## The jump density from propose draw to current draw.
-      logjump.prop2cur <- dmvt(x = param.cur, delta = param.prop.prop,
-                               sigma = -invHessObs.prop.prop, df = prop.df)
+      logjump.prop2cur <- dmvt(x = param.cur - param.prop.prop,
+                               sigma = -invHessObs.prop.prop,
+                               df = prop.df)
 
       Params.prop <- Params
       Params.prop[[callParam$id]][callParam$subset] <- param.prop
