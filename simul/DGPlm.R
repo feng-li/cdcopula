@@ -57,8 +57,8 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
 ### TESTING
 ###----------------------------------------------------------------------------
 
-Y <- matrix(rnorm(20, 1))
-beta <- runif(6)
-Xlim <- c(-3, 3)
+## Y <- matrix(rnorm(20, 1))
+## beta <- runif(6)
+## Xlim <- c(-3, 3)
 
-DGPlm(Y, beta, Xlim, intercept = TRUE)
+## DGPlm(Y, beta, Xlim, intercept = TRUE)
