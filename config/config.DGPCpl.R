@@ -33,13 +33,14 @@ Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
 
 ## THE TRUE PARAMETER VALUES IN THE DGP (INCLUDING INTERCEPTS)
-DGP.betaTRUE <- MdlDataStruc
-DGP.betaTRUE[[1]][[1]] <- c(0.2,  0.6, 0.7)
-DGP.betaTRUE[[1]][[2]] <- c(0.2, -0.6, 0.7)
-DGP.betaTRUE[[2]][[1]] <- c(0.2,  0.6, 0.7,  0.9)
-DGP.betaTRUE[[2]][[2]] <- c(0.2, -0.6, 0.7, -0.9)
-DGP.betaTRUE[[3]][[1]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
-DGP.betaTRUE[[3]][[2]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
+MdlDGP.par <- MdlDataStruc
+MdlDGP.par[[1]][[1]] <- matrix(rnorm(n), n, 1)
+MdlDGP.par[[1]][[2]] <- matrix(rlnorm(n), n, 1)
+MdlDGP.par[[2]][[1]] <- c(0.2,  0.6, 0.7,  0.9)
+MdlDGP.par[[2]][[2]] <- c(0.2, -0.6, 0.7, -0.9)
+
+MdlDGP.par[[3]][[1]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
+MdlDGP.par[[3]][[2]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
 
 ## Generating the numerical tabular for the inverse Kendall's tau
 tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)

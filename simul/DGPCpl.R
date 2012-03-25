@@ -6,7 +6,7 @@
 ##'        The configuration file for the Copula DGP 
 ##' @param export
 ##' \item {character string "list"}{Return a list containing the DGP results} 
-##' \item {environment class}{The DGP ouput are written to the given
+##' \item {character string "parent.env"}{The DGP ouput are written to the parent
 ##' environment directly} 
 ##' @return See "export" argument.
 ##' @references Li, F., 2012 
@@ -22,7 +22,9 @@ DGPCpl <- function(configfile, export = "list")
     X <- list()
     for(j in 1:length(MargisNM))
       {
-        X[[MargisNM[j]]] <- matrix(runif(nObs*2), nObs)
+        browser()
+        nCovs <- 
+        X[[MargisNM[j]]] <- matrix(runif(nObs*nCovs), nObs, nCovs)
       }
         
     ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
@@ -34,11 +36,11 @@ DGPCpl <- function(configfile, export = "list")
     Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
     Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
 
-    browser()
     ## PARAMETERS IN COPULA FUNCTION
     DGP.par <- MdlDataStruc
     for(i in 1:length(MdlDataStruc))
       {
+        
         for(j in 1:length(MdlDataStruc[[i]]))
           {
             DGP.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
@@ -47,6 +49,7 @@ DGPCpl <- function(configfile, export = "list")
           } 
       }
 
+    
     ## TRANSFORM COPULA PARAMETERS INTO THE STANDARD PARAMETRIZATION.
     DGP.parCpl <- kendalltauInv(CplNM = CplNM, parRepCpl = DGP.par[[CplNM]],
                                 tauTabular = tauTabular)
@@ -59,12 +62,13 @@ DGPCpl <- function(configfile, export = "list")
                    MargisTypes = MargisTypes)
 
     out <- list(Mdl.Y = Mdl.Y, X = X)
-    if(is.character(export) && tolower(export)  == "list")
+    if(tolower(export)  == "list")
       {
         return(out)
       }
-    else if(is.environment(export))
+    else if(tolower(export)  == "parent.env")
       {
-        list2env(x = out, envir = export)        
+        envirOut <- sys.fram(sys.parent(1))
+        list2env(x = out, envir = exvirOut)        
       }
   }

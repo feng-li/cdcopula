@@ -1,0 +1,314 @@
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/config/config.DGPCpl.R,190
+CCplNM6,262
+CCplParNM7,277
+MMargisNM10,361
+MMargisTypes11,397
+MMargisParNM12,438
+MMdlDataStruc21,689
+nnObs24,766
+MMdl.parLink27,817
+MMdlDGP.par36,1109
+ttauTabular46,1511
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/config/config.R,534
+ppathLibRoot32,1116
+MModelDescription50,1738
+CCplNM53,1832
+CCplParNM54,1847
+MMargisNM57,1931
+MMargisTypes58,1967
+MMargisParNM59,2008
+MMdlDataStruc68,2259
+ttauTabular71,2379
+MMdl.X82,2804
+MMdl.parLink91,3098
+vvarSelArgs103,3515
+ttauTabular118,4166
+nnIter125,4446
+bburnin128,4476
+ssave.output131,4539
+ttrack.MCMC134,4627
+MMCMCUpdate137,4683
+ppropArgs146,4942
+ccrossValidArgs174,6237
+ccrossValidIdx180,6553
+nnCrossFold181,6606
+LLPDS.sampleProp184,6688
+ppriArgs195,7095
+bbetaInit260,9877
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/mcmc/CplMain.R,17
+CCplMain15,466
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/mcmc/GNewtonMove.R,21
+GGNewtonMove30,983
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/mcmc/MHWithGNewton.R,23
+MMHWithGNewton23,589
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/any2any.R,17
+aany2any12,307
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/initDataStruc.R,23
+iinitDataStruc14,376
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/initPar.R,17
+iinitPar14,472
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/kendalltauGrad.R,22
+kkendalltauGrad2,26
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/kendalltauInv.R,48
+kkendalltauInv18,719
+kkendalltauInv073,2357
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/kendalltau.R,17
+kkendalltau1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/kendalltauTabular.R,27
+kkendalltauTabular15,471
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logCplGrad.R,20
+llogCplGrad14,320
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logLikCpl.R,19
+llogLikCpl14,562
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logPostGradHess.R,25
+llogPostGradHess17,643
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logPost.R,18
+llogPost54,2161
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logPriGradHess.R,24
+llogPriGradHess23,707
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/logPriors.R,19
+llogPriors18,607
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/MargisGrad.R,20
+MMargisGrad15,536
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/MargisModels.R,22
+MMargisModels19,776
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/models/parCaller.R,16
+pparCaller1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dbg/close.all.R,17
+cclose.all2,32
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dbg/dot_ls.objects.R,20
+..ls.objects8,231
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dist/DensGradHess.R,23
+DDensGradHess25,1024
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dist/lnorm2.R,70
+rrlnorm212,636
+ddlnorm220,819
+pplnorm228,1026
+qqlnorm237,1297
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dist/MultiT.R,40
+RRndMultiT14,569
+DDensMultiT44,1530
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dist/wishart.R,58
+rrwishart12,230
+rriwishart58,1422
+ddiwishart77,1813
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/dmp/stock2covariates.R,26
+sstock2covariates20,878
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/data.partition.R,24
+ddata.partition13,359
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/HessApprox.R,21
+hhessApprox26,1024
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/parLinkFun.R,20
+pparLinkFun12,404
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/parMeanFunGrad.R,24
+pparMeanFunGrad13,474
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/parMeanFun.R,20
+pparMeanFun12,463
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/save.all.R,18
+ssave.all12,256
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/mcmc/set.crossvalid.R,24
+sset.crossvalid11,247
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/bfgsi.R,12
+bbfgsi1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/csminit.R,14
+ccsminit1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/csminwelNew.R,15
+ccsminwel1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/csminwel.R,16
+ccsminwel01,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/csolveNew.R,13
+ccsolve1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/csolve.R,14
+ccsolve01,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/derivVec.R,15
+dderivVec1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/numgrad.R,14
+nnumgrad1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/numHess.R,14
+nnumHess1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/optim/volcano.R,14
+vvolcano1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/array2list.R,20
+aarray2list11,286
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/block.diag.R,20
+bblock.diag11,469
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/diagAlg.R,73
+"%d*%16,384
+"%*d%26,539
+"%d*d%36,746
+ttMdN48,929
+ddiag158,1117
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/foldMat.R,17
+ffoldMat13,319
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/ibeta.R,15
+iibeta15,403
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/inhull.R,13
+iinhull1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/is.singular.R,21
+iis.singular11,304
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/K.R,11
+KK29,544
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/K.X.R,13
+KK.X33,926
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/mesh.grid.R,19
+mmesh.grid12,269
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/mseq.R,14
+mmseq12,438
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/mvgamma.R,17
+mmvgamma17,704
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/rdist.R,15
+rrdist14,352
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/size.R,14
+ssize13,332
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/tr.R,12
+ttr11,368
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/vech2m.R,16
+vvech2m13,334
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/vech.R,14
+vvech12,232
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/others/whichInd.R,18
+wwhichInd16,776
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/plot/grid2.R,15
+ggrid215,313
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/sourceDir.R,19
+ssourceDir17,841
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/systools/attached.packages.R,27
+aattached.packages10,283
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/systools/autoupdate.packages.R,29
+aautoupdate.packages14,413
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/systools/ls2.R,10
+lls21,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/rutils/stable/systools/warningsClear.R,20
+wwarningsClear1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/sid/dlogprior.R,20
+ddlogprior29,1189
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/cCpl.R,15
+ccCpl30,1293
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/DGPCpl.R,16
+DDGPCpl16,601
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/DGPlm.R,15
+DDGPlm19,728
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/rps.R,13
+rrps14,451
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/ruCpl.R,15
+rruCpl19,667
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/u2qtl.R,12
+uu2qtl1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/simul/uCpl.R,14
+uuCpl19,585
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/chainFracCplGrad.R,23
+cchainFracCplGrad1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/d.matrix.R,19
+dd.matrix38,1850
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/logCplPriGrad.R,20
+llogCplPriGrad1,0
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/logCplPri.R,19
+llogCplPri11,330
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/logLikMargis.R,22
+llogLikMargis13,458
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/make.knots.R,21
+mmake.knots29,1206
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/parCplSTD.R,19
+pparCplSTD11,240
+
+/home/fli/Dropbox/workspace/copulas/CovarDepenCopula/R/tests/test.R,204
+SSigma5,175
+ttheta6,212
+ccopula8,246
+ppar9,261
+nn10,282
+uu12,291
+cc13,352
+pp14,412
+nn19,648
+ttheta20,657
+ccopula21,676
+UU023,693
+cc024,744
+xx026,798
+xxlim27,816
+rrho33,964

@@ -78,8 +78,6 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 DGPCpl(configfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
        export = as.environment(-1))
 
-browser()
-
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
 Mdl.X[[1]][[1]] <- cbind(1, X[[1]])

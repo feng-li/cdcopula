@@ -1,3 +1,16 @@
+##' Gradient for log copula function
+##'
+##' 
+##' @title Log copula gradient
+##' @param CplNM 
+##' @param u 
+##' @param parCpl 
+##' @param cplCaller 
+##' @param staticArgs 
+##' @return 
+##' @references Li 2012 
+##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @note Created: ; Current: .
 logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   {
     if(tolower(CplNM) == "bb7")

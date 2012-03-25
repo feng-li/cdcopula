@@ -33,7 +33,7 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
         tauMat <- tauTabular$tauMat
         lambdaUGrid <- tauTabular$lambdaUGrid
 
-        ## The idices.
+        ## The indices.
         lambdaLIdx <- round(lambdaL/tol)
         
         ## Extra work to avoid under and over flow
@@ -50,6 +50,10 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
         
         ## The upper tail dependence via dictionary search.
         lambdaU <- matrix(lambdaUGrid[lambdaUIdx])
+
+        ## Add smoothness to the approximation
+        
+
         
         ## The cross ponding theta
         theta <- log(2)/log(2-lambdaU)
@@ -163,4 +167,3 @@ kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
 ## a <- proc.time()
 ## theta0 <- kendalltauInv0("bb7", parRepCpl = parRepCpl, parCaller = "theta")
 ## print(proc.time()-a)
-

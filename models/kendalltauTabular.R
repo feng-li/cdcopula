@@ -1,4 +1,5 @@
-##' Generating tabular data for the Kendall's tau with respect to its input
+
+##' ##' Generating tabular data for the Kendall's tau with respect to its input
 ##' arguments.
 ##'
 ##' This file is used for the looking up dictionary if the inverse Kendall's is
