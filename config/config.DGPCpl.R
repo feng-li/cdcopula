@@ -32,15 +32,22 @@ Mdl.parLink[[2]][[2]] <- "log"
 Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
 
+browser()
+
 ## THE TRUE PARAMETER VALUES IN THE DGP (INCLUDING INTERCEPTS)
 MdlDGP.par <- MdlDataStruc
-MdlDGP.par[[1]][[1]] <- matrix(rnorm(n), n, 1)
-MdlDGP.par[[1]][[2]] <- matrix(rlnorm(n), n, 1)
-MdlDGP.par[[2]][[1]] <- c(0.2,  0.6, 0.7,  0.9)
-MdlDGP.par[[2]][[2]] <- c(0.2, -0.6, 0.7, -0.9)
 
-MdlDGP.par[[3]][[1]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
-MdlDGP.par[[3]][[2]] <- c(0.2,  0.6, 0.7,  0.2, 0.6, 0.7)
+## The first margin
+MdlDGP.par[[1]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
+MdlDGP.par[[1]][[2]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1))
+
+## The second margin
+MdlDGP.par[[2]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
+MdlDGP.par[[2]][[2]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1))
+
+## The copula 
+MdlDGP.par[[3]][[1]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.4))
+MdlDGP.par[[3]][[2]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.4))
 
 ## Generating the numerical tabular for the inverse Kendall's tau
 tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)

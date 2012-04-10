@@ -25,3 +25,5 @@ initDataStruc <- function(CplParNM, MargisParNM)
     out <- MdlDataStruc
     return(out)
   }
+
+

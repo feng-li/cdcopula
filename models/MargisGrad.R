@@ -70,4 +70,3 @@ MargisGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
     ## The output
     return(out)
   }
-   

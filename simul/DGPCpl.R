@@ -22,9 +22,8 @@ DGPCpl <- function(configfile, export = "list")
     X <- list()
     for(j in 1:length(MargisNM))
       {
-        browser()
         nCovs <- 
-        X[[MargisNM[j]]] <- matrix(runif(nObs*nCovs), nObs, nCovs)
+          X[[MargisNM[j]]] <- matrix(runif(nObs*nCovs), nObs, nCovs)
       }
         
     ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS

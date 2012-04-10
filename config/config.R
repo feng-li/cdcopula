@@ -247,7 +247,7 @@ priArgs[[3]][[2]] <-
            mean = 0, covariance = "g-prior", shrinkage = 1)), 
        "indicators" = list(type = "bern", 
          prob = 0.5))
-
+ 
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
 ### The parameters in the current MCMC iteration. For the first iteration, it

@@ -44,8 +44,9 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     ## Make it zero temporally. 
     X[IdxLast1] <- 0
 
-    ## Determine the last hole TODO: What if the last hole is terrible(far away
-    ## from the X domain)? 
+    ## Determine the last hole
+    ## TODO: What if the last hole is terrible(far away from the X domain)? 
+
     Y1 <- X%*%B
     XLast <- (Y-Y1)/beta[IdxLast]
 
