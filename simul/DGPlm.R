@@ -10,9 +10,9 @@
 ##' @param Xlim "vector"
 ##' @param intercept "logical"
 ##'        The intercept be considered in the DGP if the value for the argument
-##' is TRUE. 
-##' @return "matrix"  
-##' @references 
+##' is TRUE.
+##' @return "matrix"
+##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Mar 14 10:46:20 CET 2012;
 ##'       Current: Wed Mar 14 10:46:25 CET 2012.
@@ -41,18 +41,18 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     IdxLast <- sample(x = q1:q, size = n, replace = TRUE)
     IdxLast1 <- whichInd(arr.ind = cbind(1:n, IdxLast), dims = c(n, NA))
 
-    ## Make it zero temporally. 
+    ## Make it zero temporally.
     X[IdxLast1] <- 0
 
     ## Determine the last hole
-    ## TODO: What if the last hole is terrible(far away from the X domain)? 
+    ## TODO: What if the last hole is terrible(far away from the X domain)?
 
     Y1 <- X%*%B
     XLast <- (Y-Y1)/beta[IdxLast]
 
     ## Fix the hole
     X[IdxLast1] <- XLast
-    
+
     return(X)
   }
 ###----------------------------------------------------------------------------
