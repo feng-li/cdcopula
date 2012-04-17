@@ -1,3 +1,15 @@
+##' The theoretical Kendall's tau for different copulas
+##'
+##' Most Kendall's tau has explicit solutions. The Kendall's tau for elliptical
+##' class are all the same.
+##' @title Theoretical Kendall's tau
+##' @param CplNM "character" Copula name.
+##' @param parCpl "list" Parameters in the copula
+##' @return "vector" for the theoretical Kendall's tau.
+##' @references Li 2012
+##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @note Created: Tue Apr 17 18:45:16 CEST 2012;
+##'       Current: Tue Apr 17 18:45:23 CEST 2012.
 kendalltau <- function(CplNM, parCpl)
   {
     if(tolower(CplNM) == "bb7")
@@ -9,13 +21,13 @@ kendalltau <- function(CplNM, parCpl)
         ## The storage
         out <- theta
         out[0:nObs] <- NA
-        
+
         ## Healthy condition and condition for the stepwise Kendall's tau
         deltaHcond <- (delta > 0)
         Idx12 <- which(theta >= 1 & theta < 2 & deltaHcond)
         IdxLarge <- which(theta > 2 & deltaHcond)
         Idx2 <- which(theta  == 2 & deltaHcond)
-        
+
         ## The Kendall's tau
         if(length(Idx12)>0)
           {
@@ -38,11 +50,21 @@ kendalltau <- function(CplNM, parCpl)
             deltaCurr <- delta[Idx2]
             out[Idx2] <- 1- (digamma(2+deltaCurr)-digamma(1)-1)/deltaCurr
           }
-      }    
+      }
+    else if(tolower(CplNM) == "fgm")
+      {
+        theta <- parCpl[["theta"]]
+        out <- 2/9*theta
+      }
+    else if (tolower(CplNM) %in% c("gaussian", "student-t"))
+      {
+        rho <- parCpl[["rho"]]
+        out <- 2/pi*asin(rho)
+      }
+
+
     return(out)
   }
-
-
 
 
 ## kendalltau0 <- function(CplNM, parCpl)
@@ -51,7 +73,7 @@ kendalltau <- function(CplNM, parCpl)
 ##       {
 ##         theta <- parCpl[["theta"]]
 ##         delta <- parCpl[["delta"]]
-        
+
 ##         ## Healthy condition of parameters.
 ##         deltaHcond <- (delta > 0)
 
@@ -107,7 +129,7 @@ kendalltau <- function(CplNM, parCpl)
 ##       {
 ##         theta <- parCpl[["theta"]]
 ##         delta <- parCpl[["delta"]]
-        
+
 ##         ## Healthy condition of parameters.
 ##         deltaHcond <- (delta > 0)
 
