@@ -3,61 +3,53 @@
 ##' The copula expression can be find at Trivedi and Zimmer 2005
 ##' @title Random *uniform* variables generator by bivariate copula
 ##' @param n
-##' @param theta
 ##' @param copula
-##' @param par "list"
-##'         Any additional parameters input for the copula. For example in the
-##'         t copula, par$df: the degrees of freedom is needed.
-##' @return
-##' @references
-##'     Trivedi and Zimmer 2005
+##' @param parCpl "list" Any additional parameters input for the copula. For
+##' example in the t copula, par$df: the degrees of freedom is needed.
+##' @return "list" The random variables with some detailed information
+##' @references Trivedi and Zimmer 2005
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note
 ##'     DEPENDS: mvtnorm
 ##'     Created: Mon Sep 26 09:43:12 CEST 2011;
-##'     Current: Mon Sep 26 09:43:21 CEST 2011.
-ruCpl <- function(n, parCpl, copula)
+##'     Current: Mon Apr 16 13:40:47 CEST 2012.
+ruCpl <- function(n, parCpl, copula, exArgs)
 {
   if(tolower(copula) == "bb7") # Joe 1997
     {
-      ## The copula parameters are recycled if necessary
-      theta <- matrix(parCpl[[1]], n, 1)
-      delta <- matrix(parCpl[[2]], n, 1)
+      ## Subtract the parameters list.
+      tau <- parCpl[["tau"]]
+      lambdaL <- parCpl[["lambdaL"]]
 
-      ## Parameters healthy conditions
-      hCond <- (theta[1] >= 1) && (theta[2]>0)
-      if(!hCond) stop("BB7 copula should have: theta >= 1, delta >0.")
+      ## Transform the parameters into the standard form
+      ## FIXME: Consider to speed it up if it is really slow
+      parOut <- kendalltauInv(CplNM = copula, parRepCpl = parCpl,
+                              tauTabular = exArgs[["tauTabular"]])
+
+      ## The standard copula parameters (recycled if necessary).
+      delta <- as.vector(parOut[["delta"]])
+      theta <- as.vector(parOut[["theta"]])
+
+      ## Parameters healthy conditions TODO: more serious check
+      ## hCond <- (theta[1] >= 1) && (theta[2]>0)
+      ## if(!hCond) stop("BB7 copula should have: theta >= 1, delta >0.")
 
       p <- 2 #Hard code for bivariate copula
       v <- matrix(runif(n*p, 0, 1), n, p)
       u <- matrix(NA, n, p)
       u[, 1] <- v[, 1]
 
-      ## No closed form for inverse of conditional function
-      ## TODO: Potential overflow when theta is big. Consider using Chris Sims solver.
-      for(i in 1:n)
-        {
-          out.cur <- uniroot(function(x, theta, v0)
-                             {
+      ## The conditional method for sampling copula
+      TC1 <- 1-(1-v)^theta
+      L1 <- TC[, 1, drop = FALSE]
+      TC2 <- (1-v)^(-1+theta)
+      L5 <- -1 + rowSums(TC1^(-delta))
+      L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 
-                               theta1 = theta[1]
-                               theta2 = theta[2]
-                               u1 <- v0[1]
-                               v2 <- v0[2]
-                               u2 <- x
+      logv <- -(1+delta)*log(L1) - (1+1/delta)*log(L5) +
+        (-1+1/theta)*log(L6) + (-1+theta)*log(1-v[, 1, drop = FALSE])
 
-                               L1 <- 1-(1-u1)^theta1
-                               L2 <- 1-(1-u2)^theta1
-                               L5 <- -1 + L1^(-theta2) + L2^(-theta2)
-                               L6 <- 1- L5^(-1/theta2)
-                               out <- L1^(-1-theta2)*L5^(-1-1/theta2)*
-                                 L6^(-1+1/theta1)*(1-u1)^(-1+theta1)-v2
-                               return(out)
-                             },
-                             interval = c(0, 1),
-                             theta = theta, v0 = v[i, ])
-          u[i, 2] <- out.cur[["root"]]
-        }
+      u[, 2] <- exp(logv)
 
       ## The theoretical upper and lower tail dependence parameters
       lambdaU <- 2-2^(1/theta[1])
@@ -67,22 +59,20 @@ ruCpl <- function(n, parCpl, copula)
       emptau <- cor(u, method = "kendall")[2]
 
       ## Kendall's tau,  theoretical
-      theta1 = theta[1] # theta
-      theta2 = theta[2] # delta
 
       tol <- 0.0001
-      if(theta1<(2-tol))
+      if(theta<(2-tol))
         {
-          theotau <- 1-2/(theta2*(2-theta1))+4/(theta1^2*theta2)*beta(theta2+2, 2/theta1-1)
+          theotau <- 1-2/(delta*(2-theta))+4/(theta^2*delta)*beta(delta+2, 2/theta-1)
         }
-      else if (theta1>(2+tol))
+      else if (theta>(2+tol))
         {
-          theotau <- 1-2/(theta2*(2-theta1))-
-            4*pi/(theta1^2*theta2*(2+theta2)*sin(2*pi/theta1)*beta(2-2/theta1, 1+theta2+2/theta1))
+          theotau <- 1-2/(delta*(2-theta))-
+            4*pi/(theta^2*delta*(2+delta)*sin(2*pi/theta)*beta(2-2/theta, 1+delta+2/theta))
         }
       else
         {
-          theotau <- 1 + 1/theta2*(1+digamma(1)-digamma(2+theta2))
+          theotau <- 1 + 1/delta*(1+digamma(1)-digamma(2+delta))
         }
 
       out <- list(u = u, lambdaU = lambdaU, lambdaL = lambdaL,
@@ -102,7 +92,7 @@ ruCpl <- function(n, parCpl, copula)
       u <- pnorm(y)
       out <- u
     }
-  else if(tolower(copula) == "mvt") ## the multivariate t demarta mcneil (2005)
+  else if(tolower(copula) == "mvt") ## the multivariate t Demarta Mcneil (2005)
     {
       p <- (1+sqrt(8*length(theta)+1))/2 # p is obtained from the lower
                                         # triangular matrix.
@@ -117,7 +107,15 @@ ruCpl <- function(n, parCpl, copula)
 
       x <- matrix(rmvt(n*p, df = df, sigma = corr), n, p)
       u <- pt(x, df = df) # The percentile
-      out <- u
+
+      ## Kendall's tau,  empirical
+      emptau <- cor(u, method = "kendall")[2]
+
+      ## Kendall's tau,  theoretical
+      theotau <- 2/pi*asin(corr)
+
+      out <- list(u = u, emptau = emptau, theotau = theotau)
+
     }
   else if(tolower(copula) == "fgm")
     {
@@ -152,6 +150,6 @@ ruCpl <- function(n, parCpl, copula)
      u <- exp(-t^(1/theta))
      out <- u
     }
-  else stop("Given copula name is not implemented.")
+  else stop("Not implemented for given copula name.")
   return(out)
 }

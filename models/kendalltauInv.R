@@ -4,21 +4,21 @@
 ##' decimal numbers. If more precision is needed, consider using iteration
 ##' method or spline approximation.
 ##' @title Inverse Kendall's tau
-##' @param CplNM 
-##' @param parRepCpl 
+##' @param CplNM "character" The copula name
+##' @param parRepCpl "list" The parameter list in the reparmeterized copula.
 ##' @param tauTabular "list" The dictionary provide. See function
-##' kendalltauTabular(). 
-##' @return 
-##' @references 
+##' kendalltauTabular().
+##' @return "list" The traditional parameter list for the copula.
+##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Sat Dec 31 02:05:14 CET 2011;
-##'       Current: Sat Dec 31 02:05:21 CET 2011.
+##'       Current: Mon Apr 16 14:40:16 CEST 2012.
 ##' TODO: Merge iterative and dictionary as two options
 ##' TODO: Split the output by using a caller.
 kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
   {
     ## The dictionary look up method
-    if(tolower(CplNM) == "bb7") 
+    if(tolower(CplNM) == "bb7")
       {
         out <- vector("list", length(parRepCpl))
         lambdaL <- parRepCpl[["lambdaL"]]
@@ -35,27 +35,26 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
 
         ## The indices.
         lambdaLIdx <- round(lambdaL/tol)
-        
+
         ## Extra work to avoid under and over flow
         lambdaLIdx[lambdaLIdx == 0] <- 1
         lambdaLIdx[lambdaLIdx == (nGrid+1)] <- nGrid
-            
+
         tauMatTab <- tauMat[lambdaLIdx, ,drop = FALSE]
         nObs <- length(tau)
         tauTest <- matrix(tau, nObs, nGrid)
         tauAbsDev <- -abs(tauMatTab-tauTest)
-       
+
         ## lambdaUIdx <- apply(tauAbsDev, 1, which.min) # max.col is slightly faster.
         lambdaUIdx <- max.col(tauAbsDev)
-        
+
         ## The upper tail dependence via dictionary search.
         lambdaU <- matrix(lambdaUGrid[lambdaUIdx])
 
-        ## Add smoothness to the approximation
-        
+        ## TODO: Add smoothness to the approximation
 
-        
-        ## The cross ponding theta
+
+        ## The corresponding theta
         theta <- log(2)/log(2-lambdaU)
 
         ## The output
@@ -69,7 +68,7 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
 ### TESTING CODE
 ###----------------------------------------------------------------------------
 
-## The iterative method 
+## The iterative method
 kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
   {
     ## TODO: The max interval could not handle Inf in the uniroot function.
@@ -78,17 +77,17 @@ kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
     ## dependent) which yields non accurate root.
     if(tolower(CplNM) == "bb7")
       {
-        
+
         if(tolower(parCaller) == "delta")
           {
-            
+
             theta <- parRepCpl[["theta"]]
             tau <- parRepCpl[["tau"]]
-              
+
             out <- theta
             thetaLen <- length(theta)
             out[1:thetaLen] <- NA
-            
+
             for(i in 1:thetaLen)
               {
                 tauCurr <- tau[i]
@@ -117,7 +116,7 @@ kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
             out <- delta
             deltaLen <- length(delta)
             out[1:deltaLen] <- NA
-            
+
             for(i in 1:deltaLen)
               {
                 tauCurr <- tau[i]
