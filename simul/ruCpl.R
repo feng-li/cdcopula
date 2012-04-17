@@ -39,44 +39,58 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       u <- matrix(NA, n, p)
       u[, 1] <- v[, 1]
 
-      ## The conditional method for sampling copula
-      TC1 <- 1-(1-v)^theta
-      L1 <- TC[, 1, drop = FALSE]
-      TC2 <- (1-v)^(-1+theta)
-      L5 <- -1 + rowSums(TC1^(-delta))
-      L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
-
-      logv <- -(1+delta)*log(L1) - (1+1/delta)*log(L5) +
-        (-1+1/theta)*log(L6) + (-1+theta)*log(1-v[, 1, drop = FALSE])
-
-      u[, 2] <- exp(logv)
-
       ## The theoretical upper and lower tail dependence parameters
-      lambdaU <- 2-2^(1/theta[1])
-      lambdaL <- 2^(-1/theta[2])
+      lambdaU <- 2-2^(1/theta)
+      lambdaL <- 2^(-1/delta)
+
+      ## The conditional method for sampling copula
+      ## Sample v1 and v2 from U(0, 1)
+
+      ## The conditional density equation C(u2|u1)  =  v2
+      ## Not in vector form
+      logcondEQ <- function(x, delta, theta, v)
+        {
+          u1 <- v[1]
+          u2 <- x
+
+          v2 <- v[2]
+          L1 <- 1-(1-u1)^theta
+          L2 <- 1-(1-u2)^theta
+          L5 <- -1 + L1^(-delta) + L2^(-delta)
+          L6 <- 1- L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
+
+          logcondDens <- -(1+delta)*log(L1) - (1+1/delta)*log(L5) +
+            (-1+1/theta)*log(L6) + (-1+theta)*log(1-u1)
+
+          out <- logcondDens - log(v2)
+          return(out)
+        }
+
+      ## Solve u2 from v2 = C(u2|u1) No direct solution, use nonlinear
+      ## solver. TODO: Potential overflow when theta is big. Consider using
+      ## Chris Sims solver.
+      for(i in 1:n)
+        {
+          out.u2 <- uniroot(f = logcondEQ, interval = c(0, 1),
+                            theta = theta, delta = delta, v = v[i,])
+          u[i, 2] <- out.u2[["root"]]
+          ## Very simple weighted sampling with upper tail dependence as
+          ## prob to sample extreme situations.
+          ## u[i, 2] <- sample(x=c(runif(1, 0, v[i, 1]),
+          ##                     runif(1, v[i, 1], 1)),
+          ##                   size = 1,  prob = c(1-lambdaU, lambdaU))
+
+        }
 
       ## Kendall's tau,  empirical
       emptau <- cor(u, method = "kendall")[2]
 
       ## Kendall's tau,  theoretical
-
-      tol <- 0.0001
-      if(theta<(2-tol))
-        {
-          theotau <- 1-2/(delta*(2-theta))+4/(theta^2*delta)*beta(delta+2, 2/theta-1)
-        }
-      else if (theta>(2+tol))
-        {
-          theotau <- 1-2/(delta*(2-theta))-
-            4*pi/(theta^2*delta*(2+delta)*sin(2*pi/theta)*beta(2-2/theta, 1+delta+2/theta))
-        }
-      else
-        {
-          theotau <- 1 + 1/delta*(1+digamma(1)-digamma(2+delta))
-        }
+      theotau <- kendalltau(CplNM=CplNM, parCpl = list(delta = delta, theta = theta))
 
       out <- list(u = u, lambdaU = lambdaU, lambdaL = lambdaL,
-                  emptau = emptau, theotau = theotau)
+                  emptau = emptau, theotau = theotau,
+                  theta = theta, delta = delta)
     }
   else if(tolower(copula) == "gaussian")
     {
@@ -90,7 +104,13 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       y[, 1] <- v1
       y[, 2] <- v1*theta + v2*sqrt(1-theta^2)
       u <- pnorm(y)
-      out <- u
+
+      ## Kendall's tau,  empirical
+      emptau <- cor(u, method = "kendall")[2]
+
+      ## Kendall's tau,  theoretical
+      theotau <- kendalltau(CplNM=CplNM, parCpl = list(rho = theta))
+      out <- list(u = u, theotau = theotau)
     }
   else if(tolower(copula) == "mvt") ## the multivariate t Demarta Mcneil (2005)
     {
@@ -112,13 +132,14 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       emptau <- cor(u, method = "kendall")[2]
 
       ## Kendall's tau,  theoretical
-      theotau <- 2/pi*asin(corr)
+      theotau <- kendalltau(CplNM=CplNM, parCpl = list(rho = corr))
 
       out <- list(u = u, emptau = emptau, theotau = theotau)
 
     }
   else if(tolower(copula) == "fgm")
     {
+      theta <- parCpl[["theta"]]
       if(!(theta >= -1 && theta <= 1))
         {stop("FGM copula should have -1 <= theta <= 1.")}
 
@@ -132,23 +153,31 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       u1 <- v1
       u[, 1] <- u1
 
-      ## A <- theta*(2*u1-1)
-      ## B <- (1-A)^2 + 4*v2*A
-      ## u2 <- 2*v2/(sqrt(B)-A) TODO: Wrong formula in book.
-      u2 <- v2 + (2*u1-1)*(v2-1)*v2*theta
+      u2 <- (-1 - theta + 2*u1*theta +
+             sqrt(4*(-1 + 2*u1)*v2*theta + (1 + theta - 2*u1*theta)^2))/
+               (2*(-1 + 2*u1)*theta)
 
       u[, 2] <- u2
+
+      ## Kendall's tau,  empirical
+      emptau <- cor(u, method = "kendall")[2]
+
+      ## Kendall's tau,  theoretical
+      theotau <- kendalltau(CplNM=CplNM, parCpl = parCpl)
+
       out <- u
     }
   else if(tolower(copula) == "gumbel")
     {
       ## Mixture of power simulation,  Trivedi and Zimmer 2005(p. 110)
-     alpha <- 1/theta
-     gamma <- rps(n, alpha)
-     v <-matrix(runif(2*n, 0, 1), n, 2)
-     t <- -1/gamma*log(v)
-     u <- exp(-t^(1/theta))
-     out <- u
+      theta <- parCpl[["theta"]]
+
+      alpha <- 1/theta
+      gamma <- rps(n, alpha)
+      v <-matrix(runif(2*n, 0, 1), n, 2)
+      t <- -1/gamma*log(v)
+      u <- exp(-t^(1/theta))
+      out <- u
     }
   else stop("Not implemented for given copula name.")
   return(out)

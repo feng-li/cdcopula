@@ -56,7 +56,7 @@ kendalltau <- function(CplNM, parCpl)
         theta <- parCpl[["theta"]]
         out <- 2/9*theta
       }
-    else if (tolower(CplNM) %in% c("gaussian", "student-t"))
+    else if (tolower(CplNM) %in% c("gaussian", "mvt"))
       {
         rho <- parCpl[["rho"]]
         out <- 2/pi*asin(rho)
