@@ -1,8 +1,8 @@
 TODO List
 =========
 
-* The lower/upper tail dependence and the Kandall's are connected, Find the
-  range of one given the other two.
+* [*DONE*] The lower/upper tail dependence and the Kandall's are connected,
+  Find the range of one given the other two.
 
 * Can the marginal models can be evaluated separately?
 
