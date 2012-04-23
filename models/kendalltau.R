@@ -9,24 +9,25 @@
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Apr 17 18:45:16 CEST 2012;
-##'       Current: Tue Apr 17 18:45:23 CEST 2012.
+##'       Current: Thu Apr 19 18:12:59 CEST 2012.
 kendalltau <- function(CplNM, parCpl)
   {
     if(tolower(CplNM) == "bb7")
       {
         theta <- parCpl[["theta"]]
         delta <- parCpl[["delta"]]
-        nObs <- length(theta)
 
         ## The storage
+        nObs <- length(theta)
         out <- theta
         out[0:nObs] <- NA
 
         ## Healthy condition and condition for the stepwise Kendall's tau
+        tol = 0.001
         deltaHcond <- (delta > 0)
-        Idx12 <- which(theta >= 1 & theta < 2 & deltaHcond)
-        IdxLarge <- which(theta > 2 & deltaHcond)
-        Idx2 <- which(theta  == 2 & deltaHcond)
+        Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
+        IdxLarge <- which(theta > 2+tol & deltaHcond)
+        Idx2 <- which(abs(theta-2)<tol & deltaHcond) ## You will never reach this
 
         ## The Kendall's tau
         if(length(Idx12)>0)

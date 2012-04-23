@@ -1,3 +1,3 @@
-[submodule "rutils"]
-	path = rutils
-	url = git@bitbucket.org:fli/rutils.git
+[submodule "flutils"]
+	path = flutils
+	url = git@bitbucket.org:fli/flutils.git

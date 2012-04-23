@@ -2,10 +2,10 @@
 ##'
 ##' <details>
 ##' @title <short tile>
-##' @param densArgs 
-##' @param linkType 
-##' @return 
-##' @references 
+##' @param densArgs
+##' @param linkType
+##' @return
+##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Jan 12 00:05:00 CET 2012;
 ##'       Current: Thu Jan 12 00:05:07 CET 2012.
@@ -19,20 +19,19 @@ any2any <- function(densArgs, linkType)
     outType <- densArgs[["output"]][["type"]]
 
 ###----------------------------------------------------------------------------
-### The input distribution 
-###----------------------------------------------------------------------------    
+### The input distribution
+###----------------------------------------------------------------------------
 
-    if(tolower(inType) == "beta") 
+    if(tolower(inType) == "beta")
       {
         ## Beta distribution
         ## Subtract the parameter input in a convenient way
         mean <- densArgs[["input"]][["mean"]] # mean of beta density
         variance <- densArgs[["input"]][["variance"]] # Covariates
         ## shrinkage <- densArgs[["shrinkage"]] # Shrinkage
-                
-        ## Transform to standard parametrization 
-        alpha <- - mean*(mean^2 -mean + variance)/
-          (variance)
+
+        ## Transform to standard parametrization
+        alpha <- - mean*(mean^2 -mean + variance)/(variance)
         beta <- (mean-1)^2*mean/(variance) + mean -1
 
         if(tolower(linkType) == "logit")
@@ -52,17 +51,17 @@ any2any <- function(densArgs, linkType)
         ## Subtract the parameter input in a convenient way
         mean <- densArgs[["input"]][["mean"]] # mean of beta density
         variance <- densArgs[["input"]][["variance"]] # Covariates
-                
+
         ## Transform to standard parametrization
         sigma2 <- log(1+variance/mean^2)
         mu <- log(mean) - sigma2/2
-          
+
 
         if(tolower(linkType) == "log")
           {
             meanLinked<- mu
             varLinked <- sigma2
-            
+
           }
 
 
@@ -74,7 +73,7 @@ any2any <- function(densArgs, linkType)
         mean <- densArgs[["input"]][["mean"]] # mean of beta density
         variance <- densArgs[["input"]][["variance"]] # Covariates
         ## shrinkage <- densArgs[["shrinkage"]] # Shrinkage
-        
+
         ## Transform to standard parametrization
         mu <- mean
         sigma2 <- variance
@@ -88,18 +87,18 @@ any2any <- function(densArgs, linkType)
 
 ###----------------------------------------------------------------------------
 ### The output distribution
-###----------------------------------------------------------------------------    
+###----------------------------------------------------------------------------
 
-    if(tolower(outType) == "norm") 
+    if(tolower(outType) == "norm")
       {
         out <- list(mean = meanLinked,
                     variance = varLinked)
       }
 ###----------------------------------------------------------------------------
 ### The final output
-###----------------------------------------------------------------------------    
+###----------------------------------------------------------------------------
     return(out)
-    
+
   }
 
 
@@ -110,39 +109,39 @@ any2any <- function(densArgs, linkType)
 
 
 
-        
+
   ##               else if(tolower(linkCurr) == "identity")
   ##                 {
   ##                   ## TODO:
-                    
+
   ##                 }
   ##               else if(tolower(linkCurr) == "log")
   ##                 {
   ##                   ## TODO:
-                    
+
   ##                 }
 
-  ##             }            
+  ##             }
   ##           else if(tolower(priArgsCurr[["type"]]) == "norm")
   ##             {
   ##               ## Normal approximation with beta input
 
-  ##               ## Subtract the prior information 
+  ##               ## Subtract the prior information
   ##               mean <- priArgsCurr[["mean"]]
   ##               variance <- priArgsCurr[["variance"]]
   ##               shrinkage <- priArgsCurr[["shrinkage"]]
   ##                                       # density
 
-  ##               ## Transform to standard parametrization 
+  ##               ## Transform to standard parametrization
   ##               alpha <- - mean*(mean^2 -mean + variance*shrinkage)/
   ##                 (variance*shrinkage)
   ##               beta <- (mean-1)^2*mean/(variance*shrinkage) + mean -1
-                
+
   ##               if(tolower(linkCurr) == "logit")
   ##                 {
-  ##                   ## Assume this normal, 
+  ##                   ## Assume this normal,
   ##                   ## See Beta-rep.nb
-                    
+
   ##                   meanLinked<- digamma(alpha)-digamma(beta)
   ##                   varLinked <- trigamma(alpha)+trigamma(beta)
 
@@ -155,17 +154,17 @@ any2any <- function(densArgs, linkType)
   ##               else if(tolower(linkCurr) == "identity")
   ##                 {
   ##                   ## TODO:
-                    
+
   ##                 }
   ##               else if(tolower(linkCurr) == "log")
   ##                 {
   ##                   ## TODO:
-                    
+
   ##                 }
 
   ##             }
 
   ##           else if
-    
-    
+
+
   ## }
