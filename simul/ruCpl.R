@@ -18,17 +18,19 @@ ruCpl <- function(n, parCpl, copula, exArgs)
   if(tolower(copula) == "bb7") # Joe 1997
     {
       ## Subtract the parameters list.
+      ## The Kendall's tau
       tau <- parCpl[["tau"]]
+      ## The lower tail dependence
       lambdaL <- parCpl[["lambdaL"]]
 
-      ## Transform the parameters into the standard form
+      ## The upper tail dependence given lower tail dependence and Kendall's tau
       ## FIXME: Consider to speed it up if it is really slow
-      parOut <- kendalltauInv(CplNM = copula, parRepCpl = parCpl,
-                              tauTabular = exArgs[["tauTabular"]])
+      lambdaU <- kendalltauInv(CplNM = copula, parRepCpl = parCpl,
+                               tauTabular = exArgs[["tauTabular"]])
 
       ## The standard copula parameters (recycled if necessary).
-      delta <- as.vector(parOut[["delta"]])
-      theta <- as.vector(parOut[["theta"]])
+      delta <- -log(2)/log(lambdaL)
+      theta <- log(2)/log(2-lambdaU)
 
       ## Parameters healthy conditions TODO: more serious check
       ## hCond <- (theta[1] >= 1) && (theta[2]>0)
@@ -40,11 +42,13 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       u[, 1] <- v[, 1]
 
       ## The theoretical upper and lower tail dependence parameters
-      lambdaU <- 2-2^(1/theta)
-      lambdaL <- 2^(-1/delta)
+      ## lambdaU <- 2-2^(1/theta)
+      ## lambdaL <- 2^(-1/delta)
 
       ## The conditional method for sampling copula
       ## Sample v1 and v2 from U(0, 1)
+
+      browser()
 
       ## The conditional density equation C(u2|u1)  =  v2
       ## Not in vector form
@@ -72,7 +76,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       for(i in 1:n)
         {
           out.u2 <- uniroot(f = logcondEQ, interval = c(0, 1),
-                            theta = theta, delta = delta, v = v[i,])
+                            theta = theta[i], delta = delta[i], v = v[i,])
           u[i, 2] <- out.u2[["root"]]
           ## Very simple weighted sampling with upper tail dependence as
           ## prob to sample extreme situations.

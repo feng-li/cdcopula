@@ -32,11 +32,12 @@ Mdl.parLink[[2]][[2]] <- "log"
 Mdl.parLink[[3]][[1]] <- "logit"
 Mdl.parLink[[3]][[2]] <- "logit"
 
+##-----------------------------------------------------------------------------
 ## THE TRUE PARAMETER VALUES IN THE DGP
 ##-----------------------------------------------------------------------------
 ## The parameters are the features of the model, e.g. mean,  variance, ...
 ## The parameters are observation specified (each observation has its own
-## feature.)
+## features.)
 ##-----------------------------------------------------------------------------
 MdlDGP.par <- MdlDataStruc
 
@@ -49,24 +50,25 @@ MdlDGP.par[[2]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
 MdlDGP.par[[2]][[2]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1))
 
 ## The copula
-MdlDGP.par[[3]][[1]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.4))
-MdlDGP.par[[3]][[2]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.4))
+MdlDGP.par[[3]][[1]] <- matrix(rbeta2(n = nObs, mean = 0.7, sd = 0.1))
+MdlDGP.par[[3]][[2]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.1))
 
+##------------------------------------------------------------------------------
 ## THE TRUE COVARIATE-DEPENDENT PARAMETER VALUES IN THE DGP
-## -----------------------------------------------------------------------------
+##------------------------------------------------------------------------------
 ## Note that (a) The intercept is always included.  (b) Variable selection is
 ## represented if the beta coefficient is zero.  (c) If there are no covariates
 ## dependent, only intercept should be set.
-## -----------------------------------------------------------------------------
+##------------------------------------------------------------------------------
 MdlDGP.beta <- MdlDataStruc
 
 ## The first margin
-MdlDGP.beta[[1]][[1]] <- matrix(c(1, -1, 1, -1, 0))
-MdlDGP.beta[[1]][[2]] <- matrix(c(1, -1, 1, -1, 0))
+## MdlDGP.beta[[1]][[1]] <- matrix(c(1, -1, 1, -1, 0))
+## MdlDGP.beta[[1]][[2]] <- matrix(c(1, -1, 1, -1, 0))
 
 ## The second margin
-MdlDGP.beta[[2]][[1]] <- matrix(c(1, -1, 1, -1, 0))
-MdlDGP.beta[[2]][[2]] <- matrix(c(1, -1, 1, -1, 0))
+## MdlDGP.beta[[2]][[1]] <- matrix(c(1, -1, 1, -1, 0))
+## MdlDGP.beta[[2]][[2]] <- matrix(c(1, -1, 1, -1, 0))
 
 ## The copula
 MdlDGP.beta[[3]][[1]] <- matrix(c(1, -1, 1, -1, 0, 1, -1, 1, -1, 0))

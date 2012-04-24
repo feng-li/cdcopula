@@ -32,15 +32,13 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
 
         ## The lower tail dependence indices.
         lambdaLIdxRaw <- lambdaL/tol
-        lambdaLIdxFloor <- floor(lambdaLIdxRaw)
-        lambdaLIdxCeiling <- ceiling(lambdaLIdxRaw)
+        lambdaLIdxFloor <- round(lambdaLIdxRaw)
 
         ## Extra work to avoid under and over flow
-        lambdaLIdxFloor[lambdaLIdxFloor == 0] <- 1
-        lambdaLIdxCeiling[lambdaLIdxCeiling > nGrid] <- nGrid
+        lambdaLIdxFloor[lambdaLIdxFloor < 1] <- 1
+        lambdaLIdxFloor[lambdaLIdxFloor > nGrid] <- nGrid
 
         tauMatTabFloor <- tauMat[lambdaLIdxFloor, ,drop = FALSE]
-        tauMatTabCeiling <- tauMat[lambdaLIdxCeiling, ,drop = FALSE]
 
         ## Find the indices of the closed values close to tau's left and right side
         nObs <- length(tau)
@@ -52,85 +50,61 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
         tauFloorDev1 <- tauMatTabFloor-tauTest
         tauFloorDev1[tauFloorDev1>0] <- -Inf
 
-        tauCeilingDev0 <- tauTest-tauMatTabCeiling
-        tauCeilingDev0[tauCeilingDev0>0] <- -Inf
-
-        tauCeilingDev1 <- tauMatTabCeiling - tauTest
-        tauCeilingDev1[tauCeilingDev1>0] <- -Inf
-
         ## The indices of lambdaU
         ## TODO: This is the bottom neck of speed.
         lambdaUFloorIdx0 <- max.col(tauFloorDev0)
         lambdaUFloorIdx1 <- max.col(tauFloorDev1)
 
-        lambdaUCeilingIdx0 <- max.col(tauCeilingDev0)
-        lambdaUCeilingIdx1 <- max.col(tauCeilingDev1)
-
-        ## lambdaUFloorIdx0 <- apply(tauFloorDev0, 1, which.max)
-        ## lambdaUFloorIdx1 <- apply(tauFloorDev1, 1, which.max)
-
-        ## lambdaUCeilingIdx0 <- apply(tauCeilingDev0, 1, which.max)
-        ## lambdaUCeilingIdx1 <- apply(tauCeilingDev0, 1, which.max)
-
         lambdaUFloor0 <- lambdaUGrid[lambdaUFloorIdx0]
         lambdaUFloor1 <- lambdaUGrid[lambdaUFloorIdx1]
-
-        lambdaUCeiling0 <- lambdaUGrid[lambdaUCeilingIdx0]
-        lambdaUCeiling1 <- lambdaUGrid[lambdaUCeilingIdx1]
 
         ## And the corresponding tau
         tauFloorIdx0 <- whichInd(cbind(1:nObs, lambdaUFloorIdx0), c(nObs, nGrid))
         tauFloorIdx1 <- whichInd(cbind(1:nObs, lambdaUFloorIdx1), c(nObs, nGrid))
 
-        tauCeilingIdx0 <- whichInd(cbind(1:nObs, lambdaUCeilingIdx0), c(nObs, nGrid))
-        tauCeilingIdx1 <- whichInd(cbind(1:nObs, lambdaUCeilingIdx1), c(nObs, nGrid))
-
-        tauFloor0 <- tauMatTabCeiling[tauFloorIdx0]
-        tauFloor1 <- tauMatTabCeiling[tauFloorIdx1]
-
-        tauCeiling0 <- tauMatTabFloor[tauCeilingIdx0]
-        tauCeiling1 <- tauMatTabFloor[tauCeilingIdx1]
+        tauFloor0 <- tauMatTabFloor[tauFloorIdx0]
+        tauFloor1 <- tauMatTabFloor[tauFloorIdx1]
 
         ## Smooth the final results.
-        ## (tauFloor -tau)/(tau-tauCeiling) = (lambdaUFloor-lambdaU)/(lambdaU-lambdaUCeiling)
-        tauRatio0 <- exp(log(tauFloor0 -tau)-log(tau-tauFloor1))
-        lambdaU0 <- (lambdaUFloor0 + lambdaUFloor1*tauRatio0)/(1+tauRatio0)
+        ## (tauFloor -tau)/(tau-tauFloor) = (lambdaUFloor-lambdaU)/(lambdaU-lambdaUFloor)
+        tauRatioFloor <- (tauFloor0 -tau)/(tau-tauFloor1)
+        lambdaUFloor0 <- (lambdaUFloor0 + lambdaUFloor1*tauRatioFloor)/(1+tauRatioFloor)
 
-        tauRatio1 <- exp(log(tauCeiling0 -tau)-log(tau-tauCeiling1))
-        lambdaU1 <- (lambdaUCeiling0 + lambdaUCeiling1*tauRatio1)/(1+tauRatio1)
+        ## Numerical correction when the smoothness produces NA
+        lambdaUFloorNAIdx <- which(is.na(lambdaUFloor0))
+        if(length(lambdaUFloorNAIdx)>0)
+          {
+            lambdaUFloor0[lambdaUFloorNAIdx] <-
+              rowMeans(cbind(lambdaUFloor0[lambdaUFloorNAIdx],
+                             lambdaUFloor0[lambdaUFloorNAIdx]))
+          }
 
-        lambdaU <- (lambdaU0+lambdaU1)/2
-
-        ## The output in the traditional form
-        ## delta <- -log(2)/log(lambdaL)
-        ## theta <- log(2)/log(2-lambdaU)
-
-        out <- lambdaU
+        out <- lambdaUFloor0
       }
     return(out)
   }
 ###----------------------------------------------------------------------------
 ### TESTING
 ###----------------------------------------------------------------------------
-## nObs <- 5000 ## about 1.7sec
-## tauTabular <- kendalltauTabular("BB7", tol = 0.001)
+nObs <- 5000 ## about 1.7sec
+tauTabular <- kendalltauTabular("BB7", tol = 0.001)
 
-## tau <- runif(nObs, 0.001, 0.999)
-## lambdaLMax <- 2^(1/2-1/(2*tau))
+tau <- runif(nObs, 0.001, 0.999)
+lambdaLMax <- 2^(1/2-1/(2*tau))
 
-## lambdaL <- NA
-## for(i in 1:nObs) lambdaL[i] <- runif(1, 0.002, lambdaLMax[i])
+lambdaL <- NA
+for(i in 1:nObs) lambdaL[i] <- runif(1, 0.002, lambdaLMax[i])
 
-## parRepCpl <- list(lambdaL = lambdaL, tau = tau)
+parRepCpl <- list(lambdaL = lambdaL, tau = tau)
 
-## a <- proc.time()
-## lambdaU <- kendalltauInv(CplNM = "BB7", parRepCpl = parRepCpl,
-##                         tauTabular = tauTabular)
-## print(proc.time()-a)
+a <- proc.time()
+lambdaU <- kendalltauInv(CplNM = "BB7", parRepCpl = parRepCpl,
+                        tauTabular = tauTabular)
+print(proc.time()-a)
 
-## delta <- -log(2)/log(lambdaL)
-## theta <- log(2)/log(2-lambdaU)
-## tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
+delta <- -log(2)/log(lambdaL)
+theta <- log(2)/log(2-lambdaU)
+tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
 
 
 ## The iterative method

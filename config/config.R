@@ -3,7 +3,7 @@
 ###        BIVARIATE COPULA MODEL WITH COVARIATE--DEPENDENT
 ###
 ### SYSTEM REQUIREMENTS
-###        R > = 2.14.0 with packages ``mvtnorm'' 
+###        R > = 2.14.0 with packages ``mvtnorm''
 ###        BLAS (optional)
 ###
 ### INPUT  VARIABLES
@@ -13,13 +13,13 @@
 ### OUTPUT VARIABLES
 ###        The output variables are always started with ``OUT.''
 ###
-### GENERALIZATION 
+### GENERALIZATION
 ###        If you are interested in developing new copula models based on the
-###        existing code. Look into the ``model'' folder.     
+###        existing code. Look into the ``model'' folder.
 ###
 ### DATE
 ###        CREATED: Mon Jan 09 17:12:04 CET 2012
-###        CURRENT: Mon Jan 23 15:20:01 CET 2012
+###        CURRENT: Mon Apr 23 18:00:22 CEST 2012
 ###############################################################################
 
 ###----------------------------------------------------------------------------
@@ -32,12 +32,12 @@
 pathLibRoot <- "~/workspace/copulas/CovarDepenCopula/R/"
 
 ## Load the sourceDir tool
-sys.source(file.path(pathLibRoot, "rutils/stable/sourceDir.R"),
+sys.source(file.path(pathLibRoot, "flutils/stable/sourceDir.R"),
            envir = attach(NULL, name = "sourceDir"))
 
 ## Load the whole library
-sourceDir(file.path(pathLibRoot, c("rutils/stable", "mcmc", "models", "simul")),
-          byte.compile = FALSE, ignore.error = TRUE)        
+sourceDir(file.path(pathLibRoot, c("flutils/stable", "mcmc", "models", "simul")),
+          byte.compile = FALSE, ignore.error = TRUE)
 
 ## LOAD DEPENDENCES
 require("mvtnorm")
@@ -56,10 +56,10 @@ CplParNM <- list(c("tau", "lambdaL"))
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisNM <- c("SP500", "NASDAQ100")
 MargisTypes <- c("GAUSSIAN", "GAUSSIAN")
-MargisParNM <- list(c("mu", "sigma"), 
+MargisParNM <- list(c("mu", "sigma"),
                     c("mu", "sigma"))
 
-## Attribute name on the arguments 
+## Attribute name on the arguments
 names(CplParNM) <- CplNM
 names(MargisTypes) <- MargisNM
 names(MargisParNM) <- MargisNM
@@ -75,7 +75,7 @@ tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 ###----------------------------------------------------------------------------
 
 ## THE DATASET
-DGPCpl(configfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
+DGPCpl(DGPconfigfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
        export = as.environment(-1))
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
@@ -102,7 +102,7 @@ Mdl.parLink[[3]][[2]] <- "logit"
 
 varSelArgs <- MdlDataStruc
 varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
-                             init = "all-in") 
+                             init = "all-in")
 varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
                              init = "all-out")
 varSelArgs[[2]][[1]] <- list(cand = c(2, 4),
@@ -118,20 +118,23 @@ varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
 tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
 
 ###----------------------------------------------------------------------------
-### THE MCMC CONFIGURATION 
+### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
-## NUMBER OF MCMC ITERATIONS 
+## NUMBER OF MCMC ITERATIONS
 nIter <- 20
 
 ## BURN-IN RATIO
 burnin <- 0.1 # zero indicates no burn-in
 
 ## SAVE OUTPUT PATH
-save.output <- FALSE # "save.output = FALSE" will not save anything
+## "save.output = FALSE" it will not save anything.
+## "save.output = "path-to-directory"" it will save the working directory in
+## the given directory.
+save.output <- FALSE
 
 ## MCMC TRAJECTORY
-track.MCMC = TRUE
+track.MCMC = TRUE ## If the MCMC should be tracked during the evaluation.
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
@@ -142,112 +145,111 @@ MCMCUpdate[[2]][[2]] <- TRUE
 MCMCUpdate[[3]][[1]] <- TRUE
 MCMCUpdate[[3]][[2]] <- TRUE
 
-## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS 
+## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2)) 
+       "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[1]][[2]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
-       "beta" = list(type = "mvt", df = 6), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+       "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
-       "beta" = list(type = "mvt", df = 6), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+       "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[2]][[2]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
-       "beta" = list(type = "mvt", df = 6), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+       "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"), 
-       "beta" = list(type = "mvt", df = 6), 
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+       "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2))
 propArgs[[3]][[2]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-       "beta" = list(type = "mvt", df = 6), 
+       "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.2))
 
 ## CROSS-VALIDATION
-## If N.subsets  =  0, no cross-validation 
-crossValidArgs <- list(N.subsets = 1,    # Folds for cross-validation. 
+## If N.subsets  =  0, no cross-validation
+crossValidArgs <- list(N.subsets = 1,    # Folds for cross-validation.
                        partiMethod = "time-series", # How to partition the data
                        testRatio = 0.2)   # Testing percent if "time-series"
 
 ## Indices for training and testing sample according to cross-validation
-## settings 
+## settings
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
 nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR LPDS
-LPDS.sampleProp = 0.05          
+LPDS.sampleProp = 0.05
 
 ###----------------------------------------------------------------------------
 ### PRIOR SETTINGS
 ###----------------------------------------------------------------------------
 
 ## PRIOR FOR THE COPULA PARAMETERS
-## NOTE: The variable are recycled if needed. For example
-## indicators$prob can be a scaler or a vector with same length of variable
-## section candidates.
+## NOTE: The variable are recycled if needed. For example indicators$prob can
+## be a scaler or a vector with same length of variable section candidates.
 
 priArgs <- MdlDataStruc
-priArgs[[1]][[1]] <- 
+priArgs[[1]][[1]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "norm",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "norm",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
-priArgs[[1]][[2]] <- 
+priArgs[[1]][[2]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "lognorm",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "lognorm",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
-priArgs[[2]][[1]] <- 
+priArgs[[2]][[1]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "norm",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "norm",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
-priArgs[[2]][[2]] <- 
+priArgs[[2]][[2]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "lognorm",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "lognorm",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
-priArgs[[3]][[1]] <- 
+priArgs[[3]][[1]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "beta",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "beta",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
-priArgs[[3]][[2]] <- 
+priArgs[[3]][[2]] <-
   list("beta" = list(
-         "intercept" = list(type = "custom", 
-           input = list(type = "beta",  mean = 0.5, variance = 1), 
-           output = list(type = "norm", shrinkage = 1)), 
+         "intercept" = list(type = "custom",
+           input = list(type = "beta",  mean = 0.5, variance = 1),
+           output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)), 
-       "indicators" = list(type = "bern", 
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
+       "indicators" = list(type = "bern",
          prob = 0.5))
- 
+
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
 ### The parameters in the current MCMC iteration. For the first iteration, it
@@ -255,7 +257,7 @@ priArgs[[3]][[2]] <-
 ###----------------------------------------------------------------------------
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
-## ("random", or user-input)
+## The possible inputs are ("random", or user-input).
 
 betaInit <- MdlDataStruc
 betaInit[[1]][[1]] <- "random"

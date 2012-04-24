@@ -37,7 +37,7 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
         q1 <- 1
       }
 
-    ## Random select some positions to be determined.
+    ## Randomly select some positions to be determined.
     IdxLast <- sample(x = q1:q, size = n, replace = TRUE)
     IdxLast1 <- whichInd(arr.ind = cbind(1:n, IdxLast), dims = c(n, NA))
 
@@ -46,7 +46,6 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
 
     ## Determine the last hole
     ## TODO: What if the last hole is terrible(far away from the X domain)?
-
     Y1 <- X%*%B
     XLast <- (Y-Y1)/beta[IdxLast]
 

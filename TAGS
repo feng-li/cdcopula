@@ -1,42 +1,203 @@
 
-./config/config.DGPCpl.R,190
-CCplNM6,262
-CCplParNM7,277
-MMargisNM10,361
-MMargisTypes11,397
-MMargisParNM12,438
-MMdlDataStruc21,689
-nnObs24,766
-MMdl.parLink27,817
-MMdlDGP.par36,1109
-ttauTabular46,1511
+./config/config.DGPCpl.R,212
+CCplNM6,261
+CCplParNM7,276
+MMargisNM10,360
+MMargisTypes11,396
+MMargisParNM12,437
+MMdlDataStruc21,686
+nnObs24,763
+MMdl.parLink27,814
+MMdlDGP.par42,1486
+MMdlDGP.beta63,2487
+ttauTabular78,2986
 
 ./config/config.R,534
-ppathLibRoot32,1116
-MModelDescription50,1738
-CCplNM53,1832
-CCplParNM54,1847
-MMargisNM57,1931
-MMargisTypes58,1967
-MMargisParNM59,2008
-MMdlDataStruc68,2259
-ttauTabular71,2379
-MMdl.X82,2804
-MMdl.parLink91,3098
-vvarSelArgs103,3515
-ttauTabular118,4166
-nnIter125,4446
-bburnin128,4476
-ssave.output131,4539
-ttrack.MCMC134,4627
-MMCMCUpdate137,4683
-ppropArgs146,4942
-ccrossValidArgs174,6237
-ccrossValidIdx180,6553
-nnCrossFold181,6606
-LLPDS.sampleProp184,6688
-ppriArgs195,7095
-bbetaInit260,9877
+ppathLibRoot32,1110
+MModelDescription50,1726
+CCplNM53,1820
+CCplParNM54,1835
+MMargisNM57,1919
+MMargisTypes58,1955
+MMargisParNM59,1996
+MMdlDataStruc68,2245
+ttauTabular71,2365
+MMdl.X82,2790
+MMdl.parLink91,3084
+vvarSelArgs103,3501
+ttauTabular118,4151
+nnIter125,4429
+bburnin128,4459
+ssave.output134,4675
+ttrack.MCMC137,4716
+MMCMCUpdate140,4828
+ppropArgs149,5086
+ccrossValidArgs177,6369
+ccrossValidIdx183,6683
+nnCrossFold184,6736
+LLPDS.sampleProp187,6818
+ppriArgs197,7212
+bbetaInit262,9983
+
+./flutils/stable/dbg/close.all.R,17
+cclose.all2,32
+
+./flutils/stable/dbg/dot_ls.objects.R,20
+..ls.objects8,231
+
+./flutils/stable/dist/beta2.R,67
+rrbeta215,778
+ppbeta231,1243
+qqbeta250,1809
+ddbeta269,2375
+
+./flutils/stable/dist/DensGradHess.R,23
+DDensGradHess25,1024
+
+./flutils/stable/dist/lnorm2.R,70
+rrlnorm212,636
+ddlnorm220,819
+pplnorm228,1026
+qqlnorm237,1297
+
+./flutils/stable/dist/MultiT.R,40
+RRndMultiT14,569
+DDensMultiT44,1530
+
+./flutils/stable/dist/wishart.R,58
+rrwishart12,230
+rriwishart58,1422
+ddiwishart77,1813
+
+./flutils/stable/dmp/stock2covariates.R,26
+sstock2covariates20,877
+
+./flutils/stable/mcmc/data.partition.R,24
+ddata.partition13,359
+
+./flutils/stable/mcmc/HessApprox.R,21
+hhessApprox26,1024
+
+./flutils/stable/mcmc/parLinkFun.R,20
+pparLinkFun12,404
+
+./flutils/stable/mcmc/parMeanFun.R,20
+pparMeanFun12,463
+
+./flutils/stable/mcmc/parMeanFunGrad.R,24
+pparMeanFunGrad13,474
+
+./flutils/stable/mcmc/save.all.R,18
+ssave.all12,256
+
+./flutils/stable/mcmc/set.crossvalid.R,24
+sset.crossvalid11,247
+
+./flutils/stable/optim/bfgsi.R,12
+bbfgsi1,0
+
+./flutils/stable/optim/csminit.R,14
+ccsminit1,0
+
+./flutils/stable/optim/csminwel.R,16
+ccsminwel01,0
+
+./flutils/stable/optim/csminwelNew.R,15
+ccsminwel1,0
+
+./flutils/stable/optim/csolve.R,14
+ccsolve01,0
+
+./flutils/stable/optim/csolveNew.R,13
+ccsolve1,0
+
+./flutils/stable/optim/derivVec.R,15
+dderivVec1,0
+
+./flutils/stable/optim/numgrad.R,14
+nnumgrad1,0
+
+./flutils/stable/optim/numHess.R,14
+nnumHess1,0
+
+./flutils/stable/optim/volcano.R,14
+vvolcano1,0
+
+./flutils/stable/others/array2list.R,20
+aarray2list11,286
+
+./flutils/stable/others/block.diag.R,20
+bblock.diag11,469
+
+./flutils/stable/others/diagAlg.R,73
+"%d*%16,384
+"%*d%26,539
+"%d*d%36,746
+ttMdN48,929
+ddiag158,1118
+
+./flutils/stable/others/foldMat.R,17
+ffoldMat13,319
+
+./flutils/stable/others/ibeta.R,15
+iibeta15,403
+
+./flutils/stable/others/inhull.R,13
+iinhull1,0
+
+./flutils/stable/others/is.singular.R,21
+iis.singular11,304
+
+./flutils/stable/others/K.R,11
+KK29,544
+
+./flutils/stable/others/K.X.R,13
+KK.X33,926
+
+./flutils/stable/others/mesh.grid.R,19
+mmesh.grid12,269
+
+./flutils/stable/others/mseq.R,14
+mmseq12,438
+
+./flutils/stable/others/mvgamma.R,17
+mmvgamma17,704
+
+./flutils/stable/others/rdist.R,15
+rrdist14,352
+
+./flutils/stable/others/size.R,14
+ssize13,332
+
+./flutils/stable/others/tr.R,12
+ttr11,368
+
+./flutils/stable/others/vech.R,14
+vvech12,232
+
+./flutils/stable/others/vech2m.R,16
+vvech2m13,334
+
+./flutils/stable/others/whichInd.R,18
+wwhichInd16,776
+
+./flutils/stable/plot/grid2.R,15
+ggrid215,313
+
+./flutils/stable/sourceDir.R,19
+ssourceDir17,841
+
+./flutils/stable/systools/attached.packages.R,27
+aattached.packages10,283
+
+./flutils/stable/systools/autoupdate.packages.R,29
+aautoupdate.packages14,413
+
+./flutils/stable/systools/ls2.R,10
+lls21,0
+
+./flutils/stable/systools/warningsClear.R,20
+wwarningsClear1,0
 
 ./mcmc/CplMain.R,17
 CCplMain15,466
@@ -48,7 +209,7 @@ GGNewtonMove30,983
 MMHWithGNewton23,589
 
 ./models/any2any.R,17
-aany2any12,307
+aany2any12,303
 
 ./models/initDataStruc.R,23
 iinitDataStruc14,376
@@ -56,18 +217,17 @@ iinitDataStruc14,376
 ./models/initPar.R,17
 iinitPar14,472
 
-./models/kendalltau.R,17
-kkendalltau1,0
+./models/kendalltau.R,20
+kkendalltau13,554
 
 ./models/kendalltauGrad.R,22
 kkendalltauGrad2,26
 
-./models/kendalltauInv.R,48
-kkendalltauInv18,719
-kkendalltauInv073,2357
+./models/kendalltauInv.R,23
+kkendalltauInv18,832
 
 ./models/kendalltauTabular.R,27
-kkendalltauTabular15,471
+kkendalltauTabular16,747
 
 ./models/logCplGrad.R,20
 llogCplGrad14,320
@@ -76,7 +236,7 @@ llogCplGrad14,320
 llogLikCpl14,562
 
 ./models/logPost.R,18
-llogPost54,2161
+llogPost58,2235
 
 ./models/logPostGradHess.R,25
 llogPostGradHess17,643
@@ -96,160 +256,6 @@ MMargisModels19,776
 ./models/parCaller.R,16
 pparCaller1,0
 
-./rutils/stable/dbg/close.all.R,17
-cclose.all2,32
-
-./rutils/stable/dbg/dot_ls.objects.R,20
-..ls.objects8,231
-
-./rutils/stable/dist/DensGradHess.R,23
-DDensGradHess25,1024
-
-./rutils/stable/dist/lnorm2.R,70
-rrlnorm212,636
-ddlnorm220,819
-pplnorm228,1026
-qqlnorm237,1297
-
-./rutils/stable/dist/MultiT.R,40
-RRndMultiT14,569
-DDensMultiT44,1530
-
-./rutils/stable/dist/wishart.R,58
-rrwishart12,230
-rriwishart58,1422
-ddiwishart77,1813
-
-./rutils/stable/dmp/stock2covariates.R,26
-sstock2covariates20,878
-
-./rutils/stable/mcmc/data.partition.R,24
-ddata.partition13,359
-
-./rutils/stable/mcmc/HessApprox.R,21
-hhessApprox26,1024
-
-./rutils/stable/mcmc/parLinkFun.R,20
-pparLinkFun12,404
-
-./rutils/stable/mcmc/parMeanFun.R,20
-pparMeanFun12,463
-
-./rutils/stable/mcmc/parMeanFunGrad.R,24
-pparMeanFunGrad13,474
-
-./rutils/stable/mcmc/save.all.R,18
-ssave.all12,256
-
-./rutils/stable/mcmc/set.crossvalid.R,24
-sset.crossvalid11,247
-
-./rutils/stable/optim/bfgsi.R,12
-bbfgsi1,0
-
-./rutils/stable/optim/csminit.R,14
-ccsminit1,0
-
-./rutils/stable/optim/csminwel.R,16
-ccsminwel01,0
-
-./rutils/stable/optim/csminwelNew.R,15
-ccsminwel1,0
-
-./rutils/stable/optim/csolve.R,14
-ccsolve01,0
-
-./rutils/stable/optim/csolveNew.R,13
-ccsolve1,0
-
-./rutils/stable/optim/derivVec.R,15
-dderivVec1,0
-
-./rutils/stable/optim/numgrad.R,14
-nnumgrad1,0
-
-./rutils/stable/optim/numHess.R,14
-nnumHess1,0
-
-./rutils/stable/optim/volcano.R,14
-vvolcano1,0
-
-./rutils/stable/others/array2list.R,20
-aarray2list11,286
-
-./rutils/stable/others/block.diag.R,20
-bblock.diag11,469
-
-./rutils/stable/others/diagAlg.R,73
-"%d*%16,384
-"%*d%26,539
-"%d*d%36,746
-ttMdN48,929
-ddiag158,1117
-
-./rutils/stable/others/foldMat.R,17
-ffoldMat13,319
-
-./rutils/stable/others/ibeta.R,15
-iibeta15,403
-
-./rutils/stable/others/inhull.R,13
-iinhull1,0
-
-./rutils/stable/others/is.singular.R,21
-iis.singular11,304
-
-./rutils/stable/others/K.R,11
-KK29,544
-
-./rutils/stable/others/K.X.R,13
-KK.X33,926
-
-./rutils/stable/others/mesh.grid.R,19
-mmesh.grid12,269
-
-./rutils/stable/others/mseq.R,14
-mmseq12,438
-
-./rutils/stable/others/mvgamma.R,17
-mmvgamma17,704
-
-./rutils/stable/others/rdist.R,15
-rrdist14,352
-
-./rutils/stable/others/size.R,14
-ssize13,332
-
-./rutils/stable/others/tr.R,12
-ttr11,368
-
-./rutils/stable/others/vech.R,14
-vvech12,232
-
-./rutils/stable/others/vech2m.R,16
-vvech2m13,334
-
-./rutils/stable/others/whichInd.R,18
-wwhichInd16,776
-
-./rutils/stable/plot/grid2.R,15
-ggrid215,313
-
-./rutils/stable/sourceDir.R,19
-ssourceDir17,841
-
-./rutils/stable/systools/attached.packages.R,27
-aattached.packages10,283
-
-./rutils/stable/systools/autoupdate.packages.R,29
-aautoupdate.packages14,413
-
-./rutils/stable/systools/ls2.R,10
-lls21,0
-
-./rutils/stable/systools/warningsClear.R,20
-wwarningsClear1,0
-
 ./sid/dlogprior.R,20
 ddlogprior29,1189
 
@@ -257,16 +263,16 @@ ddlogprior29,1189
 ccCpl30,1293
 
 ./simul/DGPCpl.R,16
-DDGPCpl16,601
+DDGPCpl16,596
 
 ./simul/DGPlm.R,15
-DDGPlm19,728
+DDGPlm19,724
 
 ./simul/rps.R,13
 rrps14,451
 
 ./simul/ruCpl.R,15
-rruCpl19,667
+rruCpl16,679
 
 ./simul/u2qtl.R,12
 uu2qtl1,0
