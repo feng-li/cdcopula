@@ -13,9 +13,9 @@
 ##'     DEPENDS: mvtnorm
 ##'     Created: Mon Sep 26 09:43:12 CEST 2011;
 ##'     Current: Mon Apr 16 13:40:47 CEST 2012.
-ruCpl <- function(n, parCpl, copula, exArgs)
+ruCpl <- function(n, parCpl, CplNM, exArgs)
 {
-  if(tolower(copula) == "bb7") # Joe 1997
+  if(tolower(CplNM) == "bb7") # Joe 1997
     {
       ## Subtract the parameters list.
       ## The Kendall's tau
@@ -25,7 +25,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
 
       ## The upper tail dependence given lower tail dependence and Kendall's tau
       ## FIXME: Consider to speed it up if it is really slow
-      lambdaU <- kendalltauInv(CplNM = copula, parRepCpl = parCpl,
+      lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
                                tauTabular = exArgs[["tauTabular"]])
 
       ## The standard copula parameters (recycled if necessary).
@@ -47,8 +47,6 @@ ruCpl <- function(n, parCpl, copula, exArgs)
 
       ## The conditional method for sampling copula
       ## Sample v1 and v2 from U(0, 1)
-
-      browser()
 
       ## The conditional density equation C(u2|u1)  =  v2
       ## Not in vector form
@@ -96,7 +94,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
                   emptau = emptau, theotau = theotau,
                   theta = theta, delta = delta)
     }
-  else if(tolower(copula) == "gaussian")
+  else if(tolower(CplNM) == "gaussian")
     {
       ## Elliptical sampling,  Trivedi and Zimmer 2005 (p. 109)
       p <- 2 #Hard code for bivariate copula
@@ -116,7 +114,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       theotau <- kendalltau(CplNM=CplNM, parCpl = list(rho = theta))
       out <- list(u = u, theotau = theotau)
     }
-  else if(tolower(copula) == "mvt") ## the multivariate t Demarta Mcneil (2005)
+  else if(tolower(CplNM) == "mvt") ## the multivariate t Demarta Mcneil (2005)
     {
       p <- (1+sqrt(8*length(theta)+1))/2 # p is obtained from the lower
                                         # triangular matrix.
@@ -141,7 +139,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
       out <- list(u = u, emptau = emptau, theotau = theotau)
 
     }
-  else if(tolower(copula) == "fgm")
+  else if(tolower(CplNM) == "fgm")
     {
       theta <- parCpl[["theta"]]
       if(!(theta >= -1 && theta <= 1))
@@ -171,7 +169,7 @@ ruCpl <- function(n, parCpl, copula, exArgs)
 
       out <- u
     }
-  else if(tolower(copula) == "gumbel")
+  else if(tolower(CplNM) == "gumbel")
     {
       ## Mixture of power simulation,  Trivedi and Zimmer 2005(p. 110)
       theta <- parCpl[["theta"]]

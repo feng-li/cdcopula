@@ -1,11 +1,11 @@
 ##' TODO: Vectorized this
-kendalltauGrad <- function(copula, theta, delta, parCaller)
+kendalltauGrad <- function(CplNM, theta, delta, parCaller)
   {
-    if(tolower(copula) == "bb7")
+    if(tolower(CplNM) == "bb7")
       {
         if(tolower(parCaller) == "theta")
           {
-            
+
             ## Healthy condition of parameters.
             deltaHcond <- delta > 0
 
@@ -24,7 +24,7 @@ kendalltauGrad <- function(copula, theta, delta, parCaller)
                          (digamma(1+delta+2/theta)-digamma(2-2/theta)-theta)/
                          sin(2*pi/theta))/
                         (delta*(2+delta)*(theta-2)^2*theta^4*
-                         beta(1+delta+2/theta, 2-2/theta)) 
+                         beta(1+delta+2/theta, 2-2/theta))
               }
             else if(theta  == 2 && deltaHcond)
               {
@@ -72,7 +72,7 @@ kendalltauGrad <- function(copula, theta, delta, parCaller)
             stop("No such copula implementation for Kendall's tau.")
           }
       }
-    
+
     return(out)
   }
 ###----------------------------------------------------------------------------

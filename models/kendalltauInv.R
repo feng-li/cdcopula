@@ -86,25 +86,25 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
 ###----------------------------------------------------------------------------
 ### TESTING
 ###----------------------------------------------------------------------------
-nObs <- 5000 ## about 1.7sec
-tauTabular <- kendalltauTabular("BB7", tol = 0.001)
+## nObs <- 5000 ## about 1.7sec
+## tauTabular <- kendalltauTabular("BB7", tol = 0.001)
 
-tau <- runif(nObs, 0.001, 0.999)
-lambdaLMax <- 2^(1/2-1/(2*tau))
+## tau <- runif(nObs, 0.001, 0.999)
+## lambdaLMax <- 2^(1/2-1/(2*tau))
 
-lambdaL <- NA
-for(i in 1:nObs) lambdaL[i] <- runif(1, 0.002, lambdaLMax[i])
+## lambdaL <- NA
+## for(i in 1:nObs) lambdaL[i] <- runif(1, 0.002, lambdaLMax[i])
 
-parRepCpl <- list(lambdaL = lambdaL, tau = tau)
+## parRepCpl <- list(lambdaL = lambdaL, tau = tau)
 
-a <- proc.time()
-lambdaU <- kendalltauInv(CplNM = "BB7", parRepCpl = parRepCpl,
-                        tauTabular = tauTabular)
-print(proc.time()-a)
+## a <- proc.time()
+## lambdaU <- kendalltauInv(CplNM = "BB7", parRepCpl = parRepCpl,
+##                         tauTabular = tauTabular)
+## print(proc.time()-a)
 
-delta <- -log(2)/log(lambdaL)
-theta <- log(2)/log(2-lambdaU)
-tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
+## delta <- -log(2)/log(lambdaL)
+## theta <- log(2)/log(2-lambdaU)
+## tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
 
 
 ## The iterative method

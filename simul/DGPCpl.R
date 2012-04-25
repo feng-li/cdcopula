@@ -52,8 +52,9 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     ## DGP.parCpl <- kendalltauInv(CplNM = CplNM, parRepCpl = DGP.par[[CplNM]],
     ##                             tauTabular = tauTabular)
 
+    browser()
     ## THE RANDOM CDF VARIABLE IN THE COPULA
-    uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], copula = CplNM,
+    uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM,
                   exArgs = list(tauTabular = tauTabular))
 
     ## The response variables

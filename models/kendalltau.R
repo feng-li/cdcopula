@@ -148,7 +148,9 @@ kendalltau <- function(CplNM, parCpl)
 ##           }
 ##         else if(theta  == 2 && deltaHcond)
 ##           {
-##             ## You computer will never hit this branch. But we keep it anyway.
+##
+
+## You computer will never hit this branch. But we keep it anyway.
 ##             out <- 1- (digamma(2+delta)-digamma(1)-1)/delta
 ##           }
 ##         else # bad condition met.

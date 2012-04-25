@@ -1,6 +1,6 @@
-chainFracCplGrad <- function(copula, parCpl, chainCaller)
+chainFracCplGrad <- function(CplNM, parCpl, chainCaller)
   {
-    if(tolower(copula) == "bb7")
+    if(tolower(CplNM) == "bb7")
       {
         delta <- parCpl[["delta"]]
         theta <- parCpl[["theta"]]
@@ -11,18 +11,18 @@ chainFracCplGrad <- function(copula, parCpl, chainCaller)
           }
         else if(all.equal(tolower(chainCaller), c("delta", "tau")))
           {
-            out <- 1/(kendalltauGrad(copula = copula, theta = theta,
+            out <- 1/(kendalltauGrad(CplNM = CplNM, theta = theta,
                                           parCaller = "delta"))
           }
         else if(all.equal(tolower(chainCaller), c("theta", "tau")))
           {
-            out <- 1/(kendalltauGrad(copula = copula, theta = theta,
+            out <- 1/(kendalltauGrad(CplNM = CplNM, theta = theta,
                                      parCaller = "theta"))
           }
-        else 
+        else
           {
             ## There is no such chain (reparametrization), i.e. estimate delta
-            ## and theta directly. 
+            ## and theta directly.
             out <- 1
           }
       }
