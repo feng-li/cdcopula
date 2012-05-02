@@ -14,7 +14,9 @@
 ##' @return "matrix"
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Wed Mar 14 10:46:20 CET 2012;
+##' @note
+##'       DEPENDS: flutils
+##'       Created: Wed Mar 14 10:46:20 CET 2012;
 ##'       Current: Wed Mar 14 10:46:25 CET 2012.
 DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
   {
@@ -22,23 +24,38 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     q <- length(beta)
     B <- matrix(beta) # Currently only allow univariate response
 
+    ## Initialize the storage for the covariates
+    X <- matrix(1, n, q)
+
+    ## Check if intercept is included
     if(intercept)
       {
         q0 <- q-1
-        X0 <- matrix(runif(n*q0, min = Xlim[1], max = Xlim[2]), n, q0)
-        X <- cbind(1, X0)
         q1 <- 2
       }
     else
       {
         q0 <- q
-        X0 <- matrix(runif(n*q0, min = Xlim[1], max = Xlim[2]), n, q0)
-        X <- X0
         q1 <- 1
       }
+    X[, q1:q] <- matrix(runif(n*q0, min = Xlim[1], max = Xlim[2]), n, q0)
+
+    ## Which beta is zero i.e. covariates not selected via variable selection
+    beta0Idx <- which(abs(beta)<0.0001)
+    beta0Len <- length(beta0Idx)
 
     ## Randomly select some positions to be determined.
-    IdxLast <- sample(x = q1:q, size = n, replace = TRUE)
+    IdxLastCand <-q1:q
+    IdxLast0 <- IdxLastCand[!(IdxLastCand %in% beta0Idx)]
+
+    if(length(IdxLast0) == 1)
+      {
+        IdxLast <- rep(IdxLast0, n)
+      }
+    else
+      {
+        IdxLast <- sample(x = IdxLast0, size = n, replace = TRUE)
+      }
     IdxLast1 <- whichInd(arr.ind = cbind(1:n, IdxLast), dims = c(n, NA))
 
     ## Make it zero temporally.
@@ -54,6 +71,7 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
 
     return(X)
   }
+
 ###----------------------------------------------------------------------------
 ### TESTING
 ###----------------------------------------------------------------------------
