@@ -11,65 +11,89 @@
 ##' @return See "export" argument.
 ##' @references Li, F., 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Wed Mar 07 17:33:13 CET 2012;
+##' @note
+##'       DEPENDS: flutils
+##'       Created: Wed Mar 07 17:33:13 CET 2012;
 ##'       Current: Wed Mar 07 17:33:20 CET 2012.
 DGPCpl <- function(DGPconfigfile, export = "list")
   {
     ## source the configure file
     source(file = DGPconfigfile, local = TRUE)
 
-    ## COVARIATES USED IN THE MODEL
-    ## X <- list()
-    ## for(j in 1:length(MargisNM))
-    ##   {
-    ##     nCovs <-
-    ##       X[[MargisNM[j]]] <- matrix(runif(nObs*nCovs), nObs, nCovs)
-    ##   }
-
-    ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
-    ## Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
-    ## Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
-    ## Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
-    ## Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
-    ## Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
-    ## Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
-
-    ## PARAMETERS IN COPULA FUNCTION
-    ## DGP.par <- MdlDataStruc
-    ## for(i in 1:length(MdlDataStruc))
-    ##   {
-
-    ##     for(j in 1:length(MdlDataStruc[[i]]))
-    ##       {
-    ##         DGP.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
-    ##                                         beta = DGP.betaTRUE[[i]][[j]],
-    ##                                         link = Mdl.parLink[[i]][[j]])
-    ##       }
-    ##   }
-
-
-    ## TRANSFORM COPULA PARAMETERS INTO THE STANDARD PARAMETRIZATION.
-    ## DGP.parCpl <- kendalltauInv(CplNM = CplNM, parRepCpl = DGP.par[[CplNM]],
-    ##                             tauTabular = tauTabular)
-
-    browser()
     ## THE RANDOM CDF VARIABLE IN THE COPULA
     uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM,
                   exArgs = list(tauTabular = tauTabular))
 
-    ## The response variables
-    Mdl.Y <- u2qtl(u = uOut$u, parMargis = DGP.par[MargisNM],
+    ## Generate the response variables
+    Mdl.Y <- u2qtl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],
                    MargisTypes = MargisTypes)
 
+    ## The base covariates
+    Mdl.beta <- MdlDataStruc
+    Mdl.X <- MdlDataStruc
+    Mdl.XFixed <- MdlDataStruc
+
+    for(i in names(MdlDataStruc))
+      {
+        for(j in names(MdlDataStruc[[i]]))
+          {
+            Intercept <- ifelse(MdlDGP.intercept[[i]][[j]], TRUE, FALSE)
+            ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
+                                  link = MdlDGP.parLink[[i]][[j]])
+
+            nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
+            nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
+
+            betaFixed <- runif(n = nCovsFixed, min = 0, max = 1)
+
+            Mdl.XFixed[[i]][[j]] <- DGPlm(Y = ParResp, beta = betaFixed,
+                                          Xlim = c(0, 1),
+                                          intercept = Intercept)
+            Mdl.beta[[i]][[j]] <- matrix(c(betaFixed,
+                                           rep(0, nCovsTol-nCovsFixed)))
+          }
+      }
+
+
+    ## The extended covariates that are from the combination of the base
+    ## covariates FIXME: it is better to select the non-fixed covariates from
+    ## the known fixed covariates.
+    for(i in names(MdlDataStruc))
+      {
+        for(j in names(MdlDataStruc[[i]]))
+          {
+
+            nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
+            nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
+
+            ## if(j == CplNM)
+            ##   {
+                ## X <- Mdl.XFixed[names(XFixed) != j]
+
+                ## The final covariates
+                XFinal1 <- Mdl.XFixed[[i]][[j]]
+                XFinal2 <- matrix(runif(nObs*(nCovsTol-nCovsFixed)), nObs)
+
+                XFinal <- cbind(XFinal1, XFinal2)
+
+                Mdl.X[[i]][[j]] <- XFinal
+            ##   }
+            ## else
+            ##   {
+
+            ##   }
+          }
+      }
+
+
     ## The output
-    out <- list(Mdl.Y = Mdl.Y, X = X)
+    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, Mdl.beta = Mdl.beta)
     if(tolower(export)  == "list")
       {
         return(out)
       }
     else if(tolower(export)  == "parent.env")
       {
-        envirOut <- sys.fram(sys.parent(1))
-        list2env(x = out, envir = exvirOut)
+        list2env(x = out, envir = sys.frame(sys.parent(1)))
       }
   }

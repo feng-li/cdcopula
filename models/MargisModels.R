@@ -12,7 +12,7 @@
 ##' @param whichMargis
 ##'        Which marginals are going to update?
 ##' @return "matrix" with marginal names attributed.
-##' @references 
+##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Jan 17 19:27:25 CET 2012;
 ##'       Current: Tue Jan 17 19:27:30 CET 2012.
@@ -23,7 +23,7 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
     ## MargisUpNM <- names(parMargis)[whichMargis]
 
     ## No. of observations
-    ## nObs <- length(Mdl.Y[[1]]) 
+    ## nObs <- length(Mdl.Y[[1]])
 
     ## Fetch previous values for u and d.
     Mdl.ud <- staticArgs[c("Mdl.u", "Mdl.d")]
@@ -38,9 +38,9 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
 
             ## The mean and standard deviation for Gaussian density
             mu <- parMargis[[i]][["mu"]] # scaler
-            sigma <- parMargis[[i]][["sigma"]]   # scaler     
-            
-            ## The percentile representation 
+            sigma <- parMargis[[i]][["sigma"]]   # scaler
+
+            ## The percentile representation
             Mdl.ud[["Mdl.u"]][, i] <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
 
             ## The quantile representation
@@ -55,7 +55,7 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
             stop("This type of margin is not implemented.")
           }
       }
-    
+
     ## The output
     return(Mdl.ud)
   }
