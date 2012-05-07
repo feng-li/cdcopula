@@ -67,25 +67,27 @@ names(MargisParNM) <- MargisNM
 ## The object structure for the model components
 MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 
-## Generating the numerical tabular for the inverse Kendall's tau
-tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
-
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL
 ###----------------------------------------------------------------------------
 
 ## THE DATASET
+##-----------------------------------------------------------------------------
+## The dataset should either provided via DGP or the real dataset. The dataset
+## should be in the following structure:
+## Mdl.X: "list" each list contains the covariates in each margin or copula.
+## Mdl.Y: "list" each list contains the response variable of that margin.
 DGPCpl(DGPconfigfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
-       export = as.environment(-1))
+       export = "parent.env")
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
-Mdl.X <- MdlDataStruc
-Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
-Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
-Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
-Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
-Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
-Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+## Mdl.X <- MdlDataStruc
+## Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
+## Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
+## Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
+## Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
+## Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
+## Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
@@ -114,9 +116,6 @@ varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 5, 6),
 varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
                              init = "random")
 
-## Generating the numerical tabular for the inverse Kendall's tau
-tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
-
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
@@ -128,13 +127,16 @@ nIter <- 20
 burnin <- 0.1 # zero indicates no burn-in
 
 ## SAVE OUTPUT PATH
+##-----------------------------------------------------------------------------
 ## "save.output = FALSE" it will not save anything.
 ## "save.output = "path-to-directory"" it will save the working directory in
 ## the given directory.
 save.output <- FALSE
 
 ## MCMC TRAJECTORY
-track.MCMC = TRUE ## If the MCMC should be tracked during the evaluation.
+##-----------------------------------------------------------------------------
+## If TRUE,  the MCMC should be tracked during the evaluation.
+track.MCMC = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
@@ -173,15 +175,14 @@ propArgs[[3]][[2]] <-
        "indicators" = list(type = "binom", prob = 0.2))
 
 ## CROSS-VALIDATION
-## If N.subsets  =  0, no cross-validation
-crossValidArgs <- list(N.subsets = 1,    # Folds for cross-validation.
-                       partiMethod = "time-series", # How to partition the data
-                       testRatio = 0.2)   # Testing percent if "time-series"
-
-## Indices for training and testing sample according to cross-validation
-## settings
-crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
-nCrossFold <- length(crossValidIdx[["training"]])
+##-----------------------------------------------------------------------------
+## "N.subsets" is no. of folds for cross-validation. If N.subsets  =  0, no
+## cross-validation. And "partiMethod" tells how to partition the data. Testing
+## percent is used if partiMethod is "time-series". (use the old data to
+## predict the new interval)
+crossValidArgs <- list(N.subsets = 1,
+                       partiMethod = "time-series",
+                       testRatio = 0.2)
 
 ## SAMPLER PROPORTION FOR LPDS
 LPDS.sampleProp = 0.05
@@ -191,6 +192,7 @@ LPDS.sampleProp = 0.05
 ###----------------------------------------------------------------------------
 
 ## PRIOR FOR THE COPULA PARAMETERS
+##-----------------------------------------------------------------------------
 ## NOTE: The variable are recycled if needed. For example indicators$prob can
 ## be a scaler or a vector with same length of variable section candidates.
 

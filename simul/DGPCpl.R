@@ -29,7 +29,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
                    MargisTypes = MargisTypes)
 
     ## The base covariates
-    Mdl.beta <- MdlDataStruc
+    MdlDGP.beta <- MdlDataStruc
     Mdl.X <- MdlDataStruc
     Mdl.XFixed <- MdlDataStruc
 
@@ -87,7 +87,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
 
 
     ## The output
-    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, Mdl.beta = Mdl.beta)
+    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, MdlDGP.beta = MdlDGP.beta)
     if(tolower(export)  == "list")
       {
         return(out)
