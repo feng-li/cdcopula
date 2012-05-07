@@ -54,7 +54,8 @@ kendalltauTabular <- function(CplNM, tol = 0.001)
         tauMat[, IdxCurr0:IdxCurr1] <- tauCurr
       }
 
-      out <- list(tauMat = tauMat, nGrid = nGrid, tol = tol, lambdaUGrid = lambdaUGrid)
+      out <- list(tauMat = tauMat, nGrid = nGrid, tol = tol,
+                  lambdaUGrid = lambdaUGrid)
     }
   return(out)
 }

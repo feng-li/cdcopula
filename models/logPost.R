@@ -99,21 +99,23 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
-
-  logLikCpl <- logLikCpl(u = Mdl.u, CplNM = CplNM, parCpl = Mdl.par[[CplNM]],
+  browser()
+  logLikCpl <- logLikCpl(u = Mdl.u,
+                         CplNM = CplNM,
+                         parCpl = Mdl.par[[CplNM]],
                          staticArgs = staticArgs) # n-by-1
 
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS
 ###----------------------------------------------------------------------------
   Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
-                             Mdl.parLink = Mdl.parLink,
-                             Mdl.beta = Mdl.beta,
-                             Mdl.betaIdx = Mdl.betaIdx,
-                             varSelArgs = varSelArgs,
-                             priArgs = priArgs,
-                             Mdl.logPri = staticArgs[["Mdl.logPri"]],
-                             parUpdate = parUpdate)
+                          Mdl.parLink = Mdl.parLink,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          varSelArgs = varSelArgs,
+                          priArgs = priArgs,
+                          Mdl.logPri = staticArgs[["Mdl.logPri"]],
+                          parUpdate = parUpdate)
 
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE

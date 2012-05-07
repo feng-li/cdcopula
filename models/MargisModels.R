@@ -41,7 +41,8 @@ MargisModels <- function(Mdl.Y, MargisTypes, parMargis, whichMargis =
             sigma <- parMargis[[i]][["sigma"]]   # scaler
 
             ## The percentile representation
-            Mdl.ud[["Mdl.u"]][, i] <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
+            Mdl.ud[["Mdl.u"]][, i] <- pnorm(y, mean = mu, sd = sigma,
+                                            log = FALSE)
 
             ## The quantile representation
             Mdl.ud[["Mdl.d"]][, i] <- dnorm(y, mean = mu, sd = sigma, log = TRUE)

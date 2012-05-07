@@ -49,7 +49,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
             Mdl.XFixed[[i]][[j]] <- DGPlm(Y = ParResp, beta = betaFixed,
                                           Xlim = c(0, 1),
                                           intercept = Intercept)
-            Mdl.beta[[i]][[j]] <- matrix(c(betaFixed,
+            MdlDGP.beta[[i]][[j]] <- matrix(c(betaFixed,
                                            rep(0, nCovsTol-nCovsFixed)))
           }
       }

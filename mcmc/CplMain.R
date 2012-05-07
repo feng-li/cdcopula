@@ -32,9 +32,9 @@ CplMain <- function(configfile)
 
   ## Split the data into folds for cross validation,  if no cross validation,
   ## only one fold used
-  subsetFun <- function(x, idx)x[idx, , drop = FALSE]
   MdlTraining.X <- vector("list", nCrossFold)
   MdlTraining.Y <- vector("list", nCrossFold)
+
   MdlTesting.X <- vector("list", nCrossFold)
   MdlTesting.Y <- vector("list", nCrossFold)
 
@@ -44,82 +44,97 @@ CplMain <- function(configfile)
   MdlMCMC.AccPbeta <- vector("list", nCrossFold)
 
 
-  for(iCross in 1:nCrossFold)
-    {
-      Training.Idx.iCross <- crossValidIdx[["training"]][[iCross]]
-      Testing.Idx.iCross <- crossValidIdx[["testing"]][[iCross]]
-      ##Extract the training and testing data according to cross-validation
-      MdlTraining.X[[iCross]] <- rapply(object=Mdl.X,
-                                        f = subsetFun,
-                                        idx = Training.Idx.iCross,
-                                        how = "replace")
-      MdlTraining.Y[[iCross]] <- rapply(object=Mdl.X,
-                                        f = subsetFun,
-                                        idx = Training.Idx.iCross,
-                                        how = "replace")
-      MdlTesting.X[[iCross]] <- rapply(object=Mdl.X,
-                                       f = subsetFun,
-                                       idx = Testing.Idx.iCross,
-                                       how = "replace")
-      MdlTesting.Y[[iCross]] <- rapply(object=Mdl.X,
-                                       f = subsetFun,
-                                       idx = Testing.Idx.iCross,
-                                       how = "replace")
-    }
-
-
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
 ### This section should be in a function so that it can be called easily for
-### parallel computing and other purpose.
+### parallel computing and other purpose. The input should be the
+### cross-validation training and testing indices.
+### TODO:crossValidIdx should be reorganized
 ###----------------------------------------------------------------------------
+  ## browser()
 
-  ## Allocate the storage for the final parameters and split the covariates
-  ## according to the variable selection settings
-  Mdl.beta.iCross <- MdlDataStruc
-  Mdl.betaIdx.iCross <- MdlDataStruc
-  Mdl.par.iCross <- MdlDataStruc
-  Mdl.AccPbeta .iCross <- MdlDataStruc
+  iCross <- 1
+  Training.Idx <- crossValidIdx[["training"]][[iCross]]
+  Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
+  ## envCurr <- environment()
+  ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
+  ## {
+
+
+  ## Extract the training and testing data according to cross-validation
+  subsetFun <- function(x, idx)x[idx, , drop = FALSE]
+  MdlTraining.X <- rapply(object=Mdl.X,
+                                    f = subsetFun,
+                                    idx = Training.Idx,
+                                    how = "replace")
+  MdlTraining.Y <- rapply(object=Mdl.Y,
+                                    f = subsetFun,
+                                    idx = Training.Idx,
+                                    how = "replace")
+  MdlTesting.X <- rapply(object=Mdl.X,
+                                   f = subsetFun,
+                                   idx = Testing.Idx,
+                                   how = "replace")
+  MdlTesting.Y <- rapply(object=Mdl.Y,
+                                   f = subsetFun,
+                                   idx = Testing.Idx,
+                                   how = "replace")
+
+  ## Allocate the storage for the final parameters
+  MCMC.beta <- MdlDataStruc
+  MCMC.betaIdx <- MdlDataStruc
+  MCMC.par <- MdlDataStruc
+  MCMC.AccPbeta <- MdlDataStruc
   for(i in names(MdlDataStruc))
     {
       for(j in names(MdlDataStruc[[i]]))
         {
-          ncolX.ij <- ncol(Mdl.X[[i]][[j]])
+          ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
           ## The MCMC storage
-          Mdl.betaIdx.iCross[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
-          Mdl.beta.iCross[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
-          Mdl.par.iCross[[i]][[j]] <- array(NA, c(nObs, nIter))
+          MCMC.betaIdx[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
+          MCMC.beta[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
+          MCMC.par[[i]][[j]] <- array(NA, c(nObs, nIter))
           ## The Metropolis-Hasting acceptance rate
-          Mdl.AccPbeta.iCross[[i]][[j]] <- array(NA, c(nIter, 1))
+          MCMC.AccPbeta[[i]][[j]] <- array(NA, c(nIter, 1))
         }
     }
 
 
   ## Assign the initial values
-  initParOut <- initPar(varSelArgs, betaInit, Mdl.X.iCross)
-  Mdl.betaIdx <- initParOut[["Mdl.betaIdx.iCross"]]
-  Mdl.beta <- initParOut[["Mdl.beta.iCross"]]
+  initParOut <- initPar(varSelArgs = varSelArgs,
+                        betaInit = betaInit,
+                        Mdl.X = MdlTraining.X)
+  Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
+  Mdl.beta <- initParOut[["Mdl.beta"]]
 
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
-  ## Allocate and initialize the static argument
-  u <- matrix(NA, nObs, length(Mdl.Y), dimnames = list(NULL, names(Mdl.Y)))
+  ## Initialize "staticArgs"
+  ## Dry run the logPost once to obtain it.
+  ## FIXME: Using optimization routine to get good initial values
+  u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
+              dimnames = list(NULL, names(MdlTraining.Y)))
   staticArgs <- list(Mdl.logPri =  MdlDataStruc,
                      Mdl.par = MdlDataStruc,
                      Mdl.u = u,
                      Mdl.d = u,
                      tauTabular = tauTabular)
+  staticArgs <- logPost(CplNM = CplNM,
+                        Mdl.Y = MdlTraining.Y,
+                        Mdl.X = MdlTraining.X,
+                        Mdl.beta = Mdl.beta,
+                        Mdl.betaIdx = Mdl.betaIdx,
+                        Mdl.parLink = Mdl.parLink,
+                        varSelArgs = varSelArgs,
+                        MargisTypes = MargisTypes,
+                        priArgs = priArgs,
+                        parUpdate = parUpdate,
+                        staticArgs = staticArgs)[["staticArgs"]]
 
-  ## Dry run to initialize "staticArgs"
-  ## FIXME: Using optimization routine to get good initial values
-  logPostOut <- logPost(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                        varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)
-  staticArgs <- logPostOut[["staticArgs"]]  .
-
+  browser()
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
-
   CompNM <- names(MdlDataStruc)
   ## The MCMC loops
   for(iIter in 1:nIter)
@@ -140,10 +155,7 @@ CplMain <- function(configfile)
 
                   if(tolower(algArgs[["type"]]) == "gnewtonmove")
                     {
-                      ## Cross validation subsets
-                      subset <- crossValidIdx[["training"]][[iCross]]
                       ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
-
                       MHOut <- MHWithGNewton(
                                  CplNM = CplNM,
                                  propArgs = propArgs,
@@ -169,12 +181,7 @@ CplMain <- function(configfile)
         }
     }
 
-  ## The final update the parameters in each fold
-  MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
-  MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
-  MdlMCMC.par[[iCross]] <- Mdl.par.iCross
-  MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
-
+  ## }
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC
 ### Cross-validation is independent for all folds. In order to parallel it via
@@ -198,6 +205,11 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
+      ## The final update the parameters in each fold
+      MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
+      MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
+      MdlMCMC.par[[iCross]] <- Mdl.par.iCross
+      MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
 
 
   ## Fetch everything at current environment to a list
