@@ -18,19 +18,16 @@ logLikCpl <- function(u, CplNM, parCpl, staticArgs)
     {
       ## The name of marginal model
       MargisNM <- names(u)
-      nObs <- dim(u)[1]
 
       ## Subtract the parameters list.
       tau <- parCpl[["tau"]]
       lambdaL <- parCpl[["lambdaL"]]
       lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
                                tauTabular = staticArgs[["tauTabular"]])
-      ## The standard copula parameters (recycled if necessary).
-      delta <- matrix(-log(2)/log(lambdaL), nObs, 2)
-      theta <- matrix(log(2)/log(2-lambdaU), nObs, 2)
-
-      ## delta <- -log(2)/log(lambda_L)
-      ## theta <- log(2)/log(2-lambda_U)
+      ## The standard copula parameters (recycled if necessary, should not have
+      ## dimension attributed).
+      delta <- as.vector(-log(2)/log(lambdaL))
+      theta <- as.vector(log(2)/log(2-lambdaU))
 
       ## temporal data
       ## L1 <- 1-(1-u1)^theta
@@ -61,7 +58,7 @@ logLikCpl <- function(u, CplNM, parCpl, staticArgs)
       out <- logCpl
       ## if(is.infinite(out)) browser()
 
-      }
+    }
   else if(tolower(CplNM) == "gaussian")
     {
       ## The Gaussian copula

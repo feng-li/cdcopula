@@ -47,7 +47,7 @@ require("mvtnorm")
 ###----------------------------------------------------------------------------
 
 ## SHORT MODEL DESCRIPTION
-ModelDescription <- "bb7_copula_no_variable_selection"
+ModelDescription <- "bb7_copula_with_variable_selection"
 
 ## COPULA DENSITY NAME AND PARAMETERS
 CplNM <- "BB7"
@@ -96,7 +96,7 @@ Mdl.parLink[[1]][[2]] <- "log"
 Mdl.parLink[[2]][[1]] <- "identity"
 Mdl.parLink[[2]][[2]] <- "log"
 Mdl.parLink[[3]][[1]] <- "logit"
-Mdl.parLink[[3]][[2]] <- "logit"
+Mdl.parLink[[3]][[2]] <- "glogit"
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -194,7 +194,10 @@ LPDS.sampleProp = 0.05
 ## PRIOR FOR THE COPULA PARAMETERS
 ##-----------------------------------------------------------------------------
 ## NOTE: The variable are recycled if needed. For example indicators$prob can
-## be a scaler or a vector with same length of variable section candidates.
+## be a scaler or a vector with same length of variable section
+## candidates. There might be connections between parameters in the models but
+## is will not affect the prior settings on the coefficients as long as we use
+## a dynamic link function.
 
 priArgs <- MdlDataStruc
 priArgs[[1]][[1]] <-

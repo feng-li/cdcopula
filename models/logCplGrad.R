@@ -1,14 +1,14 @@
 ##' Gradient for log copula function
 ##'
-##' 
+##'
 ##' @title Log copula gradient
-##' @param CplNM 
-##' @param u 
-##' @param parCpl 
-##' @param cplCaller 
-##' @param staticArgs 
-##' @return 
-##' @references Li 2012 
+##' @param CplNM
+##' @param u
+##' @param parCpl
+##' @param cplCaller
+##' @param staticArgs
+##' @return
+##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: ; Current: .
 logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
@@ -17,17 +17,16 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
       {
         ## The name of marginal model
         MargisNM <- dimnames(u)[[2]]
-  
-        ## Subtract the parameters list. 
+        nObs <- dim(u)[1]
+        ## Subtract the parameters list.
         tau <- parCpl[["tau"]]
         lambdaL <- parCpl[["lambdaL"]]
-
-        ## Transform the parameters into the standard form
-        parOut <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
+        lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
                                 tauTabular = staticArgs[["tauTabular"]])
-        delta <- as.vector(parOut[["delta"]])
-        theta <- as.vector(parOut[["theta"]])
-        
+        ## The standard copula parameters (recycled if necessary, should be a vector).
+        delta <- as.vector(-log(2)/log(lambdaL))
+        theta <- as.vector(log(2)/log(2-lambdaU))
+
         if(tolower(cplCaller) == "lambdal")
           {
             ## Gradient w.r.t delta
@@ -42,13 +41,13 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                     2*log(L1)/delta^2+
                       (L1^(1/delta)-(1+delta)*L1^(1/delta)*
                        (log(L1)-delta*Delta1/L1)/delta^2-1)/
-                         ((1+delta)*L1^(1/delta)-delta-1/theta) 
-            
+                         ((1+delta)*L1^(1/delta)-delta-1/theta)
+
             ## Gradient w.r.t. lambdaL
             gradCpl.lambdaL <- 2^(-1/delta)*log(2)/delta^2
 
             ## The chain gradient
-            out <- logGradCpl.delta/gradCpl.lambdaL 
+            out <- logGradCpl.delta/gradCpl.lambdaL
           }
         else if(tolower(cplCaller) == "tau")
           {
@@ -73,32 +72,32 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             gradCpl.tau <- kendalltauGrad(copula, theta, delta, parCaller)
 
             ## The chain gradient
-            out <- logGradCpl.theta*gradCpl.tau 
+            out <- logGradCpl.theta*gradCpl.tau
           }
-        else 
+        else if(tolower(cplCaller) == "u")
           {
             ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are
             ## exchangeable which means the expression for the gradient w.r.t u
             ## and v are the same.
 
-            if(tolower(cplCaller) == tolower(MargisNM[1]) ||
-               tolower(cplCaller) == tolower(MargisNM[2]))
-              {
-                T1 <- 1-(1-u)^theta
-                T2 <- (1-u)^(theta-1)
-                L1 <- rowSums(T1^(-delta))-1
-                
-                Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
-                Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
-                
-                gradCpl.u <- (1+delta)*theta*Delta4.A+
-                  (1-theta)*(colSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
-                    (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
-                      (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
-                        ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
-                
-                out <- gradCpl.u
-              }
+            T1 <- 1-(1-u)^theta
+            T2 <- (1-u)^(theta-1)
+            L1 <- rowSums(T1^(-delta))-1
+
+            Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
+            Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
+
+            gradCpl.u <- (1+delta)*theta*Delta4.A+
+              (1-theta)*(colSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
+                (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
+                  (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
+                    ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
+
+            out <- gradCpl.u
+          }
+        else
+          {
+            stop("No such copula parameter!")
           }
       }
     return(out)

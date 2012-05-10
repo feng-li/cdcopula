@@ -78,7 +78,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
           ## Update the parameters for the updated part
           Mdl.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
                                           beta = Mdl.beta[[i]][[j]],
-                                          link = Mdl.parLink[[i]][[j]])
+                                          link = Mdl.parLink[[i]][[j]],
+                                          extArgs = )
         }
 
       ## Marginal Update available
@@ -99,8 +100,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
-  browser()
-  logLikCpl <- logLikCpl(u = Mdl.u,
+  Mdl.logLikCpl <- logLikCpl(u = Mdl.u,
                          CplNM = CplNM,
                          parCpl = Mdl.par[[CplNM]],
                          staticArgs = staticArgs) # n-by-1
@@ -121,15 +121,15 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
 
-  logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
-  logPost <- sum(unlist(logPri)) + sum(logLikCpl) + sum(Mdl.d)
+  Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
+  Mdl.logPost <- sum(unlist(Mdl.logPri)) + sum(Mdl.logLikCpl) + sum(Mdl.d)
 
   staticArgs[["Mdl.logPri"]] <- Mdl.logPri
   staticArgs[["Mdl.par"]] <- Mdl.par
   staticArgs[["Mdl.u"]] <- Mdl.u
   staticArgs[["Mdl.d"]] <- Mdl.d
 
-  out <- list(logPost = logPost,
+  out <- list(Mdl.logPost = Mdl.logPost,
               staticArgs = staticArgs)
 
   return(out)

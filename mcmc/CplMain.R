@@ -43,7 +43,6 @@ CplMain <- function(configfile)
   MdlMCMC.par <- vector("list", nCrossFold)
   MdlMCMC.AccPbeta <- vector("list", nCrossFold)
 
-
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
 ### This section should be in a function so that it can be called easily for
@@ -132,10 +131,10 @@ CplMain <- function(configfile)
                         parUpdate = parUpdate,
                         staticArgs = staticArgs)[["staticArgs"]]
 
-  browser()
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
   CompNM <- names(MdlDataStruc)
+
   ## The MCMC loops
   for(iIter in 1:nIter)
     {
@@ -151,9 +150,9 @@ CplMain <- function(configfile)
                   parUpdate[[CompCurr]][[parCurr]] <- TRUE
 
                   ## Call the mail Metropolis--Hastings
-                  algArgs <- propArgs[[CompCurr]][[parCurr]][["algorithm"]]
+                  algmArgs <- propArgs[[CompCurr]][[parCurr]][["algorithm"]]
 
-                  if(tolower(algArgs[["type"]]) == "gnewtonmove")
+                  if(tolower(algmArgs[["type"]]) == "gnewtonmove")
                     {
                       ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
                       MHOut <- MHWithGNewton(
@@ -162,8 +161,8 @@ CplMain <- function(configfile)
                                  varSelArgs = varSelArgs,
                                  priArgs = priArgs,
                                  parUpdate = parUpdate,
-                                 Mdl.Y = Mdl.Y,
-                                 Mdl.X = Mdl.X,
+                                 Mdl.Y = MdlTraining.Y,
+                                 Mdl.X = MdlTraining.X,
                                  Mdl.beta = Mdl.beta,
                                  Mdl.betaIdx = Mdl.betaIdx,
                                  MargisTypes = MargisTypes,
@@ -188,7 +187,7 @@ CplMain <- function(configfile)
 ### mcmlapply() function in the parallel package in R, we write the sequential
 ### code with malapply().
 ### ----------------------------------------------------------------------------
-  browser()
+
 
   parallel <- FALSE
   if(parallel == TRUE)

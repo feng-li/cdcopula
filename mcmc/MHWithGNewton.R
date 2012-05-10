@@ -1,39 +1,39 @@
 ##' Metropolis–Hastings algorithm with K-step Newton method with variable
 ##' selection.
 ##'
-##' @title 
-##' @param CplNM 
-##' @param Mdl.Y 
-##' @param Mdl.X 
-##' @param Mdl.beta 
-##' @param Mdl.betaIdx 
-##' @param Mdl.parLink 
-##' @param parUpdate 
-##' @param priArgs 
-##' @param varSelArgs 
-##' @param propArgs 
-##' @param MargisTypes 
-##' @param staticArgs 
-##' @return 
-##' @references 
+##' @title
+##' @param CplNM
+##' @param Mdl.Y
+##' @param Mdl.X
+##' @param Mdl.beta
+##' @param Mdl.betaIdx
+##' @param Mdl.parLink
+##' @param parUpdate
+##' @param priArgs
+##' @param varSelArgs
+##' @param propArgs
+##' @param MargisTypes
+##' @param staticArgs
+##' @return
+##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011;
 ##'       Current: Wed Feb 01 16:09:04 CET 2012.
 ##' DEPENDS: mvtnorm
 MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                          propArgs, MargisTypes, staticArgs)          
+                          propArgs, MargisTypes, staticArgs)
 {
 
 ###----------------------------------------------------------------------------
-### Variable Selection proposal
+### VARIABLE SELECTION PROPOSAL
 ### TODO: Write a general variable selection scheme
 ###----------------------------------------------------------------------------
-  
+
   ## The updating component parameter chain
-  cp <- parCaller(parUpdate)
-  CompCurr <- cp[1]
-  parCurr <- cp[2]
+  chainCaller <- parCaller(parUpdate)
+  CompCurr <- chainCaller[1]
+  parCurr <- chainCaller[2]
 
   ## The current variable selection indicators
   betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
@@ -41,27 +41,27 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## Randomly propose a subset TODO: A general proposal function
   varSelCand <- varSelArgs[[CompCurr]][[parCurr]]$cand
   IdxArgs <- propArgs[[CompCurr]][[parCurr]][["indicators"]]
-  
-  betaIdxProp <- betaIdxCurr # The proposal base line
-
-  ## Binomial proposal a small subset
-  betaIdxPropCand <- which(rbinom(n = length(varSelCand) , size = 1,
-                             prob = IdxArgs$prob) == 1)
-
-  ## Special case to make sure at least one variable is proposed a change
-  if(length(betaIdxPropCand) == 0)
+  betaIdxProp <- betaIdxCurr # The proposal is base on current status
+  if(IdxArgs$type == "binom")
     {
-      betaIdxPropCand <- sample(varSelCand, 1)
+      ## Binomial proposal a small subset
+      betaIdxPropCand <- which(rbinom(n = length(varSelCand) , size = 1,
+                                      prob = IdxArgs$prob) == 1)
+      ## Special case to make sure at least one variable is proposed a change
+      if(length(betaIdxPropCand) == 0)
+        {
+          betaIdxPropCand <- sample(varSelCand, 1)
+        }
     }
 
-  ## The proposed variable selection indicators 
+  ## The proposed variable selection indicators
   betaIdxProp[betaIdxPropCand] <- 1 - betaIdxCurr[betaIdxPropCand]
-  
+
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
-###----------------------------------------------------------------------------  
+###----------------------------------------------------------------------------
 
-  ## Newton method to approach the posterior for the current draw 
+  ## Newton method to approach the posterior for the current draw
   GNewton1 <- GNewtonMove(propArgs = propArgs,
                           varSelArgs = varSelArgs,
                           priArgs = priArgs,
@@ -73,11 +73,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink = Mdl.parLink,
                           Mdl.beta = Mdl.beta,
                           Mdl.betaId = Mdl.betaIdx,
-                          MargisTypes = MargisTypes, 
-                          staticArgs = staticArgs)   
-
+                          MargisTypes = MargisTypes,
+                          staticArgs = staticArgs)
+  browser()
   ## The information for proposed density via K-step Newton's method
-  param.cur.prop <- GNewton1$param # mean information 
+  param.cur.prop <- GNewton1$param # mean information
   HessObs.cur.prop <- GNewton1$HessObs # variance information
   invHessObs.cur.prop <- GNewton1$HessObsInv
 
@@ -92,20 +92,20 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       ## Propose a draw from multivariate t-distribution based on the proposed
       ## An idea (out of loud) : Generate a ## matrix of param. Select the one
-      ## that give max acceptance probability 
+      ## that give max acceptance probability
       prop.df = NA
       param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop,
-                         df = prop.df) + param.cur.prop  
-      
-      ## The jump density from the proposed draw 
+                         df = prop.df) + param.cur.prop
+
+      ## The jump density from the proposed draw
       logjump.cur2prop <- dmvt(x = param.prop - param.cur.prop,
                                sigma = -HessObs.cur.prop,
-                               df = prop.df)  
+                               df = prop.df)
     }
-  
+
 ###----------------------------------------------------------------------------
-### 
-###----------------------------------------------------------------------------  
+###
+###----------------------------------------------------------------------------
 
   if(any(is.na(param.prop))) # Previous proposal unsuccessful
     {
@@ -113,7 +113,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     }
   else # all are right
     {
-      ## Newton method to approach the posterior for the proposed draw 
+      ## Newton method to approach the posterior for the proposed draw
       GNewton2 <- GNewtonMove(propArgs = propArgs,
                               varSelArgs = varSelArgs,
                               priArgs = priArgs,
@@ -125,10 +125,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               Mdl.parLink = Mdl.parLink,
                               Mdl.beta = Mdl.beta,
                               Mdl.betaId = Mdl.betaIdx,
-                              staticArgs = staticArgs)     
+                              staticArgs = staticArgs)
 
       ## The information for proposed density via K-step Newton's method
-      param.prop.prop <- GNewton2$param 
+      param.prop.prop <- GNewton2$param
       HessObs.prop.prop <- GNewton2$hessObs
       invHessObs.prop.prop <- GNewton2$invHessObs
     }
@@ -177,31 +177,31 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               parUpdate = parUpdate,
                               staticArgs = staticArgs)
     }
-  
+
 ###----------------------------------------------------------------------------
-### Compute the MH ratio and make decision to update or keep current draw. 
-###----------------------------------------------------------------------------  
+### Compute the MH ratio and make decision to update or keep current draw.
+###----------------------------------------------------------------------------
 
   ## compute the MH ratio.
   log.r <- logpost.prop - logpost.cur + logjump.prop2cur - logjump.cur2prop
-  r <- exp(log.r) 
+  r <- exp(log.r)
 
   ## the acceptance probability
-  accept.prob <- min(1, r) 
+  accept.prob <- min(1, r)
 
-  if(!is.na(accept.prob) && runif(1) < accept.prob) 
+  if(!is.na(accept.prob) && runif(1) < accept.prob)
     {
       param.out <- param.prop  # keep update
     }
-  else 
+  else
     {
       param.out <- param.cur # keep current
       accept.prob <- 0 # set acceptance probs to zero.
     }
-  
+
 ###----------------------------------------------------------------------------
 ### The output
-###----------------------------------------------------------------------------  
+###----------------------------------------------------------------------------
   out <- list(param.out = param.out, accept.prob = accept.prob)
 
   return(out)
