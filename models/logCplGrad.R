@@ -10,7 +10,8 @@
 ##' @return
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: ; Current: .
+##' @note Created: Fri May 11 12:42:20 CEST 2012;
+##'       Current: Fri May 11 12:42:30 CEST 2012.
 logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   {
     if(tolower(CplNM) == "bb7")
@@ -22,7 +23,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
         tau <- parCpl[["tau"]]
         lambdaL <- parCpl[["lambdaL"]]
         lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
-                                tauTabular = staticArgs[["tauTabular"]])
+                                 tauTabular = staticArgs[["tauTabular"]])
         ## The standard copula parameters (recycled if necessary, should be a vector).
         delta <- as.vector(-log(2)/log(lambdaL))
         theta <- as.vector(log(2)/log(2-lambdaU))

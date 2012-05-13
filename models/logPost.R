@@ -54,13 +54,15 @@
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
-##'       Current: Tue Jan 10 17:10:10 CET 2012.
+##'       Current: Thu May 10 20:17:09 CEST 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)
 {
+  ## The pre-saved information
   Mdl.par <- staticArgs[["Mdl.par"]]
   Mdl.u <- staticArgs[["Mdl.u"]]
   Mdl.d <- staticArgs[["Mdl.d"]]
+  Mdl.logPri <- staticArgs[["Mdl.logPri"]]
 
 ###----------------------------------------------------------------------------
 ### THE MARGINAL LIKELIHOOD
@@ -68,39 +70,36 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ### still working.
 ###----------------------------------------------------------------------------
 
+### Update Mdl.par
+  Mdl.par <- CplLinkConstrain(CplNM = CplNM,
+                              Mdl.X = Mdl.X,
+                              Mdl.parLink = Mdl.parLink,
+                              Mdl.beta = Mdl.beta,
+                              parUpdate = parUpdate,
+                              Mdl.par = Mdl.par)
+
+### Update marginal pdf and cdf
   CompNM <- names(Mdl.beta)
   MargisNM <- CompNM[CompNM != CplNM]
-  for(i in CompNM)
+  for(CompCaller in MargisNM)
     {
-      parUpdateNM <- names(parUpdate[[i]] == TRUE)
-      for(j in parUpdateNM)
-        {
-          ## Update the parameters for the updated part
-          Mdl.par[[i]][[j]] <- parMeanFun(X = Mdl.X[[i]][[j]],
-                                          beta = Mdl.beta[[i]][[j]],
-                                          link = Mdl.parLink[[i]][[j]],
-                                          extArgs = )
-        }
-
+      parUpdateNM <- names(parUpdate[[CompCaller]] == TRUE)
       ## Marginal Update available
-      if(length(parUpdateNM)>0 &&
-         tolower(i) != tolower(CplNM)) # updating marginal parameters
+      if(length(parUpdateNM)>0)
         {
-          MargisOut <- MargisModels(Mdl.Y = Mdl.Y,
-                                    MargisTypes = MargisTypes,
-                                    parMargis = Mdl.par[MargisNM],
-                                    whichMargis = i,
-                                    staticArgs = staticArgs)
+          MargiOut <- MargiModel(y = Mdl.Y[[CompCaller]],
+                                 type = MargisTypes[CompCaller],
+                                 par = Mdl.par[CompCaller])
 
-          Mdl.u[, i] <- MargisOut[["Mdl.u"]][, i] # the marginal cdf
-          Mdl.d[, i] <- MargisOut[["Mdl.d"]][, i] # the marginal pdf
+          Mdl.u[, CompCaller] <- MargiOut[["u"]] # the marginal cdf
+          Mdl.d[, CompCaller] <- MargiOut[["d"]] # the marginal pdf
         }
     }
 
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
-  Mdl.logLikCpl <- logLikCpl(u = Mdl.u,
+  Mdl.logLikCpl <- logCplLik(u = Mdl.u,
                          CplNM = CplNM,
                          parCpl = Mdl.par[[CplNM]],
                          staticArgs = staticArgs) # n-by-1
@@ -114,7 +113,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                           Mdl.betaIdx = Mdl.betaIdx,
                           varSelArgs = varSelArgs,
                           priArgs = priArgs,
-                          Mdl.logPri = staticArgs[["Mdl.logPri"]],
+                          Mdl.logPri = Mdl.logPri,
                           parUpdate = parUpdate)
 
 ###----------------------------------------------------------------------------

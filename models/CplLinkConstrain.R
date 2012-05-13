@@ -8,40 +8,52 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 09:34:09 CEST 2012;
 ##'       Current: Fri May 11 09:34:16 CEST 2012.
-CplLinkConstrain <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta, parUpdate,
-                             Mdl.par)
+##' TODO: Write it in a more elegant way
+CplLinkConstrain <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
+                             parUpdate, Mdl.par)
   {
     if(tolower(CplNM) == "bb7")
       {
         ## BB7 copula (tau, lambdaL) representation requires that
         ## 0 < lambdaL < 2^(1/2-1/(2tau)) See Li 2012 for the proof.
+        ## The condition should be calculated in the end for safety.
 
         CompNM <- names(Mdl.beta)
+        ## First update all the independent linkages
         for(CompCurr in CompNM)
           {
             parUpdateNM <- names(parUpdate[[CompCurr]] == TRUE)
             for(ParCurr in parUpdateNM)
               {
                 ## Check if particular constrain is needed.
-                if(tolower(ParCurr) == "lambdaL")
-                  {
-                    tau <- Mdl.par[[CplNM]][["tau"]]
-                    a <- 0
-                    b <- 2^(1/2-1/(2*tau))
-                    extArgs <- list(a = a, b = b)
-                  }
-                else
+                if(!(tolower(ParCurr) %in% c("lambdaL")))
                   {
                     extArgs <- NA
+                    ## Update the parameters for the updated part
+                    Mdl.par[[CompCurr]][[ParCurr]] <-
+                      parMeanFun(X = Mdl.X[[CompCurr]][[ParCurr]],
+                                 beta = Mdl.beta[[CompCurr]][[ParCurr]],
+                                 link = Mdl.parLink[[CompCurr]][[ParCurr]],
+                                 extArgs = extArgs)
                   }
-
-                ## Update the parameters for the updated part
-                Mdl.par[[CompCurr]][[ParCurr]] <-
-                  parMeanFun(X = Mdl.X[[CompCurr]][[ParCurr]],
-                             beta = Mdl.beta[[CompCurr]][[ParCurr]],
-                             link = Mdl.parLink[[CompCurr]][[ParCurr]],
-                             extArgs = extArgs)
               }
+          }
+
+        ## Check if update the conditional parameters
+        ## Special case for "lambdaL" as it is conditional on "tau"
+        if(parUpdate[[CpmNM]][["tau"]] == TRUE ||
+           parUpdate[[CpmNM]][["lambdaL"]] == TRUE)
+          {
+            tau <- Mdl.par[[CplNM]][["tau"]]
+            a <- 0 ## The lower bound of generalized logit link
+            b <- 2^(1/2-1/(2*tau)) ## the upper bound
+
+            extArgs <- list(a = a, b = b)
+            Mdl.par[[CplNM]][["lambdaL"]] <-
+              parMeanFun(X = Mdl.X[[CplNM]][["lambdaL"]],
+                         beta = Mdl.beta[[CplNM]][["lambdaL"]],
+                         link = Mdl.parLink[[CplNM]][["lambdaL"]],
+                         extArgs = extArgs)
           }
 
         out <- Mdl.par

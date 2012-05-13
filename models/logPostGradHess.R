@@ -37,11 +37,10 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                        chainCaller = chainCaller)
 
       cplCaller <- "u" # The Copula parameter caller is the marginal CDF
-
-      staticArgs[["Mdl.u"]] <- MargisModels(
-                                 Mdl.Y = Mdl.Y,
-                                 MargisTypes = MargisTypes,
-                                 parMargis = parMargis,
+      staticArgs[["Mdl.u"]] <- MargiModel(
+                                 y = Mdl.Y[[CompCaller]],
+                                 type = MargisTypes[[CompCaller]],
+                                 pa = parMargis,
                                  whichMargis = CompCaller,
                                  staticArgs = staticArgs)[["Mdl.u"]]
     }
@@ -50,8 +49,12 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       ## Only update the gradient for copula parameters
       ## Gradient Fraction in the copula component.
       FracGradObs <- 1
-      cplCaller <- chainCaller[2]
+      cplCaller <- parCaller
     }
+
+
+
+
 
   ## The gradient for the copula function. n-by-1
   logCplGradObs <- logCplGrad(
@@ -63,8 +66,11 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 
   ## The gradient for the link function n-by-1
   LinkGradObs <-  parMeanFunGrad(
-                    par = Mdl.par[[chainCaller[1]]][[chainCaller[2]]],
-                    link = Mdl.parLink[[chainCaller[1]]][[chainCaller[2]]])
+                    par = Mdl.par[[CompCaller]][[parCaller]],
+                    link = Mdl.parLink[[CompCaller]][[parCaller]])
+
+
+
 
   ## The gradient and Hessian for the likelihood
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs

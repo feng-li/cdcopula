@@ -38,6 +38,8 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         for(j in names(MdlDataStruc[[i]]))
           {
             Intercept <- ifelse(MdlDGP.intercept[[i]][[j]], TRUE, FALSE)
+
+            ## FIXME: Conditional link function
             ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
                                   link = MdlDGP.parLink[[i]][[j]])
 

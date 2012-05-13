@@ -1,5 +1,5 @@
 
-./config/config.DGPCpl.R,212
+./config/config.DGPCpl.R,244
 CCplNM6,261
 CCplParNM7,276
 MMargisNM10,360
@@ -7,37 +7,33 @@ MMargisTypes11,396
 MMargisParNM12,437
 MMdlDataStruc21,686
 nnObs24,763
-MMdl.parLink27,814
-MMdlDGP.par42,1486
-MMdlDGP.beta63,2487
-ttauTabular78,2986
+MMdlDGP.parLink27,814
+MMdlDGP.par43,1625
+MMdlDGP.intercept68,2740
+MMdlDGP.nCovs96,3748
+ttauTabular111,4222
 
-./config/config.R,534
+./config/config.R,429
 ppathLibRoot32,1110
 MModelDescription50,1726
-CCplNM53,1820
-CCplParNM54,1835
-MMargisNM57,1919
-MMargisTypes58,1955
-MMargisParNM59,1996
-MMdlDataStruc68,2245
-ttauTabular71,2365
-MMdl.X82,2790
-MMdl.parLink91,3084
-vvarSelArgs103,3501
-ttauTabular118,4151
-nnIter125,4429
-bburnin128,4459
-ssave.output134,4675
-ttrack.MCMC137,4716
-MMCMCUpdate140,4828
-ppropArgs149,5086
-ccrossValidArgs177,6369
-ccrossValidIdx183,6683
-nnCrossFold184,6736
-LLPDS.sampleProp187,6818
-ppriArgs197,7212
-bbetaInit262,9983
+CCplNM53,1822
+CCplParNM54,1837
+MMargisNM57,1921
+MMargisTypes58,1957
+MMargisParNM59,1998
+MMdlDataStruc68,2247
+MMdl.parLink93,3328
+vvarSelArgs105,3746
+nnIter124,4547
+bburnin127,4577
+ssave.output134,4873
+ttrack.MCMC139,5057
+MMCMCUpdate142,5113
+ppropArgs151,5371
+ccrossValidArgs183,6949
+LLPDS.sampleProp188,7111
+ppriArgs202,7759
+bbetaInit267,10530
 
 ./flutils/stable/dbg/close.all.R,17
 cclose.all2,32
@@ -73,25 +69,25 @@ ddiwishart77,1813
 sstock2covariates20,877
 
 ./flutils/stable/mcmc/data.partition.R,24
-ddata.partition13,359
+ddata.partition13,353
 
 ./flutils/stable/mcmc/HessApprox.R,21
 hhessApprox26,1024
 
 ./flutils/stable/mcmc/parLinkFun.R,20
-pparLinkFun12,404
+pparLinkFun13,469
 
 ./flutils/stable/mcmc/parMeanFun.R,20
-pparMeanFun12,463
+pparMeanFun12,461
 
 ./flutils/stable/mcmc/parMeanFunGrad.R,24
-pparMeanFunGrad13,474
+pparMeanFunGrad14,550
 
 ./flutils/stable/mcmc/save.all.R,18
 ssave.all12,256
 
 ./flutils/stable/mcmc/set.crossvalid.R,24
-sset.crossvalid11,247
+sset.crossvalid12,300
 
 ./flutils/stable/optim/bfgsi.R,12
 bbfgsi1,0
@@ -187,29 +183,35 @@ ggrid215,313
 ./flutils/stable/sourceDir.R,19
 ssourceDir17,841
 
+./flutils/stable/splines/d.matrix.R,19
+dd.matrix38,1850
+
+./flutils/stable/splines/make.knots.R,21
+mmake.knots29,1197
+
 ./flutils/stable/systools/attached.packages.R,27
 aattached.packages10,283
 
 ./flutils/stable/systools/autoupdate.packages.R,29
 aautoupdate.packages14,413
 
-./flutils/stable/systools/ls2.R,10
-lls21,0
-
 ./flutils/stable/systools/warningsClear.R,20
 wwarningsClear1,0
 
 ./mcmc/CplMain.R,17
-CCplMain15,466
+CCplMain15,462
 
 ./mcmc/GNewtonMove.R,21
-GGNewtonMove30,983
+GGNewtonMove30,969
 
 ./mcmc/MHWithGNewton.R,23
-MMHWithGNewton23,589
+MMHWithGNewton23,574
 
 ./models/any2any.R,17
 aany2any12,303
+
+./models/CplLinkConstrain.R,26
+CCplLinkConstrain11,326
 
 ./models/initDataStruc.R,23
 iinitDataStruc14,376
@@ -230,28 +232,28 @@ kkendalltauInv18,832
 kkendalltauTabular16,747
 
 ./models/logCplGrad.R,20
-llogCplGrad14,320
+llogCplGrad15,380
 
-./models/logLikCpl.R,19
-llogLikCpl14,562
+./models/logCplLik.R,19
+llogCplLik14,557
 
 ./models/logPost.R,18
-llogPost58,2235
+llogPost58,2236
 
 ./models/logPostGradHess.R,25
 llogPostGradHess17,643
 
-./models/logPriGradHess.R,24
-llogPriGradHess23,707
-
 ./models/logPriors.R,19
 llogPriors18,607
 
-./models/MargisGrad.R,20
-MMargisGrad15,536
+./models/logPriorsGradHess.R,27
+llogPriorsGradHess23,698
 
-./models/MargisModels.R,22
-MMargisModels19,776
+./models/MargiModel.R,20
+MMargiModel17,686
+
+./models/MargiModelGrad.R,24
+MMargiModelGrad15,529
 
 ./models/parCaller.R,16
 pparCaller1,0
@@ -260,13 +262,13 @@ pparCaller1,0
 ddlogprior29,1189
 
 ./simul/cCpl.R,15
-ccCpl30,1293
+ccCpl30,1286
 
 ./simul/DGPCpl.R,16
-DDGPCpl16,596
+DDGPCpl18,633
 
 ./simul/DGPlm.R,15
-DDGPlm19,724
+DDGPlm21,761
 
 ./simul/rps.R,13
 rrps14,451
@@ -278,13 +280,10 @@ rruCpl16,679
 uu2qtl1,0
 
 ./simul/uCpl.R,14
-uuCpl19,585
+uuCpl19,580
 
 ./tests/chainFracCplGrad.R,23
 cchainFracCplGrad1,0
-
-./tests/d.matrix.R,19
-dd.matrix38,1850
 
 ./tests/logCplPri.R,19
 llogCplPri11,330
@@ -294,9 +293,6 @@ llogCplPriGrad1,0
 
 ./tests/logLikMargis.R,22
 llogLikMargis13,458
-
-./tests/make.knots.R,21
-mmake.knots29,1206
 
 ./tests/parCplSTD.R,19
 pparCplSTD11,240
