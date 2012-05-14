@@ -17,7 +17,6 @@
 logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                             Mdl.beta, Mdl.betaIdx, parUpdate, priArgs, staticArgs)
 {
-  browser()
   ## The updating chain
   chainCaller <- parCaller(parUpdate)
   CompCaller <- chainCaller[1]
@@ -29,18 +28,20 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 ###----------------------------------------------------------------------------
   if(tolower(CompCaller) != tolower(CplNM))
     {
+      yCurr <- Mdl.Y[[CompCaller]]
+      parCurr <- Mdl.par[[CompCaller]]
+      typeCurr <- MargisTypes[[CompCaller]]
+
       ## Gradient Fraction in the marginal component. n-by-1
-      FracGradObs <- MargisGrad(
-                       parMargis = parMargis,
-                       Mdl.Y = Mdl.Y,
-                       MargisTypes = MargisTypes,
-                       chainCaller = chainCaller)
+      FracGradObs <- MargiModelGrad(par = parCurr,
+                                    y = yCurr,
+                                    type = typeCurr,
+                                    parCaller = parCaller)
 
       cplCaller <- "u" # The Copula parameter caller is the marginal CDF
-      staticArgs[["Mdl.u"]] <- MargiModel(
-                                 y = Mdl.Y[[CompCaller]],
-                                 type = MargisTypes[[CompCaller]],
-                                 par = Mdl.par[[CompCaller]])[["u"]]
+      staticArgs[["Mdl.u"]] <- MargiModel(y = yCurr,
+                                          type = typeCurr,
+                                          par = parCurr)[["u"]]
     }
   else
     {
@@ -68,13 +69,13 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 ### GRADIENT AND HESSIAN IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
 
-  logPriGradHessObs <- logPriGradHess(Mdl.X = Mdl.X,
-                                      Mdl.parLink = Mdl.parLink,
-                                      Mdl.beta = Mdl.beta,
-                                      Mdl.betaIdx = Mdl.betaIdx,
-                                      varSelArgs = varSelArgs,
-                                      priArgs = priArgs,
-                                      chainCaller = chainCaller)
+  logPriGradHessObs <- logPriorsGradHess(Mdl.X = Mdl.X,
+                                         Mdl.parLink = Mdl.parLink,
+                                         Mdl.beta = Mdl.beta,
+                                         Mdl.betaIdx = Mdl.betaIdx,
+                                         varSelArgs = varSelArgs,
+                                         priArgs = priArgs,
+                                         chainCaller = chainCaller)
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT

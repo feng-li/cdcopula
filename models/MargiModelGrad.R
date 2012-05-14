@@ -11,35 +11,15 @@
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri Oct 21 18:17:01 CEST 2011;
-##'       Current: Tue Nov 22 17:27:28 CET 2011.
-MargiModelGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
+##'       Current: Mon May 14 19:07:18 CEST 2012.
+MargiModelGrad <- function(y, par, type, parCaller)
   {
-    ## Name of marginal model
-    MargisNM <- names(Mdl.Y)
 
-    ## Which marginal model is calling
-    CompCaller <- chainCaller[1]
-    parCaller <- chainCaller[2]
-
-    ## Check if the inputs are all matched.
-    if(length(MargisNM) != length(MargisTypes))
-      {
-        stop("The length of marginal input does not match the length of marginal types. I suspected you have screwed things up.")
-      }
-
-    ## Types of marginal density
-    margiType <- MargisTypes[[CompCaller]]
-
-###----------------------------------------------------------------------------
-### The gradient of the marginal density
-###----------------------------------------------------------------------------
-
-    if(tolower(margiType) == "gaussian")
+    if(tolower(type) == "gaussian")
       {
         ## Subtract parameters and data
-        mu <- parMargis[[CompCaller]][["mu"]]
-        sigma <- parMargis[[CompCaller]][["sigma"]]
-        y <- Mdl.Y[[CompCaller]]
+        mu <- par[["mu"]]
+        sigma <- par[["sigma"]]
 
         ## Calculate the log density TODO: call from log likelihood?
         logMargiDens <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
@@ -65,7 +45,6 @@ MargiModelGrad <- function(parMargis, Mdl.Y, MargisTypes, chainCaller)
       {
         stop("This marginal density is not implemented!")
       }
-
 
     ## The output
     return(out)
