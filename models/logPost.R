@@ -83,16 +83,16 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
   MargisNM <- CompNM[CompNM != CplNM]
   for(CompCaller in MargisNM)
     {
-      parUpdateNM <- names(parUpdate[[CompCaller]] == TRUE)
+      CompUpdate <- any(parUpdate[[CompCaller]] == TRUE)
       ## Marginal Update available
-      if(length(parUpdateNM)>0)
+      if(CompUpdate)
         {
-          MargiOut <- MargiModel(y = Mdl.Y[[CompCaller]],
+          Margi.ud <- MargiModel(y = Mdl.Y[[CompCaller]],
                                  type = MargisTypes[CompCaller],
-                                 par = Mdl.par[CompCaller])
+                                 par = Mdl.par[[CompCaller]])
 
-          Mdl.u[, CompCaller] <- MargiOut[["u"]] # the marginal cdf
-          Mdl.d[, CompCaller] <- MargiOut[["d"]] # the marginal pdf
+          Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
+          Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
         }
     }
 

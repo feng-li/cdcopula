@@ -31,6 +31,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                         parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                         Mdl.betaIdx, Mdl.parLink, MargisTypes, staticArgs)
 {
+
   ## The updating component parameter chain
   cp <- parCaller(parUpdate)
   CompCurr <- cp[1]

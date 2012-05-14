@@ -17,11 +17,12 @@
 logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                             Mdl.beta, Mdl.betaIdx, parUpdate, priArgs, staticArgs)
 {
+  browser()
   ## The updating chain
   chainCaller <- parCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
-  Mdl.par <- staticArgs$Mdl.par
+  Mdl.par <- staticArgs[["Mdl.par"]]
 
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
@@ -29,7 +30,6 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
   if(tolower(CompCaller) != tolower(CplNM))
     {
       ## Gradient Fraction in the marginal component. n-by-1
-      parMargis <- Mdl.par[names(MargisTypes)]
       FracGradObs <- MargisGrad(
                        parMargis = parMargis,
                        Mdl.Y = Mdl.Y,
@@ -40,9 +40,7 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       staticArgs[["Mdl.u"]] <- MargiModel(
                                  y = Mdl.Y[[CompCaller]],
                                  type = MargisTypes[[CompCaller]],
-                                 pa = parMargis,
-                                 whichMargis = CompCaller,
-                                 staticArgs = staticArgs)[["Mdl.u"]]
+                                 par = Mdl.par[[CompCaller]])[["u"]]
     }
   else
     {
@@ -51,10 +49,6 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       FracGradObs <- 1
       cplCaller <- parCaller
     }
-
-
-
-
 
   ## The gradient for the copula function. n-by-1
   logCplGradObs <- logCplGrad(

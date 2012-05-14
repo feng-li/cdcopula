@@ -6,19 +6,24 @@ CplLinkConstrainGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
         parCaller <- chainCaller[2]
         if(tolower(parCaller) == "lambdal")
           {
-            ## The conditional links TODO: add link check TODO: link function
-            ## for tau are actually connected with lambdaL. Therefore the whole
-            ## link gradient should be very complicated. Here we assume the
-            ## condition is known a priori which is a bit sloppy,
+            ## The conditional links
 
-            tau <- Mdl.par[[CplNM]][["tau"]]
-            a <- 0 ## The lower bound of generalized logit link
-            b <- 2^(1/2-1/(2*tau)) ## the upper bound
-            extArgs <- list(a = a, b = b)
+            ## TODO: link function for tau are actually connected with
+            ## lambdaL. Therefore the whole link gradient should be very
+            ## complicated. Here we assume the condition is known a priori
+            ## which is a bit sloppy.
 
+            Mdl.parLink[[CompCaller]][[parCaller]]
+            if(tolower(linkCurr) == "glogit")
+              {
+                tau <- Mdl.par[[CplNM]][["tau"]]
+                a <- 0 ## The lower bound of generalized logit link
+                b <- 2^(1/2-1/(2*tau)) ## the upper bound
+                extArgs <- list(a = a, b = b)
+              }
             LinkGradRaw <-  parMeanFunGrad(
                               par = Mdl.par[[CompCaller]][[parCaller]],
-                              link = Mdl.parLink[[CompCaller]][[parCaller]],
+                              link = linkCurr,
                               extArgs = extArgs)
             LinkGradObs <- LinkGradRaw
           }

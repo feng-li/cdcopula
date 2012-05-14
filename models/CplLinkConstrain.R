@@ -26,7 +26,7 @@ CplLinkConstrain <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
             for(ParCurr in parUpdateNM)
               {
                 ## Check if particular constrain is needed.
-                if(!(tolower(ParCurr) %in% c("lambdaL")))
+                if(!(tolower(ParCurr) %in% c("lambdal")))
                   {
                     extArgs <- NA
                     ## Update the parameters for the updated part
@@ -41,21 +41,32 @@ CplLinkConstrain <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 
         ## Check if update the conditional parameters
         ## Special case for "lambdaL" as it is conditional on "tau"
-        if(parUpdate[[CpmNM]][["tau"]] == TRUE ||
-           parUpdate[[CpmNM]][["lambdaL"]] == TRUE)
+        if(parUpdate[[CplNM]][["tau"]] == TRUE ||
+           parUpdate[[CplNM]][["lambdaL"]] == TRUE)
           {
-            tau <- Mdl.par[[CplNM]][["tau"]]
-            a <- 0 ## The lower bound of generalized logit link
-            b <- 2^(1/2-1/(2*tau)) ## the upper bound
+            linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
+            XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
+            betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
 
-            extArgs <- list(a = a, b = b)
+            if(tolower(linkCurr) == "glogit")
+              {
+                tau <- Mdl.par[[CplNM]][["tau"]]
+                a <- 0 ## The lower bound of generalized logit link
+                b <- 2^(1/2-1/(2*tau)) ## the upper bound
+
+                extArgs <- list(a = a, b = b)
+              }
+            else
+              {
+                stop("Such conditional not implemented!")
+              }
+
             Mdl.par[[CplNM]][["lambdaL"]] <-
-              parMeanFun(X = Mdl.X[[CplNM]][["lambdaL"]],
-                         beta = Mdl.beta[[CplNM]][["lambdaL"]],
-                         link = Mdl.parLink[[CplNM]][["lambdaL"]],
+              parMeanFun(X = XCurr,
+                         beta = betaCurr,
+                         link = linkCurr,
                          extArgs = extArgs)
           }
-
         out <- Mdl.par
       }
     return(out)

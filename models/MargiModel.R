@@ -18,9 +18,6 @@ MargiModel <- function(y, type, par)
   {
     if(tolower(type) == "gaussian")
       {
-        ## The observed data in the marginal model
-        y <- Mdl.Y[[i]]
-
         ## The mean and standard deviation for Gaussian density
         mu <- par[["mu"]] # scaler
         sigma <- par[["sigma"]]   # scaler
