@@ -38,7 +38,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## The current variable selection indicators
   betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
 
-  ## Randomly propose a subset TODO: A general proposal function
+  ## Randomly propose a subset
+  ## TODO: A general proposal function
   varSelCand <- varSelArgs[[CompCurr]][[parCurr]]$cand
   IdxArgs <- propArgs[[CompCurr]][[parCurr]][["indicators"]]
   betaIdxProp <- betaIdxCurr # The proposal is base on current status
@@ -72,39 +73,46 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.X = Mdl.X,
                           Mdl.parLink = Mdl.parLink,
                           Mdl.beta = Mdl.beta,
-                          Mdl.betaId = Mdl.betaIdx,
+                          Mdl.betaIdx = Mdl.betaIdx,
                           MargisTypes = MargisTypes,
                           staticArgs = staticArgs)
-  browser()
+
   ## The information for proposed density via K-step Newton's method
   param.cur.prop <- GNewton1$param # mean information
   HessObs.cur.prop <- GNewton1$HessObs # variance information
   invHessObs.cur.prop <- GNewton1$HessObsInv
 
+  browser()
   ## Check if it is a good proposal
   if(any(is.na(HessObs.cur.prop)) ||
-     is(try(chol(-invHessObs.cur.prop), silent=T), "try-error")) # Something is wrong.
+     is(try(chol(-invHessObs.cur.prop), silent=T), "try-error"))
     {
-       logjump.cur2prop <- NaN
-       param.prop <- NaN
+      ## Something is wrong.
+      logjump.cur2prop <- NaN
+      param.prop <- NaN
     }
   else # Continues with the Metropolis-Hastings
     {
       ## Propose a draw from multivariate t-distribution based on the proposed
       ## An idea (out of loud) : Generate a ## matrix of param. Select the one
-      ## that give max acceptance probability
-      prop.df = NA
-      param.prop <- rmvt(n = 1, sigma = -HessObs.cur.prop,
-                         df = prop.df) + param.cur.prop
+      ## that give max acceptance probability.TODO: more general proposal type.
+
+      propArgs.beta <- propArgs[[CompCurr]][[parCurr]][["beta"]]
+      prop.type <- propArgs.beta[["type"]]
+      prop.df <- propArgs.beta[["df"]]
+
+      param.prop <- rmvt(n = 1,
+                         sigma = -HessObs.cur.prop,
+                         df = prop.df) + matrix(param.cur.prop, 1)
 
       ## The jump density from the proposed draw
-      logjump.cur2prop <- dmvt(x = param.prop - param.cur.prop,
+      logjump.cur2prop <- dmvt(x = param.prop - matrix(param.cur.prop, 1),
                                sigma = -HessObs.cur.prop,
-                               df = prop.df)
+                               df = prop.df, log = TRUE)
     }
 
 ###----------------------------------------------------------------------------
-###
+### Jump back via K-steps Newton's method
 ###----------------------------------------------------------------------------
 
   if(any(is.na(param.prop))) # Previous proposal unsuccessful
@@ -124,7 +132,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               Mdl.X = Mdl.X,
                               Mdl.parLink = Mdl.parLink,
                               Mdl.beta = Mdl.beta,
-                              Mdl.betaId = Mdl.betaIdx,
+                              Mdl.betaIdx = Mdl.betaIdx,
+                              MargisTypes = MargisTypes,
                               staticArgs = staticArgs)
 
       ## The information for proposed density via K-step Newton's method
@@ -142,14 +151,14 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else # all are right
     {
       ## The jump density from propose draw to current draw.
-      logjump.prop2cur <- dmvt(x = param.cur - param.prop.prop,
+      logjump.prop2cur <- dmvt(x = param.cur - mattrix(param.prop.prop, 1),
                                sigma = -invHessObs.prop.prop,
-                               df = prop.df)
+                               df = prop.df, log = TRUE)
 
-      Params.prop <- Params
-      Params.prop[[callParam$id]][callParam$subset] <- param.prop
-      Params.cur <- Params
-      Params.cur[[callParam$id]][callParam$subset] <- param.cur
+      ## Params.prop <- Params
+      ## Params.prop[[callParam$id]][callParam$subset] <- param.prop
+      ## Params.cur <- Params
+      ## Params.cur[[callParam$id]][callParam$subset] <- param.cur
 
       ## The log posterior for the proposed draw
       logpost.prop <- logPost(CplNM = CplNM,
@@ -203,6 +212,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### The output
 ###----------------------------------------------------------------------------
   out <- list(param.out = param.out, accept.prob = accept.prob)
+
+  browser()
 
   return(out)
 }

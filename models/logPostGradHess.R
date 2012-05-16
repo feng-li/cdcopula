@@ -5,17 +5,23 @@
 ##' likelihood function, gradient for the prior,  gradient for the linkage.
 ##' @title The gradient for the log posterior
 ##' @param CplNM
+##' @param MargisTypes
 ##' @param Mdl.Y
-##' @param Mdl.par
+##' @param Mdl.X
+##' @param Mdl.parLink
+##' @param Mdl.beta
+##' @param Mdl.betaIdx
 ##' @param parUpdate
-##' @param u
+##' @param priArgs
+##' @param staticArgs
 ##' @return
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
 logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
-                            Mdl.beta, Mdl.betaIdx, parUpdate, priArgs, staticArgs)
+                            Mdl.beta, Mdl.betaIdx, parUpdate, priArgs,
+                            staticArgs)
 {
   ## The updating chain
   chainCaller <- parCaller(parUpdate)

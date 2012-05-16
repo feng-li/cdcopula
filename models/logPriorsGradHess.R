@@ -82,6 +82,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         Idx0Len <- length(Idx0)
         Idx1Len <- length(Idx1)
         betaLen <- length(betaIdxNoIntCurr)
+        SlopCondGrad <- matrix(NA, betaLen)
 
         ## The mean vector for the whole beta vector (recycled if necessary)
         meanVec <- matrix(mean, betaLen, 1)
@@ -104,9 +105,10 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
           {
             ## 1. all are selected. Switch to unconditional prior.
             ## The conditional gradient
-            gradObsLst[["SlopCond"]] <-
-              DensGradHess(B = xCurr, mean = meanVec, covariance = coVar*shrinkage,
-                           grad = TRUE, Hess = FALSE)[["grad"]]
+            SlopCondGrad[Idx1] <- DensGradHess(B = xCurr,
+                                         mean = meanVec,
+                                         covariance = coVar*shrinkage,
+                                         grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else if(Idx0Len > 0 && Idx0Len < betaLen)
           {
@@ -119,16 +121,18 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
               A%*%coVar[Idx0, Idx1, drop = FALSE]
 
             ## The conditional gradient
-            gradObsLst[["SlopCond"]] <-
-              DensGradHess(B = xCurr[Idx1], mean = condMean, covariance = condCovar*shrinkage,
-                           grad = TRUE, Hess = FALSE)[["grad"]]
-
+            SlopCondGrad[Idx1] <- DensGradHess(B = xCurr[Idx1],
+                                         mean = condMean,
+                                         covariance = condCovar*shrinkage,
+                                         grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else
           {
             ## 3. non are selected
-            gradSlopCondObs <- NULL
+            SlopCondGrad[Idx] <- NaN
           }
+
+        gradObsLst[["Slop"]] <- SlopCondGrad
 
         ## -------------The unconditional full Hessian matrix-------------------
 
@@ -145,6 +149,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
     gradObs <- matrix(unlist(gradObsLst))
     HessObs <- block.diag(HessObsLst)
+
 
     out <- list(gradObs = gradObs, HessObs = HessObs)
     return(out)

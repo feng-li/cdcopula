@@ -72,7 +72,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logLikGrad.prop <- gradHess.prop[["logLikGradObs"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
-      ## The alternative variable selection indices for the covariates
+      ## The alternative variable selection indices (TRUE/FALSE) for the covariates
       betaIdxProp2 <- which(betaIdxProp == 1)
       betaIdxCurr2 <- which(betaIdxCurr == 1)
 
@@ -85,10 +85,10 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## use the explicit Hessian whenever possible.
 
       logPriGrad.prop <- gradHess.prop[["logPriGradHessObs"]][["gradObs"]] # pp-by-1
-      logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # p-by-p
+      logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # pp-by-pp
 
       ## The gradient and Hessian subsets due to variable selection
-      logPriGrad.pp <- logPriGrad.prop[betaIdxProp2] # scaler
+      logPriGrad.pp <- logPriGrad.prop[betaIdxProp2, , drop = FALSE] # pp-by-1
       logPriHess.pp <- logPriHess.prop[betaIdxProp2, betaIdxProp2,
                                        drop = FALSE] # pp-by-pp
       logPriHess.pc <- logPriHess.prop[betaIdxProp2, betaIdxCurr2,
@@ -110,9 +110,11 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
 
           ## Update the parameter with current updated results.
+          ## If variable selection did not chose pth covariate,  then the pth
+          ## coefficient is zero naturally.
           betaIdxCurr <- betaIdxProp
-          paramTmp <- matrix(0, length(betaIdxCurr), 1) # Temporary with all zeros.
-          paramTmp[betaIdxCurr] <- param
+          paramTmp <- matrix(0, length(betaIdxCurr), 1)
+          paramTmp[betaIdxProp2] <- param
           Mdl.beta[[CompCurr]][[parCurr]] <- paramTmp
           staticArgs <- gradHess.prop[["staticArgs"]]
         }
