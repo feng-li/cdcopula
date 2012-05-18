@@ -33,7 +33,7 @@ ppropArgs151,5371
 ccrossValidArgs183,6949
 LLPDS.sampleProp188,7111
 ppriArgs202,7759
-bbetaInit267,10530
+bbetaInit261,10493
 
 ./flutils/stable/dbg/close.all.R,17
 cclose.all2,32
@@ -77,11 +77,11 @@ hhessApprox26,1024
 ./flutils/stable/mcmc/parLinkFun.R,20
 pparLinkFun13,469
 
-./flutils/stable/mcmc/parMeanFun.R,20
-pparMeanFun12,461
-
 ./flutils/stable/mcmc/parMeanFunGrad.R,24
 pparMeanFunGrad14,550
+
+./flutils/stable/mcmc/parMeanFun.R,20
+pparMeanFun12,461
 
 ./flutils/stable/mcmc/save.all.R,18
 ssave.all12,256
@@ -95,17 +95,17 @@ bbfgsi1,0
 ./flutils/stable/optim/csminit.R,14
 ccsminit1,0
 
-./flutils/stable/optim/csminwel.R,16
-ccsminwel01,0
-
 ./flutils/stable/optim/csminwelNew.R,15
 ccsminwel1,0
 
-./flutils/stable/optim/csolve.R,14
-ccsolve01,0
+./flutils/stable/optim/csminwel.R,16
+ccsminwel01,0
 
 ./flutils/stable/optim/csolveNew.R,13
 ccsolve1,0
+
+./flutils/stable/optim/csolve.R,14
+ccsolve01,0
 
 ./flutils/stable/optim/derivVec.R,15
 dderivVec1,0
@@ -168,11 +168,11 @@ ssize13,332
 ./flutils/stable/others/tr.R,12
 ttr11,368
 
-./flutils/stable/others/vech.R,14
-vvech12,232
-
 ./flutils/stable/others/vech2m.R,16
 vvech2m13,334
+
+./flutils/stable/others/vech.R,14
+vvech12,232
 
 ./flutils/stable/others/whichInd.R,18
 wwhichInd16,776
@@ -205,28 +205,31 @@ CCplMain15,462
 GGNewtonMove30,969
 
 ./mcmc/MHWithGNewton.R,23
-MMHWithGNewton23,574
+MMHWithGNewton23,634
 
 ./models/any2any.R,17
-aany2any12,303
+aany2any13,584
+
+./models/CplLinkConstrainGrad.R,27
+CCplLinkConstrainGrad1,0
 
 ./models/CplLinkConstrain.R,26
-CCplLinkConstrain11,326
+CCplLinkConstrain12,367
 
 ./models/initDataStruc.R,23
 iinitDataStruc14,376
 
 ./models/initPar.R,17
-iinitPar14,472
-
-./models/kendalltau.R,20
-kkendalltau13,554
+iinitPar14,468
 
 ./models/kendalltauGrad.R,22
 kkendalltauGrad2,26
 
 ./models/kendalltauInv.R,23
 kkendalltauInv18,832
+
+./models/kendalltau.R,20
+kkendalltau13,554
 
 ./models/kendalltauTabular.R,27
 kkendalltauTabular16,747
@@ -237,23 +240,23 @@ llogCplGrad15,380
 ./models/logCplLik.R,19
 llogCplLik14,557
 
+./models/logPostGradHess.R,25
+llogPostGradHess22,758
+
 ./models/logPost.R,18
 llogPost58,2236
-
-./models/logPostGradHess.R,25
-llogPostGradHess17,643
-
-./models/logPriors.R,19
-llogPriors18,607
 
 ./models/logPriorsGradHess.R,27
 llogPriorsGradHess23,698
 
-./models/MargiModel.R,20
-MMargiModel17,686
+./models/logPriors.R,19
+llogPriors18,599
 
 ./models/MargiModelGrad.R,24
-MMargiModelGrad15,529
+MMargiModelGrad15,530
+
+./models/MargiModel.R,20
+MMargiModel17,686
 
 ./models/parCaller.R,16
 pparCaller1,0
@@ -285,11 +288,11 @@ uuCpl19,580
 ./tests/chainFracCplGrad.R,23
 cchainFracCplGrad1,0
 
-./tests/logCplPri.R,19
-llogCplPri11,330
-
 ./tests/logCplPriGrad.R,20
 llogCplPriGrad1,0
+
+./tests/logCplPri.R,19
+llogCplPri11,330
 
 ./tests/logLikMargis.R,22
 llogLikMargis13,458
