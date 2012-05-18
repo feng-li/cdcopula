@@ -14,7 +14,6 @@
 ##'       Current: Mon May 14 19:07:18 CEST 2012.
 MargiModelGrad <- function(y, par, type, parCaller)
   {
-
     if(tolower(type) == "gaussian")
       {
         ## Subtract parameters and data
@@ -32,7 +31,7 @@ MargiModelGrad <- function(y, par, type, parCaller)
           {
             ## Calculate the fractions in the log form and transform back to
             ## avoid overflow/underflow.
-            logGradFrac <- log(sigma^2-(x-mu)^2) - log(sigma) - log(x-mu)
+            logGradFrac <- log(sigma^2-(y-mu)^2) - log(sigma) - log(y-mu)
             out <- exp(logMargiDens + logGradFrac)
           }
       }
