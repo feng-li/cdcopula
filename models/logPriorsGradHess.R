@@ -77,8 +77,8 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
 
         ## Split the beta vector by zero and nonzero.
-        Idx1 <- which(betaIdxNoIntCurr == 1)
-        Idx0 <- which(betaIdxNoIntCurr == 0)
+        Idx1 <- which(betaIdxNoIntCurr == TRUE)
+        Idx0 <- which(betaIdxNoIntCurr == FALSE)
         Idx0Len <- length(Idx0)
         Idx1Len <- length(Idx1)
         betaLen <- length(betaIdxNoIntCurr)
