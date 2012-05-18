@@ -49,7 +49,6 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
   ## Initialize the Newton move
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
-
   param <- betaCurr[betaIdxCurr]
 
   ## The k-step Generalized Newton Move
@@ -72,13 +71,9 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logLikGrad.prop <- gradHess.prop[["logLikGradObs"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
-      ## The alternative variable selection indices (TRUE/FALSE) for the covariates
-      betaIdxProp2 <- which(betaIdxProp == 1)
-      betaIdxCurr2 <- which(betaIdxCurr == 1)
-
       ## The selected covariates
-      X.prop <- X[ , betaIdxProp2, drop = FALSE] # n-by-pp
-      X.curr <- X[ , betaIdxCurr2, drop = FALSE] # n-by-pc
+      X.prop <- X[ , betaIdxProp, drop = FALSE] # n-by-pp
+      X.curr <- X[ , betaIdxCurr, drop = FALSE] # n-by-pc
 
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
@@ -88,10 +83,10 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # pp-by-pp
 
       ## The gradient and Hessian subsets due to variable selection
-      logPriGrad.pp <- logPriGrad.prop[betaIdxProp2, , drop = FALSE] # pp-by-1
-      logPriHess.pp <- logPriHess.prop[betaIdxProp2, betaIdxProp2,
+      logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1
+      logPriHess.pp <- logPriHess.prop[betaIdxProp, betaIdxProp,
                                        drop = FALSE] # pp-by-pp
-      logPriHess.pc <- logPriHess.prop[betaIdxProp2, betaIdxCurr2,
+      logPriHess.pc <- logPriHess.prop[betaIdxProp, betaIdxCurr,
                                        drop = FALSE] # pp-by-pc
 
       ## The gradient and Hessian in the general Newton's update
@@ -113,9 +108,11 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           ## If variable selection did not chose pth covariate,  then the pth
           ## coefficient is zero naturally.
           betaIdxCurr <- betaIdxProp
-          paramTmp <- matrix(0, length(betaIdxCurr), 1)
-          paramTmp[betaIdxProp2] <- param
-          Mdl.beta[[CompCurr]][[parCurr]] <- paramTmp
+
+          ## the full parameters including zeros.
+          param.full <- matrix(0, length(betaIdxCurr), 1)
+          param.full[betaIdxProp] <- param
+          Mdl.beta[[CompCurr]][[parCurr]] <- param.full
           staticArgs <- gradHess.prop[["staticArgs"]]
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output
@@ -126,7 +123,6 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                       param = param,
                       staticArgs = staticArgs)
         }
-
     }
   return(out)
 }
