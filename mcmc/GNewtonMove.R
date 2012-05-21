@@ -82,6 +82,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       logPriGrad.prop <- gradHess.prop[["logPriGradHessObs"]][["gradObs"]] # pp-by-1
       logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # pp-by-pp
 
+      ## browser()
+
       ## The gradient and Hessian subsets due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1
       logPriHess.pp <- logPriHess.prop[betaIdxProp, betaIdxProp,
@@ -90,7 +92,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                                        drop = FALSE] # pp-by-pc
 
       ## The gradient and Hessian in the general Newton's update
-      gradObs.prop <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop))+
+      gradObs.pp <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop))+
                              logPriGrad.pp) # pp-by-1
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop)+
         logPriHess.pp # pp-by-pp
@@ -102,7 +104,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       if((iStep <= kSteps))
         {
           ## update the proposed parameters via the general Newton formula
-          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.prop)
+          ## browser()
+          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
 
           ## Update the parameter with current updated results.
           ## If variable selection did not chose pth covariate,  then the pth
@@ -117,7 +120,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output
         {
-          out <- list(gradObs = gradObs.prop,
+          out <- list(gradObs = gradObs.pp,
                       HessObs = HessObs.pp,
                       HessObsInv = HessObsInv.pp,
                       param = param,

@@ -94,6 +94,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                   (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
                     ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
+
             out <- gradCpl.u
           }
         else

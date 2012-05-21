@@ -1,17 +1,15 @@
 ##' A collection of gradient for the copula model
 ##'
-##' @name logPriGrad
 ##' @title Gradient for priors
 ##'
 ##' @param Mdl.X
-##' @param Mdl.parLink
 ##' @param Mdl.beta
 ##' @param Mdl.betaIdx
+##' @param Mdl.parLink
 ##' @param varSelArgs
 ##' @param priArgs
-##' @param priCurr
 ##' @param chainCaller
-##' @return "list". The gradient and hessian matrix, see below.
+##' @return "list". The gradient and Hessian matrix, see below.
 ##' \item   {gradObsPri}
 ##'         {"matrix". One-column.}
 ##' \item   {hessObsPri}
@@ -48,12 +46,12 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
 
         ## Gradient and Hessian for the intercept
-        GradHessIntOut <- DensGradHess(B = xCurr, mean = mean, covariance =
-                                 variance*shrinkage, grad = TRUE, Hess = TRUE)
+        GradHessInt <- DensGradHess(B = xCurr, mean = mean, covariance =
+                                       variance*shrinkage, grad = TRUE, Hess = TRUE)
 
         ## The output
-        gradObsLst[["Int"]] <- GradHessIntOut[["grad"]]
-        HessObsLst[["Int"]] <- GradHessIntOut[["Hess"]]
+        gradObsLst[["Int"]] <- GradHessInt[["grad"]]
+        HessObsLst[["Int"]] <- GradHessInt[["Hess"]]
       }
 ###----------------------------------------------------------------------------
 ### Gradient for beta|I and Hessian for beta (unconditional)
@@ -69,7 +67,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         ## Normal distribution condition normal The full beta vector is assumed
         ## as normal. Since variable selection is included in the MCMC, The
         ## final proposed beta are those non zeros. We need to using the
-        ## gradient for the conditional normal density See Mardia p. 63
+        ## gradient for the conditional normal density See Mardia p. 63.
 
         ## Subtract the prior information for the full beta
         mean <- priArgsCurr[["mean"]] # mean of density
@@ -82,7 +80,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         Idx0Len <- length(Idx0)
         Idx1Len <- length(Idx1)
         betaLen <- length(betaIdxNoIntCurr)
-        SlopCondGrad <- matrix(NA, betaLen)
+        SlopCondGrad <- matrix(NaN, betaLen)
 
         ## The mean vector for the whole beta vector (recycled if necessary)
         meanVec <- matrix(mean, betaLen, 1)
@@ -106,9 +104,9 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
             ## 1. all are selected. Switch to unconditional prior.
             ## The conditional gradient
             SlopCondGrad[Idx1] <- DensGradHess(B = xCurr,
-                                         mean = meanVec,
-                                         covariance = coVar*shrinkage,
-                                         grad = TRUE, Hess = FALSE)[["grad"]]
+                                               mean = meanVec,
+                                               covariance = coVar*shrinkage,
+                                               grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else if(Idx0Len > 0 && Idx0Len < betaLen)
           {
@@ -122,9 +120,9 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
             ## The conditional gradient
             SlopCondGrad[Idx1] <- DensGradHess(B = xCurr[Idx1],
-                                         mean = condMean,
-                                         covariance = condCovar*shrinkage,
-                                         grad = TRUE, Hess = FALSE)[["grad"]]
+                                               mean = condMean,
+                                               covariance = condCovar*shrinkage,
+                                               grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else
           {

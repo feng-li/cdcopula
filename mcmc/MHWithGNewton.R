@@ -197,15 +197,17 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               logJump.betaIdx.currATprop - logJump.betaIdx.propATcurr
 
           MHRatio <- exp(logMHRatio)
+          ## the acceptance probability
+          accept.prob <- min(1, MHRatio)
         }
     }
 ###----------------------------------------------------------------------------
 ### The MH acceptance probability and keep/update the proposed draw.
 ###----------------------------------------------------------------------------
 
-  ## the acceptance probability
-  accept.prob <- min(1, MHRatio)
-  if(!is.na(accept.prob) && runif(1) < accept.prob) # keep update
+  if(rejectFlag == FALSE &&
+     !is.na(accept.prob) &&
+     runif(1) < accept.prob) # keep update
     {
       out <- list(betaIdx = betaIdx.prop,
                   beta = beta.prop,

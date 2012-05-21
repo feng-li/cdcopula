@@ -98,7 +98,6 @@ CplMain <- function(configfile)
         }
     }
 
-
   ## Assign the initial values
   initParOut <- initPar(varSelArgs = varSelArgs,
                         betaInit = betaInit,
