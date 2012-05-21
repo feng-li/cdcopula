@@ -29,10 +29,8 @@ MargiModelGrad <- function(y, par, type, parCaller)
           }
         else if(tolower(parCaller) == "sigma")
           {
-            ## Calculate the fractions in the log form and transform back to
-            ## avoid overflow/underflow.
-            logGradFrac <- log(sigma^2-(y-mu)^2) - log(sigma) - log(y-mu)
-            out <- exp(logMargiDens + logGradFrac)
+            GradFrac <- (sigma^2-(y-mu)^2)/((y-mu)*sigma)
+            out <- exp(logMargiDens)*GradFrac
           }
       }
     else if(tolower(margiType) == "student-t")
