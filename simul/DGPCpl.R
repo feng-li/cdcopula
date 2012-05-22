@@ -39,9 +39,23 @@ DGPCpl <- function(DGPconfigfile, export = "list")
           {
             Intercept <- ifelse(MdlDGP.intercept[[i]][[j]], TRUE, FALSE)
 
+            linkCurr <- MdlDGP.parLink[[i]][[j]]
+            if(tolower(linkCurr)  == "glogit")
+              {
+                tau <- MdlDGP.par[[CplNM]][["tau"]]
+                a <- 0 ## The lower bound of generalized logit link
+                b <- 2^(1/2-1/(2*tau)) ## the upper bound
+                extArgs <- list(a = a, b = b)
+              }
+            else
+              {
+                extArgs <- NA
+              }
+
             ## FIXME: Conditional link function
             ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
-                                  link = MdlDGP.parLink[[i]][[j]])
+                                  link = linkCurr,
+                                  extArgs = extArgs)
 
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
             nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
@@ -52,10 +66,9 @@ DGPCpl <- function(DGPconfigfile, export = "list")
                                           Xlim = c(0, 1),
                                           intercept = Intercept)
             MdlDGP.beta[[i]][[j]] <- matrix(c(betaFixed,
-                                           rep(0, nCovsTol-nCovsFixed)))
+                                              rep(0, nCovsTol-nCovsFixed)))
           }
       }
-
 
     ## The extended covariates that are from the combination of the base
     ## covariates FIXME: it is better to select the non-fixed covariates from
@@ -64,21 +77,20 @@ DGPCpl <- function(DGPconfigfile, export = "list")
       {
         for(j in names(MdlDataStruc[[i]]))
           {
-
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
             nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
 
             ## if(j == CplNM)
             ##   {
-                ## X <- Mdl.XFixed[names(XFixed) != j]
+            ## X <- Mdl.XFixed[names(XFixed) != j]
 
-                ## The final covariates
-                XFinal1 <- Mdl.XFixed[[i]][[j]]
-                XFinal2 <- matrix(runif(nObs*(nCovsTol-nCovsFixed)), nObs)
+            ## The final covariates
+            XFinal1 <- Mdl.XFixed[[i]][[j]]
+            XFinal2 <- matrix(runif(nObs*(nCovsTol-nCovsFixed)), nObs)
 
-                XFinal <- cbind(XFinal1, XFinal2)
+            XFinal <- cbind(XFinal1, XFinal2)
 
-                Mdl.X[[i]][[j]] <- XFinal
+            Mdl.X[[i]][[j]] <- XFinal
             ##   }
             ## else
             ##   {
@@ -86,7 +98,6 @@ DGPCpl <- function(DGPconfigfile, export = "list")
             ##   }
           }
       }
-
 
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, MdlDGP.beta = MdlDGP.beta)

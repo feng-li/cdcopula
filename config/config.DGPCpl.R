@@ -30,9 +30,9 @@ MdlDGP.parLink[[1]][[2]] <- "log"
 MdlDGP.parLink[[2]][[1]] <- "identity"
 MdlDGP.parLink[[2]][[2]] <- "log"
 MdlDGP.parLink[[3]][[1]] <- "logit"
-MdlDGP.parLink[[3]][[2]] <- "logit"
+MdlDGP.parLink[[3]][[2]] <- "glogit"
 
-##-----------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ## THE TRUE PARAMETER VALUES IN THE DGP
 ## -----------------------------------------------------------------------------
 ## The parameters are the features of the model, e.g. mean, variance, ...  The

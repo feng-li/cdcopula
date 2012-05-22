@@ -47,7 +47,6 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 
-      browser()
       logCplObs <- (-1-delta)*rowSums(log(TC1))+
         rowSums(log(TC2))-
           2*(1+delta)/delta*log(L5)+

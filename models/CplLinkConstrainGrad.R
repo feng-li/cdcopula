@@ -13,13 +13,17 @@ CplLinkConstrainGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
             ## complicated. Here we assume the condition is known a priori
             ## which is a bit sloppy.
 
-            Mdl.parLink[[CompCaller]][[parCaller]]
+            linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
             if(tolower(linkCurr) == "glogit")
               {
                 tau <- Mdl.par[[CplNM]][["tau"]]
                 a <- 0 ## The lower bound of generalized logit link
                 b <- 2^(1/2-1/(2*tau)) ## the upper bound
                 extArgs <- list(a = a, b = b)
+              }
+            else
+              {
+                extArgs <- NA
               }
             LinkGradRaw <-  parMeanFunGrad(
                               par = Mdl.par[[CompCaller]][[parCaller]],

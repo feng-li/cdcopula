@@ -70,7 +70,10 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                        ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
             ## Gradient w.r.t. tau
-            gradCpl.tau <- kendalltauGrad(copula, theta, delta, parCaller)
+            gradCpl.tau <- kendalltauGrad(CplNM = CplNM,
+                                          theta = theta,
+                                          delta = delta,
+                                          caller = "theta")
 
             ## The chain gradient
             out <- logGradCpl.theta*gradCpl.tau
@@ -100,7 +103,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
           }
         else if(tolower(cplCaller) == "u2")
           {
-            u <-  u[, 2:1]
+            u <-  u[, 2:1, drop = FALSE]
             ## The copula function is symmetric for "u1" and "u2". Therefore
             ## the gradient is exactly the same as "u1" but swap "u1" and "u2".
 

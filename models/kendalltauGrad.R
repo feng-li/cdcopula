@@ -1,13 +1,12 @@
 ##' TODO: Vectorized this
-kendalltauGrad <- function(CplNM, theta, delta, parCaller)
+kendalltauGrad <- function(CplNM, theta, delta, caller)
   {
     if(tolower(CplNM) == "bb7")
       {
-        if(tolower(parCaller) == "theta")
+        if(tolower(caller) == "theta")
           {
-
             ## Healthy condition of parameters.
-            deltaHcond <- delta > 0
+            deltaHcond <- (delta > 0)
 
             ## The gradient w.r.t. theta conditional on delta
             if(theta >= 1 && theta < 2 && deltaHcond)
@@ -39,7 +38,7 @@ kendalltauGrad <- function(CplNM, theta, delta, parCaller)
                 out <- NA
               }
           }
-        if(tolower(parCaller) == "delta")
+        else if(tolower(caller) == "delta")
           {
             ## Healthy condition of parameters.
             deltaHcond <- delta > 0
