@@ -10,7 +10,7 @@
 ##' @references Joe 1997, p. 153
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
-##'       Current: Thu Oct 20 18:19:34 CEST 2011.
+##'       Current: Mon May 21 14:37:01 CEST 2012.
 logCplLik <- function(u, CplNM, parCpl, staticArgs)
 {
   ## The sum of log copula density
@@ -47,7 +47,8 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 
-      logCpl <- (-1-delta)*rowSums(log(TC1))+
+      browser()
+      logCplObs <- (-1-delta)*rowSums(log(TC1))+
         rowSums(log(TC2))-
           2*(1+delta)/delta*log(L5)+
             (-2+1/theta)*log(L6)+
@@ -55,7 +56,7 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       ## loglik <- sum(logCpl)
 
-      out <- logCpl
+      out <- logCplObs
       ## if(is.infinite(out)) browser()
 
     }

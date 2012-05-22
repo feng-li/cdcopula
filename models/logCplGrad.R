@@ -75,11 +75,34 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## The chain gradient
             out <- logGradCpl.theta*gradCpl.tau
           }
-        else if(tolower(cplCaller) == "u")
+        else if(tolower(cplCaller) == "u1")
           {
             ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are
-            ## exchangeable which means the expression for the gradient w.r.t u
-            ## and v are the same.
+            ## exchangeable which means the expression for the gradient w.r.t u2
+            ## and u2 are the same if swap u1 and u2
+
+            u <-  u[, 2:1]
+            T1 <- 1-(1-u)^theta
+            T2 <- (1-u)^(theta-1)
+            L1 <- rowSums(T1^(-delta))-1
+
+            Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
+            Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
+
+            gradCpl.u <- (1+delta)*theta*Delta4.A+
+              (1-theta)*(colSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
+                (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
+                  (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
+                    ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
+
+
+            out <- gradCpl.u
+          }
+        else if(tolower(cplCaller) == "u2")
+          {
+            u <-  u[, 2:1]
+            ## The copula function is symmetric for "u1" and "u2". Therefore
+            ## the gradient is exactly the same as "u1" but swap "u1" and "u2".
 
             T1 <- 1-(1-u)^theta
             T2 <- (1-u)^(theta-1)

@@ -44,7 +44,9 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                                     type = typeCurr,
                                     parCaller = parCaller)
 
-      cplCaller <- "u" # The Copula parameter caller is the marginal CDF
+      ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
+      cplCaller <- paste("u", which(CompCaller%in%names(MargisTypes)), sep = "")
+
       staticArgs[["Mdl.u"]][, CompCaller] <- MargiModel(y = yCurr,
                                                         type = typeCurr,
                                                         par = parCurr)[["u"]]
