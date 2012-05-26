@@ -23,21 +23,24 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
               {
                 thetaCurr <- theta[Idx12]
                 deltaCurr <- delta[Idx12]
-                out[Idx12] <- -2/((theta-2)^2*delta) - 8*beta(2+delta, 2/theta-1)*
-                  (theta + digamma(2/theta-1) - digamma(2/theta+delta+1))/
-                    (theta^4*delta)
+                out[Idx12] <- -2/((thetaCurr-2)^2*deltaCurr) -
+                  8*beta(2+deltaCurr, 2/thetaCurr-1)*
+                  (thetaCurr + digamma(2/thetaCurr-1) -
+                   digamma(2/thetaCurr+deltaCurr+1))/
+                    (thetaCurr^4*deltaCurr)
               }
             if(length(IdxLarge)>0)
               {
                 thetaCurr <- theta[IdxLarge]
                 deltaCurr <- delta[IdxLarge]
-                out[IdxLarge] <- (-2*(2+delta)*theta^4*beta(1+delta+2/theta, 2-2/theta)-
-                                  8*pi^2*(theta-2)^2*cos(2*pi/theta)/sin(2*pi/theta)^2-
-                                  8*pi*(theta-2)^2*
-                                  (digamma(1+delta+2/theta)-digamma(2-2/theta)-theta)/
-                                  sin(2*pi/theta))/
-                                    (delta*(2+delta)*(theta-2)^2*theta^4*
-                                     beta(1+delta+2/theta, 2-2/theta))
+                out[IdxLarge] <- (-2*(2+deltaCurr)*thetaCurr^4*
+                                  beta(1+deltaCurr+2/thetaCurr, 2-2/thetaCurr)-
+                                  8*pi^2*(thetaCurr-2)^2*cos(2*pi/thetaCurr)/sin(2*pi/thetaCurr)^2-
+                                  8*pi*(thetaCurr-2)^2*
+                                  (digamma(1+deltaCurr+2/thetaCurr)-
+                                   digamma(2-2/thetaCurr)-thetaCurr)/sin(2*pi/thetaCurr))/
+                                    (deltaCurr*(2+deltaCurr)*(thetaCurr-2)^2*thetaCurr^4*
+                                     beta(1+deltaCurr+2/thetaCurr, 2-2/thetaCurr))
               }
             if(length(Idx2)>0)
               {
@@ -46,32 +49,35 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
 
                 ## You computer will never hit this branch. But we keep it anyway.
                 out[Idx2] <- -(12+24*digamma(1)+6*digamma(1)^2+pi^2-
-                               12*(2+digamma(1))*digamma(2+delta)+
-                               6*digamma(2+delta)^2-6*trigamma(2+delta))/
-                                 (24*delta)
+                               12*(2+digamma(1))*digamma(2+deltaCurr)+
+                               6*digamma(2+deltaCurr)^2-6*trigamma(2+deltaCurr))/
+                                 (24*deltaCurr)
               }
           }
         else if(tolower(caller) == "delta")
           {
-            ## Healthy condition of parameters.
-            deltaHcond <- delta > 0
-
             ## The gradient w.r.t. theta conditional on delta
             if(length(Idx12)>0)
               {
                 thetaCurr <- theta[Idx12]
                 deltaCurr <- delta[Idx12]
-                out[Idx12] <- -2/((theta-2)*delta^2) + 4*beta(2+delta, 2/theta-1)*
-                  (digamma(2+delta) - digamma(2/theta+delta+1)-1/delta)/
-                    (theta^2*delta)
+                out[Idx12] <- -2/((thetaCurr-2)*deltaCurr^2) +
+                  4*beta(2+deltaCurr, 2/thetaCurr-1)*
+                    (digamma(2+deltaCurr) -
+                     digamma(2/thetaCurr+deltaCurr+1)-1/deltaCurr)/
+                       (thetaCurr^2*deltaCurr)
               }
             if(length(IdxLarge)>0)
               {
                 thetaCurr <- theta[IdxLarge]
                 deltaCurr <- delta[IdxLarge]
-                out[IdxLarge] <- -2/((theta-2)*delta^2)-
-                  4*pi*(digamma(3+delta)-digamma(2/theta+delta+1)-2*(1+delta)/(2*delta+delta^2))/
-                    ((2+delta)*delta*theta^2*sin(2*pi/theta)*beta(1+delta+2/theta, 2-2/theta))
+                out[IdxLarge] <- -2/((thetaCurr-2)*deltaCurr^2)-
+                  4*pi*(digamma(3+deltaCurr)-
+                        digamma(2/thetaCurr+deltaCurr+1)-
+                        2*(1+deltaCurr)/(2*deltaCurr+deltaCurr^2))/
+                          ((2+deltaCurr)*deltaCurr*thetaCurr^2*
+                           sin(2*pi/thetaCurr)*
+                           beta(1+deltaCurr+2/thetaCurr, 2-2/thetaCurr))
               }
             if(length(Idx2)>0)
               {
@@ -79,7 +85,9 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
                 deltaCurr <- delta[Idx2]
 
                 ## You computer will never hit this branch. But we keep it anyway.
-                out[Idx2] <- (digamma(2+delta)-delta*trigamma(2+delta)-digamma(1)-1)/delta^2
+                out[Idx2] <- (digamma(2+deltaCurr)-
+                              deltaCurr*trigamma(2+deltaCurr)
+                              -digamma(1)-1)/deltaCurr^2
               }
           }
         else
