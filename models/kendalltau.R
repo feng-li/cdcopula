@@ -22,7 +22,7 @@ kendalltau <- function(CplNM, parCpl)
         out <- theta
         out[0:nObs] <- NA
 
-        ## Healthy condition and condition for the stepwise Kendall's tau
+        ## Healthy condition for the stepwise Kendall's tau
         tol = 0.001
         deltaHcond <- (delta > 0)
         Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
