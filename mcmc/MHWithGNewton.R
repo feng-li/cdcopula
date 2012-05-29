@@ -24,7 +24,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink, parUpdate, priArgs, varSelArgs,
                           propArgs, MargisTypes, staticArgs)
 {
-
   ## The updating component parameter chain
   chainCaller <- parCaller(parUpdate)
   CompCaller <- chainCaller[1]
@@ -38,6 +37,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### VARIABLE SELECTION PROPOSAL
 ###----------------------------------------------------------------------------
   ## Randomly propose a subset for covariates to change
+  ## TODO: If no variable selection, reduce to usual MCMC.
+
   varSelCand <- varSelArgs[[CompCaller]][[parCaller]]$cand
   betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
   if(betaIdxArgs$type == "binom")

@@ -70,6 +70,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ### still working.
 ###----------------------------------------------------------------------------
 
+
 ### Update Mdl.par
   Mdl.par <- CplLinkConstrain(CplNM = CplNM,
                               Mdl.X = Mdl.X,
@@ -85,12 +86,11 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     {
       CompUpdate <- any(parUpdate[[CompCaller]] == TRUE)
       ## Marginal Update available
-      if(CompUpdate)
+      if(CompUpdate == TRUE)
         {
           Margi.ud <- MargiModel(y = Mdl.Y[[CompCaller]],
                                  type = MargisTypes[CompCaller],
                                  par = Mdl.par[[CompCaller]])
-
           Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
           Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
         }
@@ -100,9 +100,9 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ### THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
   Mdl.logLikCpl <- logCplLik(u = Mdl.u,
-                         CplNM = CplNM,
-                         parCpl = Mdl.par[[CplNM]],
-                         staticArgs = staticArgs) # n-by-1
+                             CplNM = CplNM,
+                             parCpl = Mdl.par[[CplNM]],
+                             staticArgs = staticArgs) # n-by-1
 
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS

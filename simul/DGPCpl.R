@@ -80,22 +80,12 @@ DGPCpl <- function(DGPconfigfile, export = "list")
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
             nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
 
-            ## if(j == CplNM)
-            ##   {
-            ## X <- Mdl.XFixed[names(XFixed) != j]
-
-            ## The final covariates
             XFinal1 <- Mdl.XFixed[[i]][[j]]
             XFinal2 <- matrix(runif(nObs*(nCovsTol-nCovsFixed)), nObs)
 
             XFinal <- cbind(XFinal1, XFinal2)
 
             Mdl.X[[i]][[j]] <- XFinal
-            ##   }
-            ## else
-            ##   {
-
-            ##   }
           }
       }
 

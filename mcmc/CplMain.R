@@ -23,7 +23,7 @@ CplMain <- function(configfile)
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE
 ###----------------------------------------------------------------------------
   ## Generating the numerical tabular for the inverse Kendall's tau
-  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
+  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.01)
 
   ## Indices for training and testing sample according to cross-validation
   nObs <- length(Mdl.Y[[1]])
@@ -130,6 +130,15 @@ CplMain <- function(configfile)
                         parUpdate = parUpdate,
                         staticArgs = staticArgs)[["staticArgs"]]
 
+###----------------------------------------------------------------------------
+### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
+###----------------------------------------------------------------------------
+
+
+
+###----------------------------------------------------------------------------
+### THE METROPOLIS-HASTINGS WITHIN GIBBS
+###----------------------------------------------------------------------------
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
   CompNM <- names(MdlDataStruc)

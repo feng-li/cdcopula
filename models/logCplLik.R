@@ -27,8 +27,6 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).
 
-      browser()
-
       delta <- as.vector(-log(2)/log(lambdaL))
       theta <- as.vector(log(2)/log(2-lambdaU))
 
@@ -60,6 +58,8 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       out <- logCplObs
       ## if(is.infinite(out)) browser()
+
+      browser()
 
     }
   else if(tolower(CplNM) == "gaussian")

@@ -107,13 +107,13 @@ varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
                              init = "all-in")
 varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
                              init = "all-out")
-varSelArgs[[2]][[1]] <- list(cand = c(2, 4),
+varSelArgs[[2]][[1]] <- list(cand = c(2, 3),
                              init = "random")
-varSelArgs[[2]][[2]] <- list(cand = c(2, 4),
+varSelArgs[[2]][[2]] <- list(cand = c(2, 3),
                              init = "all-out")
-varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 5, 6),
+varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 4),
                              init = c(2, 3))
-varSelArgs[[3]][[2]] <- list(cand = c(3, 5, 6),
+varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
                              init = "random")
 
 ###----------------------------------------------------------------------------
