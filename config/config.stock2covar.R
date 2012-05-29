@@ -44,8 +44,8 @@ if(!(StandardizeData == FALSE))
   Y <- lapply(YRaw, StdData, method = StandardizeData)
 }else
 {
-  X <- list(out = XRaw, config = NA)
-  Y <- list(out = YRaw, config = NA)
+  X <- list(data = XRaw, config = NA)
+  Y <- list(data = YRaw, config = NA)
 }
 
 ## Save to file
