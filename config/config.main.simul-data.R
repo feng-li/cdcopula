@@ -54,7 +54,7 @@ CplNM <- "BB7"
 CplParNM <- list(c("tau", "lambdaL"))
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisNM <- c("SP500", "NASDAQ100")
+MargisNM <- c("SP600", "SP100")
 MargisTypes <- c("GAUSSIAN", "GAUSSIAN")
 MargisParNM <- list(c("mu", "sigma"),
                     c("mu", "sigma"))
