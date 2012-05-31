@@ -17,20 +17,19 @@
 ##' TODO: Split the output by using a caller.
 
 
-kendalltauInv <- function(CplNM, parCpl, method = "tabular", ...)
+kendalltauInv <- function(CplNM, parRepCpl, method = "tabular", tauTabular = NA)
   {
     if(tolower(method) == "tabular")
       {
         out <- kendalltauInv.tab(CplNM = CplNM,
                                  parRepCpl = parRepCpl,
                                  tauTabular = tauTabular)
-
       }
     else if(tolower(method) == "iterative")
       {
         out <- kendalltauInv.iter(CplNM = CplNM,
                                   parRepCpl = parRepCpl,
-                                  tauTabular = tauTabular)
+                                  parCaller = "theta")
       }
       return(out)
   }
@@ -67,10 +66,10 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
         nObs <- length(tau)
         tauTest <- matrix(tau, nObs, nGrid)
 
-        tauFloorDev0 <- abs(tauTest-tauMatTabFloor)
+        tauFloorDev0 <- - abs(tauTest-tauMatTabFloor)
 
         ## The indices of lambdaU
-        ## TODO: This is the bottom neck of speed.
+        ## This is the bottom neck of speed.
         lambdaUFloorIdx0 <- max.col(tauFloorDev0)
 
         lambdaUFloor0 <- lambdaUGrid[lambdaUFloorIdx0]
@@ -79,11 +78,10 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
     return(out)
   }
 
-
 ###----------------------------------------------------------------------------
 ### The iterative method
 ###----------------------------------------------------------------------------
-kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
+kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
   {
     ## TODO: The max interval could not handle Inf in the uniroot function.
     ## TODO: Consider the error handle. i.e., In theory (see the Appendix in
@@ -91,16 +89,45 @@ kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
     ## dependent) which yields non accurate root.
     if(tolower(CplNM) == "bb7")
       {
+        if(tolower(parCaller) == "theta")
+          {
+            lambdaL <- parRepCpl[["lambdaL"]]
+            tau <- parRepCpl[["tau"]]
 
-        if(tolower(parCaller) == "delta")
+            delta <- -log(2)/log(lambdaL)
+
+            out.theta <- delta
+            parLen <- length(delta)
+            out[1:parLen] <- NA
+
+            for(i in 1:parLen)
+              {
+                tauCurr <- tau[i]
+                deltaCurr <- delta[i]
+                outRootCurr <-
+                  uniroot(function(x, CplNM, deltaCurr, tauCurr)
+                          {
+                            kendalltau(CplNM = CplNM,
+                                       parCpl = list(theta = x,
+                                         delta = deltaCurr))-tauCurr
+                          },
+                          interval = c(1, 1000), CplNM = CplNM,
+                          deltaCurr = deltaCurr,
+                          tauCurr = tauCurr)
+                ##print(outRootCurr)
+                out.theta[i] <- outRootCurr$root
+              }
+            out <- 2 - 2^(1/out.theta)
+          }
+        else if(tolower(parCaller) == "delta")
           {
             lambdaU <- parRepCpl[["lambdaU"]]
             tau <- parRepCpl[["tau"]]
             theta <- log(2)/(log(2)-lambdaU)
 
-            out <- theta
-            thetaLen <- length(theta)
-            out[1:thetaLen] <- NA
+            out.delta <- theta
+            parLen <- length(theta)
+            out.delta[1:parLen] <- NA
 
             for(i in 1:thetaLen)
               {
@@ -117,39 +144,12 @@ kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
                           thetaCurr = thetaCurr, tauCurr =
                           tauCurr)
                 ##print(outRootCurr)
-                out[i] <- outRootCurr$root
+                out.delta[i] <- outRootCurr$root
               }
 
+            out <- 2^(1/out.delta)
           }
-        else if(tolower(parCaller) == "theta")
-          {
-            lambdaL <- parRepCpl[["lambdaL"]]
-            tau <- parRepCpl[["tau"]]
 
-            delta <- -log(2)/log(lambdaL)
-
-            out <- delta
-            deltaLen <- length(delta)
-            out[1:deltaLen] <- NA
-
-            for(i in 1:deltaLen)
-              {
-                tauCurr <- tau[i]
-                deltaCurr <- delta[i]
-                outRootCurr <-
-                  uniroot(function(x, CplNM, deltaCurr, tauCurr)
-                          {
-                            kendalltau(CplNM = CplNM,
-                                       parCpl = list(theta = x,
-                                         delta = deltaCurr))-tauCurr
-                          },
-                          interval = c(1, 1000), CplNM = CplNM,
-                          deltaCurr = deltaCurr,
-                          tauCurr = tauCurr)
-                ##print(outRootCurr)
-                out[i] <- outRootCurr$root
-              }
-          }
       }
     return(out)
   }
