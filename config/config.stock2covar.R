@@ -40,18 +40,25 @@ for(i in names(Scovar))
 ## Standardize the data
 if(!(StandardizeData == FALSE))
 {
-  X <- lapply(XRaw, StdData, method = StandardizeData)
-  Y <- lapply(YRaw, StdData, method = StandardizeData)
+  XNew <- lapply(XRaw, StdData, method = StandardizeData)
+  YNew <- lapply(YRaw, StdData, method = StandardizeData)
+
+  X <- lapply(XNew, function(x) x$data)
+  Y <- lapply(YNew, function(x) x$data)
+  X.config <- lapply(XNew, function(x) x$config)
+  Y.config <- lapply(YNew, function(x) x$config)
 }else
 {
-  X <- list(data = XRaw, config = NA)
-  Y <- list(data = YRaw, config = NA)
+  X <- XRaw
+  Y <- YRaw
+  X.config <- NA
+  Y.config <- NA
 }
 
 ## Save to file
 if(is.character(save2disk))
   {
-    save(ID, X, Y,  file = save2disk)
+    save(ID, X, Y,  X.config, Y.config, file = save2disk)
   }
 ###----------------------------------------------------------------------------
 ### End of the script

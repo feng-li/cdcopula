@@ -15,7 +15,30 @@
 ##'       Created: Sat Dec 31 02:05:14 CET 2011;
 ##'       Current: Mon Apr 16 14:40:16 CEST 2012.
 ##' TODO: Split the output by using a caller.
-kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
+
+
+kendalltauInv <- function(CplNM, parCpl, method = "tabular", ...)
+  {
+    if(tolower(method) == "tabular")
+      {
+        out <- kendalltauInv.tab(CplNM = CplNM,
+                                 parRepCpl = parRepCpl,
+                                 tauTabular = tauTabular)
+
+      }
+    else if(tolower(method) == "iterative")
+      {
+        out <- kendalltauInv.iter(CplNM = CplNM,
+                                  parRepCpl = parRepCpl,
+                                  tauTabular = tauTabular)
+      }
+      return(out)
+  }
+
+###----------------------------------------------------------------------------
+### The tabular looking up method (faster)
+###----------------------------------------------------------------------------
+kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
   {
     if(tolower(CplNM) == "bb7")
       {
@@ -44,42 +67,89 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
         nObs <- length(tau)
         tauTest <- matrix(tau, nObs, nGrid)
 
-        tauFloorDev0 <- tauTest-tauMatTabFloor
-        tauFloorDev0[tauFloorDev0>0] <- -Inf
-
-        tauFloorDev1 <- tauMatTabFloor-tauTest
-        tauFloorDev1[tauFloorDev1>0] <- -Inf
+        tauFloorDev0 <- abs(tauTest-tauMatTabFloor)
 
         ## The indices of lambdaU
         ## TODO: This is the bottom neck of speed.
         lambdaUFloorIdx0 <- max.col(tauFloorDev0)
-        lambdaUFloorIdx1 <- max.col(tauFloorDev1)
 
         lambdaUFloor0 <- lambdaUGrid[lambdaUFloorIdx0]
-        lambdaUFloor1 <- lambdaUGrid[lambdaUFloorIdx1]
-
-        ## And the corresponding tau
-        tauFloorIdx0 <- whichInd(cbind(1:nObs, lambdaUFloorIdx0), c(nObs, nGrid))
-        tauFloorIdx1 <- whichInd(cbind(1:nObs, lambdaUFloorIdx1), c(nObs, nGrid))
-
-        tauFloor0 <- tauMatTabFloor[tauFloorIdx0]
-        tauFloor1 <- tauMatTabFloor[tauFloorIdx1]
-
-        ## Smooth the final results.
-        ## (tauFloor -tau)/(tau-tauFloor) = (lambdaUFloor-lambdaU)/(lambdaU-lambdaUFloor)
-        tauRatioFloor <- (tauFloor0 -tau)/(tau-tauFloor1)
-        lambdaUFloor0 <- (lambdaUFloor0 + lambdaUFloor1*tauRatioFloor)/(1+tauRatioFloor)
-
-        ## Numerical correction when the smoothness produces NA
-        lambdaUFloorNAIdx <- which(is.na(lambdaUFloor0))
-        if(length(lambdaUFloorNAIdx)>0)
-          {
-            lambdaUFloor0[lambdaUFloorNAIdx] <-
-              rowMeans(cbind(lambdaUFloor0[lambdaUFloorNAIdx],
-                             lambdaUFloor0[lambdaUFloorNAIdx]))
-          }
-
         out <- lambdaUFloor0
+      }
+    return(out)
+  }
+
+
+###----------------------------------------------------------------------------
+### The iterative method
+###----------------------------------------------------------------------------
+kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
+  {
+    ## TODO: The max interval could not handle Inf in the uniroot function.
+    ## TODO: Consider the error handle. i.e., In theory (see the Appendix in
+    ## the paper) you can't have small tau with big delta (lower tail
+    ## dependent) which yields non accurate root.
+    if(tolower(CplNM) == "bb7")
+      {
+
+        if(tolower(parCaller) == "delta")
+          {
+            lambdaU <- parRepCpl[["lambdaU"]]
+            tau <- parRepCpl[["tau"]]
+            theta <- log(2)/(log(2)-lambdaU)
+
+            out <- theta
+            thetaLen <- length(theta)
+            out[1:thetaLen] <- NA
+
+            for(i in 1:thetaLen)
+              {
+                tauCurr <- tau[i]
+                deltaCurr <- delta[i]
+                outRootCurr <-
+                  uniroot(function(x, thetaCurr, deltaCurr, tauCurr)
+                          {
+                            kendalltau(CplNM = CplNM,
+                                       parCpl = list(theta = thetaCurr,
+                                         delta = x))-tauCurr
+                          },
+                          interval = c(1e-13, 1000), CplNM = CplNM,
+                          thetaCurr = thetaCurr, tauCurr =
+                          tauCurr)
+                ##print(outRootCurr)
+                out[i] <- outRootCurr$root
+              }
+
+          }
+        else if(tolower(parCaller) == "theta")
+          {
+            lambdaL <- parRepCpl[["lambdaL"]]
+            tau <- parRepCpl[["tau"]]
+
+            delta <- -log(2)/log(lambdaL)
+
+            out <- delta
+            deltaLen <- length(delta)
+            out[1:deltaLen] <- NA
+
+            for(i in 1:deltaLen)
+              {
+                tauCurr <- tau[i]
+                deltaCurr <- delta[i]
+                outRootCurr <-
+                  uniroot(function(x, CplNM, deltaCurr, tauCurr)
+                          {
+                            kendalltau(CplNM = CplNM,
+                                       parCpl = list(theta = x,
+                                         delta = deltaCurr))-tauCurr
+                          },
+                          interval = c(1, 1000), CplNM = CplNM,
+                          deltaCurr = deltaCurr,
+                          tauCurr = tauCurr)
+                ##print(outRootCurr)
+                out[i] <- outRootCurr$root
+              }
+          }
       }
     return(out)
   }
@@ -105,75 +175,3 @@ kendalltauInv <- function(CplNM, parRepCpl, tauTabular)
 ## delta <- -log(2)/log(lambdaL)
 ## theta <- log(2)/log(2-lambdaU)
 ## tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
-
-
-## The iterative method
-## kendalltauInv0 <- function(CplNM, parRepCpl, parCaller = "theta")
-##   {
-##     ## TODO: The max interval could not handle Inf in the uniroot function.
-##     ## TODO: Consider the error handle. i.e., In theory (see the Appendix in
-##     ## the paper) you can't have small tau with big delta (lower tail
-##     ## dependent) which yields non accurate root.
-##     if(tolower(CplNM) == "bb7")
-##       {
-
-##         if(tolower(parCaller) == "delta")
-##           {
-
-##             theta <- parRepCpl[["theta"]]
-##             tau <- parRepCpl[["tau"]]
-
-##             out <- theta
-##             thetaLen <- length(theta)
-##             out[1:thetaLen] <- NA
-
-##             for(i in 1:thetaLen)
-##               {
-##                 tauCurr <- tau[i]
-##                 deltaCurr <- delta[i]
-##                 outRootCurr <-
-##                   uniroot(function(x, thetaCurr, deltaCurr, tauCurr)
-##                           {
-##                             kendalltau(CplNM = CplNM,
-##                                        parCpl = list(theta = thetaCurr,
-##                                          delta = x))-tauCurr
-##                           },
-##                           interval = c(1e-13, 1000), CplNM = CplNM,
-##                           thetaCurr = thetaCurr, tauCurr =
-##                           tauCurr)
-##                 ##print(outRootCurr)
-##                 out[i] <- outRootCurr$root
-##               }
-##           }
-##         else if(tolower(parCaller) == "theta")
-##           {
-##             lambdaL <- parRepCpl[["lambdaL"]]
-##             tau <- parRepCpl[["tau"]]
-
-##             delta <- -log(2)/log(lambdaL)
-
-##             out <- delta
-##             deltaLen <- length(delta)
-##             out[1:deltaLen] <- NA
-
-##             for(i in 1:deltaLen)
-##               {
-##                 tauCurr <- tau[i]
-##                 deltaCurr <- delta[i]
-##                 outRootCurr <-
-##                   uniroot(function(x, CplNM, deltaCurr, tauCurr)
-##                           {
-##                             kendalltau(CplNM = CplNM,
-##                                        parCpl = list(theta = x,
-##                                          delta = deltaCurr))-tauCurr
-##                           },
-##                           interval = c(1, 1000), CplNM = CplNM,
-##                           deltaCurr = deltaCurr,
-##                           tauCurr = tauCurr)
-##                 ##print(outRootCurr)
-##                 out[i] <- outRootCurr$root
-##               }
-##           }
-##       }
-##     return(out)
-##   }

@@ -13,6 +13,23 @@
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
 logCplLik <- function(u, CplNM, parCpl, staticArgs)
 {
+
+###----------------------------------------------------------------------------
+### Let the copula likelihood be -Inf if u -> 0 or 1
+###----------------------------------------------------------------------------
+
+  ## if any u -> 0 or u -> 1,  logCplObs -> -Inf
+  u.bad <- (any(u == 0) || any(u == 1))
+  if(u.bad)
+    {
+      out <- -Inf
+      return(out)
+    }
+
+###----------------------------------------------------------------------------
+### Compute the copula likelihood
+###----------------------------------------------------------------------------
+
   ## The sum of log copula density
   if(tolower(CplNM) == "bb7")
     {
@@ -29,7 +46,6 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       delta <- as.vector(-log(2)/log(lambdaL))
       theta <- as.vector(log(2)/log(2-lambdaU))
-
       ## temporal data
       ## L1 <- 1-(1-u1)^theta
       ## L2 <- 1-(1-u2)^theta
@@ -53,6 +69,33 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
           2*(1+delta)/delta*log(L5)+
             (-2+1/theta)*log(L6)+
               log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta)
+
+
+###----------------------------------------------------------------------------
+### Try to rewrite the copula function in terms of original densities
+###----------------------------------------------------------------------------
+
+      rowProds <- function(x)
+        {
+          out <- apply(x, 1, prod)
+          return(out)
+        }
+
+
+
+      CplObs <- rowProds(TC1)^(-1-delta)*rowProds(TC2)
+
+
+
+
+
+
+
+
+
+
+
+
 
       ## loglik <- sum(logCpl)
 

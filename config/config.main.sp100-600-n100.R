@@ -77,17 +77,20 @@ MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 ## should be in the following structure:
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
-DGPCpl(DGPconfigfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
-       export = "parent.env")
+
+load(file.path(pathLibRoot, "data/SP100-SP600-n100.Rdata"))
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
-## Mdl.X <- MdlDataStruc
-## Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
-## Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
-## Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
-## Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
-## Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
-## Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+Mdl.X <- MdlDataStruc
+Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
+Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
+Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
+Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
+Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
+Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+
+## THE RESPONSE VARIABLES
+Mdl.Y <- Y
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
@@ -203,7 +206,7 @@ priArgs <- MdlDataStruc
 priArgs[[1]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0.5, variance = 1),
+           input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1)),
@@ -211,7 +214,7 @@ priArgs[[1]][[1]] <-
 priArgs[[1]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 0.5, variance = 1),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1)),
@@ -219,7 +222,7 @@ priArgs[[1]][[2]] <-
 priArgs[[2]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0.5, variance = 1),
+           input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1)),
@@ -227,7 +230,7 @@ priArgs[[2]][[1]] <-
 priArgs[[2]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 0.5, variance = 1),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1)),
@@ -243,7 +246,7 @@ priArgs[[3]][[1]] <-
 priArgs[[3]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.1, variance = 1, a = 0, b = 0.3),
+           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1)),
