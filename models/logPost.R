@@ -121,7 +121,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 
   Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
-  Mdl.logPost <- sum(unlist(Mdl.logPri)) + sum(Mdl.logLikCpl) + sum(Mdl.d)
+  Mdl.logPost <- sum(unlist(Mdl.logPri)) + Mdl.logLikCpl + sum(Mdl.d)
 
   staticArgs[["Mdl.logPri"]] <- Mdl.logPri
   staticArgs[["Mdl.par"]] <- Mdl.par

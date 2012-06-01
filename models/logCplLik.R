@@ -19,7 +19,8 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 ###----------------------------------------------------------------------------
 
   ## if any u -> 0 or u -> 1,  logCplObs -> -Inf
-  u.bad <- (any(u == 0) || any(u == 1))
+  tol <- .Machine$double.eps
+  u.bad <- (any(u < 0+tol) || any(u > 1-tol))
   if(u.bad)
     {
       out <- -Inf
@@ -46,6 +47,7 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       delta <- as.vector(-log(2)/log(lambdaL))
       theta <- as.vector(log(2)/log(2-lambdaU))
+
       ## temporal data
       ## L1 <- 1-(1-u1)^theta
       ## L2 <- 1-(1-u2)^theta
@@ -64,46 +66,11 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
 
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 
-      logCplObs <- (-1-delta)*rowSums(log(TC1))+
+      logCplDensObs <- (-1-delta)*rowSums(log(TC1))+
         rowSums(log(TC2))-
           2*(1+delta)/delta*log(L5)+
             (-2+1/theta)*log(L6)+
               log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta)
-
-
-###----------------------------------------------------------------------------
-### Try to rewrite the copula function in terms of original densities
-###----------------------------------------------------------------------------
-
-      rowProds <- function(x)
-        {
-          out <- apply(x, 1, prod)
-          return(out)
-        }
-
-
-
-      CplObs <- rowProds(TC1)^(-1-delta)*rowProds(TC2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-      ## loglik <- sum(logCpl)
-
-      out <- logCplObs
-      ## if(is.infinite(out)) browser()
-
-      browser()
-
     }
   else if(tolower(CplNM) == "gaussian")
     {
@@ -113,6 +80,8 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
     {
       stop("The copula is not implemented yet!")
     }
+
+  out <- sum(logCplDensObs)
   return(out)
   ## The sum of log marginal density
 }
