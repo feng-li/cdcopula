@@ -133,8 +133,9 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
 ###----------------------------------------------------------------------------
-
-
+  ## We use a simple two stage optimizations for the marginal and copula model.
+  ##  optim()
+  browser()
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS

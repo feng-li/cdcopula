@@ -82,12 +82,12 @@ load(file.path(pathLibRoot, "data/SP100-SP600-n100.Rdata"))
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
-Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
-Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
-Mdl.X[[2]][[2]] <- cbind(1, X[[2]])
-Mdl.X[[3]][[1]] <- cbind(1, X[[1]], X[[2]])
-Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
+Mdl.X[[1]][[1]] <- cbind(1, X[[1]][, 1:3])
+Mdl.X[[1]][[2]] <- cbind(1, X[[1]][, 1:3])
+Mdl.X[[2]][[1]] <- cbind(1, X[[2]][, 1:3])
+Mdl.X[[2]][[2]] <- cbind(1, X[[2]][, 1:3])
+Mdl.X[[3]][[1]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])
+Mdl.X[[3]][[2]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- Y

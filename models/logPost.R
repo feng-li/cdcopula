@@ -70,7 +70,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ### still working.
 ###----------------------------------------------------------------------------
 
-
 ### Update Mdl.par
   Mdl.par <- CplLinkConstrain(CplNM = CplNM,
                               Mdl.X = Mdl.X,
