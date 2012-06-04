@@ -59,8 +59,9 @@ initPar <- function(varSelArgs, betaInit, Mdl.X)
             else # Do nothing, use user input
               {
                 Mdl.betaIdx[[i]][[j]] <- array(TRUE, c(ncolX.ij, 1))
+                varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
+                Mdl.betaIdx[[i]][[j]][varSelCandCurr] <- FALSE
                 Mdl.betaIdx[[i]][[j]][varSelInitCurr] <- TRUE
-
               }
 
 ###----------------------------------------------------------------------------
