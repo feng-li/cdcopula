@@ -110,7 +110,6 @@ CplMain <- function(configfile)
 
   ## Initialize "staticArgs"
   ## Dry run the logPost once to obtain it.
-  ## FIXME: Using optimization routine to get good initial values
   u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
               dimnames = list(NULL, names(MdlTraining.Y)))
   staticArgs <- list(Mdl.logPri =  MdlDataStruc,
@@ -118,6 +117,50 @@ CplMain <- function(configfile)
                      Mdl.u = u,
                      Mdl.d = u,
                      tauTabular = tauTabular)
+
+###----------------------------------------------------------------------------
+### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
+###----------------------------------------------------------------------------
+  ## A simple two stage optimizations for the marginal and copula model.
+  ## STAGE ONE: update the parameters in the marginal models independently
+  ## STAGE TWO: Use the parameters in stage one to update the copula
+  ## densities. ()
+
+
+
+  browser()
+
+  betaVec <- unlist(Mdl.beta)
+  betaVec <- betaVec[betaVec != 0]
+  names(betaVec) <- NULL
+  betaVecOptim <- optim(
+                    par = betaVec,
+                    fn = logPostOptim,
+                    control = list(fnscale = -1),
+                    CplNM = CplNM,
+                    Mdl.Y = MdlTraining.Y,
+                    Mdl.X = MdlTraining.X,
+                    Mdl.betaIdx = Mdl.betaIdx,
+                    Mdl.parLink = Mdl.parLink,
+                    varSelArgs = varSelArgs,
+                    MargisTypes = MargisTypes,
+                    priArgs = priArgs,
+                    parUpdate = parUpdate,
+                    staticArgs = staticArgs)
+
+  logPostTest <- logPost(CplNM = CplNM,
+                        Mdl.Y = MdlTraining.Y,
+                        Mdl.X = MdlTraining.X,
+                        Mdl.beta = Mdl.beta,
+                        Mdl.betaIdx = Mdl.betaIdx,
+                        Mdl.parLink = Mdl.parLink,
+                        varSelArgs = varSelArgs,
+                        MargisTypes = MargisTypes,
+                        priArgs = priArgs,
+                        parUpdate = parUpdate,
+                        staticArgs = staticArgs)[["Mdl.logPost"]]
+
+
   staticArgs <- logPost(CplNM = CplNM,
                         Mdl.Y = MdlTraining.Y,
                         Mdl.X = MdlTraining.X,
@@ -130,12 +173,6 @@ CplMain <- function(configfile)
                         parUpdate = parUpdate,
                         staticArgs = staticArgs)[["staticArgs"]]
 
-###----------------------------------------------------------------------------
-### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
-###----------------------------------------------------------------------------
-  ## We use a simple two stage optimizations for the marginal and copula model.
-  ##  optim()
-  browser()
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS

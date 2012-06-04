@@ -79,6 +79,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                               Mdl.par = Mdl.par)
 
 ### Update marginal pdf and cdf
+
+### the marginal u and only updated if the corresponding parameters are updated.
   CompNM <- names(Mdl.beta)
   MargisNM <- CompNM[CompNM != CplNM]
   for(CompCaller in MargisNM)
@@ -129,6 +131,5 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
   out <- list(Mdl.logPost = Mdl.logPost,
               staticArgs = staticArgs)
-
   return(out)
 }
