@@ -59,7 +59,6 @@ CplMain <- function(configfile)
   ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
   ## {
 
-
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
   MdlTraining.X <- rapply(object=Mdl.X,
@@ -98,57 +97,73 @@ CplMain <- function(configfile)
         }
     }
 
-  ## Assign the initial values
-  initParOut <- initPar(varSelArgs = varSelArgs,
-                        betaInit = betaInit,
-                        Mdl.X = MdlTraining.X)
-  Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
-  Mdl.beta <- initParOut[["Mdl.beta"]]
-
-  ## Switch all the updating indicators ON
-  parUpdate <- MCMCUpdate
-
-  ## Initialize "staticArgs"
-  ## Dry run the logPost once to obtain it.
-  u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
-              dimnames = list(NULL, names(MdlTraining.Y)))
-  staticArgs <- list(Mdl.logPri =  MdlDataStruc,
-                     Mdl.par = MdlDataStruc,
-                     Mdl.u = u,
-                     Mdl.d = u,
-                     tauTabular = tauTabular)
 
 ###----------------------------------------------------------------------------
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
 ###----------------------------------------------------------------------------
-  ## A simple two stage optimizations for the marginal and copula model.
-  ## STAGE ONE: update the parameters in the marginal models independently
-  ## STAGE TWO: Use the parameters in stage one to update the copula
-  ## densities. ()
 
+  ## Generate initial values that does not let log posterior be -Inf.
+  InitGood <- FALSE
 
+  ## Loop and count how many times tried for initial values
+  nLoopInit <- 0
+  while(InitGood == FALSE)
+    {
+      ## Assign the initial values
+      initParOut <- initPar(varSelArgs = varSelArgs,
+                            betaInit = betaInit,
+                            Mdl.X = MdlTraining.X)
+      Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
+      Mdl.beta <- initParOut[["Mdl.beta"]]
 
-  browser()
+      ## Switch all the updating indicators ON
+      parUpdate <- MCMCUpdate
 
-  betaVec <- unlist(Mdl.beta)
-  betaVec <- betaVec[betaVec != 0]
-  names(betaVec) <- NULL
-  betaVecOptim <- optim(
-                    par = betaVec,
-                    fn = logPostOptim,
-                    control = list(fnscale = -1),
-                    CplNM = CplNM,
-                    Mdl.Y = MdlTraining.Y,
-                    Mdl.X = MdlTraining.X,
-                    Mdl.betaIdx = Mdl.betaIdx,
-                    Mdl.parLink = Mdl.parLink,
-                    varSelArgs = varSelArgs,
-                    MargisTypes = MargisTypes,
-                    priArgs = priArgs,
-                    parUpdate = parUpdate,
-                    staticArgs = staticArgs)
+      ## Initialize "staticArgs"
+      ## Dry run the logPost once to obtain it.
+      u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
+                  dimnames = list(NULL, names(MdlTraining.Y)))
+      staticArgs <- list(Mdl.logPri =  MdlDataStruc,
+                         Mdl.par = MdlDataStruc,
+                         Mdl.u = u,
+                         Mdl.d = u,
+                         tauTabular = tauTabular)
 
-  logPostTest <- logPost(CplNM = CplNM,
+      logPostTest <- logPost(CplNM = CplNM,
+                             Mdl.Y = MdlTraining.Y,
+                             Mdl.X = MdlTraining.X,
+                             Mdl.beta = Mdl.beta,
+                             Mdl.betaIdx = Mdl.betaIdx,
+                             Mdl.parLink = Mdl.parLink,
+                             varSelArgs = varSelArgs,
+                             MargisTypes = MargisTypes,
+                             priArgs = priArgs,
+                             parUpdate = parUpdate,
+                             staticArgs = staticArgs)[["Mdl.logPost"]]
+
+      if(is.finite(logPostTest) == FALSE &&
+         any(tolower(unlist(betaInit)) == "random"))
+        {
+          InitGood <- FALSE
+        }
+      else
+        {
+          InitGood <- TRUE
+        }
+      nLoopInit <- nLoopInit +1
+    }
+
+  ## Optimize the initial values via BFGS.
+  betaVecInit <- parSwap(betaInput = Mdl.beta,
+                         Mdl.beta = Mdl.beta,
+                         Mdl.betaIdx = Mdl.betaIdx,
+                         parUpdate = parUpdate)
+
+  betaVecOptim <- optim(par = betaVecInit,
+                        fn = logPostOptim,
+                        control = list(fnscale = -1, maxit = 200),
+                        method = "BFGS",
+                        CplNM = CplNM,
                         Mdl.Y = MdlTraining.Y,
                         Mdl.X = MdlTraining.X,
                         Mdl.beta = Mdl.beta,
@@ -158,9 +173,14 @@ CplMain <- function(configfile)
                         MargisTypes = MargisTypes,
                         priArgs = priArgs,
                         parUpdate = parUpdate,
-                        staticArgs = staticArgs)[["Mdl.logPost"]]
+                        staticArgs = staticArgs)
 
+  Mdl.beta <- parSwap(betaInput = betaVecOptim[["par"]],
+                      Mdl.beta = Mdl.beta,
+                      Mdl.betaIdx = Mdl.betaIdx,
+                      parUpdate = parUpdate)
 
+  ## Dry run to obtain the initial "staticArgs"
   staticArgs <- logPost(CplNM = CplNM,
                         Mdl.Y = MdlTraining.Y,
                         Mdl.X = MdlTraining.X,
@@ -172,7 +192,6 @@ CplMain <- function(configfile)
                         priArgs = priArgs,
                         parUpdate = parUpdate,
                         staticArgs = staticArgs)[["staticArgs"]]
-
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
@@ -234,10 +253,11 @@ CplMain <- function(configfile)
 ### code with malapply().
 ### ----------------------------------------------------------------------------
 
-
   parallel <- FALSE
   if(parallel == TRUE)
     {
+      require(parallel)
+
       ## Use mcmlapply function
     }
   else
@@ -257,7 +277,6 @@ CplMain <- function(configfile)
 
 
   ## Fetch everything at current environment to a list
-  ## Use list2env() to extract the entries
   out <- as.list(environment())
-  ## return(out)
+  list2env(out, envir = .GlobalEnv)
 }

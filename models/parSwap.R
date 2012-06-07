@@ -1,7 +1,26 @@
 parSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = NA)
   {
-    ## Convert betaVec to Mdl.beta
-    if(is.vector(betaInput))
+    ## Convert Mdl.beta -> betaVec
+    if(class(betaInput)  == "list")
+      {
+        for(CompCurr in names(Mdl.betaIdx))
+          {
+            for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
+              {
+                if(parUpdate[[CompCurr]][[parCurr]] == FALSE)
+                  {
+                    Mdl.beta[[CompCurr]][[parCurr]] <- NULL
+                    Mdl.betaIdx[[CompCurr]][[parCurr]] <- NULL
+                  }
+              }
+          }
+        betaVec <- unlist(Mdl.beta)
+        betaIdxVec <- unlist(Mdl.betaIdx)
+        betaVec <- betaVec[betaIdxVec]
+        names(betaVec) <- NULL
+        out <- betaVec
+      }
+    else ## Convert betaVec -> Mdl.beta
       {
         ## Convert the parameter vector into the model structure
         Idx0 <- NA # the initial parameter index
@@ -10,7 +29,7 @@ parSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = NA)
           {
             for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
               {
-                if(parUpdate[[CompCurr]][[parCurr]])
+                if(parUpdate[[CompCurr]][[parCurr]] == TRUE)
                   {
                     betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
                     betaLen <- length(betaIdxCurr)
@@ -27,16 +46,7 @@ parSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = NA)
               }
 
           }
-
         out <- Mdl.beta
-      }
-    else ## Convert Mdl.beta -> betaVec
-      {
-        betaVec <- unlist(Mdl.beta)
-        betaIdxVec <- unlist(Mdl.betaIdx)
-        betaVec <- betaVec[(betaVec != 0) & (betaIdxVec == TRUE)]
-        names(betaVec) <- NULL
-        out <- betaVec
       }
     return(out)
   }

@@ -46,6 +46,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## Binomial proposal a small subset
       betaIdx.propCand <- which(rbinom(n = length(varSelCand) , size = 1,
                                        prob = betaIdxArgs$prob) == 1)
+
       ## Special case to make sure at least one variable is proposed a change
       if(length(betaIdx.propCand) == 0)
         {
@@ -73,6 +74,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   beta.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]][betaIdx.curr]
   Mdl.beta.curr <- Mdl.beta
   Mdl.betaIdx.curr <- Mdl.betaIdx
+  staticArgs.curr <- staticArgs
+
+  browser()
 
   ## Newton method to approach the posterior based on the current draw
   beta.curr2mode <- GNewtonMove(propArgs = propArgs,
@@ -87,7 +91,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                 Mdl.beta = Mdl.beta.curr,
                                 Mdl.betaIdx = Mdl.betaIdx.curr,
                                 MargisTypes = MargisTypes,
-                                staticArgs = staticArgs)
+                                staticArgs = staticArgs.curr)
 
   ## The information for proposed density via K-step Newton's method
   beta.curr2mode.mean <- matrix(beta.curr2mode$param, 1) # 1-by-p
@@ -144,7 +148,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                     Mdl.beta = Mdl.beta.prop,
                                     Mdl.betaIdx = Mdl.betaIdx.prop,
                                     MargisTypes = MargisTypes,
-                                    staticArgs = staticArgs)
+                                    staticArgs = staticArgs.prop2mode)
 
       ## The information for proposed density via K-step Newton's method
       beta.prop2mode.mean <- matrix(beta.prop2mode$param, 1) # 1-by-p
@@ -177,7 +181,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                   MargisTypes = MargisTypes,
                                   priArgs = priArgs,
                                   parUpdate = parUpdate,
-                                  staticArgs = staticArgs)[["Mdl.logPost"]]
+                                  staticArgs = staticArgs.prop)[["Mdl.logPost"]]
 
           ## The log posterior for the current draw
           logPost.curr <- logPost(CplNM = CplNM,
@@ -190,7 +194,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                   MargisTypes = MargisTypes,
                                   priArgs = priArgs,
                                   parUpdate = parUpdate,
-                                  staticArgs = staticArgs)[["Mdl.logPost"]]
+                                  staticArgs = staticArgs.curr)[["Mdl.logPost"]]
 
           ## compute the MH ratio.
           logMHRatio <- logPost.prop - logPost.curr +
