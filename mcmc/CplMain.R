@@ -41,7 +41,7 @@ CplMain <- function(configfile)
   MdlMCMC.beta <- vector("list", nCrossFold)
   MdlMCMC.betaIdx <- vector("list", nCrossFold)
   MdlMCMC.par <- vector("list", nCrossFold)
-  MdlMCMC.AccPbeta <- vector("list", nCrossFold)
+  MdlMCMC.AccProb <- vector("list", nCrossFold)
 
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
@@ -78,7 +78,7 @@ CplMain <- function(configfile)
                                    idx = Testing.Idx,
                                    how = "replace")
 
-  ## Allocate the storage for the final parameters
+  ## Allocate the storage for the final parameters in current fold
   MCMC.beta <- MdlDataStruc
   MCMC.betaIdx <- MdlDataStruc
   MCMC.par <- MdlDataStruc
@@ -94,10 +94,9 @@ CplMain <- function(configfile)
           MCMC.beta[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
           MCMC.par[[i]][[j]] <- array(NA, c(nObs, nIter))
           ## The Metropolis-Hasting acceptance rate
-          MCMC.AccPbeta[[i]][[j]] <- array(NA, c(nIter, 1))
+          MCMC.AccProb[[i]][[j]] <- array(NA, c(nIter, 1))
         }
     }
-
 
 ###----------------------------------------------------------------------------
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
@@ -236,10 +235,10 @@ CplMain <- function(configfile)
                       staticArgs <- MHOut[["staticArgs"]]
 
                       ## The final update the parameters in each fold
-                      MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
-                      MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
-                      MdlMCMC.par[[iCross]] <- Mdl.par.iCross
-                      MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
+                      MCMC.beta[[CompCurr]][[parCurr]][, nIter] <- MHOut[["beta"]]
+                      MCMC.betaIdx[[CompCurr]][[parCurr]][, iIter] <- MHOut[["betaIdx"]]
+                      MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["par"]]
+                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter, 1] <- MHOut[["accPbeta"]]
                     }
                   else
                     {
@@ -251,7 +250,10 @@ CplMain <- function(configfile)
             }
         }
     }
-
+  out <- list(MCMC.beta = MCMC.beta,
+              MCMC.betaIdx = MCMC.betaIdx,
+              MCMC.par = MCMC.par,
+              MCMC.AccProb = MCMC.AccProb)
   ## }
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC

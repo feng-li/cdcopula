@@ -17,7 +17,9 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
             if(tolower(linkCurr) == "glogit")
               {
                 tau <- Mdl.par[[CplNM]][["tau"]]
-                a <- 0 ## The lower bound of generalized logit link
+
+                ## The upper and lower bounds are dynamic
+                a <- 0 ## The lower bound
                 b <- 2^(1/2-1/(2*tau)) ## the upper bound
                 extArgs <- list(a = a, b = b)
               }
