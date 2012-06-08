@@ -82,8 +82,7 @@ CplMain <- function(configfile)
   MCMC.beta <- MdlDataStruc
   MCMC.betaIdx <- MdlDataStruc
   MCMC.par <- MdlDataStruc
-  MCMC.AccPbeta <- MdlDataStruc
-
+  MCMC.AccProb <- MdlDataStruc
   for(i in names(MdlDataStruc))
     {
       for(j in names(MdlDataStruc[[i]]))
@@ -266,7 +265,6 @@ CplMain <- function(configfile)
   if(parallel == TRUE)
     {
       require(parallel)
-
       ## Use mcmlapply function
     }
   else

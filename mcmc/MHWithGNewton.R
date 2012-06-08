@@ -41,32 +41,37 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   varSelCand <- varSelArgs[[CompCaller]][[parCaller]]$cand
   betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
-  if(betaIdxArgs$type == "binom")
-    {
-      ## Binomial proposal a small subset
-      betaIdx.propCand <- which(rbinom(n = length(varSelCand) , size = 1,
-                                       prob = betaIdxArgs$prob) == 1)
 
-      ## Special case to make sure at least one variable is proposed a change
-      if(length(betaIdx.propCand) == 0)
-        {
-          betaIdx.propCand <- sample(varSelCand, 1)
-        }
-    }
-
-  ## The current and proposed variable selection indicators
+  ## The current and proposed variable selection indicators are the same by
+  ## assuming there is no variable selection
   betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
-
   betaIdx.prop <- betaIdx.curr
-  betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
-
-  ## No. of covariates
-  nCovs <- length(betaIdx.curr)
 
   ## The jump density for the variable selection indicators
   ## TODO: Add adaptive scheme
   logJump.betaIdx.currATprop <- 1
   logJump.betaIdx.propATcurr <- 1
+
+  ## No. of covariates
+  nCovs <- length(betaIdx.curr)
+
+  ## If variable selection is available, make a proposal change
+  if(length(varSelCand) > 0)
+    {
+      if(betaIdxArgs$type == "binom")
+        {
+          ## Binomial proposal a small subset
+          betaIdx.propCand <- which(rbinom(n = length(varSelCand) , size = 1,
+                                           prob = betaIdxArgs$prob) == 1)
+
+          ## Special case to make sure at least one variable is proposed a change
+          if(length(betaIdx.propCand) == 0)
+            {
+              betaIdx.propCand <- sample(varSelCand, 1)
+            }
+        }
+      betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
+    }
 
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
@@ -216,13 +221,15 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       out <- list(betaIdx = betaIdx.prop,
                   beta = beta.prop,
-                  accept.prob = accept.prob)
+                  accept.prob = accept.prob,
+                  staticArgs = staticArgs)
     }
   else # keep current
     {
       out <- list(betaIdx = betaIdx.curr,
                   beta = beta.curr,
-                  accept.prob = 0)
+                  accept.prob = 0,
+                  staticArgs = staticArgs)
     }
   return(out)
 }
