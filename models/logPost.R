@@ -71,12 +71,12 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 
 ### Update Mdl.par
-  Mdl.par <- CplLinkConstrain(CplNM = CplNM,
-                              Mdl.X = Mdl.X,
-                              Mdl.parLink = Mdl.parLink,
-                              Mdl.beta = Mdl.beta,
-                              parUpdate = parUpdate,
-                              Mdl.par = Mdl.par)
+  Mdl.par <- parCplMeanFun(CplNM = CplNM,
+                           Mdl.X = Mdl.X,
+                           Mdl.parLink = Mdl.parLink,
+                           Mdl.beta = Mdl.beta,
+                           parUpdate = parUpdate,
+                           Mdl.par = Mdl.par)
 
 ### Update marginal pdf and cdf
 

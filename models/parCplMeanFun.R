@@ -9,8 +9,8 @@
 ##' @note Created: Fri May 11 09:34:09 CEST 2012;
 ##'       Current: Fri May 11 09:34:16 CEST 2012.
 ##' TODO: Write it in a more elegant way
-CplLinkConstrain <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
-                             parUpdate, Mdl.par)
+parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
+                          parUpdate, Mdl.par)
   {
     if(tolower(CplNM) == "bb7")
       {

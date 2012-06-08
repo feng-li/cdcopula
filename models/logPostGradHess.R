@@ -68,10 +68,10 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                      staticArgs = staticArgs)
 
   ## The gradient for the link function n-by-1
-  LinkGradObs <- CplLinkConstrainGrad(CplNM = CplNM,
-                                      Mdl.par = Mdl.par,
-                                      Mdl.parLink = Mdl.parLink,
-                                      chainCaller = chainCaller)
+  LinkGradObs <- parCplMeanFunGrad(CplNM = CplNM,
+                                   Mdl.par = Mdl.par,
+                                   Mdl.parLink = Mdl.parLink,
+                                   chainCaller = chainCaller)
 
   ## The gradient and Hessian for the likelihood
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs

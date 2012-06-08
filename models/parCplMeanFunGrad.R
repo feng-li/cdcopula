@@ -1,4 +1,4 @@
-CplLinkConstrainGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
+parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
   {
     if(tolower(CplNM) == "bb7")
       {

@@ -83,6 +83,7 @@ CplMain <- function(configfile)
   MCMC.betaIdx <- MdlDataStruc
   MCMC.par <- MdlDataStruc
   MCMC.AccPbeta <- MdlDataStruc
+
   for(i in names(MdlDataStruc))
     {
       for(j in names(MdlDataStruc[[i]]))
@@ -220,19 +221,25 @@ CplMain <- function(configfile)
                   if(tolower(algmArgs[["type"]]) == "gnewtonmove")
                     {
                       ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
-                      MHOut <- MHWithGNewton(
-                                 CplNM = CplNM,
-                                 propArgs = propArgs,
-                                 varSelArgs = varSelArgs,
-                                 priArgs = priArgs,
-                                 parUpdate = parUpdate,
-                                 Mdl.Y = MdlTraining.Y,
-                                 Mdl.X = MdlTraining.X,
-                                 Mdl.beta = Mdl.beta,
-                                 Mdl.betaIdx = Mdl.betaIdx,
-                                 MargisTypes = MargisTypes,
-                                 Mdl.parLink = Mdl.parLink,
-                                 staticArgs = staticArgs)
+                      MHOut <- MHWithGNewton(CplNM = CplNM,
+                                             propArgs = propArgs,
+                                             varSelArgs = varSelArgs,
+                                             priArgs = priArgs,
+                                             parUpdate = parUpdate,
+                                             Mdl.Y = MdlTraining.Y,
+                                             Mdl.X = MdlTraining.X,
+                                             Mdl.beta = Mdl.beta,
+                                             Mdl.betaIdx = Mdl.betaIdx,
+                                             MargisTypes = MargisTypes,
+                                             Mdl.parLink = Mdl.parLink,
+                                             staticArgs = staticArgs)
+                      staticArgs <- MHOut[["staticArgs"]]
+
+                      ## The final update the parameters in each fold
+                      MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
+                      MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
+                      MdlMCMC.par[[iCross]] <- Mdl.par.iCross
+                      MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
                     }
                   else
                     {
