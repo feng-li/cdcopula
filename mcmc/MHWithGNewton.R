@@ -76,12 +76,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### Make good proposal via K-steps Newton's method
 ###----------------------------------------------------------------------------
-  beta.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]][betaIdx.curr]
+  beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
+  beta.curr <- beta.curr.full[betaIdx.curr]
   Mdl.beta.curr <- Mdl.beta
   Mdl.betaIdx.curr <- Mdl.betaIdx
   staticArgs.curr <- staticArgs
-
-  browser()
 
   ## Newton method to approach the posterior based on the current draw
   beta.curr2mode <- GNewtonMove(propArgs = propArgs,
@@ -222,14 +221,14 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
      runif(1) < accept.prob) # keep update
     {
       out <- list(betaIdx = betaIdx.prop,
-                  beta = beta.prop,
+                  beta = beta.prop.full,
                   accept.prob = accept.prob,
                   staticArgs = staticArgs.prop)
     }
   else # keep current
     {
       out <- list(betaIdx = betaIdx.curr,
-                  beta = beta.curr,
+                  beta = beta.curr.full,
                   accept.prob = 0,
                   staticArgs = staticArgs.curr)
     }

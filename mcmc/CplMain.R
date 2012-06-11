@@ -54,6 +54,7 @@ CplMain <- function(configfile)
   iCross <- 1
   Training.Idx <- crossValidIdx[["training"]][[iCross]]
   Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
+
   ## envCurr <- environment()
   ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
   ## {
@@ -61,21 +62,21 @@ CplMain <- function(configfile)
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
   MdlTraining.X <- rapply(object=Mdl.X,
-                                    f = subsetFun,
-                                    idx = Training.Idx,
-                                    how = "replace")
+                          f = subsetFun,
+                          idx = Training.Idx,
+                          how = "replace")
   MdlTraining.Y <- rapply(object=Mdl.Y,
-                                    f = subsetFun,
-                                    idx = Training.Idx,
-                                    how = "replace")
+                          f = subsetFun,
+                          idx = Training.Idx,
+                          how = "replace")
   MdlTesting.X <- rapply(object=Mdl.X,
-                                   f = subsetFun,
-                                   idx = Testing.Idx,
-                                   how = "replace")
+                         f = subsetFun,
+                         idx = Testing.Idx,
+                         how = "replace")
   MdlTesting.Y <- rapply(object=Mdl.Y,
-                                   f = subsetFun,
-                                   idx = Testing.Idx,
-                                   how = "replace")
+                         f = subsetFun,
+                         idx = Testing.Idx,
+                         how = "replace")
 
   ## Allocate the storage for the final parameters in current fold
   MCMC.beta <- MdlDataStruc
@@ -88,9 +89,9 @@ CplMain <- function(configfile)
         {
           ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
           ## The MCMC storage
-          MCMC.betaIdx[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
-          MCMC.beta[[i]][[j]] <- array(NA, c(ncolX.ij, nIter))
-          MCMC.par[[i]][[j]] <- array(NA, c(nObs, nIter))
+          MCMC.betaIdx[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
+          MCMC.beta[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
+          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nObs))
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- array(NA, c(nIter, 1))
         }
@@ -103,7 +104,7 @@ CplMain <- function(configfile)
   ## Generate initial values that does not let log posterior be -Inf.
   InitGood <- FALSE
 
-  ## Loop and count how many times tried for initial values
+  ## Loop and count how many times tried for generating initial values
   nLoopInit <- 0
   while(InitGood == FALSE)
     {
@@ -160,7 +161,7 @@ CplMain <- function(configfile)
 
   betaVecOptim <- optim(par = betaVecInit,
                         fn = logPostOptim,
-                        control = list(fnscale = -1, maxit = 200),
+                        control = list(fnscale = -1, maxit = 100),
                         method = "BFGS",
                         CplNM = CplNM,
                         Mdl.Y = MdlTraining.Y,
@@ -231,13 +232,21 @@ CplMain <- function(configfile)
                                              MargisTypes = MargisTypes,
                                              Mdl.parLink = Mdl.parLink,
                                              staticArgs = staticArgs)
-                      staticArgs <- MHOut[["staticArgs"]]
 
-                      ## The final update the parameters in each fold
-                      MCMC.beta[[CompCurr]][[parCurr]][, nIter] <- MHOut[["beta"]]
-                      MCMC.betaIdx[[CompCurr]][[parCurr]][, iIter] <- MHOut[["betaIdx"]]
-                      # MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
-                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter, 1] <- MHOut[["accPbeta"]]
+                      browser()
+                      ## Update the MH results to the current parameter structure
+                      staticArgs <- MHOut[["staticArgs"]]
+                      Mdl.beta[[CompCurr]][[parCurr]] <- MHOut[["beta"]]
+                      Mdl.betaIdx[[CompCurr]][[parCurr]] <- MHOut[["betaIdx"]]
+
+                      ## Export the parameters in each fold
+                      MCMC.beta[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["beta"]]
+                      MCMC.betaIdx[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["betaIdx"]]
+                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <-
+                        MHOut[["accept.prob"]]
+
+                      ## MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
+
                     }
                   else
                     {
@@ -276,12 +285,11 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
-      ## The final update the parameters in each fold
-      MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
-      MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
-      MdlMCMC.par[[iCross]] <- Mdl.par.iCross
-      MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
-
+  ## The final update the parameters in each fold
+  MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
+  MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
+  MdlMCMC.par[[iCross]] <- Mdl.par.iCross
+  MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
 
   ## Fetch everything at current environment to a list
   out <- as.list(environment())
