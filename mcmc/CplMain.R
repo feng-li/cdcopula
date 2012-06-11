@@ -233,7 +233,6 @@ CplMain <- function(configfile)
                                              Mdl.parLink = Mdl.parLink,
                                              staticArgs = staticArgs)
 
-                      browser()
                       ## Update the MH results to the current parameter structure
                       staticArgs <- MHOut[["staticArgs"]]
                       Mdl.beta[[CompCurr]][[parCurr]] <- MHOut[["beta"]]
@@ -242,8 +241,7 @@ CplMain <- function(configfile)
                       ## Export the parameters in each fold
                       MCMC.beta[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["beta"]]
                       MCMC.betaIdx[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["betaIdx"]]
-                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <-
-                        MHOut[["accept.prob"]]
+                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <- MHOut[["accept.prob"]]
 
                       ## MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
 

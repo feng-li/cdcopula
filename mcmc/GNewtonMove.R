@@ -126,5 +126,6 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                       staticArgs = staticArgs)
         }
     }
+
   return(out)
 }
