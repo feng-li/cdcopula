@@ -4,6 +4,7 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
       {
         CompCaller <- chainCaller[1]
         parCaller <- chainCaller[2]
+
         if(tolower(parCaller) == "lambdal")
           {
             ## The conditional links
@@ -16,7 +17,7 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
             linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
             if(tolower(linkCurr) == "glogit")
               {
-                tau <- Mdl.par[[CplNM]][["tau"]]
+                tau <- as.numeric(Mdl.par[[CplNM]][["tau"]])
 
                 ## The upper and lower bounds are dynamic
                 a <- 0 ## The lower bound
