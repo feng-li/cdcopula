@@ -50,7 +50,6 @@ CplMain <- function(configfile)
 ### cross-validation training and testing indices.
 ### TODO:crossValidIdx should be reorganized
 ###----------------------------------------------------------------------------
-  ## browser()
 
   iCross <- 1
   Training.Idx <- crossValidIdx[["training"]][[iCross]]
@@ -122,6 +121,7 @@ CplMain <- function(configfile)
       ## Dry run the logPost once to obtain it.
       u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
                   dimnames = list(NULL, names(MdlTraining.Y)))
+
       staticArgs <- list(Mdl.logPri =  MdlDataStruc,
                          Mdl.par = MdlDataStruc,
                          Mdl.u = u,
@@ -236,7 +236,7 @@ CplMain <- function(configfile)
                       ## The final update the parameters in each fold
                       MCMC.beta[[CompCurr]][[parCurr]][, nIter] <- MHOut[["beta"]]
                       MCMC.betaIdx[[CompCurr]][[parCurr]][, iIter] <- MHOut[["betaIdx"]]
-                      MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["par"]]
+                      # MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
                       MCMC.AccProb[[CompCurr]][[parCurr]][iIter, 1] <- MHOut[["accPbeta"]]
                     }
                   else

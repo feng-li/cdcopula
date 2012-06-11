@@ -153,7 +153,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                     Mdl.beta = Mdl.beta.prop,
                                     Mdl.betaIdx = Mdl.betaIdx.prop,
                                     MargisTypes = MargisTypes,
-                                    staticArgs = staticArgs.prop2mode)
+                                    staticArgs = staticArgs.curr)
 
       ## The information for proposed density via K-step Newton's method
       beta.prop2mode.mean <- matrix(beta.prop2mode$param, 1) # 1-by-p
@@ -176,7 +176,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                               df = beta.prop.df, log = TRUE)
 
           ## The log posterior for the proposed draw
-          logPost.prop <- logPost(CplNM = CplNM,
+          logPost.propOut <- logPost(CplNM = CplNM,
                                   Mdl.Y = Mdl.Y,
                                   Mdl.X = Mdl.X,
                                   Mdl.beta = Mdl.beta.prop,
@@ -186,7 +186,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                   MargisTypes = MargisTypes,
                                   priArgs = priArgs,
                                   parUpdate = parUpdate,
-                                  staticArgs = staticArgs.prop)[["Mdl.logPost"]]
+                                  staticArgs = staticArgs.curr)
+          logPost.prop <- logPost.propOut[["Mdl.logPost"]]
+          staticArgs.prop <- logPost.propOut[["staticArgs"]]
 
           ## The log posterior for the current draw
           logPost.curr <- logPost(CplNM = CplNM,
@@ -222,14 +224,14 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       out <- list(betaIdx = betaIdx.prop,
                   beta = beta.prop,
                   accept.prob = accept.prob,
-                  staticArgs = staticArgs)
+                  staticArgs = staticArgs.prop)
     }
   else # keep current
     {
       out <- list(betaIdx = betaIdx.curr,
                   beta = beta.curr,
                   accept.prob = 0,
-                  staticArgs = staticArgs)
+                  staticArgs = staticArgs.curr)
     }
   return(out)
 }
