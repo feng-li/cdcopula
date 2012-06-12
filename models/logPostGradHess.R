@@ -29,6 +29,8 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
   parCaller <- chainCaller[2]
   Mdl.par <- staticArgs[["Mdl.par"]]
 
+
+  if(parCaller == "tau")
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------

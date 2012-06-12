@@ -31,6 +31,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                         parUpdate, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                         Mdl.betaIdx, Mdl.parLink, MargisTypes, staticArgs)
 {
+
   ## The updating component parameter chain
   cp <- parCaller(parUpdate)
   CompCurr <- cp[1]
@@ -80,8 +81,6 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 
       logPriGrad.prop <- gradHess.prop[["logPriGradHessObs"]][["gradObs"]] # pp-by-1
       logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # pp-by-pp
-
-      ## browser()
 
       ## The gradient and Hessian subsets due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1

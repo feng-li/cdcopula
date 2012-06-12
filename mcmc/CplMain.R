@@ -101,6 +101,20 @@ CplMain <- function(configfile)
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
 ###----------------------------------------------------------------------------
 
+  ## Switch all the updating indicators ON
+  parUpdate <- MCMCUpdate
+
+  ## Initialize "staticArgs"
+  ## Dry run the logPost once to obtain it.
+  u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
+              dimnames = list(NULL, names(MdlTraining.Y)))
+
+  staticArgs <- list(Mdl.logPri =  MdlDataStruc,
+                     Mdl.par = MdlDataStruc,
+                     Mdl.u = u,
+                     Mdl.d = u,
+                     tauTabular = tauTabular)
+
   ## Generate initial values that does not let log posterior be -Inf.
   InitGood <- FALSE
 
@@ -115,33 +129,29 @@ CplMain <- function(configfile)
       Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
       Mdl.beta <- initParOut[["Mdl.beta"]]
 
-      ## Switch all the updating indicators ON
-      parUpdate <- MCMCUpdate
-
-      ## Initialize "staticArgs"
-      ## Dry run the logPost once to obtain it.
-      u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
-                  dimnames = list(NULL, names(MdlTraining.Y)))
-
-      staticArgs <- list(Mdl.logPri =  MdlDataStruc,
-                         Mdl.par = MdlDataStruc,
-                         Mdl.u = u,
-                         Mdl.d = u,
-                         tauTabular = tauTabular)
-
-      logPostTest <- logPost(CplNM = CplNM,
-                             Mdl.Y = MdlTraining.Y,
-                             Mdl.X = MdlTraining.X,
+      ## Optimize the initial values via BFGS.
+      betaVecInit <- parSwap(betaInput = Mdl.beta,
                              Mdl.beta = Mdl.beta,
                              Mdl.betaIdx = Mdl.betaIdx,
-                             Mdl.parLink = Mdl.parLink,
-                             varSelArgs = varSelArgs,
-                             MargisTypes = MargisTypes,
-                             priArgs = priArgs,
-                             parUpdate = parUpdate,
-                             staticArgs = staticArgs)[["Mdl.logPost"]]
+                             parUpdate = parUpdate)
 
-      if(is.finite(logPostTest) == FALSE &&
+      betaVecOptim <- try(optim(par = betaVecInit,
+                                fn = logPostOptim,
+                                control = list(fnscale = -1, maxit = 100),
+                                method = "BFGS",
+                                CplNM = CplNM,
+                                Mdl.Y = MdlTraining.Y,
+                                Mdl.X = MdlTraining.X,
+                                Mdl.beta = Mdl.beta,
+                                Mdl.betaIdx = Mdl.betaIdx,
+                                Mdl.parLink = Mdl.parLink,
+                                varSelArgs = varSelArgs,
+                                MargisTypes = MargisTypes,
+                                priArgs = priArgs,
+                                parUpdate = parUpdate,
+                                staticArgs = staticArgs), silent = TRUE)
+
+      if(is(betaVecOptim, "try-error") == TRUE &&
          any(tolower(unlist(betaInit)) == "random"))
         {
           InitGood <- FALSE
@@ -149,36 +159,14 @@ CplMain <- function(configfile)
       else
         {
           InitGood <- TRUE
+          Mdl.beta <- parSwap(betaInput = betaVecOptim[["par"]],
+                              Mdl.beta = Mdl.beta,
+                              Mdl.betaIdx = Mdl.betaIdx,
+                              parUpdate = parUpdate)
+
         }
       nLoopInit <- nLoopInit +1
     }
-
-  ## Optimize the initial values via BFGS.
-  betaVecInit <- parSwap(betaInput = Mdl.beta,
-                         Mdl.beta = Mdl.beta,
-                         Mdl.betaIdx = Mdl.betaIdx,
-                         parUpdate = parUpdate)
-
-  betaVecOptim <- optim(par = betaVecInit,
-                        fn = logPostOptim,
-                        control = list(fnscale = -1, maxit = 100),
-                        method = "BFGS",
-                        CplNM = CplNM,
-                        Mdl.Y = MdlTraining.Y,
-                        Mdl.X = MdlTraining.X,
-                        Mdl.beta = Mdl.beta,
-                        Mdl.betaIdx = Mdl.betaIdx,
-                        Mdl.parLink = Mdl.parLink,
-                        varSelArgs = varSelArgs,
-                        MargisTypes = MargisTypes,
-                        priArgs = priArgs,
-                        parUpdate = parUpdate,
-                        staticArgs = staticArgs)
-
-  Mdl.beta <- parSwap(betaInput = betaVecOptim[["par"]],
-                      Mdl.beta = Mdl.beta,
-                      Mdl.betaIdx = Mdl.betaIdx,
-                      parUpdate = parUpdate)
 
   ## Dry run to obtain the initial "staticArgs"
   staticArgs <- logPost(CplNM = CplNM,
@@ -268,6 +256,7 @@ CplMain <- function(configfile)
 ### code with malapply().
 ### ----------------------------------------------------------------------------
 
+  ## Temporally Disabled for debugging mode
   parallel <- FALSE
   if(parallel == TRUE)
     {
@@ -284,7 +273,7 @@ CplMain <- function(configfile)
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
   ## The final update the parameters in each fold
-  MdlMCMC.beta[[iCross]] <- Mdl.betaIdx.iCross
+  MdlMCMC.beta[[iCross]] <- Mdl.beta.iCross
   MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
   MdlMCMC.par[[iCross]] <- Mdl.par.iCross
   MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross

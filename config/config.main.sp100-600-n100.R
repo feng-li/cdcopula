@@ -202,6 +202,8 @@ LPDS.sampleProp = 0.05
 ## is will not affect the prior settings on the coefficients as long as we use
 ## a dynamic link function.
 
+nObs <- length(Mdl.Y[[1]])
+
 priArgs <- MdlDataStruc
 priArgs[[1]][[1]] <-
   list("beta" = list(
@@ -209,7 +211,7 @@ priArgs[[1]][[1]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][[2]] <-
   list("beta" = list(
@@ -217,7 +219,7 @@ priArgs[[1]][[2]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][[1]] <-
   list("beta" = list(
@@ -225,7 +227,7 @@ priArgs[[2]][[1]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][[2]] <-
   list("beta" = list(
@@ -233,7 +235,7 @@ priArgs[[2]][[2]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][[1]] <-
   list("beta" = list(
@@ -241,7 +243,7 @@ priArgs[[3]][[1]] <-
            input = list(type = "beta",  mean = 0.5, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][[2]] <-
   list("beta" = list(
@@ -249,7 +251,7 @@ priArgs[[3]][[2]] <-
            input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------
