@@ -273,10 +273,10 @@ CplMain <- function(configfile)
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
   ## The final update the parameters in each fold
-  MdlMCMC.beta[[iCross]] <- Mdl.beta.iCross
-  MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
-  MdlMCMC.par[[iCross]] <- Mdl.par.iCross
-  MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
+  ## MdlMCMC.beta[[iCross]] <- Mdl.beta.iCross
+  ## MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
+  ## MdlMCMC.par[[iCross]] <- Mdl.par.iCross
+  ## MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
 
   ## Fetch everything at current environment to a list
   out <- as.list(environment())

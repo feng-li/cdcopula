@@ -59,7 +59,7 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
             if(length(IdxDeltaSmall)>0)
               {
                 out[IdxDeltaSmall] <- 2*(1-harmonic(2/theta))/(theta-2)^2-
-                  4*digamma(2/theta+1)/((theta-2)*theta^2)
+                  4*trigamma(2/theta+1)/((theta-2)*theta^2)
               }
 
           }
