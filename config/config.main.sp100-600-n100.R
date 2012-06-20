@@ -248,7 +248,7 @@ priArgs[[3]][[1]] <-
 priArgs[[3]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0, b = 0.3),
+           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.1, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),

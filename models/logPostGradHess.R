@@ -29,8 +29,8 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
   parCaller <- chainCaller[2]
   Mdl.par <- staticArgs[["Mdl.par"]]
 
+  if(parCaller == "tau") browser()
 
-  if(parCaller == "tau")
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------
@@ -52,8 +52,7 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       staticArgs[["Mdl.u"]][, CompCaller] <- MargiModel(y = yCurr,
                                                         type = typeCurr,
                                                         par = parCurr)[["u"]]
-    }
-  else
+    }  else
     {
       ## Only update the gradient for copula parameters
       ## Gradient Fraction in the copula component.

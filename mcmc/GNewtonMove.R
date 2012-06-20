@@ -37,6 +37,9 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   CompCurr <- cp[1]
   parCurr <- cp[2]
 
+
+  ## if(parCurr == "tau") browser()
+
   ## The current parameters
   X <- Mdl.X[[CompCurr]][[parCurr]]
   betaCurr <- Mdl.beta[[CompCurr]][[parCurr]] # p-by-1

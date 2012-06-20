@@ -30,8 +30,10 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     gradObsLst <- list()
     HessObsLst <- list()
 
+    ## if(parCurr == "tau") browser()
+
 ###----------------------------------------------------------------------------
-### Gradient and Hess for the intercept as a special case
+### Gradient and Hessian for the intercept as a special case
 ###----------------------------------------------------------------------------
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
     xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
@@ -132,6 +134,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
         gradObsLst[["Slop"]] <- SlopCondGrad
 
+
         ## -------------The unconditional full Hessian matrix-------------------
 
         HessObsLst[["SlopFull"]] <-
@@ -147,7 +150,6 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 
     gradObs <- matrix(unlist(gradObsLst))
     HessObs <- block.diag(HessObsLst)
-
 
     out <- list(gradObs = gradObs, HessObs = HessObs)
     return(out)

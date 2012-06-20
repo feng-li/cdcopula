@@ -10,14 +10,17 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
 
         ## Healthy condition for the stepwise Kendall's tau
         tol = 0.001
-        deltaHcond <- (delta > 0)
+        deltaHcond <- (delta > 0+tol)
+        deltaHcondSmall <- (delta <=  0+tol & delta > 0) # A special case when delta is very close to zero (almost no tail dependence)
+
         Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
         IdxLarge <- which(theta > 2+tol & deltaHcond)
         Idx2 <- which(abs(theta-2)<tol & deltaHcond) # You will never reach this
+        IdxDeltaSmall <- which(deltaHcondSmall) # sometimes you hit this,  use
+                                        # the asymptotic results.
 
         if(tolower(caller) == "theta")
           {
-
             ## The gradient w.r.t. theta conditional on delta
             if(length(Idx12)>0)
               {
@@ -53,6 +56,12 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
                                6*digamma(2+deltaCurr)^2-6*trigamma(2+deltaCurr))/
                                  (24*deltaCurr)
               }
+            if(length(IdxDeltaSmall)>0)
+              {
+                out[IdxDeltaSmall] <- 2*(1-harmonic(2/theta))/(theta-2)^2-
+                  4*digamma(2/theta+1)/((theta-2)*theta^2)
+              }
+
           }
         else if(tolower(caller) == "delta")
           {
