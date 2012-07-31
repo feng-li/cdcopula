@@ -55,7 +55,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## No. of covariates
   nCovs <- length(betaIdx.curr)
 
-  ## If variable selection is available, make a proposal change
+  ## If variable selection is available, make a change proposal
+  ## Otherwise do nothing.
   if(length(varSelCand) > 0)
     {
       if(betaIdxArgs$type == "binom")

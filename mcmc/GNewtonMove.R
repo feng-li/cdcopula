@@ -37,6 +37,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   CompCurr <- cp[1]
   parCurr <- cp[2]
 
+  ## print(cp)
 
   ## if(parCurr == "tau") browser()
 
@@ -126,6 +127,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
                       HessObsInv = HessObsInv.pp,
                       param = param,
                       staticArgs = staticArgs)
+          ## print(gradObs.pp)
         }
     }
 

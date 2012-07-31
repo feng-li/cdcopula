@@ -30,7 +30,7 @@ CplMain <- function(configfile)
   crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
   nCrossFold <- length(crossValidIdx[["training"]])
 
-  ## Split the data into folds for cross validation,  if no cross validation,
+  ## Split the data into folds for cross validation,  if no cross-validation,
   ## only one fold used
   MdlTraining.X <- vector("list", nCrossFold)
   MdlTraining.Y <- vector("list", nCrossFold)
@@ -254,7 +254,7 @@ CplMain <- function(configfile)
 ### Cross-validation is independent for all folds. In order to parallel it via
 ### mcmlapply() function in the parallel package in R, we write the sequential
 ### code with malapply().
-### ----------------------------------------------------------------------------
+### ---------------------------------------------------------------------------
 
   ## Temporally Disabled for debugging mode
   parallel <- FALSE
