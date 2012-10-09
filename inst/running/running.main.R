@@ -8,18 +8,20 @@ require("methods")
 rm(list = ls()); gc()
 
 ## PATH TO THE ROOT DIRECTORY OF THE MODEL LIBRARY
-pathLibRoot <- "~/workspace/copulas/CovarDepenCopula/R/"
+pathLibRoot <- "~/workspace/copula/code/"
 
 ## PATH TO THE MODEL CONFIGURATION FILE
-configfile <- file.path(pathLibRoot, "config/config.main.sp100-600-n100.R")
+configfile <- file.path(pathLibRoot, "inst/config/config.main.sp100-600-n100.R")
 
 ## Load the sourceDir tool
-sys.source(file.path(pathLibRoot, "flutils/stable/sourceDir.R"),
+sys.source(file.path(pathLibRoot, "R/flutils/stable/sourceDir.R"),
            envir = .GlobalEnv)
 
 ## Load the whole library
-sourceDir(file.path(pathLibRoot, c("flutils/stable", "mcmc", "models", "simul")),
-          byte.compile = 0, recursive = TRUE, ignore.error = TRUE)
+Cpl.source <- sourceDir(file.path(pathLibRoot, "R"),
+                        byte.compile = 0,
+                        recursive = TRUE,
+                        ignore.error = TRUE)
 
 ## LOAD DEPENDENCES
 require("mvtnorm")
