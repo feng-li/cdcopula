@@ -123,33 +123,36 @@ CplMain <- function(configfile)
   while(InitGood == FALSE)
     {
       ## Assign the initial values
-      initParOut <- initPar(varSelArgs = varSelArgs,
-                            betaInit = betaInit,
-                            Mdl.X = MdlTraining.X)
+      initParOut <- initPar(
+          varSelArgs = varSelArgs,
+          betaInit = betaInit,
+          Mdl.X = MdlTraining.X)
       Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
       Mdl.beta <- initParOut[["Mdl.beta"]]
 
       ## Optimize the initial values via BFGS.
-      betaVecInit <- parSwap(betaInput = Mdl.beta,
-                             Mdl.beta = Mdl.beta,
-                             Mdl.betaIdx = Mdl.betaIdx,
-                             parUpdate = parUpdate)
+      betaVecInit <- parSwap(
+          betaInput = Mdl.beta,
+          Mdl.beta = Mdl.beta,
+          Mdl.betaIdx = Mdl.betaIdx,
+          parUpdate = parUpdate)
 
-      betaVecOptim <- try(optim(par = betaVecInit,
-                                fn = logPostOptim,
-                                control = list(fnscale = -1, maxit = 100),
-                                method = "BFGS",
-                                CplNM = CplNM,
-                                Mdl.Y = MdlTraining.Y,
-                                Mdl.X = MdlTraining.X,
-                                Mdl.beta = Mdl.beta,
-                                Mdl.betaIdx = Mdl.betaIdx,
-                                Mdl.parLink = Mdl.parLink,
-                                varSelArgs = varSelArgs,
-                                MargisTypes = MargisTypes,
-                                priArgs = priArgs,
-                                parUpdate = parUpdate,
-                                staticArgs = staticArgs), silent = TRUE)
+      betaVecOptim <- try(optim(
+          par = betaVecInit,
+          fn = logPostOptim,
+          control = list(fnscale = -1, maxit = 100),
+          method = "BFGS",
+          CplNM = CplNM,
+          Mdl.Y = MdlTraining.Y,
+          Mdl.X = MdlTraining.X,
+          Mdl.beta = Mdl.beta,
+          Mdl.betaIdx = Mdl.betaIdx,
+          Mdl.parLink = Mdl.parLink,
+          varSelArgs = varSelArgs,
+          MargisTypes = MargisTypes,
+          priArgs = priArgs,
+          parUpdate = parUpdate,
+          staticArgs = staticArgs), silent = TRUE)
 
       if(is(betaVecOptim, "try-error") == TRUE &&
          any(tolower(unlist(betaInit)) == "random"))
@@ -169,17 +172,18 @@ CplMain <- function(configfile)
     }
 
   ## Dry run to obtain the initial "staticArgs"
-  staticArgs <- logPost(CplNM = CplNM,
-                        Mdl.Y = MdlTraining.Y,
-                        Mdl.X = MdlTraining.X,
-                        Mdl.beta = Mdl.beta,
-                        Mdl.betaIdx = Mdl.betaIdx,
-                        Mdl.parLink = Mdl.parLink,
-                        varSelArgs = varSelArgs,
-                        MargisTypes = MargisTypes,
-                        priArgs = priArgs,
-                        parUpdate = parUpdate,
-                        staticArgs = staticArgs)[["staticArgs"]]
+  staticArgs <- logPost(
+      CplNM = CplNM,
+      Mdl.Y = MdlTraining.Y,
+      Mdl.X = MdlTraining.X,
+      Mdl.beta = Mdl.beta,
+      Mdl.betaIdx = Mdl.betaIdx,
+      Mdl.parLink = Mdl.parLink,
+      varSelArgs = varSelArgs,
+      MargisTypes = MargisTypes,
+      priArgs = priArgs,
+      parUpdate = parUpdate,
+      staticArgs = staticArgs)[["staticArgs"]]
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
@@ -208,18 +212,19 @@ CplMain <- function(configfile)
                   if(tolower(algmArgs[["type"]]) == "gnewtonmove")
                     {
                       ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
-                      MHOut <- MHWithGNewton(CplNM = CplNM,
-                                             propArgs = propArgs,
-                                             varSelArgs = varSelArgs,
-                                             priArgs = priArgs,
-                                             parUpdate = parUpdate,
-                                             Mdl.Y = MdlTraining.Y,
-                                             Mdl.X = MdlTraining.X,
-                                             Mdl.beta = Mdl.beta,
-                                             Mdl.betaIdx = Mdl.betaIdx,
-                                             MargisTypes = MargisTypes,
-                                             Mdl.parLink = Mdl.parLink,
-                                             staticArgs = staticArgs)
+                      MHOut <- MHWithGNewton(
+                          CplNM = CplNM,
+                          propArgs = propArgs,
+                          varSelArgs = varSelArgs,
+                          priArgs = priArgs,
+                          parUpdate = parUpdate,
+                          Mdl.Y = MdlTraining.Y,
+                          Mdl.X = MdlTraining.X,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          MargisTypes = MargisTypes,
+                          Mdl.parLink = Mdl.parLink,
+                          staticArgs = staticArgs)
 
                       ## Update the MH results to the current parameter structure
                       staticArgs <- MHOut[["staticArgs"]]
@@ -231,7 +236,8 @@ CplMain <- function(configfile)
                       MCMC.betaIdx[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["betaIdx"]]
                       MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <- MHOut[["accept.prob"]]
 
-                      ## MCMC.par[[CompCurr]][[parCurr]][, iIter] <- MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
+                      ## MCMC.par[[CompCurr]][[parCurr]][, iIter] <-
+                      ## MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
 
                     }
                   else
@@ -268,15 +274,6 @@ CplMain <- function(configfile)
       ## Sequential loops over folds.
       ## mapply(FUN = MCMCFun)
     }
-
-###----------------------------------------------------------------------------
-### POSTERIOR INFERENCE, PREDICTION ETC
-###----------------------------------------------------------------------------
-  ## The final update the parameters in each fold
-  ## MdlMCMC.beta[[iCross]] <- Mdl.beta.iCross
-  ## MdlMCMC.betaIdx[[iCross]] <- Mdl.beta.iCross
-  ## MdlMCMC.par[[iCross]] <- Mdl.par.iCross
-  ## MdlMCMC.AccPbeta[[iCross]] <- Mdl.AccPbeta.iCross
 
   ## Fetch everything at current environment to a list
   out <- as.list(environment())

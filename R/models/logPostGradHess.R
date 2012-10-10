@@ -62,17 +62,18 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 
   ## The gradient for the copula function. n-by-1
   logCplGradObs <- logCplGrad(
-                     CplNM = CplNM,
-                     u = staticArgs$Mdl.u,
-                     parCpl = Mdl.par[[CplNM]],
-                     cplCaller = cplCaller,
-                     staticArgs = staticArgs)
+      CplNM = CplNM,
+      u = staticArgs$Mdl.u,
+      parCpl = Mdl.par[[CplNM]],
+      cplCaller = cplCaller,
+      staticArgs = staticArgs)
 
   ## The gradient for the link function n-by-1
-  LinkGradObs <- parCplMeanFunGrad(CplNM = CplNM,
-                                   Mdl.par = Mdl.par,
-                                   Mdl.parLink = Mdl.parLink,
-                                   chainCaller = chainCaller)
+  LinkGradObs <- parCplMeanFunGrad(
+      CplNM = CplNM,
+      Mdl.par = Mdl.par,
+      Mdl.parLink = Mdl.parLink,
+      chainCaller = chainCaller)
 
   ## The gradient and Hessian for the likelihood
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
@@ -81,13 +82,14 @@ logPostGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 ### GRADIENT AND HESSIAN IN THE PRIOR COMPONENT
 ###----------------------------------------------------------------------------
 
-  logPriGradHessObs <- logPriorsGradHess(Mdl.X = Mdl.X,
-                                         Mdl.parLink = Mdl.parLink,
-                                         Mdl.beta = Mdl.beta,
-                                         Mdl.betaIdx = Mdl.betaIdx,
-                                         varSelArgs = varSelArgs,
-                                         priArgs = priArgs,
-                                         chainCaller = chainCaller)
+  logPriGradHessObs <- logPriorsGradHess(
+      Mdl.X = Mdl.X,
+      Mdl.parLink = Mdl.parLink,
+      Mdl.beta = Mdl.beta,
+      Mdl.betaIdx = Mdl.betaIdx,
+      varSelArgs = varSelArgs,
+      priArgs = priArgs,
+      chainCaller = chainCaller)
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT

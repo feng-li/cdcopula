@@ -71,12 +71,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 
 ### Update Mdl.par
-  Mdl.par <- parCplMeanFun(CplNM = CplNM,
-                           Mdl.X = Mdl.X,
-                           Mdl.parLink = Mdl.parLink,
-                           Mdl.beta = Mdl.beta,
-                           parUpdate = parUpdate,
-                           Mdl.par = Mdl.par)
+  Mdl.par <- parCplMeanFun(
+      CplNM = CplNM,
+      Mdl.X = Mdl.X,
+      Mdl.parLink = Mdl.parLink,
+      Mdl.beta = Mdl.beta,
+      parUpdate = parUpdate,
+      Mdl.par = Mdl.par)
 
 ### Update marginal pdf and cdf
 
@@ -100,21 +101,23 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
-  Mdl.logLikCpl <- logCplLik(u = Mdl.u,
-                             CplNM = CplNM,
-                             parCpl = Mdl.par[[CplNM]],
-                             staticArgs = staticArgs) # n-by-1
+  Mdl.logLikCpl <- logCplLik(
+      u = Mdl.u,
+      CplNM = CplNM,
+      parCpl = Mdl.par[[CplNM]],
+      staticArgs = staticArgs) # n-by-1
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
-                          Mdl.parLink = Mdl.parLink,
-                          Mdl.beta = Mdl.beta,
-                          Mdl.betaIdx = Mdl.betaIdx,
-                          varSelArgs = varSelArgs,
-                          priArgs = priArgs,
-                          Mdl.logPri = Mdl.logPri,
-                          parUpdate = parUpdate)
+  Mdl.logPri <- logPriors(
+      Mdl.X = Mdl.X,
+      Mdl.parLink = Mdl.parLink,
+      Mdl.beta = Mdl.beta,
+      Mdl.betaIdx = Mdl.betaIdx,
+      varSelArgs = varSelArgs,
+      priArgs = priArgs,
+      Mdl.logPri = Mdl.logPri,
+      parUpdate = parUpdate)
 
 ###----------------------------------------------------------------------------
 ### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE

@@ -37,7 +37,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### VARIABLE SELECTION PROPOSAL
 ###----------------------------------------------------------------------------
   ## Randomly propose a subset for covariates to change
-  ## TODO: If no variable selection, reduce to usual MCMC.
 
   varSelCand <- varSelArgs[[CompCaller]][[parCaller]]$cand
   betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
@@ -75,7 +74,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     }
 
 ###----------------------------------------------------------------------------
-### Make good proposal via K-steps Newton's method
+### PROPOSAL VIA K-STEP NEWTON'S METHOD
 ###----------------------------------------------------------------------------
   beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
   beta.curr <- beta.curr.full[betaIdx.curr]
@@ -84,19 +83,20 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   staticArgs.curr <- staticArgs
 
   ## Newton method to approach the posterior based on the current draw
-  beta.curr2mode <- GNewtonMove(propArgs = propArgs,
-                                varSelArgs = varSelArgs,
-                                priArgs = priArgs,
-                                betaIdxProp = betaIdx.prop,
-                                parUpdate = parUpdate,
-                                CplNM = CplNM,
-                                Mdl.Y = Mdl.Y,
-                                Mdl.X = Mdl.X,
-                                Mdl.parLink = Mdl.parLink,
-                                Mdl.beta = Mdl.beta.curr,
-                                Mdl.betaIdx = Mdl.betaIdx.curr,
-                                MargisTypes = MargisTypes,
-                                staticArgs = staticArgs.curr)
+  beta.curr2mode <- GNewtonMove(
+      propArgs = propArgs,
+      varSelArgs = varSelArgs,
+      priArgs = priArgs,
+      betaIdxProp = betaIdx.prop,
+      parUpdate = parUpdate,
+      CplNM = CplNM,
+      Mdl.Y = Mdl.Y,
+      Mdl.X = Mdl.X,
+      Mdl.parLink = Mdl.parLink,
+      Mdl.beta = Mdl.beta.curr,
+      Mdl.betaIdx = Mdl.betaIdx.curr,
+      MargisTypes = MargisTypes,
+      staticArgs = staticArgs.curr)
 
   ## The information for proposed density via K-step Newton's method
   beta.curr2mode.mean <- matrix(beta.curr2mode$param, 1) # 1-by-p
@@ -120,14 +120,15 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         {
           ## The proposal parameters block
           beta.prop.df <- beta.propArgs[["df"]]
-          beta.prop <- beta.curr2mode.mean + rmvt(n = 1,
-                                                  sigma = beta.curr2mode.sigma,
-                                                  df = beta.prop.df)
+          beta.prop <- beta.curr2mode.mean +
+            rmvt(n = 1,
+                 sigma = beta.curr2mode.sigma,
+                 df = beta.prop.df)
         }
     }
 
 ###----------------------------------------------------------------------------
-### Jump via K-steps Newton's method
+### JUMP VIA K-STEPS NEWTON'S METHOD
 ###----------------------------------------------------------------------------
 
   ## Newton method to approach the posterior for the proposed draw
@@ -141,19 +142,20 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       Mdl.betaIdx.prop <- Mdl.betaIdx
       Mdl.betaIdx.prop[[CompCaller]][[parCaller]] <- betaIdx.prop
 
-      beta.prop2mode <- GNewtonMove(propArgs = propArgs,
-                                    varSelArgs = varSelArgs,
-                                    priArgs = priArgs,
-                                    betaIdxProp = betaIdx.curr,
-                                    parUpdate = parUpdate,
-                                    CplNM = CplNM,
-                                    Mdl.Y = Mdl.Y,
-                                    Mdl.X = Mdl.X,
-                                    Mdl.parLink = Mdl.parLink,
-                                    Mdl.beta = Mdl.beta.prop,
-                                    Mdl.betaIdx = Mdl.betaIdx.prop,
-                                    MargisTypes = MargisTypes,
-                                    staticArgs = staticArgs.curr)
+      beta.prop2mode <- GNewtonMove(
+          propArgs = propArgs,
+          varSelArgs = varSelArgs,
+          priArgs = priArgs,
+          betaIdxProp = betaIdx.curr,
+          parUpdate = parUpdate,
+          CplNM = CplNM,
+          Mdl.Y = Mdl.Y,
+          Mdl.X = Mdl.X,
+          Mdl.parLink = Mdl.parLink,
+          Mdl.beta = Mdl.beta.prop,
+          Mdl.betaIdx = Mdl.betaIdx.prop,
+          MargisTypes = MargisTypes,
+          staticArgs = staticArgs.curr)
 
       ## The information for proposed density via K-step Newton's method
       beta.prop2mode.mean <- matrix(beta.prop2mode$param, 1) # 1-by-p
@@ -166,42 +168,47 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       else # all are right
         {
           ## The jump density for current point at proposal mode
-          logJump.beta.currATprop2mode <- dmvt(x = beta.curr - beta.prop2mode.mean,
-                                               sigma = beta.prop2mode.sigma,
-                                               df = beta.prop.df, log = TRUE)
+          logJump.beta.currATprop2mode <- dmvt(
+              x = beta.curr - beta.prop2mode.mean,
+              sigma = beta.prop2mode.sigma,
+              df = beta.prop.df, log = TRUE)
 
           ## The jump density for propose draw to current draw.
-          logJump.beta.propATcurr2mode<- dmvt(x = beta.prop - beta.curr2mode.mean,
-                                              sigma = beta.curr2mode.sigma,
-                                              df = beta.prop.df, log = TRUE)
+          logJump.beta.propATcurr2mode<- dmvt(
+              x = beta.prop - beta.curr2mode.mean,
+              sigma = beta.curr2mode.sigma,
+              df = beta.prop.df, log = TRUE)
 
           ## The log posterior for the proposed draw
-          logPost.propOut <- logPost(CplNM = CplNM,
-                                  Mdl.Y = Mdl.Y,
-                                  Mdl.X = Mdl.X,
-                                  Mdl.beta = Mdl.beta.prop,
-                                  Mdl.betaIdx = Mdl.betaIdx.prop,
-                                  Mdl.parLink = Mdl.parLink,
-                                  varSelArgs = varSelArgs,
-                                  MargisTypes = MargisTypes,
-                                  priArgs = priArgs,
-                                  parUpdate = parUpdate,
-                                  staticArgs = staticArgs.curr)
+          logPost.propOut <- logPost(
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.beta = Mdl.beta.prop,
+              Mdl.betaIdx = Mdl.betaIdx.prop,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticArgs = staticArgs.curr)
+
           logPost.prop <- logPost.propOut[["Mdl.logPost"]]
           staticArgs.prop <- logPost.propOut[["staticArgs"]]
 
           ## The log posterior for the current draw
-          logPost.curr <- logPost(CplNM = CplNM,
-                                  Mdl.Y = Mdl.Y,
-                                  Mdl.X = Mdl.X,
-                                  Mdl.beta = Mdl.beta.curr,
-                                  Mdl.betaIdx = Mdl.betaIdx.curr,
-                                  Mdl.parLink = Mdl.parLink,
-                                  varSelArgs = varSelArgs,
-                                  MargisTypes = MargisTypes,
-                                  priArgs = priArgs,
-                                  parUpdate = parUpdate,
-                                  staticArgs = staticArgs.curr)[["Mdl.logPost"]]
+          logPost.curr <- logPost(
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.beta = Mdl.beta.curr,
+              Mdl.betaIdx = Mdl.betaIdx.curr,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticArgs = staticArgs.curr)[["Mdl.logPost"]]
 
           ## compute the MH ratio.
           logMHRatio <- logPost.prop - logPost.curr +
@@ -214,7 +221,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         }
     }
 ###----------------------------------------------------------------------------
-### The MH acceptance probability and keep/update the proposed draw.
+### THE MH ACCEPTANCE PROBABILITY AND KEEP/UPDATE THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
 
   if(rejectFlag == FALSE &&
