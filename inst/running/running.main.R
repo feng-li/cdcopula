@@ -14,7 +14,7 @@ pathLibRoot <- "~/workspace/copula/code/"
 CplConfigFile <- file.path(pathLibRoot, "inst/config/config.main.sp100-600-n100.R")
 
 ## Load the sourceDir tool
-sys.source(file.path(pathLibRoot, "R/flutils/stable/sourceDir.R"),
+sys.source(file.path(pathLibRoot, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
 
 ## Load the whole library

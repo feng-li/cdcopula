@@ -18,8 +18,13 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
-logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                              varSelArgs, priArgs, chainCaller)
+logPriorsGradHess <- function(Mdl.X,
+                              Mdl.beta,
+                              Mdl.betaIdx,
+                              Mdl.parLink,
+                              varSelArgs,
+                              priArgs,
+                              chainCaller)
   {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior
@@ -48,8 +53,10 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
 
         ## Gradient and Hessian for the intercept
-        GradHessInt <- DensGradHess(B = xCurr, mean = mean, covariance =
-                                       variance*shrinkage, grad = TRUE, Hess = TRUE)
+        GradHessInt <- DensGradHess(B = xCurr,
+                                    mean = mean,
+                                    covariance = variance*shrinkage,
+                                    grad = TRUE, Hess = TRUE)
 
         ## The output
         gradObsLst[["Int"]] <- GradHessInt[["grad"]]
@@ -82,7 +89,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
         Idx0Len <- length(Idx0)
         Idx1Len <- length(Idx1)
         betaLen <- length(betaIdxNoIntCurr)
-        SlopCondGrad <- matrix(NaN, betaLen)
+        SlopCondGrad <- matrix(NA, betaLen)
 
         ## The mean vector for the whole beta vector (recycled if necessary)
         meanVec <- matrix(mean, betaLen, 1)
@@ -121,15 +128,16 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
               A%*%coVar[Idx0, Idx1, drop = FALSE]
 
             ## The conditional gradient
-            SlopCondGrad[Idx1] <- DensGradHess(B = xCurr[Idx1],
-                                               mean = condMean,
-                                               covariance = condCovar*shrinkage,
-                                               grad = TRUE, Hess = FALSE)[["grad"]]
+            SlopCondGrad[Idx1] <- DensGradHess(
+                B = xCurr[Idx1],
+                mean = condMean,
+                covariance = condCovar*shrinkage,
+                grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else
           {
             ## 3. non are selected
-            SlopCondGrad[Idx] <- NaN
+            SlopCondGrad[Idx] <- NA
           }
 
         gradObsLst[["Slop"]] <- SlopCondGrad

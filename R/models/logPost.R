@@ -106,6 +106,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
       CplNM = CplNM,
       parCpl = Mdl.par[[CplNM]],
       staticArgs = staticArgs) # n-by-1
+
 ###----------------------------------------------------------------------------
 ### THE LOG PRIORS
 ###----------------------------------------------------------------------------

@@ -55,6 +55,11 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
   param <- betaCurr[betaIdxCurr]
 
+
+###----------------------------------------------------------------------------
+### The k-step Generalized Newton Move
+###----------------------------------------------------------------------------
+
   ## The k-step Generalized Newton Move
   for(iStep in 1:(kSteps+1))
     {
@@ -69,6 +74,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           Mdl.betaIdx = Mdl.betaIdx,
           parUpdate = parUpdate,
           priArgs = priArgs,
+          varSelArgs = varSelArgs,
           staticArgs = staticArgs)
 
       ## Gradient and Hessian for the likelihood

@@ -128,5 +128,5 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             stop("No such copula parameter!")
           }
       }
-    return(out)
+    return(matrix(out))
   }
