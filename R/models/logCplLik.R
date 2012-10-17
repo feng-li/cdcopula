@@ -4,14 +4,16 @@
 ##' should consist of two parts: copula and marginal parts.
 ##' @title Compute the copula likelihood of copula function
 ##' @param u
-##' @param copula
-##' @param par
+##' @param CplNM
+##' @param parCpl
+##' @param staticArgs
+##' @param logLik "logical"
 ##' @return "matrix";
 ##' @references Joe 1997, p. 153
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
-logCplLik <- function(u, CplNM, parCpl, staticArgs)
+logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
 {
 
 ###----------------------------------------------------------------------------
@@ -81,7 +83,17 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs)
       stop("The copula is not implemented yet!")
     }
 
-  out <- sum(logCplDensObs)
+
+  ## The output
+  if(logLik)
+    {
+      ## The sum of log marginal density,  scaler
+      out <- sum(logCplDensObs)
+    }
+  else
+    {
+      ## The log marginal density,  vector
+      out <- logCplDensObs
+    }
   return(out)
-  ## The sum of log marginal density
 }
