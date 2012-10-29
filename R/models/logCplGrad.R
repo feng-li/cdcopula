@@ -22,27 +22,80 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
         ## Subtract the parameters list.
         tau <- parCpl[["tau"]]
         lambdaL <- parCpl[["lambdaL"]]
-        lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
+        lambdaU <- kendalltauInv(CplNM = CplNM,
+                                 parRepCpl = parCpl,
                                  tauTabular = staticArgs[["tauTabular"]])
         ## The standard copula parameters (recycled if necessary, should be a vector).
         delta <- as.vector(-log(2)/log(lambdaL))
-        theta <- as.vector(log(2)/log(2-lambdaU))
+        theta <- as.vector(log(2)/log(2-lambdaU)) # ff(delta)
 
         if(tolower(cplCaller) == "lambdal")
           {
-            ## Gradient w.r.t delta
-            T1 <- 1-(1-u)^theta
-            L1 <- rowSums(T1^(-delta))-1
-            Delta1 <- -rowSums(T1^(-delta)*log(T1))
+            ## FIXME: This part needs review when the conditional linkage used.
 
-            logGradCpl.delta <-  - rowSums(log(T1))-
-              2*(1+delta)*Delta1/(delta*L1)-
-                (1/theta-2)*(log(L1)-delta*Delta1/L1)/
-                  (delta^2*(L1^(1/delta)-1))+
-                    2*log(L1)/delta^2+
-                      (L1^(1/delta)-(1+delta)*L1^(1/delta)*
-                       (log(L1)-delta*Delta1/L1)/delta^2-1)/
-                         ((1+delta)*L1^(1/delta)-delta-1/theta)
+            ## Gradient w.r.t delta
+            ## T1 <- 1-(1-u)^theta
+            ## L1 <- rowSums(T1^(-delta))-1
+            ## Delta1 <- -rowSums(T1^(-delta)*log(T1))
+
+            ## logGradCpl.delta <-  - rowSums(log(T1))-
+            ##   2*(1+delta)*Delta1/(delta*L1)-
+            ##     (1/theta-2)*(log(L1)-delta*Delta1/L1)/
+            ##       (delta^2*(L1^(1/delta)-1))+
+            ##         2*log(L1)/delta^2+
+            ##           (L1^(1/delta)-(1+delta)*L1^(1/delta)*
+            ##            (log(L1)-delta*Delta1/L1)/delta^2-1)/
+            ##              ((1+delta)*L1^(1/delta)-delta-1/theta)
+
+            ## Gradient w.r.t. tau, i.e.  ff'(delta)
+            tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
+                                            theta = theta,
+                                            delta = delta,
+                                            caller = "delta")
+
+            ub <- 1-u
+            ub1 <- ub[, 1, drop = FALSE]
+            ub2 <- ub[, 2, drop = FALSE]
+
+            M12 <- 1-ub^theta
+
+            M34 <- -log(M12) + ub^theta*log(ub)*tauGrad.delta/M12
+
+            M5 <- -1 + rowSums(M12^(-delta))
+            M6 <- -1 + M5^(1/delta)
+
+
+            M7 <- (log(M5^(1/delta))-log(M6))*tauGrad.delta/theta^2
+            C1 <- rowSums((M12^(-delta)*M34))M5
+            M8 <- C1*delta + log(M5)
+            M9 <- M7-(M8*(-1+1/theta))/(M6*delta^2)
+
+            P12 <- M6*(1+delta)*theta*log(ub)*tauGrad.delta
+            P34 <- -M12*log(M12)+(1+delta)log(ub)*ub^theta*tauGrad.delta
+            P56 <- (-1+theta)*log(ub)*tauGrad.delta
+            P78 <- M6*P34*(1+delta)*theta/M12
+
+            C34 <- P34*(-1+theta)/M12
+
+            ############################
+            S1 <- M12^delta
+
+            gradCpl.lambdaL <- (
+                (S1[, 1]*S1[, 2])^(-2)*(rowSums(M12^delta)-S1[, 1]*S1[, 2])^2*
+                (
+                    rowSums(C34+P12+P78) - M6*theta/delta +
+                    M5^(1/delta)*(1-M5^(-1/delta))*M9*(1+delta)*theta+
+                    M6*(1+delta)*theta/delta-
+                    (M7-M8*(-2+1/theta)/(M6*delta^2))*(-1+1/theta)*theta-
+                    2*(-1+1/theta)*theta*(-C1*delta*(1+delta)+log(M5))/delta^2+
+                    M5^(1/delta)*(1-M5^(-1/delta))*(1+delta)*theta*
+                    (C1*(-2-1/delta)+log(M5)/delta^2)+ M6*(1+delta)*tauGrad.delta+
+                    tauGrad.delta/theta+(-1+theta*tauGrad.delta)/theta
+                    )
+            )/(
+                M5^2*(-1+(-delta+M5^(1/delta)*(1+delta))*theta)
+                )
+
 
             ## Gradient w.r.t. lambdaL
             gradCpl.lambdaL <- 2^(-1/delta)*log(2)/delta^2
