@@ -15,59 +15,90 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
     if(tolower(CplNM) == "bb7")
       {
         ## BB7 copula (tau, lambdaL) representation requires that
-        ## 0 < lambdaL < 2^(1/2-1/(2tau)) See Li 2012 for the proof.
+        ## 0 < lambdaL < 2^(1/2-1/(2*tau)) See Li 2012 for the proof.
         ## The condition should be calculated in the end for safety.
 
         CompNM <- names(Mdl.beta)
-        ## First update all the independent linkages
+
+        ## Which parameter are conditionally considered
+        ## Hard coded, maybe should treat it as an input
+        condPar <- c("lambdal")
+
+###----------------------------------------------------------------------------
+### (1) update all the independent linkages
+###----------------------------------------------------------------------------
         for(CompCurr in CompNM)
           {
             parUpdateNM <- names(parUpdate[[CompCurr]] == TRUE)
             for(ParCurr in parUpdateNM)
               {
                 ## Check if particular constrain is needed.
-                if(!(tolower(ParCurr) %in% c("lambdal")))
+                if(!(tolower(ParCurr) %in% conPar))
                   {
                     extArgs <- NA
                     ## Update the parameters for the updated part
-                    Mdl.par[[CompCurr]][[ParCurr]] <-
-                      parMeanFun(X = Mdl.X[[CompCurr]][[ParCurr]],
-                                 beta = Mdl.beta[[CompCurr]][[ParCurr]],
-                                 link = Mdl.parLink[[CompCurr]][[ParCurr]],
-                                 extArgs = extArgs)
+                    Mdl.par[[CompCurr]][[ParCurr]] <- parMeanFun(
+                        X = Mdl.X[[CompCurr]][[ParCurr]],
+                        beta = Mdl.beta[[CompCurr]][[ParCurr]],
+                        link = Mdl.parLink[[CompCurr]][[ParCurr]],
+                        extArgs = extArgs)
                   }
               }
           }
 
-        ## Check if update the conditional parameters
-        ## Special case for "lambdaL" as it is conditional on "tau"
+###----------------------------------------------------------------------------
+### (2) Special case for conditional linkage
+###----------------------------------------------------------------------------
+
+
         if(parUpdate[[CplNM]][["tau"]] == TRUE ||
            parUpdate[[CplNM]][["lambdaL"]] == TRUE)
           {
-            linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
-            XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
-            betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
+            ## linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
+            ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
+            ## betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
+
+
+            linkCurr <- Mdl.parLink[[CplNM]][["tau"]]
+            XCurr <- Mdl.X[[CplNM]][["tau"]]
+            betaCurr <- Mdl.beta[[CplNM]][["tau"]]
 
             if(tolower(linkCurr) == "glogit")
               {
-                tau <- Mdl.par[[CplNM]][["tau"]]
-                a <- 0 ## The lower bound of generalized logit link
-                b <- 2^(1/2-1/(2*tau)) ## the upper bound
+                ## tau <- Mdl.par[[CplNM]][["tau"]]
+                ## a <- 0 ## The lower bound of generalized logit link
+                ## b <- 2^(1/2-1/(2*tau)) ## the upper bound
+
+                ## The lower and upper bounds of generalized logit link
+                lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
+
+                a <- log(2)/(log(2)-log(lambdaL))
+                b <- 1 ## the upper bound
+
 
                 extArgs <- list(a = a, b = b)
               }
             else
               {
-                stop("Such conditional not implemented!")
+                stop("Such conditional linkage is not implemented!")
               }
 
-            Mdl.par[[CplNM]][["lambdaL"]] <-
-              parMeanFun(X = XCurr,
-                         beta = betaCurr,
-                         link = linkCurr,
-                         extArgs = extArgs)
+            ## Mdl.par[[CplNM]][["lambdaL"]] <- parMeanFun(
+            ##     X = XCurr,
+            ##     beta = betaCurr,
+            ##     link = linkCurr,
+            ##     extArgs = extArgs)
+
+            Mdl.par[[CplNM]][["tau"]] <- parMeanFun(
+                X = XCurr,
+                beta = betaCurr,
+                link = linkCurr,
+                extArgs = extArgs)
+
           }
         out <- Mdl.par
       }
+
+
     return(out)
   }
