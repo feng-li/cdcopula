@@ -37,7 +37,6 @@ logPostGradHess <- function(CplNM,
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
   Mdl.par <- staticArgs[["Mdl.par"]]
-
   ## if(parCaller == "tau") browser()
 
   if(tolower(CompCaller) != tolower(CplNM))
@@ -130,54 +129,65 @@ logPostGradHess <- function(CplNM,
   if("numeric" %in% tolower(gradMethods))
     {
       browser()
-
-      ## The gradient for the copula function. n-by-1
-      logCplGradNumFun <- function(
-          x, CompCaller, cplCaller, u, CplNM, parCpl, staticArgs)
+      ## The gradient for the copula function. scaler input and output
+      logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
+                                   CplNM, parCpl, staticArgs)
         {
           if(tolower(cplCaller) %in% c("u1", "u2"))
             {
               ## Calling the marginal CDF u1, u2
+              ## u <- staticArgs$Mdl.u
               u[, CompCaller] <- x
             }
           else
             {
               ## Calling copula parameters
-              parCpl[[cplCaller]] <- x
+              parCpl[[parCaller]] <- x
             }
 
           out <- logCplLik(u = u, CplNM = CplNM,
                            parCpl = parCpl,
-                           staticArgs = staticArgs)
+                           staticArgs = staticArgs,
+                           logLik = FALSE)
           return(out)
         }
 
-      if(tolower(cplCaller) %in% c("u1", "u2"))
+      nObs <- length(Mdl.Y[[1]])
+      logCplGradObs2 <- matrix(NA, nObs, 1)
+      for(i in 1:nObs)
         {
-          ## Calling the marginal CDF u1, u2
-          xCurr <- staticArgs$Mdl.u[, CompCaller]
-        }
-      else
-        {
-          ## Calling copula parameters
-          xCurr <- Mdl.par[[CplNM]][[cplCaller]]
-        }
+          if(tolower(cplCaller) %in% c("u1", "u2"))
+            {
+              ## Calling the marginal CDF u1, u2
+              xCurr <- staticArgs$Mdl.u[i, CompCaller]
+            }
+          else
+            {
+              ## Calling copula parameters
+              xCurr <- Mdl.par[[CompCaller]][[parCaller]][i]
+            }
 
-      logCplGradObs2 <- numgrad(
-          fcn = logCplGradNumFun,
-          x = xCurr,
-          u = staticArgs$Mdl.u,
-          cplCaller = cplCaller,
-          CplNM <- CplNM,
-          parCpl = Mdl.par[[CplNM]],
-          staticArgs = staticArgs)$g
-
+          logCplGradObs2[i] <- numgrad(
+              fcn = logCplGradNumFun,
+              x = xCurr,
+              u = staticArgs$Mdl.u[i, , drop = FALSE],
+              CompCaller = CompCaller,
+              parCaller = parCaller,
+              cplCaller = cplCaller,
+              CplNM =  CplNM,
+              parCpl = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
+              staticArgs = staticArgs)$g
+        }
       ## The gradient for the link function n-by-1
+
+
+
 
     }
 
-  ## The gradient for the likelihood
+  ## The gradient for the likelihood,  n-by-1
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
+
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT

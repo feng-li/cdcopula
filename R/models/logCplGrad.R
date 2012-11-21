@@ -31,7 +31,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
         if(tolower(cplCaller) == "lambdal")
           {
-            ## FIXME: This part needs review when the conditional linkage used.
+            ## The commenting out part of the code is for the unconditional
+            ## link function which is deprecated.
 
             ## Gradient w.r.t delta
             ## T1 <- 1-(1-u)^theta
@@ -47,15 +48,21 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ##            (log(L1)-delta*Delta1/L1)/delta^2-1)/
             ##              ((1+delta)*L1^(1/delta)-delta-1/theta)
 
+
+
             ## Gradient w.r.t. tau, i.e.  ff'(delta)
-            tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
-                                            theta = theta,
-                                            delta = delta,
-                                            caller = "delta")
+            ## tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
+            ##                                 theta = theta,
+            ##                                 delta = delta,
+            ##                                 caller = "delta")
+
+            ## This should be obtained through the conditional linkage
+            tauGrad.delta <- ???
+
 
             ub <- 1-u
-            ub1 <- ub[, 1, drop = FALSE]
-            ub2 <- ub[, 2, drop = FALSE]
+            ## ub1 <- ub[, 1, drop = FALSE]
+            ## ub2 <- ub[, 2, drop = FALSE]
 
             M12 <- 1-ub^theta
 
@@ -63,7 +70,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
             M5 <- -1 + rowSums(M12^(-delta))
             M6 <- -1 + M5^(1/delta)
-
 
             M7 <- (log(M5^(1/delta))-log(M6))*tauGrad.delta/theta^2
             C1 <- rowSums((M12^(-delta)*M34))M5
