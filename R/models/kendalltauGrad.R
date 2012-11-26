@@ -1,4 +1,3 @@
-##' TODO: Vectorized this
 kendalltauGrad <- function(CplNM, theta, delta, caller)
   {
     if(tolower(CplNM) == "bb7")

@@ -42,6 +42,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
             linkCurr <- MdlDGP.parLink[[i]][[j]]
             if(tolower(linkCurr)  == "glogit")
               {
+                warning("DGPCpl function needs review with conditional link,  Feng")
                 tau <- MdlDGP.par[[CplNM]][["tau"]]
                 a <- 0 ## The lower bound of generalized logit link
                 b <- 2^(1/2-1/(2*tau)) ## the upper bound

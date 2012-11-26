@@ -48,17 +48,40 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ##            (log(L1)-delta*Delta1/L1)/delta^2-1)/
             ##              ((1+delta)*L1^(1/delta)-delta-1/theta)
 
-
-
             ## Gradient w.r.t. tau, i.e.  ff'(delta)
             ## tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
             ##                                 theta = theta,
             ##                                 delta = delta,
             ##                                 caller = "delta")
 
-            ## This should be obtained through the conditional linkage
-            tauGrad.delta <- ???
 
+            ###########################################################################
+            ## This should be obtained through the conditional linkage
+            ## TODO: This is kind of hard code, consider it in a more general way.
+
+            ## Gradient w.r.t. tau
+            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
+                                                theta = theta,
+                                                delta = delta,
+                                                caller = "theta")
+
+            ## The gradient for the parameters in conditional link
+            tau.b <- 1
+            tau.a <- log(2)/(log(2)-2*log(lambdaL))
+            linPred.tau <-  log(tau-a) - log(b-tau)
+
+            grad.glogit.a <- 1/(1+exp(linPred.tau))
+
+            grad.link.a.lambdaL <- grad.glogit.a*
+              2*log(2)/(lambdaL*(log(2)-2*log(lambdaL))^2)
+
+            ## The gradient for the reparameterized parameters
+            ## lambdaL  =  2^(-1/delta)
+            grad.labmdal.delta <- 2^(-1/delta)*log(2)/delta^2
+
+            tauGrad.delta <- 1/gradCpl.tau.theta*grad.link.a.lambdaL*grad.labmdal.delta
+
+            ###########################################################################
 
             ub <- 1-u
             ## ub1 <- ub[, 1, drop = FALSE]

@@ -5,6 +5,10 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
         CompCaller <- chainCaller[1]
         parCaller <- chainCaller[2]
 
+
+
+        ## The linkage for all parameters
+
         if(tolower(parCaller) == "tau")
           {
             ## The conditional links

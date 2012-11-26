@@ -180,9 +180,6 @@ logPostGradHess <- function(CplNM,
         }
       ## The gradient for the link function n-by-1
 
-
-
-
     }
 
   ## The gradient for the likelihood,  n-by-1
