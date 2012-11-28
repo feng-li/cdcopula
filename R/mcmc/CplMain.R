@@ -14,6 +14,7 @@
 ##'       Current: Wed Mar 07 16:56:30 CET 2012.
 CplMain <- function(configfile)
 {
+
 ###----------------------------------------------------------------------------
 ### Load user setup file
 ###----------------------------------------------------------------------------
@@ -115,10 +116,12 @@ CplMain <- function(configfile)
                      Mdl.d = u,
                      tauTabular = tauTabular)
 
-  ## Generate initial values that does not let log posterior be -Inf.
-  InitGood <- FALSE
 
+
+
+  ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
+  InitGood <- FALSE
   nLoopInit <- 0
   while(InitGood == FALSE)
     {
@@ -131,6 +134,7 @@ CplMain <- function(configfile)
       Mdl.beta <- initParOut[["Mdl.beta"]]
 
       ## Optimize the initial values via BFGS.
+      ## NOTE: The variable selection indicators are fixed (not optimized)
       betaVecInit <- parSwap(
           betaInput = Mdl.beta,
           Mdl.beta = Mdl.beta,
@@ -168,7 +172,20 @@ CplMain <- function(configfile)
                               parUpdate = parUpdate)
 
         }
+
       nLoopInit <- nLoopInit +1
+
+      ## Too many failures,  abort!
+      if(nLoopInit >= 100)
+        {
+          ## InitGood <- TRUE
+          warning(paste(
+              "The initializing algorithm failed more that",
+              nLoopInit, "times.\n", "Must be something went wrong!\n",
+              "Continue without initial value optimization."))
+          break
+        }
+
     }
 
   ## Dry run to obtain the initial "staticArgs"
@@ -231,7 +248,7 @@ CplMain <- function(configfile)
                       Mdl.beta[[CompCurr]][[parCurr]] <- MHOut[["beta"]]
                       Mdl.betaIdx[[CompCurr]][[parCurr]] <- MHOut[["betaIdx"]]
 
-                      ## Export the parameters in each fold
+                      ## Epxort the parameters in each fold
                       MCMC.beta[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["beta"]]
                       MCMC.betaIdx[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["betaIdx"]]
                       MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <- MHOut[["accept.prob"]]

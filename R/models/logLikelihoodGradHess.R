@@ -19,7 +19,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
-logPostGradHess <- function(CplNM,
+logLikelihoodGradHess <- function(CplNM,
                             MargisTypes,
                             Mdl.Y,
                             Mdl.X,
@@ -128,7 +128,6 @@ logPostGradHess <- function(CplNM,
 
   if("numeric" %in% tolower(gradMethods))
     {
-      browser()
       ## The gradient for the copula function. scaler input and output
       logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
                                    CplNM, parCpl, staticArgs)
@@ -191,7 +190,6 @@ logPostGradHess <- function(CplNM,
 ###----------------------------------------------------------------------------
 
   out <- list(logLikGradObs = logLikGradObs,
-              logPriGradHessObs = logPriGradHessObs,
               staticArgs = staticArgs)
 
   return(out)

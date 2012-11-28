@@ -78,8 +78,8 @@ Mdl.parLink[[1]][[1]] <- "identity"
 Mdl.parLink[[1]][[2]] <- "log"
 Mdl.parLink[[2]][[1]] <- "identity"
 Mdl.parLink[[2]][[2]] <- "log"
-Mdl.parLink[[3]][[1]] <- "logit"
-Mdl.parLink[[3]][[2]] <- "glogit"
+Mdl.parLink[[3]][[1]] <- "glogit"
+Mdl.parLink[[3]][[2]] <- "logit"
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -220,7 +220,7 @@ priArgs[[2]][[2]] <-
 priArgs[[3]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "beta",  mean = 0.5, variance = 1),
+           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.1, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -228,7 +228,7 @@ priArgs[[3]][[1]] <-
 priArgs[[3]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.1, b = 0.3),
+           input = list(type = "beta",  mean = 0.5, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),

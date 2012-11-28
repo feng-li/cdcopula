@@ -33,9 +33,9 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
 {
 
   ## The updating component parameter chain
-  cp <- parCaller(parUpdate)
-  CompCurr <- cp[1]
-  parCurr <- cp[2]
+  chainCaller <- parCaller(parUpdate)
+  CompCurr <- chainCaller[1]
+  parCurr <- chainCaller[2]
 
   ## print(cp)
 
@@ -63,8 +63,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
   ## The k-step Generalized Newton Move
   for(iStep in 1:(kSteps+1))
     {
-      ## Obtain the gradient and Hessian information
-      gradHess.prop <- logPostGradHess(
+      ## The gradient and Hessian in the likelihood
+      logLikGradHess.prop <- logLikelihoodGradHess(
           CplNM = CplNM,
           Mdl.Y = Mdl.Y,
           Mdl.X = Mdl.X,
@@ -78,7 +78,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           staticArgs = staticArgs)
 
       ## Gradient and Hessian for the likelihood
-      logLikGrad.prop <- gradHess.prop[["logLikGradObs"]] # n-by-pp
+      logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
       ## The selected covariates
@@ -88,9 +88,17 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
+      logPriGradHess.prop <- logPriorsGradHess(
+          Mdl.X = Mdl.X,
+          Mdl.beta = Mdl.beta,
+          Mdl.betaIdx = Mdl.betaIdx,
+          Mdl.parLink = Mdl.parLink,
+          varSelArgs = varSelArgs,
+          priArgs = priArgs,
+          chainCaller = chainCaller)
 
-      logPriGrad.prop <- gradHess.prop[["logPriGradHessObs"]][["gradObs"]] # pp-by-1
-      logPriHess.prop <- gradHess.prop[["logPriGradHessObs"]][["HessObs"]] # pp-by-pp
+      logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
+      logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
 
       ## The gradient and Hessian subsets due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1
@@ -124,7 +132,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp,
           param.full <- matrix(0, length(betaIdxCurr), 1)
           param.full[betaIdxProp] <- param
           Mdl.beta[[CompCurr]][[parCurr]] <- param.full
-          staticArgs <- gradHess.prop[["staticArgs"]]
+          staticArgs <- logLikGradHess.prop[["staticArgs"]]
         }
       else if(iStep == (kSteps+1)) # (k+1):th step.  Make a output
         {

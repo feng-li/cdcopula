@@ -68,7 +68,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## The gradient for the parameters in conditional link
             tau.b <- 1
             tau.a <- log(2)/(log(2)-2*log(lambdaL))
-            linPred.tau <-  log(tau-a) - log(b-tau)
+            linPred.tau <-  log(tau-tau.a) - log(tau.b-tau)
 
             grad.glogit.a <- 1/(1+exp(linPred.tau))
 
@@ -95,12 +95,12 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             M6 <- -1 + M5^(1/delta)
 
             M7 <- (log(M5^(1/delta))-log(M6))*tauGrad.delta/theta^2
-            C1 <- rowSums((M12^(-delta)*M34))M5
+            C1 <- rowSums((M12^(-delta)*M34))/M5
             M8 <- C1*delta + log(M5)
             M9 <- M7-(M8*(-1+1/theta))/(M6*delta^2)
 
             P12 <- M6*(1+delta)*theta*log(ub)*tauGrad.delta
-            P34 <- -M12*log(M12)+(1+delta)log(ub)*ub^theta*tauGrad.delta
+            P34 <- -M12*log(M12)+(1+delta)*log(ub)*ub^theta*tauGrad.delta
             P56 <- (-1+theta)*log(ub)*tauGrad.delta
             P78 <- M6*P34*(1+delta)*theta/M12
 

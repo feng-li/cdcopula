@@ -22,7 +22,8 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 
         ## Which parameter are conditionally considered
         ## Hard coded, maybe should treat it as an input
-        condPar <- c("lambdal")
+        ## condPar <- c("lambdaL")
+        condPar <- c("tau")
 
 ###----------------------------------------------------------------------------
 ### (1) update all the independent linkages
@@ -33,7 +34,7 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
             for(ParCurr in parUpdateNM)
               {
                 ## Check if particular constrain is needed.
-                if(!(tolower(ParCurr) %in% conPar))
+                if(!(tolower(ParCurr) %in% tolower(condPar)))
                   {
                     extArgs <- NA
                     ## Update the parameters for the updated part
