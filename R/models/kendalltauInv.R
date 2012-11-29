@@ -41,7 +41,7 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
   {
     if(tolower(CplNM) == "bb7")
       {
-        out <- vector("list", length(parRepCpl))
+        ## out <- vector("list", length(parRepCpl))
         lambdaL <- parRepCpl[["lambdaL"]]
         tau <- parRepCpl[["tau"]]
 
@@ -72,8 +72,12 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
         ## This is the bottom neck of speed.
         lambdaUFloorIdx0 <- max.col(tauFloorDev0)
 
+
         lambdaUFloor0 <- lambdaUGrid[lambdaUFloorIdx0]
-        out <- lambdaUFloor0
+
+        ## Make sure the output format is same as the input
+        out <- tau
+        out[1:length(out)] <- lambdaUFloor0
       }
     return(out)
   }

@@ -19,18 +19,20 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
 ##'       Current: Thu Feb 02 22:45:48 CET 2012.
-logLikelihoodGradHess <- function(CplNM,
-                            MargisTypes,
-                            Mdl.Y,
-                            Mdl.X,
-                            Mdl.parLink,
-                            Mdl.beta,
-                            Mdl.betaIdx,
-                            parUpdate,
-                            priArgs,
-                            varSelArgs,
-                            staticArgs,
-                            gradMethods = c("analytic", "numeric"))
+logLikelihoodGradHess <- function(
+    CplNM,
+    MargisTypes,
+    Mdl.Y,
+    Mdl.X,
+    Mdl.parLink,
+    Mdl.beta,
+    Mdl.betaIdx,
+    parUpdate,
+    priArgs,
+    varSelArgs,
+    staticArgs,
+    gradMethods = c("analytic"))
+##  gradMethods = c("analytic", "numeric"))
 {
   ## The updating chain
   chainCaller <- parCaller(parUpdate)
@@ -190,6 +192,7 @@ logLikelihoodGradHess <- function(CplNM,
 ###----------------------------------------------------------------------------
 
   out <- list(logLikGradObs = logLikGradObs,
+              logLikHessObs = NA,
               staticArgs = staticArgs)
 
   return(out)

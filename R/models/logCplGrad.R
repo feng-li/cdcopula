@@ -19,15 +19,19 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
         ## The name of marginal model
         MargisNM <- dimnames(u)[[2]]
         nObs <- dim(u)[1]
+
         ## Subtract the parameters list.
-        tau <- parCpl[["tau"]]
-        lambdaL <- parCpl[["lambdaL"]]
-        lambdaU <- kendalltauInv(CplNM = CplNM,
-                                 parRepCpl = parCpl,
-                                 tauTabular = staticArgs[["tauTabular"]])
+        ## NOTE: convert matrix into vector to match the calculation
+        tau <- as.vector(parCpl[["tau"]])
+        lambdaL <- as.vector(parCpl[["lambdaL"]])
+        lambdaU <- as.vector(kendalltauInv(
+            CplNM = CplNM,
+            parRepCpl = parCpl,
+            tauTabular = staticArgs[["tauTabular"]]))
+
         ## The standard copula parameters (recycled if necessary, should be a vector).
-        delta <- as.vector(-log(2)/log(lambdaL))
-        theta <- as.vector(log(2)/log(2-lambdaU)) # ff(delta)
+        delta <- -log(2)/log(lambdaL)
+        theta <- log(2)/log(2-lambdaU) # ff(delta)
 
         if(tolower(cplCaller) == "lambdal")
           {
@@ -60,7 +64,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## TODO: This is kind of hard code, consider it in a more general way.
 
             ## Gradient w.r.t. tau
-            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
+            gradCpl.tau.delta <- kendalltauGrad(CplNM = CplNM,
                                                 theta = theta,
                                                 delta = delta,
                                                 caller = "theta")
@@ -79,7 +83,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## lambdaL  =  2^(-1/delta)
             grad.labmdal.delta <- 2^(-1/delta)*log(2)/delta^2
 
-            tauGrad.delta <- 1/gradCpl.tau.theta*grad.link.a.lambdaL*grad.labmdal.delta
+            tauGrad.delta <- 1/gradCpl.tau.delta*grad.link.a.lambdaL*grad.labmdal.delta
 
             ###########################################################################
 
@@ -109,7 +113,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ############################
             S1 <- M12^delta
 
-            gradCpl.lambdaL <- (
+            logGradCpl.delta <- (
                 (S1[, 1]*S1[, 2])^(-2)*(rowSums(M12^delta)-S1[, 1]*S1[, 2])^2*
                 (
                     rowSums(C34+P12+P78) - M6*theta/delta +
@@ -134,6 +138,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
           }
         else if(tolower(cplCaller) == "tau")
           {
+            browser()
             ## Gradient w.r.t theta
             T1 <- 1-(1-u)^theta
             T2 <- (1-u)^(theta-1)
@@ -152,13 +157,13 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                        ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
             ## Gradient w.r.t. tau
-            gradCpl.tau <- kendalltauGrad(CplNM = CplNM,
+            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
                                           theta = theta,
                                           delta = delta,
                                           caller = "theta")
 
             ## The chain gradient
-            out <- logGradCpl.theta*gradCpl.tau
+            out <- logGradCpl.theta*gradCpl.tau.theta
           }
         else
           {
