@@ -138,7 +138,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
           }
         else if(tolower(cplCaller) == "tau")
           {
-            browser()
             ## Gradient w.r.t theta
             T1 <- 1-(1-u)^theta
             T2 <- (1-u)^(theta-1)
