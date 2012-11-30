@@ -163,12 +163,12 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 caller = "theta")
 
             ## The chain gradient
-            out <- logGradCpl.theta*gradCpl.tau.theta
+            out <- logGradCpl.theta/gradCpl.tau.theta
           }
         else
           {
             ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are
-            ## exchangeable which means the expression for the gradient w.r.t u2
+            ## exchangeable which means the expression for the gradient w.r.t u1
             ## and u2 are the same if swap u1 and u2
             if(tolower(cplCaller) == "u1")
               {
@@ -184,18 +184,41 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 stop("No such copula parameter!")
               }
 
-            T1 <- 1-(1-u)^theta
-            T2 <- (1-u)^(theta-1)
-            L1 <- rowSums(T1^(-delta))-1
+            ## T1 <- 1-(1-u)^theta
+            ## T2 <- (1-u)^(theta-1)
+            ## L1 <- rowSums(T1^(-delta))-1
 
-            Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
-            Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
+            ## Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
+            ## Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
 
-            gradCpl.u <- (1+delta)*theta*Delta4.A+
-              (1-theta)*(colSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
-                (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
-                  (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
-                    ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
+            ## gradCpl.u <- (1+delta)*theta*Delta4.A+
+            ##   (1-theta)*(rowSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
+            ##     (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
+            ##       (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
+            ##         ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
+
+
+            ub <- 1 - u
+            ub1 <- ub[, 1, drop = FALSE]
+
+            D12 <- 1-ub^theta
+            D1 <- D12[, 1, drop = FALSE]
+            D2 <- D12[, 2, drop = FALSE]
+
+            S1 <- 1 - rowSums(D12^(-delta))
+            S2 <- -1 + (-S1)^(1/delta)
+
+            gradCpl.u <- (D1^(-1-3*delta)*D2^(-2*delta)*
+                          (rowSums(D12^delta)-D1^delta*D2^delta)^2*
+                          (D1^(1+delta)*S1*(-1+theta)*
+                           (1+(-S1)^(1/delta)*(-1+theta)-theta+S2^2*theta+S2^2*delta*theta)+
+                           D2^(-delta)*(D1^delta*(-1+D2^delta)*S2*(1+delta)*theta*
+                           (-1+(1+S2+S2*delta)*theta)+D2^delta*
+                            (1+theta*(-3+2*theta+S2*(1+delta)*
+                                     (-2+(2+S2*delta)*theta))))*ub1^theta))/
+                           (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
+                                  (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
+
 
 
             out <- gradCpl.u

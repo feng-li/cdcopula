@@ -21,7 +21,7 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
 ###----------------------------------------------------------------------------
 
   ## if any u -> 0 or u -> 1,  logCplObs -> -Inf
-  tol <- .Machine$double.eps
+  tol <- .Machine$double.eps*1000
   u.bad <- (any(u < 0+tol) || any(u > 1-tol))
   if(u.bad)
     {
@@ -40,22 +40,20 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       MargisNM <- names(u)
 
       ## Subtract the parameters list.
-      tau <- parCpl[["tau"]]
-      lambdaL <- parCpl[["lambdaL"]]
-      lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
-                               tauTabular = staticArgs[["tauTabular"]])
+      tau <- as.vector(parCpl[["tau"]])
+      lambdaL <- as.vector(parCpl[["lambdaL"]])
+      lambdaU <- as.vector(kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
+                               tauTabular = staticArgs[["tauTabular"]]))
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).
 
-      delta <- as.vector(-log(2)/log(lambdaL))
-      theta <- as.vector(log(2)/log(2-lambdaU))
+      delta <- -log(2)/log(lambdaL)
+      theta <- log(2)/log(2-lambdaU)
 
       ## temporal data
       ## L1 <- 1-(1-u1)^theta
       ## L2 <- 1-(1-u2)^theta
       TC1 <- 1-(1-u)^theta
-      ## L1 <- TC1[, 1]
-      ## L2 <- TC1[, 2]
 
       ## L3 <- (1-u1)^(-1+theta)
       ## L4 <- (1-u2)^(-1+theta)
@@ -64,7 +62,7 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       ## L4 <- TC2[, 2]
 
       ## L5 <- -1+L1^(-delta)+L2^(-delta)
-      L5 <- -1 + rowSums(TC1^(-delta))
+      L5 <- rowSums(TC1^(-delta)) - 1
 
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 

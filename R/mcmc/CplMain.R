@@ -135,7 +135,7 @@ CplMain <- function(configfile)
 
       ## Optimize the initial values via BFGS.
       ## NOTE: The variable selection indicators are fixed (not optimized)
-      betaVecInit <- parSwap(
+      betaVecInit <- parCplSwap(
           betaInput = Mdl.beta,
           Mdl.beta = Mdl.beta,
           Mdl.betaIdx = Mdl.betaIdx,
@@ -166,10 +166,11 @@ CplMain <- function(configfile)
       else
         {
           InitGood <- TRUE
-          Mdl.beta <- parSwap(betaInput = betaVecOptim[["par"]],
-                              Mdl.beta = Mdl.beta,
-                              Mdl.betaIdx = Mdl.betaIdx,
-                              parUpdate = parUpdate)
+          Mdl.beta <- parCplSwap(
+              betaInput = betaVecOptim[["par"]],
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              parUpdate = parUpdate)
 
         }
 

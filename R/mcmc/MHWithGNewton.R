@@ -25,7 +25,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           propArgs, MargisTypes, staticArgs)
 {
   ## The updating component parameter chain
-  chainCaller <- parCaller(parUpdate)
+  chainCaller <- parCplCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 

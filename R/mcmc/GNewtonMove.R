@@ -43,7 +43,7 @@ GNewtonMove <- function(propArgs,
 {
 
   ## The updating component parameter chain
-  chainCaller <- parCaller(parUpdate)
+  chainCaller <- parCplCaller(parUpdate)
   CompCurr <- chainCaller[1]
   parCurr <- chainCaller[2]
 

@@ -76,10 +76,10 @@ logLikelihoodGradHess <- function(
               return(out)
             }
 
-          FracGradObs <- matrix(NA, length(yCurr), 1)
+          FracGradObs.num <- matrix(NA, length(yCurr), 1)
           for(i in 1:length(yCurr))
             {
-              FracGradObs[i] <- numgrad(
+              FracGradObs.num[i] <- numgrad(
                   fcn = MargiModelGradNumFun,
                   x = parCurr[[parCaller]][i],
                   parCaller = parCaller,
@@ -156,7 +156,7 @@ logLikelihoodGradHess <- function(
         }
 
       nObs <- length(Mdl.Y[[1]])
-      logCplGradObs2 <- matrix(NA, nObs, 1)
+      logCplGradObs.num <- matrix(NA, nObs, 1)
       for(i in 1:nObs)
         {
           if(tolower(cplCaller) %in% c("u1", "u2"))
@@ -170,7 +170,7 @@ logLikelihoodGradHess <- function(
               xCurr <- Mdl.par[[CompCaller]][[parCaller]][i]
             }
 
-          logCplGradObs2[i] <- numgrad(
+          logCplGradObs.num[i] <- numgrad(
               fcn = logCplGradNumFun,
               x = xCurr,
               u = staticArgs$Mdl.u[i, , drop = FALSE],
