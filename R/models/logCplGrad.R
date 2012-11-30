@@ -156,10 +156,11 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                        ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
             ## Gradient w.r.t. tau
-            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
-                                          theta = theta,
-                                          delta = delta,
-                                          caller = "theta")
+            gradCpl.tau.theta <- kendalltauGrad(
+                CplNM = CplNM,
+                theta = theta,
+                delta = delta,
+                caller = "theta")
 
             ## The chain gradient
             out <- logGradCpl.theta*gradCpl.tau.theta

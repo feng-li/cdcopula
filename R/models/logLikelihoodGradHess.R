@@ -35,7 +35,7 @@ logLikelihoodGradHess <- function(
 ##  gradMethods = c("analytic", "numeric"))
 {
   ## The updating chain
-  chainCaller <- parCaller(parUpdate)
+  chainCaller <- parCplCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
   Mdl.par <- staticArgs[["Mdl.par"]]
@@ -109,6 +109,8 @@ logLikelihoodGradHess <- function(
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------
+
+  browser()
 
   if("analytic" %in% tolower(gradMethods))
     {
