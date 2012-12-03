@@ -29,8 +29,9 @@ MargiModelGrad <- function(y, par, type, parCaller)
           }
         else if(tolower(parCaller) == "sigma")
           {
-            GradFrac <- (sigma^2-(y-mu)^2)/((y-mu)*sigma)
-            out <- exp(logMargiDens)*GradFrac
+            ## GradFrac <- (sigma^2-(y-mu)^2)/((y-mu)*sigma)
+            ## out <- exp(logMargiDens)*GradFrac
+            out <- -(y-mu)/sigma*exp(logMargiDens)
           }
       }
     else if(tolower(margiType) == "student-t")

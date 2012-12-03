@@ -14,6 +14,32 @@
 ##'       Current: Fri May 11 12:42:30 CEST 2012.
 logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   {
+
+###----------------------------------------------------------------------------
+### Let the copula likelihood be -Inf if u -> 0 or 1
+###----------------------------------------------------------------------------
+
+  ## Fix u on the cliff if any u -> 0 or u -> 1.
+  ## Thanks to the advice from M. Smith
+
+  tol <- .Machine$double.eps*1000
+  u.bad1 <- (u > 1-tol)
+  u.bad0 <- (u < 0+tol)
+
+  if(any(u.bad1))
+    {
+      u[u.bad1] <- 1-tol
+    }
+
+  if(any(u.bad0))
+    {
+      u[u.bad0] <- 0 +tol
+    }
+
+###----------------------------------------------------------------------------
+### Gradients for the copula
+###----------------------------------------------------------------------------
+
     if(tolower(CplNM) == "bb7")
       {
         ## The name of marginal model
@@ -175,7 +201,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 u <-  u[, 1:2, drop = FALSE]
               }
 
-            else if(tolower(cplCaller) == "u1")
+            else if(tolower(cplCaller) == "u2")
               {
                 u <-  u[, 2:1, drop = FALSE]
               }
@@ -218,8 +244,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                                      (-2+(2+S2*delta)*theta))))*ub1^theta))/
                            (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
                                   (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
-
-
 
             out <- gradCpl.u
           }

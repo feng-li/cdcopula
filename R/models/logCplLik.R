@@ -20,13 +20,21 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
 ### Let the copula likelihood be -Inf if u -> 0 or 1
 ###----------------------------------------------------------------------------
 
-  ## if any u -> 0 or u -> 1,  logCplObs -> -Inf
+  ## Fix u on the cliff if any u -> 0 or u -> 1.
+  ## Thanks to the advice from M. Smith
+
   tol <- .Machine$double.eps*1000
-  u.bad <- (any(u < 0+tol) || any(u > 1-tol))
-  if(u.bad)
+  u.bad1 <- (u > 1-tol)
+  u.bad0 <- (u < 0+tol)
+
+  if(any(u.bad1))
     {
-      out <- -Inf
-      return(out)
+      u[u.bad1] <- 1-tol
+    }
+
+  if(any(u.bad0))
+    {
+      u[u.bad0] <- 0 +tol
     }
 
 ###----------------------------------------------------------------------------

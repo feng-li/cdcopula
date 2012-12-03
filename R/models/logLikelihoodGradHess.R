@@ -76,22 +76,32 @@ logLikelihoodGradHess <- function(
               return(out)
             }
 
-          FracGradObs.num <- matrix(NA, length(yCurr), 1)
-          for(i in 1:length(yCurr))
+          nObs <- length(Mdl.Y[[1]])
+          FracGradObs.num <- matrix(NA, nObs, 1)
+          for(i in 1:nObs)
             {
-              FracGradObs.num[i] <- numgrad(
+              gradTry <- try(numgrad(
                   fcn = MargiModelGradNumFun,
                   x = parCurr[[parCaller]][i],
                   parCaller = parCaller,
                   parCurr = lapply(parCurr, function(x, i)x[i], i = i),
                   yCurr = yCurr[i],
-                  typeCurr = typeCurr)$g
+                  typeCurr = typeCurr), silent = TRUE)
+
+              if(is(gradTry, "try-error"))
+                {
+                  FracGradObs.num[i] <- NA
+                }
+              else
+                {
+                  FracGradObs.num[i] <- gradTry$g
+                }
             }
 
         }
 
       ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
-      cplCaller <- paste("u", which(CompCaller%in%names(MargisTypes)), sep = "")
+      cplCaller <- paste("u", which(names(MargisTypes)%in%CompCaller), sep = "")
 
       staticArgs[["Mdl.u"]][, CompCaller] <- MargiModel(
           y = yCurr,
@@ -170,7 +180,7 @@ logLikelihoodGradHess <- function(
               xCurr <- Mdl.par[[CompCaller]][[parCaller]][i]
             }
 
-          logCplGradObs.num[i] <- numgrad(
+          gradTry <- try(numgrad(
               fcn = logCplGradNumFun,
               x = xCurr,
               u = staticArgs$Mdl.u[i, , drop = FALSE],
@@ -179,7 +189,17 @@ logLikelihoodGradHess <- function(
               cplCaller = cplCaller,
               CplNM =  CplNM,
               parCpl = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
-              staticArgs = staticArgs)$g
+              staticArgs = staticArgs), silent = TRUE)
+
+          if(is(gradTry, "try-error"))
+            {
+              logCplGradObs.num[i] <- NA
+            }
+          else
+            {
+              logCplGradObs.num[i] <- gradTry$g
+            }
+
         }
       ## The gradient for the link function n-by-1
 
@@ -192,7 +212,6 @@ logLikelihoodGradHess <- function(
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
-
   out <- list(logLikGradObs = logLikGradObs,
               logLikHessObs = NA,
               staticArgs = staticArgs)

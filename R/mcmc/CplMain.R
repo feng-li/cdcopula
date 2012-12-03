@@ -189,7 +189,10 @@ CplMain <- function(configfile)
 
     }
 
+
   ## Dry run to obtain the initial "staticArgs"
+  ## NOTE: As this is the very first run, the "parUpdate" should be all on for
+  ## this time.
   staticArgs <- logPost(
       CplNM = CplNM,
       Mdl.Y = MdlTraining.Y,
@@ -200,7 +203,7 @@ CplMain <- function(configfile)
       varSelArgs = varSelArgs,
       MargisTypes = MargisTypes,
       priArgs = priArgs,
-      parUpdate = parUpdate,
+      parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
       staticArgs = staticArgs)[["staticArgs"]]
 
 ###----------------------------------------------------------------------------
