@@ -16,13 +16,13 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   {
 
 ###----------------------------------------------------------------------------
-### Let the copula likelihood be -Inf if u -> 0 or 1
+### Copula likelihood numerical correction if u -> 0 or 1
 ###----------------------------------------------------------------------------
 
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
-  tol <- .Machine$double.eps*1000
+  tol <- .Machine$double.eps*1e3
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
 
@@ -245,7 +245,13 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                            (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
                                   (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
 
-            out <- gradCpl.u
+            ## FIXME: No idea where is the error, it is just has the opposite
+            ## sign from the numerical result. Assuming the numerical result is
+            ## right at the moment. Need further investigation.
+
+            ## out <- gradCpl.u
+            out <- - gradCpl.u
+
           }
       }
     return(matrix(out))
