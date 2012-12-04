@@ -23,10 +23,22 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
         if(tolower(caller) == "theta")
           {
             ## The gradient w.r.t. theta conditional on delta
+            ## Conditional on the lower tail dependency lambdaL(delta),  the
+            ## gradient for the Kendall's tau with respect to theta should be
+            ## the same as usual.
+
             if(length(Idx12)>0)
               {
                 thetaCurr <- theta[Idx12]
                 deltaCurr <- delta[Idx12]
+
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 1.5
+                ## deltaCurr <- 2.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
+
                 out[Idx12] <- -2/((thetaCurr-2)^2*deltaCurr) -
                   8*beta(2+deltaCurr, 2/thetaCurr-1)*
                   (thetaCurr + digamma(2/thetaCurr-1) -
@@ -35,6 +47,13 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
               }
             if(length(IdxLarge)>0)
               {
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 3.5
+                ## deltaCurr <- 4.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
+
                 thetaCurr <- theta[IdxLarge]
                 deltaCurr <- delta[IdxLarge]
                 out[IdxLarge] <- (-2*(2+deltaCurr)*thetaCurr^4*
@@ -51,6 +70,13 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
                 thetaCurr <- theta[Idx2]
                 deltaCurr <- delta[Idx2]
 
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 2
+                ## deltaCurr <- 4.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
+
                 ## You computer will never hit this branch. But we keep it anyway.
                 out[Idx2] <- -(12+24*digamma(1)+6*digamma(1)^2+pi^2-
                                12*(2+digamma(1))*digamma(2+deltaCurr)+
@@ -59,18 +85,42 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
               }
             if(length(IdxDeltaSmall)>0)
               {
-                out[IdxDeltaSmall] <- 2*(1-harmonic(2/theta))/(theta-2)^2-
-                  4*trigamma(2/theta+1)/((theta-2)*theta^2)
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 3
+                ## deltaCurr <- 0.0005
+                ## PASSED with analytical expression in Mathematica
+                ## NOTE: The two if conditions are essentially the same, interesting:)
+                ############################################
+
+                thetaCurr.A <- theta[IdxDeltaSmall & Idx12]
+                thetaCurr.B <- theta[IdxDeltaSmall & IdxLarge]
+
+                if(length(thetaCurr.A)>0)
+                  {
+                    out[IdxDeltaSmall & Idx12] <- -
+                      (thetaCurr.A^2*(4-2*digamma(1)*(thetaCurr.A-2)
+                       +(thetaCurr.A-6)*thetaCurr.A) +
+                         2*(thetaCurr.A-2)*thetaCurr.A^2*digamma(2/thetaCurr.A-1)+
+                           4*(thetaCurr.A-2)^2*trigamma((2+thetaCurr.A)/thetaCurr.A)
+                       )/
+                         (
+                             (thetaCurr.A-2)^3*thetaCurr.A^2
+                             )
+                  }
+                if(length(thetaCurr.B)>0)
+                  {
+                    out[IdxDeltaSmall & IdxLarge] <- 2*(1-harmonic(2/thetaCurr.B))/(thetaCurr.B-2)^2-
+                      4*trigamma(2/thetaCurr.B+1)/((thetaCurr.B-2)*thetaCurr.B^2)
+                  }
+
               }
 
           }
         else if(tolower(caller) == "delta")
           {
             ## FIXME: The conditional gradient
-            tauGrad.delta <- ???
-
-
-
+            tauGrad.delta <-
 
             ## The gradient w.r.t. theta conditional on delta
             if(length(Idx12)>0)

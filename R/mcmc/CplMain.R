@@ -24,7 +24,8 @@ CplMain <- function(configfile)
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE
 ###----------------------------------------------------------------------------
   ## Generating the numerical tabular for the inverse Kendall's tau
-  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.01)
+
+  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
 
   ## Indices for training and testing sample according to cross-validation
   nObs <- length(Mdl.Y[[1]])

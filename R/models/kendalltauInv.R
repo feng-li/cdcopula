@@ -17,7 +17,11 @@
 ##' TODO: Split the output by using a caller.
 
 
-kendalltauInv <- function(CplNM, parRepCpl, method = "tabular", tauTabular = NA)
+kendalltauInv <- function(
+    CplNM,
+    parRepCpl,
+    method = c("tabular", "iterative")[2],
+    tauTabular = NA)
   {
     if(tolower(method) == "tabular")
       {
@@ -102,7 +106,8 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
 
             out.theta <- delta
             parLen <- length(delta)
-            out[1:parLen] <- NA
+            out.theta <- delta
+            out.theta[1:parLen] <- NA
 
             for(i in 1:parLen)
               {

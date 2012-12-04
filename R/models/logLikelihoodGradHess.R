@@ -155,13 +155,14 @@ logLikelihoodGradHess <- function(
           else
             {
               ## Calling copula parameters
-              parCpl[[parCaller]] <- x
+              parCpl[[parCaller]] <- x + 0.01
             }
 
           out <- logCplLik(u = u, CplNM = CplNM,
                            parCpl = parCpl,
                            staticArgs = staticArgs,
                            logLik = FALSE)
+
           return(out)
         }
 
@@ -190,7 +191,6 @@ logLikelihoodGradHess <- function(
               CplNM =  CplNM,
               parCpl = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
               staticArgs = staticArgs), silent = TRUE)
-
           if(is(gradTry, "try-error"))
             {
               logCplGradObs.num[i] <- NA

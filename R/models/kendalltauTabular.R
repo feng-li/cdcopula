@@ -13,7 +13,7 @@
 ##'       Current: Thu Apr 19 18:04:39 CEST 2012.
 ##' TODO: This is a very standard way of creating tables. It should be possible
 ##' to make a general function.
-kendalltauTabular <- function(CplNM, tol = 0.001)
+kendalltauTabular <- function(CplNM, tol = 1e-4)
 {
   if(tolower(CplNM) == "bb7")
     {
