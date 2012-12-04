@@ -84,13 +84,12 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ##                                 delta = delta,
             ##                                 caller = "delta")
 
-
             ###########################################################################
             ## This should be obtained through the conditional linkage
             ## TODO: This is kind of hard code, consider it in a more general way.
 
             ## Gradient w.r.t. tau
-            gradCpl.tau.delta <- kendalltauGrad(CplNM = CplNM,
+            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
                                                 theta = theta,
                                                 delta = delta,
                                                 caller = "theta")
@@ -109,7 +108,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## lambdaL  =  2^(-1/delta)
             grad.labmdal.delta <- 2^(-1/delta)*log(2)/delta^2
 
-            tauGrad.delta <- 1/gradCpl.tau.delta*grad.link.a.lambdaL*grad.labmdal.delta
+            tauGrad.delta <- (1/gradCpl.tau.theta)*(grad.link.a.lambdaL*grad.labmdal.delta)
 
             ###########################################################################
 
@@ -189,7 +188,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 caller = "theta")
 
             ## The chain gradient
-            out <- logGradCpl.theta/gradCpl.tau.theta
+            out <- logGradCpl.theta*(1/gradCpl.tau.theta)
           }
         else
           {
