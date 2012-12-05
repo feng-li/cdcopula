@@ -113,12 +113,9 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ###########################################################################
 
             ub <- 1-u
-            ## ub1 <- ub[, 1, drop = FALSE]
-            ## ub2 <- ub[, 2, drop = FALSE]
-
             M12 <- 1-ub^theta
 
-            M34 <- -log(M12) + ub^theta*log(ub)*tauGrad.delta/M12
+            M34 <- -log(M12) + ub^theta*delta*log(ub)*tauGrad.delta/M12
 
             M5 <- -1 + rowSums(M12^(-delta))
             M6 <- -1 + M5^(1/delta)
@@ -139,9 +136,9 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             S1 <- M12^delta
 
             logGradCpl.delta <- (
-                (S1[, 1]*S1[, 2])^(-2)*(rowSums(M12^delta)-S1[, 1]*S1[, 2])^2*
+                (S1[, 1]*S1[, 2])^(-2)*(rowSums(S1)-S1[, 1]*S1[, 2])^2*
                 (
-                    rowSums(C34+P12+P78) - M6*theta/delta +
+                    rowSums(C34+P12+P56+P78) - M6*theta/delta +
                     M5^(1/delta)*(1-M5^(-1/delta))*M9*(1+delta)*theta+
                     M6*(1+delta)*theta/delta-
                     (M7-M8*(-2+1/theta)/(M6*delta^2))*(-1+1/theta)*theta-
