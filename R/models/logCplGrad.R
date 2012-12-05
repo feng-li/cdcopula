@@ -163,22 +163,50 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
           }
         else if(tolower(cplCaller) == "tau")
           {
+################################################################################
+### DEBUGGING
+            ## u <- matrix(c(0.6, 0.3), 1, )
+            ## theta <- 3.5
+            ## delta <- 2.4
+### PASSED
+################################################################################
+
             ## Gradient w.r.t theta
             T1 <- 1-(1-u)^theta
-            T2 <- (1-u)^(theta-1)
             L1 <- rowSums(T1^(-delta))-1
-            Delta2.A <- -rowSums(T1^(-1)*(1-u)^theta*log(1-u))
-            Delta2.B <- -rowSums(T1^(-delta-1)*(1-u)^theta*log(1-u))
-            Delta2.C <- -rowSums(T1^(1/delta-1)*(1-u)^theta*log(1-u))
-            Delta2.D <- -rowSums(T1^(-1/delta-1)*(1-u)^theta*log(1-u))
-            ## Delta3 <- rowSums(log(1-u))
-            logGradCpl.theta <- -(1+theta)*Delta2.A + rowSums(log(1-u))+
-              2*(1+delta)*Delta2.B/L1+
-                (1+2*theta)*Delta2.C/((1-L1^(-1/delta))*theta*delta)-
-                  log(1-L1^(-1/delta))/theta^2+
-                    ((1+delta)*L1^(1/delta)+
-                     theta*(1+delta)/delta*L1^(1/delta-1)*Delta2.D-delta)/
-                       ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
+            PT1 <- matrix(T1[, 1]*T1[, 2])
+
+            SD12 <- rowSums((T1[, 2:1])^(1+delta)*(1-u)^theta*log(1-u))
+            SD34 <- rowSums(T1^(-1-delta)*(1-u)^theta*delta*log(1-u))
+
+            C1 <- SD34*L1^(-(1+delta)/delta)/(delta-L1^(-1/delta)*delta)
+            C2 <- (log(L1^(1/delta))-log(-1+L1^(1/delta)))/theta^2
+
+            logGradCpl.theta <-
+              1/(L1^3*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta))*
+                PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
+                  (1/theta*PT1^(-delta)*(-SD12*(1+delta)*theta*(
+                      -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-L1*PT1^(1+delta)*(
+                          C1*(-1+theta)*(-1+theta-theta*delta+L1^(1/delta)*(1+delta)*theta)+
+                          theta*(C2+delta+C2*delta*theta-L1^(1/delta)*(1+delta)*(1+C2*theta))))+
+                   L1*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta)*
+                   (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
+
+            ## logGradCpl.theta <- (
+            ##     PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
+            ##     (
+            ##         L1^(1+1/delta)*(1-L1^(-1/delta))*PT1*(1+delta)-
+            ##         L1*PL1*(-1+1/theta)+2*(-SD12)*PT1^(-delta)*
+            ##         (1+delta)*(theta-1)+ L1*PT1/theta+
+            ##         (-SD12)*(-1+L1^(1/delta))*PT1^(-delta)*
+            ##         (1+delta)*(1+2*delta)*theta-
+            ##         L1*PT1*(-1+1/theta)*theta*
+            ##         (C2 + C1*(-1+1/theta))
+
+            ##         )
+
+
+            ##     )
 
             ## Gradient w.r.t. tau
             gradCpl.tau.theta <- kendalltauGrad(
@@ -222,6 +250,13 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ##       (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
             ##         ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
+################################################################################
+            ## DEBUGGING
+            ## u <- matrix(c(0.6, 0.3), 1, )
+            ## theta <- 3.5
+            ## delta <- 2.4
+            ## PASSED
+################################################################################
 
             ub <- 1 - u
             ub1 <- ub[, 1, drop = FALSE]

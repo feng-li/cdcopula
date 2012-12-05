@@ -128,7 +128,6 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
             ## tauGrad.delta <- ff'(delta)
             #############################################################################
 
-
             ## The gradient w.r.t. theta conditional on delta
             if(length(Idx12)>0)
               {
