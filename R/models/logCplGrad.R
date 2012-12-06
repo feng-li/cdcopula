@@ -22,19 +22,19 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
-  ## tol <- .Machine$double.eps*1e3
-  ## u.bad1 <- (u > 1-tol)
-  ## u.bad0 <- (u < 0+tol)
+  tol <- .Machine$double.eps*1e3
+  u.bad1 <- (u > 1-tol)
+  u.bad0 <- (u < 0+tol)
 
-  ## if(any(u.bad1))
-  ##   {
-  ##     u[u.bad1] <- 1-tol
-  ##   }
+  if(any(u.bad1))
+    {
+      u[u.bad1] <- 1-tol
+    }
 
-  ## if(any(u.bad0))
-  ##   {
-  ##     u[u.bad0] <- 0 +tol
-  ##   }
+  if(any(u.bad0))
+    {
+      u[u.bad0] <- 0 +tol
+    }
 
 ###----------------------------------------------------------------------------
 ### Gradients for the copula
@@ -78,7 +78,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ##            (log(L1)-delta*Delta1/L1)/delta^2-1)/
             ##              ((1+delta)*L1^(1/delta)-delta-1/theta)
 
-            ## Gradient w.r.t. tau, i.e.  ff'(delta)
             ## tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
             ##                                 theta = theta,
             ##                                 delta = delta,
@@ -108,31 +107,30 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## lambdaL  =  2^(-1/delta)
             grad.labmdal.delta <- 2^(-1/delta)*log(2)/delta^2
 
-            tauGrad.delta <- (1/gradCpl.tau.theta)*(grad.link.a.lambdaL*grad.labmdal.delta)
+            grad.delta.theta <- (1/gradCpl.tau.theta)*(grad.link.a.lambdaL*grad.labmdal.delta)
 
             ###########################################################################
 
             ub <- 1-u
             M12 <- 1-ub^theta
 
-            M34 <- -log(M12) + ub^theta*delta*log(ub)*tauGrad.delta/M12
+            M34 <- -log(M12) + ub^theta*delta*log(ub)*grad.delta.theta/M12
 
             M5 <- -1 + rowSums(M12^(-delta))
             M6 <- -1 + M5^(1/delta)
 
-            M7 <- (log(M5^(1/delta))-log(M6))*tauGrad.delta/theta^2
+            M7 <- (log(M5^(1/delta))-log(M6))*grad.delta.theta/theta^2
             C1 <- rowSums((M12^(-delta)*M34))/M5
             M8 <- C1*delta + log(M5)
             M9 <- M7-(M8*(-1+1/theta))/(M6*delta^2)
 
-            P12 <- M6*(1+delta)*theta*log(ub)*tauGrad.delta
-            P34 <- -M12*log(M12)+(1+delta)*log(ub)*ub^theta*tauGrad.delta
-            P56 <- (-1+theta)*log(ub)*tauGrad.delta
+            P12 <- M6*(1+delta)*theta*log(ub)*grad.delta.theta
+            P34 <- -M12*log(M12)+(1+delta)*log(ub)*ub^theta*grad.delta.theta
+            P56 <- (-1+theta)*log(ub)*grad.delta.theta
             P78 <- M6*P34*(1+delta)*theta/M12
 
             C34 <- P34*(-1+theta)/M12
 
-            ############################
             S1 <- M12^delta
 
             logGradCpl.delta <- (
@@ -144,8 +142,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                     (M7-M8*(-2+1/theta)/(M6*delta^2))*(-1+1/theta)*theta-
                     2*(-1+1/theta)*theta*(-C1*delta*(1+delta)+log(M5))/delta^2+
                     M5^(1/delta)*(1-M5^(-1/delta))*(1+delta)*theta*
-                    (C1*(-2-1/delta)+log(M5)/delta^2)+ M6*(1+delta)*tauGrad.delta+
-                    tauGrad.delta/theta+(-1+theta*tauGrad.delta)/theta
+                    (C1*(-2-1/delta)+log(M5)/delta^2)+ M6*(1+delta)*grad.delta.theta+
+                    grad.delta.theta/theta+(-1+theta*grad.delta.theta)/theta
                     )
             )/(
                 M5^2*(-1+(-delta+M5^(1/delta)*(1+delta))*theta)
@@ -189,21 +187,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                    L1*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta)*
                    (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
 
-            ## logGradCpl.theta <- (
-            ##     PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
-            ##     (
-            ##         L1^(1+1/delta)*(1-L1^(-1/delta))*PT1*(1+delta)-
-            ##         L1*PL1*(-1+1/theta)+2*(-SD12)*PT1^(-delta)*
-            ##         (1+delta)*(theta-1)+ L1*PT1/theta+
-            ##         (-SD12)*(-1+L1^(1/delta))*PT1^(-delta)*
-            ##         (1+delta)*(1+2*delta)*theta-
-            ##         L1*PT1*(-1+1/theta)*theta*
-            ##         (C2 + C1*(-1+1/theta))
-
-            ##         )
-
-
-            ##     )
 
             ## Gradient w.r.t. tau
             gradCpl.tau.theta <- kendalltauGrad(
@@ -234,18 +217,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 stop("No such copula parameter!")
               }
 
-            ## T1 <- 1-(1-u)^theta
-            ## T2 <- (1-u)^(theta-1)
-            ## L1 <- rowSums(T1^(-delta))-1
-
-            ## Delta4.A <- -rowSums(T1^(-1)*(1-u)^(theta-1)*theta)
-            ## Delta4.B <- -rowSums(T1^(-delta -1)*(1-u)^(theta-1)*theta)
-
-            ## gradCpl.u <- (1+delta)*theta*Delta4.A+
-            ##   (1-theta)*(rowSums(1/(1-u)))-2*(1+delta)*Delta4.B/L1-
-            ##     (1/theta-2)*L1^(-1/delta-1)*Delta4.B/(1-L1^(-1/delta))-
-            ##       (1+delta)*theta*L1^(1/theta-1)*Delta4.B/
-            ##         ((1+delta)*theta*L1^(1/delta)-theta*delta-1)
 
 ################################################################################
             ## DEBUGGING
