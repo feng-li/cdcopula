@@ -1,4 +1,4 @@
-##' A wrapper of the log likelihood with first argument as an vector
+##' A wrapper of the log posterior with first argument as an vector
 ##'
 ##'
 ##' @title log posterior function

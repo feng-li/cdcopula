@@ -106,8 +106,7 @@ CplMain <- function(configfile)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
-  ## Initialize "staticArgs"
-  ## Dry run the logPost once to obtain it.
+  ## Initialize "staticArgs" structure
   u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
               dimnames = list(NULL, names(MdlTraining.Y)))
 
@@ -117,83 +116,99 @@ CplMain <- function(configfile)
                      Mdl.d = u,
                      tauTabular = tauTabular)
 
-
-
-
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  InitGood <- FALSE
-  nLoopInit <- 0
-  while(InitGood == FALSE)
+  optimInit <- TRUE
+
+  if(optimInit == TRUE &
+     any(tolower(unlist(betaInit)) == "random"))
     {
-      ## Assign the initial values
-      initParOut <- initPar(
-          varSelArgs = varSelArgs,
-          betaInit = betaInit,
-          Mdl.X = MdlTraining.X)
-      Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
-      Mdl.beta <- initParOut[["Mdl.beta"]]
-
-      ## Optimize the initial values via BFGS.
-      ## NOTE: The variable selection indicators are fixed (not optimized)
-      betaVecInit <- parCplSwap(
-          betaInput = Mdl.beta,
-          Mdl.beta = Mdl.beta,
-          Mdl.betaIdx = Mdl.betaIdx,
-          parUpdate = parUpdate)
-
-      betaVecOptim <- try(optim(
-          par = betaVecInit,
-          fn = logPostOptim,
-          control = list(fnscale = -1, maxit = 100),
-          method = "BFGS",
-          CplNM = CplNM,
-          Mdl.Y = MdlTraining.Y,
-          Mdl.X = MdlTraining.X,
-          Mdl.beta = Mdl.beta,
-          Mdl.betaIdx = Mdl.betaIdx,
-          Mdl.parLink = Mdl.parLink,
-          varSelArgs = varSelArgs,
-          MargisTypes = MargisTypes,
-          priArgs = priArgs,
-          parUpdate = parUpdate,
-          staticArgs = staticArgs), silent = TRUE)
-
-      if(is(betaVecOptim, "try-error") == TRUE &&
-         any(tolower(unlist(betaInit)) == "random"))
+      InitGood <- FALSE
+      nLoopInit <- 0
+      while(InitGood == FALSE)
         {
-          InitGood <- FALSE
-        }
-      else
-        {
-          InitGood <- TRUE
-          Mdl.beta <- parCplSwap(
-              betaInput = betaVecOptim[["par"]],
+          ## Assign the initial values
+          initParOut <- initPar(
+              varSelArgs = varSelArgs,
+              betaInit = betaInit,
+              Mdl.X = MdlTraining.X)
+          Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
+          Mdl.beta <- initParOut[["Mdl.beta"]]
+
+          ## Dry run to obtain the initial "staticArgs"
+          ## NOTE: As this is the very first run, the "parUpdate" should be all on for
+          ## this time.
+
+          staticArgs <- logPost(
+              CplNM = CplNM,
+              Mdl.Y = MdlTraining.Y,
+              Mdl.X = MdlTraining.X,
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
+              staticArgs = staticArgs)[["staticArgs"]]
+
+          ## Optimize the initial values via BFGS.
+          ## NOTE: The variable selection indicators are fixed (not optimized)
+          betaVecInit <- parCplSwap(
+              betaInput = Mdl.beta,
               Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx,
               parUpdate = parUpdate)
 
+          betaVecOptim <- try(optim(
+              par = betaVecInit,
+              fn = logPostOptim,
+              control = list(fnscale = -1, maxit = 100),
+              method = "BFGS",
+              CplNM = CplNM,
+              Mdl.Y = MdlTraining.Y,
+              Mdl.X = MdlTraining.X,
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticArgs = staticArgs), silent = TRUE)
+
+          if(is(betaVecOptim, "try-error") == TRUE)
+            {
+              InitGood <- FALSE
+            }
+          else
+            {
+              InitGood <- TRUE
+              Mdl.beta <- parCplSwap(
+                  betaInput = betaVecOptim[["par"]],
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  parUpdate = parUpdate)
+
+            }
+
+          nLoopInit <- nLoopInit +1
+
+          ## Too many failures,  abort!
+          if(nLoopInit >= 100)
+            {
+              ## InitGood <- TRUE
+              warning(paste(
+                  " The initializing algorithm failed more that",
+                  nLoopInit, "times.\n",
+                  "Continue without initial value optimization."))
+              break
+            }
+
         }
-
-      nLoopInit <- nLoopInit +1
-
-      ## Too many failures,  abort!
-      if(nLoopInit >= 100)
-        {
-          ## InitGood <- TRUE
-          warning(paste(
-              "The initializing algorithm failed more that",
-              nLoopInit, "times.\n", "Must be something went wrong!\n",
-              "Continue without initial value optimization."))
-          break
-        }
-
     }
 
-
-  ## Dry run to obtain the initial "staticArgs"
-  ## NOTE: As this is the very first run, the "parUpdate" should be all on for
-  ## this time.
+  ## Dry run to obtain staticArgs for the initial values
   staticArgs <- logPost(
       CplNM = CplNM,
       Mdl.Y = MdlTraining.Y,

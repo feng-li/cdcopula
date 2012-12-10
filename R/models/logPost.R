@@ -108,7 +108,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
       staticArgs = staticArgs) # n-by-1
 
 ###----------------------------------------------------------------------------
-### THE LOG PRIORS
+### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
   Mdl.logPri <- logPriors(
       Mdl.X = Mdl.X,

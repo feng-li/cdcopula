@@ -1,1 +1,4 @@
-allocateModelDataFrame <- function(DataFrame, )
+allocateModelDataFrame <- function(DataFrame)
+  {
+
+  }

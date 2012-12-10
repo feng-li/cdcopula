@@ -120,8 +120,6 @@ logLikelihoodGradHess <- function(
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------
 
-  browser()
-
   if("analytic" %in% tolower(gradMethods))
     {
       ## The gradient for the copula function. n-by-1

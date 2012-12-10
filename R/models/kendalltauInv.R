@@ -114,7 +114,7 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
                 tauCurr <- tau[i]
                 deltaCurr <- delta[i]
                 outRootCurr <-
-                  uniroot(function(x, CplNM, deltaCurr, tauCurr)
+                  try(uniroot(function(x, CplNM, deltaCurr, tauCurr)
                           {
                             kendalltau(CplNM = CplNM,
                                        parCpl = list(theta = x,
@@ -122,9 +122,14 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
                           },
                           interval = c(1, 1000), CplNM = CplNM,
                           deltaCurr = deltaCurr,
-                          tauCurr = tauCurr)
-                ##print(outRootCurr)
-                out.theta[i] <- outRootCurr$root
+                          tauCurr = tauCurr), silent = TRUE)
+
+                if(is(outRootCurr, "try-error"))
+                  {out.theta[i] <- NA}
+                else
+                  {
+                    out.theta[i] <- outRootCurr$root
+                  }
               }
             out <- 2 - 2^(1/out.theta)
           }
@@ -143,17 +148,24 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
                 tauCurr <- tau[i]
                 deltaCurr <- delta[i]
                 outRootCurr <-
-                  uniroot(function(x, thetaCurr, deltaCurr, tauCurr)
-                          {
-                            kendalltau(CplNM = CplNM,
-                                       parCpl = list(theta = thetaCurr,
-                                         delta = x))-tauCurr
-                          },
-                          interval = c(1e-13, 1000), CplNM = CplNM,
-                          thetaCurr = thetaCurr, tauCurr =
-                          tauCurr)
+                  try(uniroot(
+                      function(x, thetaCurr, deltaCurr, tauCurr)
+                      {
+                        kendalltau(CplNM = CplNM,
+                                   parCpl = list(theta = thetaCurr,
+                                     delta = x))-tauCurr
+                      },
+                      interval = c(1e-10, 1000), CplNM = CplNM,
+                      thetaCurr = thetaCurr, tauCurr =
+                      tauCurr), silent = TRUE)
                 ##print(outRootCurr)
-                out.delta[i] <- outRootCurr$root
+                if(is(outRootCurr, "try-error"))
+                  {out.delta[i] <- NA}
+                else
+                  {
+                    out.delta[i] <- outRootCurr$root
+                  }
+
               }
 
             out <- 2^(1/out.delta)
