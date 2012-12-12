@@ -124,11 +124,11 @@ track.MCMC = TRUE
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
 MCMCUpdate[[1]][[1]] <- TRUE
-MCMCUpdate[[1]][[2]] <- TRUE
-MCMCUpdate[[2]][[1]] <- TRUE
-MCMCUpdate[[2]][[2]] <- TRUE
-MCMCUpdate[[3]][[1]] <- TRUE
-MCMCUpdate[[3]][[2]] <- TRUE
+MCMCUpdate[[1]][[2]] <- F
+MCMCUpdate[[2]][[1]] <- F
+MCMCUpdate[[2]][[2]] <- F
+MCMCUpdate[[3]][[1]] <- F
+MCMCUpdate[[3]][[2]] <- F
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc

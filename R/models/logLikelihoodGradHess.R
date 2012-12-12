@@ -28,7 +28,6 @@ logLikelihoodGradHess <- function(
     Mdl.beta,
     Mdl.betaIdx,
     parUpdate,
-    priArgs,
     varSelArgs,
     staticArgs,
     gradMethods = c("analytic"))

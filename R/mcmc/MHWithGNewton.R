@@ -24,6 +24,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink, parUpdate, priArgs, varSelArgs,
                           propArgs, MargisTypes, staticArgs)
 {
+
   ## The updating component parameter chain
   chainCaller <- parCplCaller(parUpdate)
   CompCaller <- chainCaller[1]
@@ -61,15 +62,23 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       if(betaIdxArgs$type == "binom")
         {
           ## Binomial proposal a small subset
-          betaIdx.propCand <- which(rbinom(n = length(varSelCand) , size = 1,
-                                           prob = betaIdxArgs$prob) == 1)
+          betaIdx.propCandIdx <- which(rbinom(n = length(varSelCand) , size = 1,
+                                              prob = betaIdxArgs$prob) == 1)
 
-          ## Special case to make sure at least one variable is proposed a change
-          if(length(betaIdx.propCand) == 0)
+          ## Special case to make sure at least one variable is proposed a
+          ## change
+          ## FIXME: This may break the binomial settings
+          if(length(betaIdx.propCandIdx) == 0)
             {
               betaIdx.propCand <- sample(varSelCand, 1)
             }
+          else
+            {
+              betaIdx.propCand <- varSelCand[betaIdx.propCandIdx]
+            }
+
         }
+      ## Propose a change
       betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
     }
 
@@ -120,10 +129,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         {
           ## The proposal parameters block
           beta.prop.df <- beta.propArgs[["df"]]
-          beta.prop <- beta.curr2mode.mean +
-            rmvt(n = 1,
-                 sigma = beta.curr2mode.sigma,
-                 df = beta.prop.df)
+          beta.prop <- beta.curr2mode.mean + rmvt(
+              n = 1,
+              sigma = beta.curr2mode.sigma,
+              df = beta.prop.df)
         }
     }
 
@@ -159,7 +168,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       ## The information for proposed density via K-step Newton's method
       beta.prop2mode.mean <- matrix(beta.prop2mode$param, 1) # 1-by-p
-      beta.prop2mode.sigma <- - beta.prop2mode$HessObsInv
+      beta.prop2mode.sigma <- - beta.prop2mode$HessObsInv # p-by-p
 
       if(any(is.na(beta.prop2mode.sigma)))
         { ## Something is wrong at GNewton2,  reject it soon.
@@ -173,7 +182,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               sigma = beta.prop2mode.sigma,
               df = beta.prop.df, log = TRUE)
 
-          ## The jump density for propose draw to current draw.
+          ## The jump density for propose draw at current draw.
           logJump.beta.propATcurr2mode<- dmvt(
               x = beta.prop - beta.curr2mode.mean,
               sigma = beta.curr2mode.sigma,
