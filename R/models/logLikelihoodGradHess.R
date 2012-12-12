@@ -210,8 +210,7 @@ logLikelihoodGradHess <- function(
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
   out <- list(logLikGradObs = logLikGradObs,
-              logLikHessObs = NA,
-              staticArgs = staticArgs)
+              logLikHessObs = NA)
 
   return(out)
 }

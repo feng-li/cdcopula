@@ -69,8 +69,6 @@ GNewtonMove <- function(propArgs,
 ### The k-step Generalized Newton Move
 ###----------------------------------------------------------------------------
 
-  ## The k-step Generalized Newton Move
-
   for(iStep in 1:(kSteps+1))
     {
       ## The gradient and Hessian in the likelihood
@@ -108,10 +106,8 @@ GNewtonMove <- function(propArgs,
 
       ## The gradient and Hessian subsets in the priors due to variable selection
       logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1
-      logPriHess.pp <- logPriHess.prop[betaIdxProp, betaIdxProp,
-                                       drop = FALSE] # pp-by-pp
-      logPriHess.pc <- logPriHess.prop[betaIdxProp, betaIdxCurr,
-                                       drop = FALSE] # pp-by-pc
+      logPriHess.pp <- logPriHess.prop[betaIdxProp, betaIdxProp, drop = FALSE] # pp-by-pp
+      logPriHess.pc <- logPriHess.prop[betaIdxProp, betaIdxCurr, drop = FALSE] # pp-by-pc
 
       ## The selected covariates in the proposed and current draw
       X.prop <- X[ , betaIdxProp, drop = FALSE] # n-by-pp
@@ -134,7 +130,9 @@ GNewtonMove <- function(propArgs,
 
           ## Update the parameter with current updated results.
           ## If variable selection did not chose pth covariate,  then the pth
-          ## coefficient is zero naturally.
+          ## coefficient is zero naturally. After the first
+          ## variable-dimensional move, the algorithm switches to usual
+          ## Newton's move.
           betaIdxCurr <- betaIdxProp
 
           ## the full parameters including zeros.

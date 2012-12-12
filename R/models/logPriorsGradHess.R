@@ -18,13 +18,14 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
-logPriorsGradHess <- function(Mdl.X,
-                              Mdl.beta,
-                              Mdl.betaIdx,
-                              Mdl.parLink,
-                              varSelArgs,
-                              priArgs,
-                              chainCaller)
+logPriorsGradHess <- function(
+    Mdl.X,
+    Mdl.beta,
+    Mdl.betaIdx,
+    Mdl.parLink,
+    varSelArgs,
+    priArgs,
+    chainCaller)
   {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior
@@ -112,10 +113,11 @@ logPriorsGradHess <- function(Mdl.X,
           {
             ## 1. all are selected. Switch to unconditional prior.
             ## The conditional gradient
-            SlopCondGrad[Idx1] <- DensGradHess(B = xCurr,
-                                               mean = meanVec,
-                                               covariance = coVar*shrinkage,
-                                               grad = TRUE, Hess = FALSE)[["grad"]]
+            SlopCondGrad[Idx1] <- DensGradHess(
+                B = xCurr,
+                mean = meanVec,
+                covariance = coVar*shrinkage,
+                grad = TRUE, Hess = FALSE)[["grad"]]
           }
         else if(Idx0Len > 0 && Idx0Len < betaLen)
           {
@@ -144,10 +146,11 @@ logPriorsGradHess <- function(Mdl.X,
 
 
         ## -------------The unconditional full Hessian matrix-------------------
-
-        HessObsLst[["SlopFull"]] <-
-          DensGradHess(B = xCurr, mean = meanVec, covariance = coVar*shrinkage,
-                       grad = FALSE, Hess = TRUE)[["Hess"]]
+        HessObsLst[["SlopFull"]] <- DensGradHess(
+            B = xCurr,
+            mean = meanVec,
+            covariance = coVar*shrinkage,
+            grad = FALSE, Hess = TRUE)[["Hess"]]
       }
 
 ###----------------------------------------------------------------------------
