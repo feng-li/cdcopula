@@ -229,9 +229,15 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           accept.prob <- min(1, MHRatio)
         }
     }
+  else
+    {
+      accept.prob <- NA
+    }
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND KEEP/UPDATE THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
+  print(accept.prob)
+
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&

@@ -28,13 +28,12 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
                 ## a <- 0 ## The lower bound
                 ## b <- 2^(1/2-1/(2*tau)) ## the upper bound
 
+                ## The lower and upper bounds
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
+                tau.a <- log(2)/(log(2)-log(lambdaL))
+                tau.b <- 1 ## NOTE: Numerical stable. keep it slightly away from 1.
 
-                a <- log(2)/(log(2)-log(lambdaL))
-                b <- 1 ## the upper bound
-
-
-                extArgs <- list(a = a, b = b)
+                extArgs <- list(a = tau.a, b = tau.b)
               }
             else
               {

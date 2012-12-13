@@ -52,8 +52,7 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 ###----------------------------------------------------------------------------
 
 
-        if(parUpdate[[CplNM]][["tau"]] == TRUE ||
-           parUpdate[[CplNM]][["lambdaL"]] == TRUE)
+        if(parUpdate[[CplNM]][["tau"]] == TRUE)
           {
             ## linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
             ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
@@ -67,17 +66,17 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
             if(tolower(linkCurr) == "glogit")
               {
                 ## tau <- Mdl.par[[CplNM]][["tau"]]
-                ## a <- 0 ## The lower bound of generalized logit link
-                ## b <- 2^(1/2-1/(2*tau)) ## the upper bound
+                ## tau.a <- 0 ## The lower bound of generalized logit link
+                ## tau.b <- 2^(1/2-1/(2*tau)) ## the upper bound
 
                 ## The lower and upper bounds of generalized logit link
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
 
-                a <- log(2)/(log(2)-log(lambdaL))
-                b <- 1 ## the upper bound
+                tau.a <- log(2)/(log(2)-log(lambdaL))
+                tau.b <- 1 ## NOTE: Numerical stable. keep it slightly away
+                ## from 1.
 
-
-                extArgs <- list(a = a, b = b)
+                extArgs <- list(a = tau.a, b = tau.b)
               }
             else
               {
@@ -95,11 +94,9 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                 beta = betaCurr,
                 link = linkCurr,
                 extArgs = extArgs)
-
           }
         out <- Mdl.par
       }
-
 
     return(out)
   }

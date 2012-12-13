@@ -144,7 +144,6 @@ logPriorsGradHess <- function(
 
         gradObsLst[["Slop"]] <- SlopCondGrad
 
-
         ## -------------The unconditional full Hessian matrix-------------------
         HessObsLst[["SlopFull"]] <- DensGradHess(
             B = xCurr,

@@ -63,7 +63,7 @@ GNewtonMove <- function(propArgs,
 
   ## Initialize the Newton move with the proposed variable selection indicator
   Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
-  param <- betaCurr[betaIdxCurr]
+  param <- betaCurr[betaIdxCurr, , drop = FALSE]
 
 ###----------------------------------------------------------------------------
 ### The k-step Generalized Newton Move
@@ -123,10 +123,9 @@ GNewtonMove <- function(propArgs,
       ## The general Newton's Update
       if((iStep <= kSteps))
         {
+          ## if(iStep == 2) browser()
           ## update the proposed parameters via the general Newton formula
-          ## browser()
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
-          print(param)
 
           ## Update the parameter with current updated results.
           ## If variable selection did not chose pth covariate,  then the pth

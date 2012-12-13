@@ -94,7 +94,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                                                 caller = "theta")
 
             ## The gradient for the parameters in conditional link
-            tau.b <- 1
+            tau.b <- 1 ## NOTE: Numerical stable to not allow tau  =  1
+
             tau.a <- log(2)/(log(2)-2*log(lambdaL))
             linPred.tau <-  log(tau-tau.a) - log(tau.b-tau)
 
