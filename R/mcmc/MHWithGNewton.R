@@ -233,7 +233,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 
   ## if(is(try(print(accept.prob)), "try-error")) browser()
-  print(accept.prob)
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&
