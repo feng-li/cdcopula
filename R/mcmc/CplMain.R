@@ -291,7 +291,7 @@ CplMain <- function(configfile)
               MCMC.betaIdx = MCMC.betaIdx,
               MCMC.par = MCMC.par,
               MCMC.AccProb = MCMC.AccProb)
-  ## }
+
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC
 ### Cross-validation is independent for all folds. In order to parallel it via

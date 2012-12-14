@@ -226,14 +226,14 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else
     {
       accept.prob <- NA
-      browser()
+      ## browser()
     }
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND KEEP/UPDATE THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
 
-  if(is(try(print(accept.prob)), "try-error")) browser()
-
+  ## if(is(try(print(accept.prob)), "try-error")) browser()
+  print(accept.prob)
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&
@@ -248,7 +248,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       out <- list(betaIdx = betaIdx.curr,
                   beta = beta.curr.full,
-                  accept.prob = 0,
+                  accept.prob = accept.prob,
                   staticArgs = staticArgs.curr)
     }
   return(out)

@@ -48,7 +48,6 @@ GNewtonMove <- function(propArgs,
   parCaller <- chainCaller[2]
 
   ## print(cp)
-  browser()
 
   ## if(parCaller == "tau") browser()
 
