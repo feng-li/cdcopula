@@ -66,8 +66,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                               prob = betaIdxArgs$prob) == 1)
 
           ## Special case to make sure at least one variable is proposed a
-          ## change
-          ## FIXME: This may break the binomial settings
+          ## change. FIXME: This may break the binomial settings
           if(length(betaIdx.propCandIdx) == 0)
             {
               betaIdx.propCand <- sample(varSelCand, 1)
@@ -76,7 +75,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
             {
               betaIdx.propCand <- varSelCand[betaIdx.propCandIdx]
             }
-
         }
       ## Propose a change
       betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
@@ -87,6 +85,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
   beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
   beta.curr <- beta.curr.full[betaIdx.curr]
+
   Mdl.beta.curr <- Mdl.beta
   Mdl.betaIdx.curr <- Mdl.betaIdx
   staticArgs.curr <- staticArgs
@@ -130,9 +129,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           ## The proposal parameters block
           beta.prop.df <- beta.propArgs[["df"]]
           beta.prop <- beta.curr2mode.mean + rmvt(
-              n = 1,
               sigma = beta.curr2mode.sigma,
-              df = beta.prop.df)
+              n = 1, df = beta.prop.df)
         }
     }
 
@@ -168,13 +166,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       ## The information for proposed density via K-step Newton's method
       beta.prop2mode.mean <- matrix(beta.prop2mode$param, 1) # 1-by-p
-      beta.prop2mode.sigma <- - beta.prop2mode$HessObsInv # p-by-p
+      beta.prop2mode.sigma <- -beta.prop2mode$HessObsInv # p-by-p
 
-      if(any(is.na(beta.prop2mode.sigma)))
-        { ## Something is wrong at GNewton2,  reject it soon.
-          rejectFlag <- TRUE
-        }
-      else # all are right
+      if(all(!is.na(beta.prop2mode.sigma)))
         {
           ## The jump density for current point at proposal mode
           logJump.beta.currATprop2mode <- dmvt(
@@ -232,11 +226,13 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   else
     {
       accept.prob <- NA
+      browser()
     }
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND KEEP/UPDATE THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
-  print(accept.prob)
+
+  if(is(try(print(accept.prob)), "try-error")) browser()
 
 
   if(rejectFlag == FALSE &&

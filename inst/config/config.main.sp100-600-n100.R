@@ -130,6 +130,14 @@ MCMCUpdate[[2]][[2]] <- T
 MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
+MCMCUpdateOrder <- MdlDataStruc
+MCMCUpdateOrder[[1]][[1]] <- 1
+MCMCUpdateOrder[[1]][[2]] <- 2
+MCMCUpdateOrder[[2]][[1]] <- 3
+MCMCUpdateOrder[[2]][[2]] <- 4
+MCMCUpdateOrder[[3]][[1]] <- 6
+MCMCUpdateOrder[[3]][[2]] <- 5
+
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-

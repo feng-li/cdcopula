@@ -55,8 +55,9 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
 ##'       Current: Thu May 10 20:17:09 CEST 2012.
-logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                    varSelArgs, MargisTypes, priArgs, parUpdate, staticArgs)
+logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
+                    varSelArgs,MargisTypes,priArgs,parUpdate,
+                    staticArgs, staticArgsOnly = FALSE)
 {
   ## The pre-saved information
   Mdl.par <- staticArgs[["Mdl.par"]]
@@ -99,15 +100,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     }
 
 ###----------------------------------------------------------------------------
-### THE COPULA LIKELIHOOD
-###----------------------------------------------------------------------------
-  Mdl.logLikCpl <- logCplLik(
-      u = Mdl.u,
-      CplNM = CplNM,
-      parCpl = Mdl.par[[CplNM]],
-      staticArgs = staticArgs) # n-by-1
-
-###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
   Mdl.logPri <- logPriors(
@@ -119,18 +111,35 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
       priArgs = priArgs,
       Mdl.logPri = Mdl.logPri,
       parUpdate = parUpdate)
-
-###----------------------------------------------------------------------------
-### THE FINAL LOG POSTERIOR AND STATIC ARGUMENT UPDATE
-###----------------------------------------------------------------------------
-
   Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
-  Mdl.logPost <- sum(unlist(Mdl.logPri)) + Mdl.logLikCpl + sum(Mdl.d)
+
+###----------------------------------------------------------------------------
+### THE STATIC ARGUMENT UPDATE
+###----------------------------------------------------------------------------
 
   staticArgs[["Mdl.logPri"]] <- Mdl.logPri
   staticArgs[["Mdl.par"]] <- Mdl.par
   staticArgs[["Mdl.u"]] <- Mdl.u
   staticArgs[["Mdl.d"]] <- Mdl.d
+
+###----------------------------------------------------------------------------
+### THE LOG POSTERIOR
+###----------------------------------------------------------------------------
+
+  if(staticArgsOnly == FALSE)
+    {
+      Mdl.logLikCpl <- logCplLik(
+          u = Mdl.u,
+          CplNM = CplNM,
+          parCpl = Mdl.par[[CplNM]],
+          staticArgs = staticArgs) # n-by-1
+
+      Mdl.logPost <- sum(unlist(Mdl.logPri)) + Mdl.logLikCpl + sum(Mdl.d)
+    }
+  else
+    {
+      Mdl.logPost <- NA
+    }
 
   out <- list(Mdl.logPost = Mdl.logPost,
               staticArgs = staticArgs)

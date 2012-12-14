@@ -44,26 +44,42 @@ GNewtonMove <- function(propArgs,
 
   ## The updating component parameter chain
   chainCaller <- parCplCaller(parUpdate)
-  CompCurr <- chainCaller[1]
-  parCurr <- chainCaller[2]
+  CompCaller <- chainCaller[1]
+  parCaller <- chainCaller[2]
 
   ## print(cp)
+  browser()
 
-  ## if(parCurr == "tau") browser()
+  ## if(parCaller == "tau") browser()
 
   ## The current parameters
-  X <- Mdl.X[[CompCurr]][[parCurr]]
-  betaCurr <- Mdl.beta[[CompCurr]][[parCurr]] # p-by-1
-  betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]] # p-by-1
+  X <- Mdl.X[[CompCaller]][[parCaller]]
+  betaCurr <- Mdl.beta[[CompCaller]][[parCaller]] # p-by-1
+  betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-by-1
 
   ## Finite Newton move. K steps to approach the mode plus one more step to
   ## update the gradient and Hessian at i:th step.
-  kSteps <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["ksteps"]]
-  hessMethod <- propArgs[[CompCurr]][[parCurr]][["algorithm"]][["hess"]]
+  kSteps <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["ksteps"]]
+  hessMethod <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["hess"]]
 
   ## Initialize the Newton move with the proposed variable selection indicator
-  Mdl.betaIdx[[CompCurr]][[parCurr]] <- betaIdxProp
+  Mdl.betaIdx[[CompCaller]][[parCaller]] <- betaIdxProp
   param <- betaCurr[betaIdxCurr, , drop = FALSE]
+
+  ## Initial update staticArgs for current Newton move
+  staticArgs.curr <- logPost(
+      CplNM = CplNM,
+      Mdl.Y = Mdl.Y,
+      Mdl.X = Mdl.X,
+      Mdl.beta = Mdl.beta,
+      Mdl.betaIdx = Mdl.betaIdx,
+      Mdl.parLink = Mdl.parLink,
+      varSelArgs = varSelArgs,
+      MargisTypes = MargisTypes,
+      priArgs = priArgs,
+      parUpdate = parUpdate,
+      staticArgs = staticArgs,
+      staticArgsOnly = TRUE)[["staticArgs"]]
 
 ###----------------------------------------------------------------------------
 ### The k-step Generalized Newton Move
@@ -82,7 +98,7 @@ GNewtonMove <- function(propArgs,
           Mdl.betaIdx = Mdl.betaIdx,
           parUpdate = parUpdate,
           varSelArgs = varSelArgs,
-          staticArgs = staticArgs)
+          staticArgs = staticArgs.curr)
 
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
@@ -137,8 +153,23 @@ GNewtonMove <- function(propArgs,
           ## the full parameters including zeros.
           param.full <- matrix(0, length(betaIdxCurr), 1)
           param.full[betaIdxProp] <- param
-          Mdl.beta[[CompCurr]][[parCurr]] <- param.full
-          ## staticArgs <- logLikGradHess.prop[["staticArgs"]]
+          Mdl.beta[[CompCaller]][[parCaller]] <- param.full
+
+          ## Update the staticArgs
+          ## Initial update staticArgs for current Newton move
+          staticArgs.curr <- logPost(
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticArgs = staticArgs.curr,
+              staticArgsOnly = TRUE)[["staticArgs"]]
         }
       else # (k+1):th step.  Make a output
         {

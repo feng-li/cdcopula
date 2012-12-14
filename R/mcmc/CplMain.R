@@ -150,7 +150,8 @@ CplMain <- function(configfile)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-              staticArgs = staticArgs)[["staticArgs"]]
+              staticArgs = staticArgs,
+              staticArgsOnly = TRUE)[["staticArgs"]]
 
           ## Optimize the initial values via BFGS.
           ## NOTE: The variable selection indicators are fixed (not optimized)
@@ -220,7 +221,8 @@ CplMain <- function(configfile)
       MargisTypes = MargisTypes,
       priArgs = priArgs,
       parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-      staticArgs = staticArgs)[["staticArgs"]]
+      staticArgs = staticArgs,
+      staticArgsOnly = TRUE)[["staticArgs"]]
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
