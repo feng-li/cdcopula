@@ -229,64 +229,62 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
-  CompNM <- names(MdlDataStruc)
+
+  ## The updating matrix,  ordered
+  UpdateMat <- parCplCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMCUpdateOrder)
 
   ## The MCMC loops
   for(iIter in 1:nIter)
     {
       ## The Gibbs loop
-      for(CompCurr in CompNM)
+      for(iUpdate in 1:dim(UpdateMat)[1])
         {
-          parNM <- names(MdlDataStruc[[CompCurr]])
-          for(parCurr in parNM)
+          CompCaller <- UpdateMat[iUpdate, 1]
+          parCaller <- UpdateMat[iUpdate, 2]
+
+          ## Switch current updating parameter indicator on
+          parUpdate[[CompCaller]][[parCaller]] <- TRUE
+
+          ## Call the mail Metropolis--Hastings
+          algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
+
+          if(tolower(algmArgs[["type"]]) == "gnewtonmove")
             {
-              if (MCMCUpdate[[CompCurr]][[parCurr]] == TRUE)
-                {
-                  ## Switch current updating parameter indicator on
-                  parUpdate[[CompCurr]][[parCurr]] <- TRUE
+              ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
+              MHOut <- MHWithGNewton(
+                  CplNM = CplNM,
+                  propArgs = propArgs,
+                  varSelArgs = varSelArgs,
+                  priArgs = priArgs,
+                  parUpdate = parUpdate,
+                  Mdl.Y = MdlTraining.Y,
+                  Mdl.X = MdlTraining.X,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  MargisTypes = MargisTypes,
+                  Mdl.parLink = Mdl.parLink,
+                  staticArgs = staticArgs)
 
-                  ## Call the mail Metropolis--Hastings
-                  algmArgs <- propArgs[[CompCurr]][[parCurr]][["algorithm"]]
+              ## Update the MH results to the current parameter structure
+              staticArgs <- MHOut[["staticArgs"]]
+              Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
+              Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-                  if(tolower(algmArgs[["type"]]) == "gnewtonmove")
-                    {
-                      ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
-                      MHOut <- MHWithGNewton(
-                          CplNM = CplNM,
-                          propArgs = propArgs,
-                          varSelArgs = varSelArgs,
-                          priArgs = priArgs,
-                          parUpdate = parUpdate,
-                          Mdl.Y = MdlTraining.Y,
-                          Mdl.X = MdlTraining.X,
-                          Mdl.beta = Mdl.beta,
-                          Mdl.betaIdx = Mdl.betaIdx,
-                          MargisTypes = MargisTypes,
-                          Mdl.parLink = Mdl.parLink,
-                          staticArgs = staticArgs)
+              ## Epxort the parameters in each fold
+              MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
+              MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
+              MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
 
-                      ## Update the MH results to the current parameter structure
-                      staticArgs <- MHOut[["staticArgs"]]
-                      Mdl.beta[[CompCurr]][[parCurr]] <- MHOut[["beta"]]
-                      Mdl.betaIdx[[CompCurr]][[parCurr]] <- MHOut[["betaIdx"]]
+              ## MCMC.par[[CompCaller]][[parCaller]][, iIter] <-
+              ## MHOut[["staticArgs"]][[CompCaller]][[parCaller]]
 
-                      ## Epxort the parameters in each fold
-                      MCMC.beta[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["beta"]]
-                      MCMC.betaIdx[[CompCurr]][[parCurr]][iIter, ] <- MHOut[["betaIdx"]]
-                      MCMC.AccProb[[CompCurr]][[parCurr]][iIter,] <- MHOut[["accept.prob"]]
-
-                      ## MCMC.par[[CompCurr]][[parCurr]][, iIter] <-
-                      ## MHOut[["staticArgs"]][[CompCurr]][[parCurr]]
-
-                    }
-                  else
-                    {
-                      stop("Unknown proposal algorithm!")
-                    }
-                }
-              ## Switch current updating parameter indicator off
-              parUpdate[[CompCurr]][[parCurr]] <- FALSE
             }
+          else
+            {
+              stop("Unknown proposal algorithm!")
+            }
+          ## Switch current updating parameter indicator off
+          parUpdate[[CompCaller]][[parCaller]] <- FALSE
         }
     }
   out <- list(MCMC.beta = MCMC.beta,
