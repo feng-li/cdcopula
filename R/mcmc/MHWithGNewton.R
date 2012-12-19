@@ -112,6 +112,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   beta.prop.type <- beta.propArgs[["type"]]
   beta.prop.mean <- matrix(beta.NTProp[["param"]], 1) # 1-by-p
   beta.prop.sigma <- -beta.NTProp[["HessObsInv"]]
+  staticArgs.prop <- beta.NTProp[["staticArgs"]]
 
   ## Check if it is a good proposal
   if(any(is.na(beta.prop.sigma)) ||
@@ -162,11 +163,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta = Mdl.beta.prop,
           Mdl.betaIdx = Mdl.betaIdx.prop,
           MargisTypes = MargisTypes,
-          staticArgs = staticArgs.curr) ## FIXME: what statistics ?
+          staticArgs = staticArgs.prop)
 
       ## The information for proposed density via K-step Newton's method
-      beta.propRev.mean <- matrix(beta.propRev[["param"]], 1) # 1-by-p
-      beta.propRev.sigma <- -beta.propRev[["HessObsInv"]] # p-by-p
+      beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
+      beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
 
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
@@ -197,7 +198,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = parUpdate,
-              staticArgs = staticArgs.curr)
+              staticArgs = staticArgs.prop)
 
           logPost.prop <- logPost.propOut[["Mdl.logPost"]]
           staticArgs.prop <- logPost.propOut[["staticArgs"]]
@@ -217,11 +218,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               staticArgs = staticArgs.curr)[["Mdl.logPost"]]
 
           ## compute the MH ratio.
-          logMHRatio <- logPost.prop - logPost.curr +
-            logJump.currATpropRev - logJump.propATprop +
-              logJump.Idx.currATprop - logJump.Idx.propATcurr
+          MHRatio <- exp(logPost.prop - logPost.curr +
+                         logJump.currATpropRev - logJump.propATprop +
+                         logJump.Idx.currATprop - logJump.Idx.propATcurr)
 
-          MHRatio <- exp(logMHRatio)
           ## the acceptance probability
           accept.prob <- min(1, MHRatio)
         }
@@ -230,7 +230,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
 
-  if(is(try(print(accept.prob)), "try-error")) browser()
+  ## if(is(try(print(accept.prob)), "try-error")) browser()
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&

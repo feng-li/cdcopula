@@ -23,19 +23,19 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   ## Thanks to the advice from M. Smith
 
   tol <- .Machine$double.eps*1e3
-  u.bad1 <- (u > 1-tol)
-  u.bad0 <- (u < 0+tol)
+  ## u.bad1 <- (u > 1-tol)
+  ## u.bad0 <- (u < 0+tol)
 
 
-  if(any(u.bad1))
-    {
-      u[u.bad1] <- 1-tol
-    }
+  ## if(any(u.bad1))
+  ##   {
+  ##     u[u.bad1] <- 1-tol
+  ##   }
 
-  if(any(u.bad0))
-    {
-      u[u.bad0] <- 0 +tol
-    }
+  ## if(any(u.bad0))
+  ##   {
+  ##     u[u.bad0] <- 0 +tol
+  ##   }
 
 ###----------------------------------------------------------------------------
 ### Gradients for the copula

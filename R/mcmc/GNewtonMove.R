@@ -47,7 +47,6 @@ GNewtonMove <- function(propArgs,
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
-  ## print(cp)
 
   ## if(parCaller == "tau") browser()
 
@@ -80,7 +79,6 @@ GNewtonMove <- function(propArgs,
       parUpdate = parUpdate,
       staticArgs = staticArgs,
       staticArgsOnly = TRUE)[["staticArgs"]]
-
 
 ###----------------------------------------------------------------------------
 ### The k-step Generalized Newton Move
@@ -185,10 +183,10 @@ GNewtonMove <- function(propArgs,
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticArgs = staticArgs.curr,
-              staticArgsOnly = TRUE)[["staticArgs"]], silent = TRUE)
+              staticArgsOnly = TRUE)[["staticArgs"]], silent = FALSE)
 
 
-          if(is(staticArgs.curr, "try-error")) browser()
+          ## if(is(staticArgs.curr, "try-error")) browser()
 
         }
       else # (k+1):th step.  Make a output

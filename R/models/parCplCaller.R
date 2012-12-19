@@ -21,13 +21,12 @@ parCplCaller <- function(parUpdate, parUpdateOrder)
       parOrder <- unlist(parUpdateOrder)
       parUpdate <- unlist(parUpdate)
       parUpdateOrderVec <- order(parOrder[parUpdate])
-      out <- out.init[parUpdateOrderVec, ]
+      out <- out.init[parUpdateOrderVec, , drop = FALSE]
     }
     else
       {
-        out <- out.init
+        out <- matrix(out.init, , 2)
       }
-
 
   return(out)
 }

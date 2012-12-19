@@ -38,7 +38,10 @@ logLikelihoodGradHess <- function(
   chainCaller <- parCplCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
+
   Mdl.par <- staticArgs[["Mdl.par"]]
+  ## if(is(Mdl.par, "try-error")) browser()
+
   ## if(parCaller == "tau") browser()
 
   if(tolower(CompCaller) != tolower(CplNM))

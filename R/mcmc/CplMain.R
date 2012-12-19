@@ -25,7 +25,7 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
   ## Generating the numerical tabular for the inverse Kendall's tau
 
-  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
+  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-1)
 
   ## Indices for training and testing sample according to cross-validation
   nObs <- length(Mdl.Y[[1]])
@@ -242,7 +242,8 @@ CplMain <- function(configfile)
           CompCaller <- UpdateMat[iUpdate, 1]
           parCaller <- UpdateMat[iUpdate, 2]
 
-          cat(iIter, ", ")
+          cat(UpdateMat[iUpdate, ], "\n")
+
 
           ## Switch current updating parameter indicator on
           parUpdate[[CompCaller]][[parCaller]] <- TRUE
