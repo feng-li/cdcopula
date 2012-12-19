@@ -26,7 +26,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
 
-  if(any(!is.numeric(u))) browser()
 
   if(any(u.bad1))
     {

@@ -80,6 +80,11 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       parUpdate = parUpdate,
       Mdl.par = Mdl.par)
 
+  if(any(is.na(unlist(Mdl.par))))
+    {
+      stop("Debugging")
+    }
+
 ### Update marginal pdf and cdf
 
 ### the marginal u and only updated if the corresponding parameters are updated.
@@ -111,7 +116,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       priArgs = priArgs,
       Mdl.logPri = Mdl.logPri,
       parUpdate = parUpdate)
-  Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
+
+  ## Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
 
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE

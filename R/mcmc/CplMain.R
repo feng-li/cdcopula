@@ -242,6 +242,8 @@ CplMain <- function(configfile)
           CompCaller <- UpdateMat[iUpdate, 1]
           parCaller <- UpdateMat[iUpdate, 2]
 
+          cat(iIter, ", ")
+
           ## Switch current updating parameter indicator on
           parUpdate[[CompCaller]][[parCaller]] <- TRUE
 

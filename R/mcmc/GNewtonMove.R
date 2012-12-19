@@ -66,6 +66,7 @@ GNewtonMove <- function(propArgs,
   param <- betaCurr[betaIdxCurr, , drop = FALSE]
 
   ## Initial update staticArgs for current Newton move
+
   staticArgs.curr <- logPost(
       CplNM = CplNM,
       Mdl.Y = Mdl.Y,
@@ -79,6 +80,7 @@ GNewtonMove <- function(propArgs,
       parUpdate = parUpdate,
       staticArgs = staticArgs,
       staticArgsOnly = TRUE)[["staticArgs"]]
+
 
 ###----------------------------------------------------------------------------
 ### The k-step Generalized Newton Move
@@ -156,7 +158,22 @@ GNewtonMove <- function(propArgs,
 
           ## Update the staticArgs
           ## Initial update staticArgs for current Newton move
-          staticArgs.curr <- logPost(
+
+          ## staticArgs.curr <- logPost(
+          ##     CplNM = CplNM,
+          ##     Mdl.Y = Mdl.Y,
+          ##     Mdl.X = Mdl.X,
+          ##     Mdl.beta = Mdl.beta,
+          ##     Mdl.betaIdx = Mdl.betaIdx,
+          ##     Mdl.parLink = Mdl.parLink,
+          ##     varSelArgs = varSelArgs,
+          ##     MargisTypes = MargisTypes,
+          ##     priArgs = priArgs,
+          ##     parUpdate = parUpdate,
+          ##     staticArgs = staticArgs.curr,
+          ##     staticArgsOnly = TRUE)[["staticArgs"]]
+
+          staticArgs.curr <- try(logPost(
               CplNM = CplNM,
               Mdl.Y = Mdl.Y,
               Mdl.X = Mdl.X,
@@ -168,7 +185,11 @@ GNewtonMove <- function(propArgs,
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticArgs = staticArgs.curr,
-              staticArgsOnly = TRUE)[["staticArgs"]]
+              staticArgsOnly = TRUE)[["staticArgs"]], silent = TRUE)
+
+
+          if(is(staticArgs.curr, "try-error")) browser()
+
         }
       else # (k+1):th step.  Make a output
         {
@@ -176,7 +197,7 @@ GNewtonMove <- function(propArgs,
                       gradObs = gradObs.pp,
                       HessObs = HessObs.pp,
                       HessObsInv = HessObsInv.pp,
-                      staticArgs = staticArgs)
+                      staticArgs = staticArgs.curr)
           ## print(gradObs.pp)
         }
     }
