@@ -174,13 +174,13 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
       if(all(!is.na(beta.propRev.sigma)))
         {
-          ## The jump density for current point at proposal mode
+          ## The jump density for proposed point at proposed mode
           logJump.propATprop <- dmvt(
               x = beta.prop - beta.prop.mean,
               sigma = beta.prop.sigma,
               df = beta.prop.df, log = TRUE)
 
-          ## The jump density for propose draw at current draw.
+          ## The jump density for curr draw at reverse proposed mode.
           logJump.currATpropRev<- dmvt(
               x = beta.curr - beta.propRev.mean,
               sigma = beta.propRev.sigma,
@@ -222,6 +222,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                          logJump.currATpropRev - logJump.propATprop +
                          logJump.Idx.currATprop - logJump.Idx.propATcurr)
 
+          cat(logPost.prop, logPost.curr, "\n")
           ## the acceptance probability
           accept.prob <- min(1, MHRatio)
         }
@@ -231,6 +232,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 
   ## if(is(try(print(accept.prob)), "try-error")) browser()
+
+  print(accept.prob)
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&

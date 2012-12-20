@@ -57,6 +57,8 @@ CplMain <- function(configfile)
   Training.Idx <- crossValidIdx[["training"]][[iCross]]
   Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
 
+  nTraining <- length(Training.Idx)
+
   ## envCurr <- environment()
   ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
   ## {
@@ -93,7 +95,7 @@ CplMain <- function(configfile)
           ## The MCMC storage
           MCMC.betaIdx[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
           MCMC.beta[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
-          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nObs))
+          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining))
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- array(NA, c(nIter, 1))
         }
@@ -242,9 +244,6 @@ CplMain <- function(configfile)
           CompCaller <- UpdateMat[iUpdate, 1]
           parCaller <- UpdateMat[iUpdate, 2]
 
-          cat(UpdateMat[iUpdate, ], "\n")
-
-
           ## Switch current updating parameter indicator on
           parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
@@ -278,8 +277,8 @@ CplMain <- function(configfile)
               MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
               MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
 
-              ## MCMC.par[[CompCaller]][[parCaller]][, iIter] <-
-              ## MHOut[["staticArgs"]][[CompCaller]][[parCaller]]
+              MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
+                staticArgs[["Mdl.par"]][[CompCaller]][[parCaller]]
 
             }
           else

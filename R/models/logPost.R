@@ -134,13 +134,21 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if(staticArgsOnly == FALSE)
     {
-      Mdl.logLikCpl <- logCplLik(
+      Mdl.logLikCpl.sum <- logCplLik(
           u = Mdl.u,
           CplNM = CplNM,
           parCpl = Mdl.par[[CplNM]],
           staticArgs = staticArgs) # n-by-1
 
-      Mdl.logPost <- sum(unlist(Mdl.logPri)) + Mdl.logLikCpl + sum(Mdl.d)
+      Mdl.logPri.sum <- sum(unlist(Mdl.logPri))
+      Mdl.logLikMargis.sum <- sum(Mdl.d)
+
+      Mdl.logPost <- Mdl.logPri.sum  + Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
+
+      ## cat("Prior:    ", Mdl.logPri.sum, "\n")
+      ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")
+      ## cat("MargisLik:", Mdl.logLikMargis.sum, "\n")
+
     }
   else
     {
