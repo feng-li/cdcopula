@@ -223,6 +223,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                          logJump.Idx.currATprop - logJump.Idx.propATcurr)
 
           cat(logPost.prop, logPost.curr, "\n")
+
+          if(is.infinite(logPost.prop)) browser()
+
           ## the acceptance probability
           accept.prob <- min(1, MHRatio)
         }
@@ -230,10 +233,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
-
-  ## if(is(try(print(accept.prob)), "try-error")) browser()
-
-  print(accept.prob)
 
   if(rejectFlag == FALSE &&
      !is.na(accept.prob) &&

@@ -10,7 +10,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Jan 12 00:05:00 CET 2012;
 ##'       Current: Mon May 14 15:15:39 CEST 2012.
-any2any <- function(densArgs, linkType)
+any2any <- function(densArgs, linkArgs)
   {
 
     ## Input distribution type
@@ -19,6 +19,7 @@ any2any <- function(densArgs, linkType)
     ## Output distribution type
     outType <- densArgs[["output"]][["type"]]
 
+    linkType <- linkArgs[["type"]]
 ###----------------------------------------------------------------------------
 ### The input distribution
 ###----------------------------------------------------------------------------

@@ -69,7 +69,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
           if(tolower(priArgsCurr[["type"]]) == "custom")
             {
               ## Call the any2any() function
-              densOutput <- any2any(densArgs = priArgsCurr, linkType = linkCurr)
+              densOutput <- any2any(densArgs = priArgsCurr, linkArgs = linkCurr)
 
               mean <- densOutput$mean
               variance <- densOutput$variance

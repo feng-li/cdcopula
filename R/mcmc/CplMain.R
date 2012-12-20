@@ -204,7 +204,7 @@ CplMain <- function(configfile)
               warning(paste(
                   " The initializing algorithm failed more that",
                   nLoopInit, "times.\n",
-                  "Continue without initial value optimization."))
+                  "Continue without initial value optimization."), immediate. = TRUE)
               break
             }
 

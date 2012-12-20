@@ -5,9 +5,7 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
         CompCaller <- chainCaller[1]
         parCaller <- chainCaller[2]
 
-
-
-        ## The linkage for all parameters
+        linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
         if(tolower(parCaller) == "tau")
           {
@@ -17,10 +15,8 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
             ## complicated. Here we assume the condition is known a priori
             ## which is a bit sloppy.
 
-            linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
-
             ## Construct the extArgs
-            if(tolower(linkCurr) == "glogit")
+            if(tolower(linkCurr[["type"]]) == "glogit")
               {
                 ## tau <- as.numeric(Mdl.par[[CplNM]][["tau"]])
 
@@ -32,30 +28,21 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
                 tau.a <- log(2)/(log(2)-log(lambdaL))
                 tau.b <- 1 ## NOTE: Numerical stable. keep it slightly away from 1.
-
-                extArgs <- list(a = tau.a, b = tau.b)
+                linkCurr$a <- tau.a
+                linkCurr$b <- tau.b
               }
             else
               {
-                extArgs <- NA
+                stop("No such link available for tau")
               }
 
-            ## The gradient
-            LinkGradRaw <-  parMeanFunGrad(
-                par = Mdl.par[[CompCaller]][[parCaller]],
-                link = linkCurr,
-                extArgs = extArgs)
-            LinkGradObs <- LinkGradRaw
           }
-        else
-          {
-            ## The unconditional gradients for the linkage
-            LinkGradObs <-  parMeanFunGrad(
-                par = Mdl.par[[CompCaller]][[parCaller]],
-                link = Mdl.parLink[[CompCaller]][[parCaller]],
-                extArgs = NA)
-          }
-        out <- LinkGradObs
+        ## The unconditional gradients for the linkage
+        LinkGradObs <-  parMeanFunGrad(
+            par = Mdl.par[[CompCaller]][[parCaller]],
+            linkArgs = linkCurr)
       }
+    out <- LinkGradObs
+
     return(out)
   }

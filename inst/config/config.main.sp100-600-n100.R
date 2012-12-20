@@ -74,30 +74,45 @@ Mdl.Y <- Y
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
-Mdl.parLink[[1]][[1]] <- "identity"
-Mdl.parLink[[1]][[2]] <- "log"
-Mdl.parLink[[2]][[1]] <- "identity"
-Mdl.parLink[[2]][[2]] <- "log"
-Mdl.parLink[[3]][[1]] <- "glogit"
-Mdl.parLink[[3]][[2]] <- "logit"
+Mdl.parLink[[1]][[1]] <- list(type = "identity")
+Mdl.parLink[[1]][[2]] <- list(type = "log")
+Mdl.parLink[[2]][[1]] <- list(type = "identity")
+Mdl.parLink[[2]][[2]] <- list(type = "log")
+Mdl.parLink[[3]][[1]] <- list(type = "glogit", b = 0.95)
+Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.01, b = 0.95)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
+varSelArgs[[1]][[1]] <- list(cand = NULL,
                              init = "all-in")
-varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
+varSelArgs[[1]][[2]] <- list(cand = NULL,
                              init = "all-out")
-varSelArgs[[2]][[1]] <- list(cand = c(2, 3),
+varSelArgs[[2]][[1]] <- list(cand = NULL,
                              init = "random")
-varSelArgs[[2]][[2]] <- list(cand = c(2, 3),
+varSelArgs[[2]][[2]] <- list(cand = NULL,
                              init = "all-out")
-varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 4),
+varSelArgs[[3]][[1]] <- list(cand = NULL,
                              init = c(2, 3))
-varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
+varSelArgs[[3]][[2]] <- list(cand = NULL,
                              init = "random")
+
+
+## varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
+##                              init = "all-in")
+## varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
+##                              init = "all-out")
+## varSelArgs[[2]][[1]] <- list(cand = c(2, 3),
+##                              init = "random")
+## varSelArgs[[2]][[2]] <- list(cand = c(2, 3),
+##                              init = "all-out")
+## varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 4),
+##                              init = c(2, 3))
+## varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
+##                              init = "random")
+
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
@@ -124,11 +139,11 @@ track.MCMC = TRUE
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
 MCMCUpdate[[1]][[1]] <- T
-MCMCUpdate[[1]][[2]] <- F
-MCMCUpdate[[2]][[1]] <- F
-MCMCUpdate[[2]][[2]] <- F
-MCMCUpdate[[3]][[1]] <- F
-MCMCUpdate[[3]][[2]] <- F
+MCMCUpdate[[1]][[2]] <- T
+MCMCUpdate[[2]][[1]] <- T
+MCMCUpdate[[2]][[2]] <- T
+MCMCUpdate[[3]][[1]] <- T
+MCMCUpdate[[3]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -228,7 +243,7 @@ priArgs[[2]][[2]] <-
 priArgs[[3]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.1, b = 0.3),
+           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.3, b = 0.8),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -236,7 +251,7 @@ priArgs[[3]][[1]] <-
 priArgs[[3]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "beta",  mean = 0.5, variance = 1),
+           input = list(type = "gbeta",  mean = 0.2, variance = 1, a = 0.1, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),

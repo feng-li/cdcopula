@@ -56,7 +56,11 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             parRepCpl = parCpl,
             tauTabular = staticArgs[["tauTabular"]]))
 
-        ## The standard copula parameters (recycled if necessary, should be a vector).
+        ## The standard copula parameters (recycled if necessary, should be a
+        ## vector).
+        ## NOTE: Numeric stabilization when lamdbaL and lambdaU are two close
+        ## to 1.
+
         delta <- -log(2)/log(lambdaL)
         theta <- log(2)/log(2-lambdaU) # ff(delta)
 
@@ -89,13 +93,12 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## TODO: This is kind of hard code, consider it in a more general way.
 
             ## Gradient w.r.t. tau
-            gradCpl.tau.theta <- kendalltauGrad(CplNM = CplNM,
-                                                theta = theta,
-                                                delta = delta,
-                                                caller = "theta")
+            gradCpl.tau.theta <- kendalltauGrad(
+                CplNM = CplNM, theta = theta,
+                delta = delta, caller = "theta")
 
             ## The gradient for the parameters in conditional link
-            tau.b <- 1 ## NOTE: Numerical stable to not allow tau  =  1
+            tau.b <- 1-0.05 ## NOTE: Numerical stable to not allow tau  =  1
 
             tau.a <- log(2)/(log(2)-2*log(lambdaL))
             linPred.tau <-  log(tau-tau.a) - log(tau.b-tau)
@@ -219,7 +222,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 stop("No such copula parameter!")
               }
 
-
 ################################################################################
             ## DEBUGGING
             ## u <- matrix(c(0.6, 0.3), 1, )
@@ -254,7 +256,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
             ## right at the moment. Need further investigation.
 
             ## out <- gradCpl.u
-            out <- - gradCpl.u
+            out <- -gradCpl.u
 
           }
       }

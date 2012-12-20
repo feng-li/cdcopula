@@ -36,13 +36,11 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                 ## Check if particular constrain is needed.
                 if(!(tolower(ParCurr) %in% tolower(condPar)))
                   {
-                    extArgs <- NA
                     ## Update the parameters for the updated part
                     Mdl.par[[CompCurr]][[ParCurr]] <- parMeanFun(
                         X = Mdl.X[[CompCurr]][[ParCurr]],
                         beta = Mdl.beta[[CompCurr]][[ParCurr]],
-                        link = Mdl.parLink[[CompCurr]][[ParCurr]],
-                        extArgs = extArgs)
+                        linkArgs = Mdl.parLink[[CompCurr]][[ParCurr]])
                   }
               }
           }
@@ -63,7 +61,7 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
             XCurr <- Mdl.X[[CplNM]][["tau"]]
             betaCurr <- Mdl.beta[[CplNM]][["tau"]]
 
-            if(tolower(linkCurr) == "glogit")
+            if(tolower(linkCurr[["type"]]) == "glogit")
               {
                 ## tau <- Mdl.par[[CplNM]][["tau"]]
                 ## tau.a <- 0 ## The lower bound of generalized logit link
@@ -73,27 +71,21 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
 
                 tau.a <- log(2)/(log(2)-log(lambdaL))
-                tau.b <- 1 ## NOTE: Numerical stable. keep it slightly away
+                tau.b <- 1-0.05 ## NOTE: Numerical stable. keep it slightly away
                 ## from 1.
 
-                extArgs <- list(a = tau.a, b = tau.b)
+                linkCurr$a <- tau.a
+                linkCurr$b <- tau.b
+
               }
             else
               {
                 stop("Such conditional linkage is not implemented!")
               }
 
-            ## Mdl.par[[CplNM]][["lambdaL"]] <- parMeanFun(
-            ##     X = XCurr,
-            ##     beta = betaCurr,
-            ##     link = linkCurr,
-            ##     extArgs = extArgs)
 
             Mdl.par[[CplNM]][["tau"]] <- parMeanFun(
-                X = XCurr,
-                beta = betaCurr,
-                link = linkCurr,
-                extArgs = extArgs)
+                X = XCurr, beta = betaCurr, linkArgs = linkCurr)
           }
         out <- Mdl.par
       }
