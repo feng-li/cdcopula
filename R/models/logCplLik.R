@@ -23,18 +23,18 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
-  tol <- .Machine$double.eps*1e3
-  ## u.bad1 <- (u > 1-tol)
-  ## u.bad0 <- (u < 0+tol)
+  tol <- .Machine$double.eps*1e8
+  u.bad1 <- (u > 1-tol)
+  u.bad0 <- (u < 0+tol)
 
-  ## if(any(u.bad1))
-  ##   {
-  ##     u[u.bad1] <- 1-tol
-  ##   }
-  ## if(any(u.bad0))
-  ##   {
-  ##     u[u.bad0] <- 0 +tol
-  ##   }
+  if(any(u.bad1))
+    {
+      u[u.bad1] <- 1-tol
+    }
+  if(any(u.bad0))
+    {
+      u[u.bad0] <- 0 +tol
+    }
 
 ###----------------------------------------------------------------------------
 ### Compute the copula likelihood
@@ -60,11 +60,44 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       ## temporal data
       TC1 <- 1-(1-u)^theta
 
+      ## Numeric check if L6 is too close to zero.
+      tol <- .Machine$double.eps*1e8
+      TC1.bad0 <- (TC1<tol)
+      if(any(TC1.bad0))
+        {
+          TC1[TC1.bad0] <- tol
+        }
+      TC1.bad1 <- (TC1>(1-tol))
+      if(any(TC1.bad1))
+        {
+          TC1[TC1.bad1] <- 1-tol
+        }
+
+
       TC2 <- (1-u)^(-1+theta)
+
+
+      ## Numeric check if L6 is too close to zero.
+      tol <- .Machine$double.eps*1e8
+      TC2.bad0 <- (TC2<tol)
+      if(any(TC2.bad0))
+        {
+          TC2[TC2.bad0] <- tol
+        }
+      TC2.bad1 <- (TC2>(1-tol))
+      if(any(TC2.bad1))
+        {
+          TC2[TC2.bad1] <- 1-tol
+        }
+
+
 
       L5 <- rowSums(TC1^(-delta)) - 1
 
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
+
+
+
 
       logCplDensObs <- (-1-delta)*rowSums(log(TC1))+
         rowSums(log(TC2))-

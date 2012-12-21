@@ -49,8 +49,12 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 ### (2) Special case for conditional linkage
 ###----------------------------------------------------------------------------
 
+        ## The parameter tau is updated individually. NOTE that the parameter
+        ## tau depends on lambdaL. So when lambdal is updated, the information
+        ## of tau should also be updated.
 
-        if(parUpdate[[CplNM]][["tau"]] == TRUE)
+        if(parUpdate[[CplNM]][["tau"]] == TRUE |
+           parUpdate[[CplNM]][["lambdaL"]] == TRUE)
           {
             ## linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
             ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
@@ -71,7 +75,7 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
 
                 tau.a <- log(2)/(log(2)-log(lambdaL))
-                tau.b <- 1-0.05 ## NOTE: Numerical stable. keep it slightly away
+                tau.b <- linkCurr[["b"]] ## NOTE: Numerical stable. keep it slightly away
                 ## from 1.
 
                 linkCurr$a <- tau.a

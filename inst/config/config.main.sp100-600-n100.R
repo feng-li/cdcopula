@@ -79,7 +79,7 @@ Mdl.parLink[[1]][[2]] <- list(type = "log")
 Mdl.parLink[[2]][[1]] <- list(type = "identity")
 Mdl.parLink[[2]][[2]] <- list(type = "log")
 Mdl.parLink[[3]][[1]] <- list(type = "glogit", b = 0.95)
-Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.01, b = 0.95)
+Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.05, b = 0.95)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -119,7 +119,7 @@ varSelArgs[[3]][[2]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 20
 
 ## BURN-IN RATIO
 burnin <- 0.1 # zero indicates no burn-in
@@ -138,10 +138,10 @@ track.MCMC = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- T
-MCMCUpdate[[1]][[2]] <- T
-MCMCUpdate[[2]][[1]] <- T
-MCMCUpdate[[2]][[2]] <- T
+MCMCUpdate[[1]][[1]] <- F
+MCMCUpdate[[1]][[2]] <- F
+MCMCUpdate[[2]][[1]] <- F
+MCMCUpdate[[2]][[2]] <- F
 MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
@@ -243,7 +243,7 @@ priArgs[[2]][[2]] <-
 priArgs[[3]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.3, b = 0.8),
+           input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.3, b = 0.6),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),

@@ -12,7 +12,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 12:42:20 CEST 2012;
 ##'       Current: Fri May 11 12:42:30 CEST 2012.
-logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
+logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   {
 
 ###----------------------------------------------------------------------------
@@ -22,24 +22,23 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
-  tol <- .Machine$double.eps*1e3
-  ## u.bad1 <- (u > 1-tol)
-  ## u.bad0 <- (u < 0+tol)
+  tol <- .Machine$double.eps*1e8
+  u.bad1 <- (u > 1-tol)
+  u.bad0 <- (u < 0+tol)
+  if(any(u.bad1))
+    {
+      u[u.bad1] <- 1-tol
+    }
 
-
-  ## if(any(u.bad1))
-  ##   {
-  ##     u[u.bad1] <- 1-tol
-  ##   }
-
-  ## if(any(u.bad0))
-  ##   {
-  ##     u[u.bad0] <- 0 +tol
-  ##   }
+  if(any(u.bad0))
+    {
+      u[u.bad0] <- 0 +tol
+    }
 
 ###----------------------------------------------------------------------------
 ### Gradients for the copula
 ###----------------------------------------------------------------------------
+
 
     if(tolower(CplNM) == "bb7")
       {
@@ -51,6 +50,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
         ## NOTE: convert matrix into vector to match the calculation
         tau <- as.vector(parCpl[["tau"]])
         lambdaL <- as.vector(parCpl[["lambdaL"]])
+
         lambdaU <- as.vector(kendalltauInv(
             CplNM = CplNM,
             parRepCpl = parCpl,
@@ -58,8 +58,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
         ## The standard copula parameters (recycled if necessary, should be a
         ## vector).
-        ## NOTE: Numeric stabilization when lamdbaL and lambdaU are two close
-        ## to 1.
 
         delta <- -log(2)/log(lambdaL)
         theta <- log(2)/log(2-lambdaU) # ff(delta)
@@ -98,11 +96,14 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
                 delta = delta, caller = "theta")
 
             ## The gradient for the parameters in conditional link
-            tau.b <- 1-0.05 ## NOTE: Numerical stable to not allow tau  =  1
+            ## tau.b <- 1-0.05 ## NOTE: Numerical stable to not allow tau  =  1
+            ## tau.a <- log(2)/(log(2)-2*log(lambdaL))
+            ## if(any(tau<tau.a)) browser()
+            ## linPred.tau0 <-  log(tau-tau.a) - log(tau.b-tau)
 
-            tau.a <- log(2)/(log(2)-2*log(lambdaL))
-            linPred.tau <-  log(tau-tau.a) - log(tau.b-tau)
-
+            X <- Mdl.X[[CplNM]][["tau"]]
+            beta <- Mdl.beta[[CplNM]][["tau"]]
+            linPred.tau <- as.vector(X%*%beta)
             grad.glogit.a <- 1/(1+exp(linPred.tau))
 
             grad.link.a.lambdaL <- grad.glogit.a*
@@ -118,6 +119,20 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
             ub <- 1-u
             M12 <- 1-ub^theta
+
+            ## Numeric check if M12 is too close to 1 or 0.
+            tol <- .Machine$double.eps*1e8
+            M12.bad1 <- (M12> (1-tol))
+            if(any(M12.bad1))
+              {
+                M12[M12.bad1] <- 1 - tol
+              }
+            M12.bad0 <- (M12<tol)
+            if(any(M12.bad0))
+              {
+                M12[M12.bad0] <- tol
+              }
+
 
             M34 <- -log(M12) + ub^theta*delta*log(ub)*grad.delta.theta/M12
 
@@ -160,6 +175,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
             ## The chain gradient
             out <- logGradCpl.delta/gradCpl.lambdaL
+            if(any(is.na(out))) browser()
           }
         else if(tolower(cplCaller) == "tau")
           {
@@ -173,6 +189,22 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
             ## Gradient w.r.t theta
             T1 <- 1-(1-u)^theta
+
+            ## Numeric check if T1 is too close to 1.
+            tol <- .Machine$double.eps*1e8
+            T1.bad1 <- (T1> (1-tol))
+            if(any(T1.bad1))
+              {
+                T1[T1.bad1] <- 1 - tol
+              }
+
+            T1.bad0 <- (T1<tol)
+            if(any(T1.bad0))
+              {
+                T1[T1.bad0] <- tol
+              }
+
+
             L1 <- rowSums(T1^(-delta))-1
             PT1 <- matrix(T1[, 1]*T1[, 2])
 
@@ -202,6 +234,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs)
 
             ## The chain gradient
             out <- logGradCpl.theta*(1/gradCpl.tau.theta)
+            if(any(is.na(out))) browser()
+
           }
         else
           {

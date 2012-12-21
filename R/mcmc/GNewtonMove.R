@@ -27,19 +27,20 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
 ##'       Current: Mon Mar 05 10:33:29 CET 2012.
-GNewtonMove <- function(propArgs,
-                        varSelArgs,
-                        priArgs,
-                        betaIdxProp,
-                        parUpdate,
-                        CplNM,
-                        Mdl.Y,
-                        Mdl.X,
-                        Mdl.beta,
-                        Mdl.betaIdx,
-                        Mdl.parLink,
-                        MargisTypes,
-                        staticArgs)
+GNewtonMove <- function(
+    propArgs,
+    varSelArgs,
+    priArgs,
+    betaIdxProp,
+    parUpdate,
+    CplNM,
+    Mdl.Y,
+    Mdl.X,
+    Mdl.beta,
+    Mdl.betaIdx,
+    Mdl.parLink,
+    MargisTypes,
+    staticArgs)
 {
 
   ## The updating component parameter chain
@@ -140,6 +141,8 @@ GNewtonMove <- function(propArgs,
         {
           ## if(iStep == 2) browser()
           ## update the proposed parameters via the general Newton formula
+          if(any(is.na(gradObs.pp))) browser()
+
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
 
           ## Update the parameter with current updated results.

@@ -82,7 +82,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if(any(is.na(unlist(Mdl.par))))
     {
-      warnings("NA happens when updating Mdl.par...")
+      warnings("DEBUGGING: NA happens when updating Mdl.par...")
     }
 
 ### Update marginal pdf and cdf

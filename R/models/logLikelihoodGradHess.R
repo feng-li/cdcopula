@@ -125,13 +125,16 @@ logLikelihoodGradHess <- function(
 
   if("analytic" %in% tolower(gradMethods))
     {
+
       ## The gradient for the copula function. n-by-1
       logCplGradObs <- logCplGrad(
           CplNM = CplNM,
           u = staticArgs$Mdl.u,
           parCpl = Mdl.par[[CplNM]],
           cplCaller = cplCaller,
-          staticArgs = staticArgs)
+          staticArgs = staticArgs,
+          Mdl.X = Mdl.X,
+          Mdl.beta = Mdl.beta)
 
       ## The gradient for the link function n-by-1
       LinkGradObs <- parCplMeanFunGrad(
