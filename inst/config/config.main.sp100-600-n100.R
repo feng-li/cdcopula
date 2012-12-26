@@ -62,12 +62,12 @@ load(file.path(pathLibRoot, "data/SP100-SP600-n100.Rdata"))
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][[1]] <- cbind(1, X[[1]][, 1:3])
-Mdl.X[[1]][[2]] <- cbind(1, X[[1]][, 1:3])
-Mdl.X[[2]][[1]] <- cbind(1, X[[2]][, 1:3])
-Mdl.X[[2]][[2]] <- cbind(1, X[[2]][, 1:3])
-Mdl.X[[3]][[1]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])
-Mdl.X[[3]][[2]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])
+Mdl.X[[1]][[1]] <- cbind(1, X[[1]][, 1])[, 1:2, drop = FALSE]
+Mdl.X[[1]][[2]] <- cbind(1, X[[1]][, 1:3])[, 1, drop = FALSE]
+Mdl.X[[2]][[1]] <- cbind(1, X[[2]][, 1:3])[, 1:2, drop = FALSE]
+Mdl.X[[2]][[2]] <- cbind(1, X[[2]][, 1:3])[, 1, drop = FALSE]
+Mdl.X[[3]][[1]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])[, 1, drop = FALSE]
+Mdl.X[[3]][[2]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])[, 1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- Y
@@ -87,17 +87,17 @@ Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.05, b = 0.95)
 
 varSelArgs <- MdlDataStruc
 varSelArgs[[1]][[1]] <- list(cand = NULL,
-                             init = "all-in")
+                             init = "all-out")
 varSelArgs[[1]][[2]] <- list(cand = NULL,
                              init = "all-out")
 varSelArgs[[2]][[1]] <- list(cand = NULL,
-                             init = "random")
+                             init = "all-out")
 varSelArgs[[2]][[2]] <- list(cand = NULL,
                              init = "all-out")
 varSelArgs[[3]][[1]] <- list(cand = NULL,
-                             init = c(2, 3))
+                             init = "all-out")
 varSelArgs[[3]][[2]] <- list(cand = NULL,
-                             init = "random")
+                             init = "all-out")
 
 
 ## varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
@@ -138,10 +138,10 @@ track.MCMC = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- F
-MCMCUpdate[[1]][[2]] <- F
-MCMCUpdate[[2]][[1]] <- F
-MCMCUpdate[[2]][[2]] <- F
+MCMCUpdate[[1]][[1]] <- T
+MCMCUpdate[[1]][[2]] <- T
+MCMCUpdate[[2]][[1]] <- T
+MCMCUpdate[[2]][[2]] <- T
 MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
@@ -206,7 +206,6 @@ LPDS.sampleProp = 0.05
 ## a dynamic link function.
 
 nObs <- length(Mdl.Y[[1]])
-
 priArgs <- MdlDataStruc
 priArgs[[1]][[1]] <-
   list("beta" = list(
@@ -214,7 +213,7 @@ priArgs[[1]][[1]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][[2]] <-
   list("beta" = list(
@@ -222,7 +221,7 @@ priArgs[[1]][[2]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][[1]] <-
   list("beta" = list(
@@ -230,7 +229,7 @@ priArgs[[2]][[1]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][[2]] <-
   list("beta" = list(
@@ -238,7 +237,7 @@ priArgs[[2]][[2]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][[1]] <-
   list("beta" = list(
@@ -246,7 +245,7 @@ priArgs[[3]][[1]] <-
            input = list(type = "gbeta",  mean = 0.5, variance = 1, a = 0.3, b = 0.6),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][[2]] <-
   list("beta" = list(
@@ -254,7 +253,7 @@ priArgs[[3]][[2]] <-
            input = list(type = "gbeta",  mean = 0.2, variance = 1, a = 0.1, b = 0.3),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------

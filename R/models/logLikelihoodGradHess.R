@@ -34,6 +34,7 @@ logLikelihoodGradHess <- function(
 ##  gradMethods = c("analytic", "numeric"))
 {
 
+
   ## The updating chain
   chainCaller <- parCplCaller(parUpdate)
   CompCaller <- chainCaller[1]

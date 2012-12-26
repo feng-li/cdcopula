@@ -42,7 +42,7 @@ logPriorsGradHess <- function(
 ### Gradient and Hessian for the intercept as a special case
 ###----------------------------------------------------------------------------
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
-    xCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
+    betaCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
     linkCurr <- Mdl.parLink[[CompCurr]][[parCurr]]
 
     if(tolower(priArgsCurr[["type"]]) == "custom")
@@ -54,7 +54,7 @@ logPriorsGradHess <- function(
         shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
 
         ## Gradient and Hessian for the intercept
-        GradHessInt <- DensGradHess(B = xCurr,
+        GradHessInt <- DensGradHess(B = betaCurr,
                                     mean = mean,
                                     covariance = variance*shrinkage,
                                     grad = TRUE, Hess = TRUE)
@@ -68,90 +68,99 @@ logPriorsGradHess <- function(
 ###----------------------------------------------------------------------------
 
     priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
-    xCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
+    betaCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
     betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
                                         # indicator without intercept
 
-    if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
+    X <- Mdl.X[[CompCurr]][[parCurr]][, -1, drop = FALSE]
+    if(length(X) == 0L)
       {
-        ## Normal distribution condition normal The full beta vector is assumed
-        ## as normal. Since variable selection is included in the MCMC, The
-        ## final proposed beta are those non zeros. We need to using the
-        ## gradient for the conditional normal density See Mardia p. 63.
-
-        ## Subtract the prior information for the full beta
-        mean <- priArgsCurr[["mean"]] # mean of density
-        covariance <- priArgsCurr[["covariance"]] # Covariates
-        shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
-
-        ## Split the beta vector by zero and nonzero.
-        Idx1 <- which(betaIdxNoIntCurr == TRUE)
-        Idx0 <- which(betaIdxNoIntCurr == FALSE)
-        Idx0Len <- length(Idx0)
-        Idx1Len <- length(Idx1)
-        betaLen <- length(betaIdxNoIntCurr)
-        SlopCondGrad <- matrix(NA, betaLen)
-
-        ## The mean vector for the whole beta vector (recycled if necessary)
-        meanVec <- matrix(mean, betaLen, 1)
-
-        ## The covariance matrix for the whole beta vector
-        if(tolower(covariance) == "g-prior")
+        ## No covariates at all (only intercept in the model)
+        gradObsLst[["Slop"]] <- NULL
+        HessObsLst[["SlopFull"]] <- NULL
+      }
+    else
+      {
+        if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
           {
-            X <- Mdl.X[[CompCurr]][[parCurr]][, -1, drop = FALSE]
-            coVar <- qr.solve(crossprod(X))
-          }
-        else if(tolower(covariance) == "identity")
-          {
-            coVar <- diag(length(Idx1))
-          }
+            ## Normal distribution condition normal The full beta vector is assumed
+            ## as normal. Since variable selection is included in the MCMC, The
+            ## final proposed beta are those non zeros. We need to using the
+            ## gradient for the conditional normal density See Mardia p. 63.
 
-        ##--------------------The conditional gradient--------------------------
+            ## Subtract the prior information for the full beta
+            mean <- priArgsCurr[["mean"]] # mean of density
+            covariance <- priArgsCurr[["covariance"]] # Covariates
+            shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
 
-        ## Consider three situations for gradient:
-        if(Idx0Len == 0)
-          {
-            ## 1. all are selected. Switch to unconditional prior.
-            ## The conditional gradient
-            SlopCondGrad[Idx1] <- DensGradHess(
-                B = xCurr,
+            ## Split the beta vector by zero and nonzero.
+            Idx1 <- which(betaIdxNoIntCurr == TRUE)
+            Idx0 <- which(betaIdxNoIntCurr == FALSE)
+            Idx0Len <- length(Idx0)
+            Idx1Len <- length(Idx1)
+            betaLen <- length(betaIdxNoIntCurr)
+
+            SlopCondGrad <- matrix(NA, betaLen, 1)
+
+            ## The mean vector for the whole beta vector (recycled if necessary)
+            meanVec <- matrix(mean, betaLen, 1)
+
+            ## The covariance matrix for the whole beta vector
+            if(tolower(covariance) == "g-prior")
+              {
+                coVar <- qr.solve(crossprod(X))
+              }
+            else if(tolower(covariance) == "identity")
+              {
+                coVar <- diag(length(betaLen))
+              }
+
+            ##--------------------The conditional gradient--------------------------
+
+            ## Consider three situations for gradient:
+            if(Idx0Len == 0)
+              {
+                ## 1. all are selected. Switch to unconditional prior.
+                ## The conditional gradient
+                SlopCondGrad[Idx1] <- DensGradHess(
+                    B = betaCurr,
+                    mean = meanVec,
+                    covariance = coVar*shrinkage,
+                    grad = TRUE, Hess = FALSE)[["grad"]]
+              }
+            else if(Idx0Len > 0 && Idx0Len < betaLen)
+              {
+                ## 2. some are selected (the most common situation)
+                ## The conditional prior
+                A <- coVar[Idx1, Idx0, drop = FALSE]%*%
+                  solve(coVar[Idx0, Idx0, drop = FALSE])
+                condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
+                condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
+                  A%*%coVar[Idx0, Idx1, drop = FALSE]
+
+                ## The conditional gradient
+                SlopCondGrad[Idx1] <- DensGradHess(
+                    B = betaCurr[Idx1],
+                    mean = condMean,
+                    covariance = condCovar*shrinkage,
+                    grad = TRUE, Hess = FALSE)[["grad"]]
+              }
+            else
+              {
+                ## 3. non are selected
+                SlopCondGrad[Idx] <- NA
+              }
+
+            gradObsLst[["Slop"]] <- SlopCondGrad
+
+            ## -------------The unconditional full Hessian matrix-------------------
+            HessObsLst[["SlopFull"]] <- DensGradHess(
+                B = betaCurr,
                 mean = meanVec,
                 covariance = coVar*shrinkage,
-                grad = TRUE, Hess = FALSE)[["grad"]]
+                grad = FALSE, Hess = TRUE)[["Hess"]]
           }
-        else if(Idx0Len > 0 && Idx0Len < betaLen)
-          {
-            ## 2. some are selected (the most common situation)
-            ## The conditional prior
-            A <- coVar[Idx1, Idx0, drop = FALSE]%*%
-              solve(coVar[Idx0, Idx0, drop = FALSE])
-            condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
-            condCovar <- coVar[Idx1, Idx1, drop = FALSE] -
-              A%*%coVar[Idx0, Idx1, drop = FALSE]
-
-            ## The conditional gradient
-            SlopCondGrad[Idx1] <- DensGradHess(
-                B = xCurr[Idx1],
-                mean = condMean,
-                covariance = condCovar*shrinkage,
-                grad = TRUE, Hess = FALSE)[["grad"]]
-          }
-        else
-          {
-            ## 3. non are selected
-            SlopCondGrad[Idx] <- NA
-          }
-
-        gradObsLst[["Slop"]] <- SlopCondGrad
-
-        ## -------------The unconditional full Hessian matrix-------------------
-        HessObsLst[["SlopFull"]] <- DensGradHess(
-            B = xCurr,
-            mean = meanVec,
-            covariance = coVar*shrinkage,
-            grad = FALSE, Hess = TRUE)[["Hess"]]
       }
-
 ###----------------------------------------------------------------------------
 ### The output
 ###----------------------------------------------------------------------------

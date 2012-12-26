@@ -66,7 +66,6 @@ GNewtonMove <- function(
   param <- betaCurr[betaIdxCurr, , drop = FALSE]
 
   ## Initial update staticArgs for current Newton move
-
   staticArgs.curr <- logPost(
       CplNM = CplNM,
       Mdl.Y = Mdl.Y,
@@ -112,9 +111,13 @@ GNewtonMove <- function(
           priArgs = priArgs,
           chainCaller = chainCaller)
 
+
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
+
+      if(any(is.infinite(logLikGrad.prop))) browser()
+
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
       logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
@@ -141,7 +144,7 @@ GNewtonMove <- function(
         {
           ## if(iStep == 2) browser()
           ## update the proposed parameters via the general Newton formula
-          if(any(is.na(gradObs.pp))) browser()
+          ## if(any(is.na(gradObs.pp))) browser()
 
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
 
@@ -174,7 +177,7 @@ GNewtonMove <- function(
           ##     staticArgs = staticArgs.curr,
           ##     staticArgsOnly = TRUE)[["staticArgs"]]
 
-          staticArgs.curr <- try(logPost(
+          staticArgs.curr <- logPost(
               CplNM = CplNM,
               Mdl.Y = Mdl.Y,
               Mdl.X = Mdl.X,
@@ -186,10 +189,10 @@ GNewtonMove <- function(
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticArgs = staticArgs.curr,
-              staticArgsOnly = TRUE)[["staticArgs"]], silent = FALSE)
+              staticArgsOnly = TRUE)[["staticArgs"]]
 
-
-          ## if(is(staticArgs.curr, "try-error")) browser()
+          ## Mdl.par0 <- unlist(staticArgs.curr[["Mdl.par"]])
+          ## if(any(is.na(Mdl.par0))) browser()
 
         }
       else # (k+1):th step.  Make a output

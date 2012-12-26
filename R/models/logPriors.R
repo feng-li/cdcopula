@@ -62,8 +62,9 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 
 ### intercept as special case
+### The intercept should alway be included.
           priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
-          xCurr <- Mdl.beta[[CompCaller]][[parCaller]][1] # the intercept
+          betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1] # the intercept
           linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
           if(tolower(priArgsCurr[["type"]]) == "custom")
@@ -75,77 +76,99 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
               variance <- densOutput$variance
               shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
 
-              logDens <- dnorm(xCurr, mean = mean,
+              logDens <- dnorm(x = betaCurr, mean = mean,
                                sd = sqrt(variance*shrinkage), log = TRUE)
               outCurr[["beta"]][["intercept"]] <- logDens
             }
 
 ### coefficients conditional on variable selection indicators
           priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
-          xCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1] # Slopes(taking away intercept)
+          betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1] # Slopes(taking away intercept)
           betaIdxNoIntCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]][-1] # Variable section
                                         # indicator without intercept
 
-          if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
+          ## The covariance matrix for the whole beta vector
+          X <- Mdl.X[[CompCaller]][[parCaller]][, -1, drop = FALSE]
+
+          if(length(X) == 0L)
             {
-              ## Normal distribution condition normal The full beta
-              ## vector is assumed as normal. Since variable selection is
-              ## included in the MCMC, The final proposed beta are those
-              ## non zeros. We need to using the conditional normal
-              ## density See Mardia p. 63
+              ## No covariates at all (only intercept in the model)
+              outCurr[["beta"]][["slopes"]] <- NULL
+            }
+          else
+            {
 
-              ## Subtract the prior information for the full beta
-              mean <- priArgsCurr[["mean"]] # mean of density
-              covariance <- priArgsCurr[["covariance"]] # Covariates
-              shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
-
-              ## Split the beta vector by selected and non-selected.
-              Idx1 <- which(betaIdxNoIntCurr == TRUE)
-              Idx0 <- which(betaIdxNoIntCurr == FALSE)
-
-              Idx0Len <- length(Idx0)
-              betaLen <- length(betaIdxNoIntCurr)
-
-              ## The mean vector (recycled if necessary)
-              meanVec <- matrix(mean, betaLen, 1)
-
-              ## The covariance matrix for the whole beta vector
-              if(tolower(covariance) == "g-prior")
+              if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
                 {
-                  X <- Mdl.X[[CompCaller]][[parCaller]][, -1, drop = FALSE]
-                  coVar <- qr.solve(crossprod(X))
-                }
-              else if(tolower(covariance) == "identity")
-                {
-                  coVar <- diag(length(Idx1))
-                }
+                  ## Normal distribution condition normal The full beta
+                  ## vector is assumed as normal. Since variable selection is
+                  ## included in the MCMC, The final proposed beta are those
+                  ## non zeros. We need to using the conditional normal
+                  ## density See Mardia p. 63
 
-              ## Consider three situations:
-              if(Idx0Len == 0 || Idx0Len == betaLen)
-                {
-                  ## 1. all are selected 2. non are selected:
-                  ## Switch to unconditional prior.
-                  outCurr[["beta"]][["slopes"]] <-
-                    dmvnorm(t(xCurr), meanVec, coVar*shrinkage, log = TRUE)
-                }
-              else if(Idx0Len > 0 && Idx0Len < betaLen)
-                {
-                  ## 2. some are selected
-                  ## The conditional prior
+                  ## Subtract the prior information for the full beta
+                  mean <- priArgsCurr[["mean"]] # mean of density
+                  covariance <- priArgsCurr[["covariance"]] # Covariates
+                  shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
 
-                  A <- coVar[Idx1, Idx0]%*%solve(coVar[Idx0, Idx0])
-                  condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
-                  condCovar <- coVar[Idx1, Idx1] - A%*%coVar[Idx0, Idx1]
+                  ## Split the beta vector by selected and non-selected.
+                  Idx1 <- which(betaIdxNoIntCurr == TRUE)
+                  Idx0 <- which(betaIdxNoIntCurr == FALSE)
 
-                  outCurr[["beta"]][["slopes"]] <-
-                    dmvnorm(matrix(xCurr[Idx1], 1),
-                            condMean, condCovar*shrinkage, log = TRUE)
-                }
-              else
-                {
-                  stop("Debug me: Unknown situation for conditional priors.")
+                  Idx0Len <- length(Idx0)
+                  Idx1Len <- length(Idx1)
+
+                  betaLen <- length(betaIdxNoIntCurr)
+
+                  ## The mean vector (recycled if necessary)
+                  meanVec <- matrix(mean, betaLen, 1)
+
+                  ## The covariance matrix for the whole beta vector
+                  if(tolower(covariance) == "g-prior")
+                    {
+                      coVar <- qr.solve(crossprod(X))
+                    }
+                  else if(tolower(covariance) == "identity")
+                    {
+                      coVar <- diag(length(betaLen))
+                    }
+
+                  ## Calculate the log density
+                  if(Idx0Len == 0L )
+                    {
+                      ## 1. all are selected or
+                      ## Switch to unconditional prior.
+                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
+                          matrix(betaCurr, betaLen,byrow = TRUE),
+                          meanVec, coVar*shrinkage, log = TRUE)
+                    }
+                  else if( Idx0Len == betaLen)
+                    {
+                      ## 2. non are selected:
+                      ## Switch to unconditional prior.
+                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
+                          matrix(betaCurr, betaLen,byrow = TRUE),
+                          meanVec, coVar*shrinkage, log = TRUE)
+                    }
+                  else if(Idx0Len > 0 & Idx0Len < betaLen)
+                    {
+                      ## 3. some are selected
+                      ## Using the conditional prior
+                      A <- coVar[Idx1, Idx0]%*%solve(coVar[Idx0, Idx0])
+                      condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
+                      condCovar <- coVar[Idx1, Idx1] - A%*%coVar[Idx0, Idx1]
+
+                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
+                          matrix(betaCurr[Idx1], 1),
+                          condMean, condCovar*shrinkage, log = TRUE)
+                    }
+                  else
+                    {
+                      stop("Debug me: Unknown situation for conditional priors.")
+                    }
                 }
             }
+
 ###----------------------------------------------------------------------------
 ### Update the output for prior
 ###----------------------------------------------------------------------------

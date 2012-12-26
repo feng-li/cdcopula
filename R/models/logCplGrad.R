@@ -23,6 +23,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   ## Thanks to the advice from M. Smith
 
   tol <- .Machine$double.eps*1e8
+
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
   if(any(u.bad1))
