@@ -101,7 +101,7 @@ logLikelihoodGradHess <- function(
                   FracGradObs.num[i] <- gradTry$g
                 }
             }
-
+          FracGradObs <- FracGradObs.num
         }
 
       ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
@@ -123,6 +123,12 @@ logLikelihoodGradHess <- function(
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------
+  ## The gradient for the link function n-by-1
+  LinkGradObs <- parCplMeanFunGrad(
+      CplNM = CplNM,
+      Mdl.par = Mdl.par,
+      Mdl.parLink = Mdl.parLink,
+      chainCaller = chainCaller)
 
   if("analytic" %in% tolower(gradMethods))
     {
@@ -136,13 +142,6 @@ logLikelihoodGradHess <- function(
           staticArgs = staticArgs,
           Mdl.X = Mdl.X,
           Mdl.beta = Mdl.beta)
-
-      ## The gradient for the link function n-by-1
-      LinkGradObs <- parCplMeanFunGrad(
-          CplNM = CplNM,
-          Mdl.par = Mdl.par,
-          Mdl.parLink = Mdl.parLink,
-          chainCaller = chainCaller)
     }
 
   if("numeric" %in% tolower(gradMethods))
@@ -207,7 +206,7 @@ logLikelihoodGradHess <- function(
 
         }
       ## The gradient for the link function n-by-1
-
+      logCplGradObs <- logCplGradObs.num
     }
 
   ## The gradient for the likelihood,  n-by-1

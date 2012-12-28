@@ -30,6 +30,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
+  ## cat(chainCaller, "\n")
+
   ## Set a reject flag to handle unexpected situations. If TRUE, the proposal
   ## is rejected anyway regardless of other situations.
   rejectFlag <- FALSE
@@ -241,10 +243,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                              logJump.currATpropRev - logJump.propATprop +
                              logJump.Idx.currATprop - logJump.Idx.propATcurr)
 
-              ## cat(logPost.prop, logPost.curr, "\n")
+              ##  cat(logPost.prop, logPost.curr, logJump.currATpropRev, logJump.propATprop, "\n")
 
               ## the acceptance probability
               accept.prob <- min(1, MHRatio)
+              ## print(round(accept.prob*100))
             }
         }
 ###----------------------------------------------------------------------------

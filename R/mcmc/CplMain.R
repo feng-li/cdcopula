@@ -121,6 +121,7 @@ CplMain <- function(configfile)
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
   optimInit <- TRUE
+  betaTest <- NULL
 
   if(optimInit == TRUE &
      any(tolower(unlist(betaInit)) == "random"))
@@ -166,8 +167,8 @@ CplMain <- function(configfile)
           betaVecOptim <- try(optim(
               par = betaVecInit,
               fn = logPostOptim,
-              control = list(fnscale = -1, maxit = 100),
-              method = "BFGS",
+              control = list(fnscale = -1, maxit = 200),
+              method = "L-BFGS-B",
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
@@ -180,26 +181,32 @@ CplMain <- function(configfile)
               parUpdate = parUpdate,
               staticArgs = staticArgs), silent = TRUE)
 
-          if(is(betaVecOptim, "try-error") == TRUE)
+          if(is(betaVecOptim, "try-error") == TRUE ||
+             betaVecOptim$convergence != 0L)
             {
               InitGood <- FALSE
             }
           else
             {
               InitGood <- TRUE
+
+
               Mdl.beta <- parCplSwap(
                   betaInput = betaVecOptim[["par"]],
                   Mdl.beta = Mdl.beta,
                   Mdl.betaIdx = Mdl.betaIdx,
                   parUpdate = parUpdate)
 
+              ## betaTest <- rbind(betaTest, betaVecOptim[["par"]])
+              print(betaVecOptim)
             }
 
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 100)
+          if(nLoopInit >= 10)
             {
+              browser()
               ## InitGood <- TRUE
               warning(paste(
                   " The initializing algorithm failed more that",
@@ -272,7 +279,7 @@ CplMain <- function(configfile)
               Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
               Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-              ## Epxort the parameters in each fold
+              ## Export the parameters in each cross-validation fold
               MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
               MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
               MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]

@@ -99,6 +99,22 @@ GNewtonMove <- function(
           varSelArgs = varSelArgs,
           staticArgs = staticArgs.curr)
 
+      logLikGradHess.prop.num <- logLikelihoodGradHess(
+          CplNM = CplNM,
+          Mdl.Y = Mdl.Y,
+          Mdl.X = Mdl.X,
+          Mdl.parLink = Mdl.parLink,
+          Mdl.beta = Mdl.beta,
+          MargisTypes = MargisTypes,
+          Mdl.betaIdx = Mdl.betaIdx,
+          parUpdate = parUpdate,
+          varSelArgs = varSelArgs,
+          staticArgs = staticArgs.curr,
+          gradMethods = "numeric")
+
+      logLikGrad.prop.num <- logLikGradHess.prop.num[["logLikGradObs"]] # n-by-pp
+
+
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
@@ -111,13 +127,16 @@ GNewtonMove <- function(
           priArgs = priArgs,
           chainCaller = chainCaller)
 
-
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
+
+
+      ## cbind(logLikGrad.prop, logLikGrad.prop.num)
+      ## browser()
+
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
       if(any(is.infinite(logLikGrad.prop))) browser()
-
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
       logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
@@ -131,6 +150,14 @@ GNewtonMove <- function(
       ## The selected covariates in the proposed and current draw
       X.prop <- X[ , betaIdxProp, drop = FALSE] # n-by-pp
       X.curr <- X[ , betaIdxCurr, drop = FALSE] # n-by-pc
+
+
+      ## Testing if a subset of gradients works, seems not
+      ## idx <- sample(1:80, 8)
+      ## logLikGrad.prop0 <- logLikGrad.prop
+      ## logLikGrad.prop[idx] <- 0
+      ## gradObs.pp0 <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop0)) + logPriGrad.pp) # pp-by-1
+
 
       ## The gradient and Hessian in the general Newton's update
       gradObs.pp <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop)) + logPriGrad.pp) # pp-by-1
@@ -146,7 +173,12 @@ GNewtonMove <- function(
           ## update the proposed parameters via the general Newton formula
           ## if(any(is.na(gradObs.pp))) browser()
 
+
           param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
+
+          ## param <- param - diag(length(gradObs.pp))%*%gradObs.pp
+
+          ## print(HessObsInv.pp%*%gradObs.pp)
 
           ## Update the parameter with current updated results.
           ## If variable selection did not chose pth covariate,  then the pth

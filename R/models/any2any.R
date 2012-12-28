@@ -1,6 +1,6 @@
 ##' Approximate translate a distribution to another one through link functions.
 ##'
-##' Use need to input distribution and output distribution and linkage
+##' User need to input distribution and output distribution and linkage
 ##' type.
 ##' @title Translate distributions.
 ##' @param densArgs "list" arguments for densities
@@ -32,6 +32,11 @@ any2any <- function(densArgs, linkArgs)
         variance <- densArgs[["input"]][["variance"]] # Covariates
         ## shrinkage <- densArgs[["shrinkage"]] # Shrinkage
 
+        if(variance >= mean*(1-mean))
+          {
+            stop("Mean and variance should be in intervals (a, b) and (0, mean(1-mean)),  respectively.")
+          }
+
         ## Transform to standard parametrization
         alpha <- - mean*(mean^2 -mean + variance)/(variance)
         beta <- (mean-1)^2*mean/(variance) + mean -1
@@ -56,14 +61,20 @@ any2any <- function(densArgs, linkArgs)
         a <- densArgs[["input"]][["a"]]
         b <- densArgs[["input"]][["b"]]
 
-        mean0 <- mean/(b-a)-a
+        mean0 <- (mean-a)/(b-a)
         variance0 <- variance/(b-a)^2
+
+        if(variance0 >= mean0*(1-mean0))
+          {
+            stop("Mean and variance should be in intervals \n (a, b) and (0, (mean-a)(b-mean)),  respectively.")
+          }
 
         ## shrinkage <- densArgs[["shrinkage"]] # Shrinkage
 
         ## Transform to standard parametrization
         alpha0 <- - mean0*(mean0^2 -mean0 + variance0)/(variance0)
         beta0 <- (mean0-1)^2*mean0/(variance0) + mean0 -1
+
         if(tolower(linkType) == "glogit")
           {
             ## Assume this normal, See Beta-rep.nb
@@ -92,10 +103,7 @@ any2any <- function(densArgs, linkArgs)
           {
             meanLinked<- mu
             varLinked <- sigma2
-
           }
-
-
       }
     else if(tolower(inType) == "norm")
       {

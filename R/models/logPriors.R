@@ -121,7 +121,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                   betaLen <- length(betaIdxNoIntCurr)
 
                   ## The mean vector (recycled if necessary)
-                  meanVec <- matrix(mean, betaLen, 1)
+                  meanVec <- matrix(mean, 1, betaLen)
 
                   ## The covariance matrix for the whole beta vector
                   if(tolower(covariance) == "g-prior")
@@ -138,8 +138,9 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                     {
                       ## 1. all are selected or
                       ## Switch to unconditional prior.
+
                       outCurr[["beta"]][["slopes"]] <- dmvnorm(
-                          matrix(betaCurr, betaLen,byrow = TRUE),
+                          matrix(betaCurr, 1, betaLen,byrow = TRUE),
                           meanVec, coVar*shrinkage, log = TRUE)
                     }
                   else if( Idx0Len == betaLen)
@@ -147,7 +148,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                       ## 2. non are selected:
                       ## Switch to unconditional prior.
                       outCurr[["beta"]][["slopes"]] <- dmvnorm(
-                          matrix(betaCurr, betaLen,byrow = TRUE),
+                          matrix(betaCurr, 1, betaLen, byrow = TRUE),
                           meanVec, coVar*shrinkage, log = TRUE)
                     }
                   else if(Idx0Len > 0 & Idx0Len < betaLen)
