@@ -75,18 +75,17 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
 
                 tau.a <- log(2)/(log(2)-log(lambdaL))
-                tau.b <- linkCurr[["b"]] ## NOTE: Numerical stable. keep it slightly away
-                ## from 1.
-
                 linkCurr$a <- tau.a
-                linkCurr$b <- tau.b
+
+                ## tau.b <- linkCurr[["b"]] ## NOTE: Numerical stable. keep it slightly away
+                ## from 1.
+                ## linkCurr$b <- tau.b
 
               }
             else
               {
                 stop("Such conditional linkage is not implemented!")
               }
-
 
             Mdl.par[[CplNM]][["tau"]] <- parMeanFun(
                 X = XCurr, beta = betaCurr, linkArgs = linkCurr)

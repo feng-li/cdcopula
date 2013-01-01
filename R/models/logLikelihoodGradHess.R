@@ -30,8 +30,8 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    gradMethods = c("analytic"))
-##  gradMethods = c("analytic", "numeric"))
+    ## gradMethods = c("analytic"))
+    gradMethods = c("analytic", "numeric"))
 {
 
 
@@ -134,7 +134,7 @@ logLikelihoodGradHess <- function(
     {
 
       ## The gradient for the copula function. n-by-1
-      logCplGradObs <- logCplGrad(
+      logCplGradObs.ana <- logCplGrad(
           CplNM = CplNM,
           u = staticArgs$Mdl.u,
           parCpl = Mdl.par[[CplNM]],
@@ -142,6 +142,7 @@ logLikelihoodGradHess <- function(
           staticArgs = staticArgs,
           Mdl.X = Mdl.X,
           Mdl.beta = Mdl.beta)
+      logCplGradObs <- logCplGradObs.ana
     }
 
   if("numeric" %in% tolower(gradMethods))
@@ -205,14 +206,14 @@ logLikelihoodGradHess <- function(
             }
 
         }
-      ## The gradient for the link function n-by-1
+      ## The Gradient For The Link Function n-by-1
       logCplGradObs <- logCplGradObs.num
     }
 
   ## The gradient for the likelihood,  n-by-1
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
 
-
+  browser()
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------

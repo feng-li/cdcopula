@@ -27,9 +27,10 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
                 ## The lower and upper bounds
                 lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
                 tau.a <- log(2)/(log(2)-log(lambdaL))
-                tau.b <- 1 ## NOTE: Numerical stable. keep it slightly away from 1.
                 linkCurr$a <- tau.a
-                linkCurr$b <- tau.b
+
+                ## tau.b <- linkCurr$b  ## NOTE: Numerical stable. keep it slightly away from 1.
+                ## linkCurr$b <- tau.b
               }
             else
               {
@@ -37,6 +38,7 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
               }
 
           }
+
         ## The unconditional gradients for the linkage
         LinkGradObs <-  parMeanFunGrad(
             par = Mdl.par[[CompCaller]][[parCaller]],
