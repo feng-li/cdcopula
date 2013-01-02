@@ -60,7 +60,6 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
             ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
             ## betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
 
-
             linkCurr <- Mdl.parLink[[CplNM]][["tau"]]
             XCurr <- Mdl.X[[CplNM]][["tau"]]
             betaCurr <- Mdl.beta[[CplNM]][["tau"]]

@@ -173,9 +173,7 @@ GNewtonMove <- function(
           ## update the proposed parameters via the general Newton formula
           ## if(any(is.na(gradObs.pp))) browser()
 
-          browser()
-
-          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
+          ## param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
 
           ## param <- param - diag(length(gradObs.pp))%*%gradObs.pp
 

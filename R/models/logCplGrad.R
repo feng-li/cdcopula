@@ -91,19 +91,21 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
             ## This should be obtained through the conditional linkage
             ## TODO: This is kind of hard code, consider it in a more general way.
 
+
             ## Gradient w.r.t. tau
             gradCpl.tau.theta <- kendalltauGrad(
                 CplNM = CplNM, theta = theta,
                 delta = delta, caller = "theta")
 
             ## The gradient for the parameters in conditional link
-            ## tau.b <- 1-0.05 ## NOTE: Numerical stable to not allow tau  =  1
+            ## tau.b <- 1-0.1 ## NOTE: Numerical stable to not allow tau  =  1
             ## tau.a <- log(2)/(log(2)-2*log(lambdaL))
             ## if(any(tau<tau.a)) browser()
             ## linPred.tau0 <-  log(tau-tau.a) - log(tau.b-tau)
 
             X <- Mdl.X[[CplNM]][["tau"]]
             beta <- Mdl.beta[[CplNM]][["tau"]]
+
             linPred.tau <- as.vector(X%*%beta)
             grad.glogit.a <- 1/(1+exp(linPred.tau))
 
@@ -112,10 +114,9 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
 
             ## The gradient for the reparameterized parameters
             ## lambdaL  =  2^(-1/delta)
-            grad.labmdal.delta <- 2^(-1/delta)*log(2)/delta^2
-
-            grad.delta.theta <- (1/gradCpl.tau.theta)*(grad.link.a.lambdaL*grad.labmdal.delta)
-
+            grad.lambdaL.delta <- 2^(-1/delta)*log(2)/delta^2
+            grad.delta.theta <- (1/gradCpl.tau.theta)*
+              (grad.link.a.lambdaL*grad.lambdaL.delta)
             ###########################################################################
 
             ub <- 1-u
@@ -172,10 +173,10 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
 
 
             ## Gradient w.r.t. lambdaL
-            gradCpl.lambdaL <- 2^(-1/delta)*log(2)/delta^2
+            ## gradCpl.lambdaL <- 2^(-1/delta)*log(2)/delta^2
 
             ## The chain gradient
-            out <- logGradCpl.delta/gradCpl.lambdaL
+            out <- logGradCpl.delta/grad.lambdaL.delta
             if(any(is.na(out))) browser()
           }
         else if(tolower(cplCaller) == "tau")

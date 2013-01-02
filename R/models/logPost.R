@@ -80,9 +80,12 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       parUpdate = parUpdate,
       Mdl.par = Mdl.par)
 
+  browser()
+
   if(any(is.na(unlist(Mdl.par))))
     {
-      warnings("DEBUGGING: NA happens when updating Mdl.par...")
+      warning("DEBUGGING: NA happens when updating Mdl.par...",
+              immediate. = TRUE)
     }
 
 ### Update marginal pdf and cdf

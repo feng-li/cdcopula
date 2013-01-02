@@ -67,7 +67,7 @@ Mdl.X[[1]][[2]] <- cbind(1, X[[1]][, 1:3])[, 1:2, drop = FALSE]
 Mdl.X[[2]][[1]] <- cbind(1, X[[2]][, 1:3])[, 1:2, drop = FALSE]
 Mdl.X[[2]][[2]] <- cbind(1, X[[2]][, 1:3])[, 1:2, drop = FALSE]
 Mdl.X[[3]][[1]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])[, 1:3, drop = FALSE]
-Mdl.X[[3]][[2]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])[, 1, drop = FALSE]
+Mdl.X[[3]][[2]] <- cbind(1, X[[1]][, 1:3], X[[2]][, 1:3])[, 1:3, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- Y
@@ -243,7 +243,7 @@ priArgs[[2]][[2]] <-
 priArgs[[3]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.6, variance = 0.08, a = 0.3, b = 0.9),
+           input = list(type = "gbeta",  mean = 0.5, variance = 0.15, a = 0.1, b = 0.9),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
@@ -251,7 +251,7 @@ priArgs[[3]][[1]] <-
 priArgs[[3]][[2]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.4, variance = 0.05, a = 0.1, b = 0.6),
+           input = list(type = "gbeta",  mean = 0.5, variance = 0.15, a = 0.1, b = 0.9),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),

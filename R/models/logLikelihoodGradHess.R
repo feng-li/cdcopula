@@ -30,8 +30,8 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    ## gradMethods = c("analytic"))
-    gradMethods = c("analytic", "numeric"))
+    gradMethods = c("analytic"))
+    ## gradMethods = c("analytic", "numeric"))
 {
 
 
@@ -213,7 +213,6 @@ logLikelihoodGradHess <- function(
   ## The gradient for the likelihood,  n-by-1
   logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
 
-  browser()
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
