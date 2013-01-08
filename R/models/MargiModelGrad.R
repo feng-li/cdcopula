@@ -34,9 +34,55 @@ MargiModelGrad <- function(y, par, type, parCaller)
             out <- -(y-mu)/sigma*exp(logMargiDens)
           }
       }
-    else if(tolower(margiType) == "student-t")
+    else if(tolower(margiType) == "splitt")
       {
         ## The marginal likelihood
+        ## Literal translation from GSMMatlab code AsymStudT
+
+        mu = par[["mu"]]  # location parameter
+        df = par[["df"]] # Degrees of freedom
+        phi = par[["phi"]] # Scaling Parameter
+        lmd = par[["lmd"]] # Skewness Parameter
+
+        ## PDF
+        ## logMargiDens <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
+        ##                         log = FALSE)
+
+        if(tolower(parCaller) == "mu")
+          {
+            I0 <- (y<=mu)
+            I <- (!I0)
+            sign <- 1*I0 + lmd*I
+
+            out <- -2*sign*sqrt(1/((y-mu)^2+sign^2*df*phi^2))*
+              (sign^2*df*phi^2/
+               ((y-mu)^2+sign^2*df*phi^2))^(df/2)/
+                ((1+lmd)*beta(df/2, 1/2))
+              }
+          }
+        else if(tolower(parCaller) == "df")
+          {
+            stop("Not implemented yet")
+          }
+        else if(tolower(parCaller) == "phi")
+          {
+            I0 <- (y<=mu)
+            I <- (!I0)
+            sign <- 1*I0 + lmd*I
+
+            out <- -2*sign*(y-mu)*sqrt(1/((y-mu)^2+sign^2*df*phi^2))*
+              (sign^2*df*phi^2/((y-mu)^2+sign^2*df*phi^2))^(df/2)/
+                ((1+lmd)*phi*beta(df/2, 1/2))
+
+          }
+        else if(tolower(parCaller) == "lmd")
+          {
+            stop("Not implemented yet")
+          }
+        else
+          {
+            stop("No such parameter!")
+          }
 
       }
     else
@@ -46,4 +92,5 @@ MargiModelGrad <- function(y, par, type, parCaller)
 
     ## The output
     return(out)
+
   }

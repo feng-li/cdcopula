@@ -2,7 +2,6 @@
 ##'
 ##' The detailed description can be found in the main setting file for each
 ##' input variable.
-##' @title CDF of marginal model.
 ##' @param y "list".
 ##'        The response variables for the marginal model.
 ##' @param type "vector" with character input.
@@ -10,7 +9,7 @@
 ##' @param par "list".
 ##'        The parameters input for the marginal model.
 ##' @return "matrix" with marginal names attributed.
-##' @references
+##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Jan 17 19:27:25 CET 2012;
 ##'       Current: Tue Jan 17 19:27:30 CET 2012.
@@ -31,9 +30,25 @@ MargiModel <- function(y, type, par)
         ## The output
         out <- list(u = u, d = d)
       }
-    else if (tolower(margiType) == "student-t")
+    else if (tolower(margiType) == "splitt")
       {
-        ## the student t version
+        ## The marginal likelihood
+        ## Literal translation from GSMMatlab code AsymStudT
+
+        mu = par[["mu"]]  # location parameter
+        df = par[["df"]] # Degrees of freedom
+        phi = par[["phi"]]; # Scaling Parameter
+        lmd = par[["lmd"]]; # Skewness Parameter
+
+        ## CDF
+        u <- psplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
+                     log = FALSE)
+
+        ## PDF
+        d <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
+                     log = FALSE)
+
+        out <- list(u = u, d = d)
       }
     else
       {

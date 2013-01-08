@@ -29,11 +29,16 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   if(any(u.bad1))
     {
       u[u.bad1] <- 1-tol
+      warning("u is to close to 1. Adjusted...",
+              immediate. = TRUE)
+
     }
 
   if(any(u.bad0))
     {
       u[u.bad0] <- 0 +tol
+      warning("u is to close to 1. Adjusted...",
+              immediate. = TRUE)
     }
 
 ###----------------------------------------------------------------------------
@@ -128,11 +133,15 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
             if(any(M12.bad1))
               {
                 M12[M12.bad1] <- 1 - tol
+                warning("Numerical unstable on M12,  adjust on the cliff...",
+                        immediate. = TRUE)
               }
             M12.bad0 <- (M12<tol)
             if(any(M12.bad0))
               {
                 M12[M12.bad0] <- tol
+                warning("Numerical unstable on M12,  adjust on the cliff...",
+                        immediate. = TRUE)
               }
 
 
@@ -198,14 +207,17 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
             if(any(T1.bad1))
               {
                 T1[T1.bad1] <- 1 - tol
+                warning("Numerical unstable on T1,  adjusted on the cliff...",
+                        immediate. = TRUE)
               }
 
             T1.bad0 <- (T1<tol)
             if(any(T1.bad0))
               {
                 T1[T1.bad0] <- tol
+                warning("Numerical unstable on T1,  adjusted on the cliff...",
+                        immediate. = TRUE)
               }
-
 
             L1 <- rowSums(T1^(-delta))-1
             PT1 <- matrix(T1[, 1]*T1[, 2])
@@ -248,7 +260,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
               {
                 u <-  u[, 1:2, drop = FALSE]
               }
-
             else if(tolower(cplCaller) == "u2")
               {
                 u <-  u[, 2:1, drop = FALSE]

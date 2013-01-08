@@ -30,7 +30,8 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    gradMethods = c("analytic"))
+    ## gradMethods = c("analytic"))
+    gradMethods = c("numeric"))
     ## gradMethods = c("analytic", "numeric"))
 {
 

@@ -1,27 +1,29 @@
-##' The log posterior of the copula model.
+##' The log posterior of the copula model
 ##'
 ##' The structure of the input are constructed via the design of variable
 ##' "MdlDataStuc" in the main setting file. See the individual description for
 ##' each variable in the setting files.
-##' @title The log posterior function of the copula model
-##'
 ##' @param CplNM "character".
 ##'        The copula name.
 ##'
-##' @param Mdl.Y ""
+##' @param Mdl.Y "list"
+##'        The responses of each marginal models.
 ##'
 ##' @param Mdl.X "list".
 ##'        The covariate used in each parameter components. The structure is
 ##'        designed by "MdlDataStruc" variable in the main file. The intercept
 ##'        is included if called in the data construction procedure.
 ##'
-##' @param Mdl.beta
-##' @param Mdl.betaIdx
+##' @param Mdl.beta "list".
+##'
+##' @param Mdl.betaIdx "list".
+##'
 ##' @param Mdl.parLink "list".
 ##'        The link function used in the MCMC procedure. See the main setting
 ##'        file for details.
 ##'
-##' @param varSelArgs
+##' @param varSelArgs "list"
+##'
 ##' @param MargisTypes "list".
 ##'        The model type in each marginal distribution.
 ##'
@@ -33,7 +35,13 @@
 ##'        are doing conditional posterior which means some components are kept
 ##'        uncaged. This can reduce computing time.
 ##'
-##' @param staticArgs
+##' @param staticArgs "list"
+##'        Miscellaneous arguments that are needed in the model.
+##'
+##' @param staticArgsOnly "logical"
+##'        If TRUE,  only update the staticArgs,  otherwise, do a full log
+##'        posterior updating.
+##'
 ##' @param MdlCurr.beta "list".
 ##'        The beta coefficients for each parameter. Note that the length
 ##'        should be same as the length of covariates in the covariates.
@@ -80,11 +88,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       parUpdate = parUpdate,
       Mdl.par = Mdl.par)
 
-  browser()
+
+  ## print(Mdl.par$BB7$lambdaL)
+  ## print(Mdl.beta$BB7$lambdaL)
 
   if(any(is.na(unlist(Mdl.par))))
     {
-      warning("DEBUGGING: NA happens when updating Mdl.par...",
+      warning("DEBUGGING: NA happens when updating ``Mdl.par''...",
               immediate. = TRUE)
     }
 
@@ -146,7 +156,9 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       Mdl.logPri.sum <- sum(unlist(Mdl.logPri))
       Mdl.logLikMargis.sum <- sum(Mdl.d)
 
-      Mdl.logPost <- Mdl.logPri.sum  + Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
+      ## Mdl.logPost <- Mdl.logPri.sum  + Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
+
+      Mdl.logPost <-  Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
 
       ## cat("Prior:    ", Mdl.logPri.sum, "\n")
       ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")

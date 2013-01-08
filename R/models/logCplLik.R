@@ -30,10 +30,14 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
   if(any(u.bad1))
     {
       u[u.bad1] <- 1-tol
+      warning("u is to close to 1. Adjusted...",
+              immediate. = TRUE)
     }
   if(any(u.bad0))
     {
       u[u.bad0] <- 0 +tol
+      warning("u is to close to 0. Adjusted...",
+              immediate. = TRUE)
     }
 
 ###----------------------------------------------------------------------------
@@ -49,8 +53,12 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       ## Subtract the parameters list.
       tau <- as.vector(parCpl[["tau"]])
       lambdaL <- as.vector(parCpl[["lambdaL"]])
-      lambdaU <- as.vector(kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
-                               tauTabular = staticArgs[["tauTabular"]]))
+      lambdaU <- as.vector(kendalltauInv(
+          CplNM = CplNM, parRepCpl = parCpl,
+          tauTabular = staticArgs[["tauTabular"]]))
+
+      print(lambdaU)
+
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).
 
@@ -61,43 +69,46 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       TC1 <- 1-(1-u)^theta
 
       ## Numeric check if L6 is too close to zero.
-      tol <- .Machine$double.eps*1e8
-      TC1.bad0 <- (TC1<tol)
-      if(any(TC1.bad0))
-        {
-          TC1[TC1.bad0] <- tol
-        }
-      TC1.bad1 <- (TC1>(1-tol))
-      if(any(TC1.bad1))
-        {
-          TC1[TC1.bad1] <- 1-tol
-        }
+      ## tol <- .Machine$double.eps*1e8
+      ## TC1.bad0 <- (TC1<tol)
+      ## if(any(TC1.bad0))
+      ##   {
+      ##     TC1[TC1.bad0] <- tol
+      ##     warning("Numerical unstable on TC1,  adjusted on the cliff...",
+      ##             immediate. = TRUE)
 
+      ##   }
+      ## TC1.bad1 <- (TC1>(1-tol))
+      ## if(any(TC1.bad1))
+      ##   {
+      ##     TC1[TC1.bad1] <- 1-tol
+      ##     warning("Numerical unstable on TC1,  adjusted on the cliff...",
+      ##             immediate. = TRUE)
+      ##   }
 
       TC2 <- (1-u)^(-1+theta)
 
 
       ## Numeric check if L6 is too close to zero.
-      tol <- .Machine$double.eps*1e8
-      TC2.bad0 <- (TC2<tol)
-      if(any(TC2.bad0))
-        {
-          TC2[TC2.bad0] <- tol
-        }
-      TC2.bad1 <- (TC2>(1-tol))
-      if(any(TC2.bad1))
-        {
-          TC2[TC2.bad1] <- 1-tol
-        }
+      ## tol <- .Machine$double.eps*1e8
+      ## TC2.bad0 <- (TC2<tol)
+      ## if(any(TC2.bad0))
+      ##   {
+      ##     TC2[TC2.bad0] <- tol
+      ##     warning("Numerical unstable on TC2,  adjusted on the cliff...",
+      ##             immediate. = TRUE)
 
-
+      ##   }
+      ## TC2.bad1 <- (TC2>(1-tol))
+      ## if(any(TC2.bad1))
+      ##   {
+      ##     TC2[TC2.bad1] <- 1-tol
+      ##     warning("Numerical unstable on TC2,  adjusted on the cliff...",
+      ##             immediate. = TRUE)
+      ##   }
 
       L5 <- rowSums(TC1^(-delta)) - 1
-
       L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
-
-
-
 
       logCplDensObs <- (-1-delta)*rowSums(log(TC1))+
         rowSums(log(TC2))-

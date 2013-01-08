@@ -189,8 +189,6 @@ CplMain <- function(configfile)
           else
             {
               InitGood <- TRUE
-
-
               Mdl.beta <- parCplSwap(
                   betaInput = betaVecOptim[["par"]],
                   Mdl.beta = Mdl.beta,
@@ -206,7 +204,6 @@ CplMain <- function(configfile)
           ## Too many failures,  abort!
           if(nLoopInit >= 10)
             {
-              browser()
               ## InitGood <- TRUE
               warning(paste(
                   " The initializing algorithm failed more that",

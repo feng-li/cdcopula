@@ -78,8 +78,8 @@ Mdl.parLink[[1]][[1]] <- list(type = "identity")
 Mdl.parLink[[1]][[2]] <- list(type = "log")
 Mdl.parLink[[2]][[1]] <- list(type = "identity")
 Mdl.parLink[[2]][[2]] <- list(type = "log")
-Mdl.parLink[[3]][[1]] <- list(type = "glogit", b = 0.9)
-Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.1, b = 0.9)
+Mdl.parLink[[3]][[1]] <- list(type = "glogit", b = 0.99)
+Mdl.parLink[[3]][[2]] <- list(type = "glogit", a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -142,7 +142,7 @@ MCMCUpdate[[1]][[1]] <- F
 MCMCUpdate[[1]][[2]] <- F
 MCMCUpdate[[2]][[1]] <- F
 MCMCUpdate[[2]][[2]] <- F
-MCMCUpdate[[3]][[1]] <- F
+MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
@@ -158,27 +158,27 @@ propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[1]][[2]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[2]][[1]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[2]][[2]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[3]][[1]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[3]][[2]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.2))
+       "indicators" = list(type = "binom", prob = 0.5))
 
 ## CROSS-VALIDATION
 ##-----------------------------------------------------------------------------
