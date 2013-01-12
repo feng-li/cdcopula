@@ -1,4 +1,4 @@
-##' Calculate the CDF and PDF of the marginal distribution.
+##' CDF and PDF of the marginal distribution.
 ##'
 ##' The detailed description can be found in the main setting file for each
 ##' input variable.
@@ -8,8 +8,12 @@
 ##'        The type of the marginal model.
 ##' @param par "list".
 ##'        The parameters input for the marginal model.
-##' @return "matrix" with marginal names attributed.
-##' @references NA
+##' @return "list".
+##'
+##'        Return the percentile and log density of the marginal models.
+##'
+##'
+##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Jan 17 19:27:25 CET 2012;
 ##'       Current: Tue Jan 17 19:27:30 CET 2012.
@@ -19,18 +23,18 @@ MargiModel <- function(y, type, par)
       {
         ## The mean and standard deviation for Gaussian density
         mu <- par[["mu"]] # scaler
-        sigma <- par[["sigma"]]   # scaler
+        phi <- par[["phi"]]   # scaler
 
         ## The percentile representation
-        u <- pnorm(y, mean = mu, sd = sigma, log = FALSE)
+        u <- pnorm(y, mean = mu, sd = phi, log = FALSE)
 
         ## The quantile representation
-        d <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
+        d <- dnorm(y, mean = mu, sd = phi, log = TRUE)
 
         ## The output
         out <- list(u = u, d = d)
       }
-    else if (tolower(margiType) == "splitt")
+    else if (tolower(type) == "splitt")
       {
         ## The marginal likelihood
         ## Literal translation from GSMMatlab code AsymStudT

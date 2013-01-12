@@ -33,6 +33,11 @@
 empltdc <- function(x, y, k, method)
   {
     n <- length(x)
+    if(k>n)
+      {
+        stop("Argument `k' should be smaller than the number of random variables.")
+      }
+
     if(tolower(method) == "simple")
       {
         u <- k/n
@@ -48,6 +53,7 @@ empltdc <- function(x, y, k, method)
       }
     else if(tolower(method) == "mixture")
       {
+
         u <- (1:k)/n
         v <- (1:k)/n
         out <- sum((hatCpl(u = u, v = v, x = x, y = y)-((1:k)/n)^2)*

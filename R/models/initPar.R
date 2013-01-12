@@ -2,15 +2,31 @@
 ##'
 ##' This function is only once for the first iteration. The values are updated
 ##' via MCMC scheme.
-##' @title Setup copula model initial value.
-##' @param varSelArgs
-##' @param betaInit
-##' @param Mdl.X
+##' @param varSelArgs "list".
+##'
+##'        Variable selection argument
+##'
+##' @param betaInit "character or numeric".
+##'
+##'        If is "character", the corresponding method are used to generate the
+##' initial value.
+##'
+##'        If is "numeric", The initial value are taken as is.
+##'
+##' @param Mdl.X "list".
+##'
+##'        The covariates list
+##'
 ##' @return "list"
-##' @references
+##'
+##'       Both the initial value for the beta coefficients ("Mdl.beta") and the
+##' initial value for the variable selection indicator ("Mdl.betaIdx") are
+##' returned.
+##'
+##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011;
-##'       Current: Wed Jan 11 16:03:44 CET 2012.
+##'       Current: Fri Jan 11 18:09:22 CET 2013.
 initPar <- function(varSelArgs, betaInit, Mdl.X)
   {
     ## The output structure.

@@ -57,7 +57,7 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
           CplNM = CplNM, parRepCpl = parCpl,
           tauTabular = staticArgs[["tauTabular"]]))
 
-      print(lambdaU)
+      print(lambdaL)
 
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).

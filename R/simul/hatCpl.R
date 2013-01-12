@@ -13,7 +13,7 @@
 ##'
 ##'         The numeric estimation of copula for data x and y.
 ##'
-##' @references Dobric and Schmid 2005
+##' @references Dobric and Schmid (2005)
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Jan 08 17:37:50 CET 2013;
 ##'       Current: Tue Jan 08 17:37:55 CET 2013.

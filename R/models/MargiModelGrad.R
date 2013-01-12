@@ -18,20 +18,20 @@ MargiModelGrad <- function(y, par, type, parCaller)
       {
         ## Subtract parameters and data
         mu <- par[["mu"]]
-        sigma <- par[["sigma"]]
+        phi <- par[["phi"]]
 
         ## Calculate the log density TODO: call from log likelihood?
-        logMargiDens <- dnorm(y, mean = mu, sd = sigma, log = TRUE)
+        logMargiDens <- dnorm(y, mean = mu, sd = phi, log = TRUE)
 
         if(tolower(parCaller) == "mu")
           {
             out <- -exp(logMargiDens)
           }
-        else if(tolower(parCaller) == "sigma")
+        else if(tolower(parCaller) == "phi")
           {
-            ## GradFrac <- (sigma^2-(y-mu)^2)/((y-mu)*sigma)
+            ## GradFrac <- (phi^2-(y-mu)^2)/((y-mu)*phi)
             ## out <- exp(logMargiDens)*GradFrac
-            out <- -(y-mu)/sigma*exp(logMargiDens)
+            out <- -(y-mu)/phi*exp(logMargiDens)
           }
       }
     else if(tolower(margiType) == "splitt")
@@ -58,7 +58,7 @@ MargiModelGrad <- function(y, par, type, parCaller)
               (sign^2*df*phi^2/
                ((y-mu)^2+sign^2*df*phi^2))^(df/2)/
                 ((1+lmd)*beta(df/2, 1/2))
-              }
+
           }
         else if(tolower(parCaller) == "df")
           {
