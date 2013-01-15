@@ -30,9 +30,9 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    ## gradMethods = c("analytic"))
-    gradMethods = c("numeric"))
-    ## gradMethods = c("analytic", "numeric"))
+    gradMethods = c("analytic"))
+  ## gradMethods = c("numeric"))
+  ## gradMethods = c("analytic", "numeric"))
 {
 
 
@@ -55,11 +55,12 @@ logLikelihoodGradHess <- function(
       ## Gradient Fraction in the marginal component. n-by-1
       if("analytic" %in% tolower(gradMethods))
         {
-          FracGradObs <- MargiModelGrad(
+          FracGradObs.ana <- MargiModelGrad(
               par = parCurr,
               y = yCurr,
               type = typeCurr,
               parCaller = parCaller)
+          FracGradObs <- FracGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))
         {

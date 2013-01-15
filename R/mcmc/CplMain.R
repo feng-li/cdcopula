@@ -118,23 +118,33 @@ CplMain <- function(configfile)
                      Mdl.d = u,
                      tauTabular = tauTabular)
 
+  ## Assign the initial values
+  initParOut <- initPar(
+      varSelArgs = varSelArgs,
+      betaInit = betaInit,
+      Mdl.X = MdlTraining.X,
+      Mdl.Y = MdlTraining.Y)
+  Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
+  Mdl.beta <- initParOut[["Mdl.beta"]]
+
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- TRUE
+  optimInit <- FALSE
   betaTest <- NULL
 
-  if(optimInit == TRUE &
+  if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
     {
       InitGood <- FALSE
       nLoopInit <- 0
       while(InitGood == FALSE)
         {
-          ## Assign the initial values
+          ## Reassign the initial values
           initParOut <- initPar(
               varSelArgs = varSelArgs,
               betaInit = betaInit,
-              Mdl.X = MdlTraining.X)
+              Mdl.X = MdlTraining.X,
+              Mdl.Y = MdlTraining.Y)
           Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
           Mdl.beta <- initParOut[["Mdl.beta"]]
 
@@ -154,7 +164,8 @@ CplMain <- function(configfile)
               priArgs = priArgs,
               parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
               staticArgs = staticArgs,
-              staticArgsOnly = TRUE)[["staticArgs"]]
+              staticArgsOnly = TRUE,
+              parUpdate4Pri = parUpdate)[["staticArgs"]]
 
           ## Optimize the initial values via BFGS.
           ## NOTE: The variable selection indicators are fixed (not optimized)
@@ -179,7 +190,8 @@ CplMain <- function(configfile)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = parUpdate,
-              staticArgs = staticArgs), silent = TRUE)
+              staticArgs = staticArgs,
+              parUpdate4Pri = parUpdate), silent = TRUE)
 
           if(is(betaVecOptim, "try-error") == TRUE ||
              betaVecOptim$convergence != 0L)
@@ -226,7 +238,7 @@ CplMain <- function(configfile)
       varSelArgs = varSelArgs,
       MargisTypes = MargisTypes,
       priArgs = priArgs,
-      parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
+      parUpdate = parUpdate,
       staticArgs = staticArgs,
       staticArgsOnly = TRUE)[["staticArgs"]]
 

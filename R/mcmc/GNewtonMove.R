@@ -1,22 +1,21 @@
-##' This is the Newton move with dimension changes for the copula model.
+##' Generalized Newton move with dimension changes for the copula model.
 ##'
-##' @title Generalized Newton method for the copula model
-##' @param propArgs
-##' @param varSelArgs
-##' @param priArgs
-##' @param betaIdxProp
-##' @param parUpdate
-##' @param CplNM
-##' @param Mdl.Y
-##' @param Mdl.X
-##' @param Mdl.beta
-##' @param Mdl.betaIdx
-##' @param Mdl.parLink
-##' @param MargisTypes
-##' @param staticArgs
+##' @param propArgs "list".
+##' @param varSelArgs "list".
+##' @param priArgs "list".
+##' @param betaIdxProp "list".
+##' @param parUpdate "list".
+##' @param CplNM "list".
+##' @param Mdl.Y "list".
+##' @param Mdl.X "list".
+##' @param Mdl.beta "list".
+##' @param Mdl.betaIdx "list".
+##' @param Mdl.parLink "list".
+##' @param MargisTypes "list".
+##' @param staticArgs "list".
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
-##' @return "list". See bellow.
+##' @return "list".
 ##' \item   {gradObs}
 ##'         {"matrix". The gradient}
 ##' \item   {HessObsInv}
@@ -173,7 +172,7 @@ GNewtonMove <- function(
           ## update the proposed parameters via the general Newton formula
           ## if(any(is.na(gradObs.pp))) browser()
 
-          ## param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
+          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
 
           ## param <- param - diag(length(gradObs.pp))%*%gradObs.pp
 

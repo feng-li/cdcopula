@@ -27,6 +27,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ### Only update priors for parameters that need to update.
 ###----------------------------------------------------------------------------
       parUpdateIdx <- which(parUpdate[[CompCaller]] == TRUE)
+
       for(parCaller in parUpdateIdx)
         {
           ## Initial the storage structure for current log prior

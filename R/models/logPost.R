@@ -7,7 +7,7 @@
 ##'        The copula name.
 ##'
 ##' @param Mdl.Y "list"
-##'        The responses of each marginal models.
+##'        The responses of each marginal model.
 ##'
 ##' @param Mdl.X "list".
 ##'        The covariate used in each parameter components. The structure is
@@ -65,7 +65,7 @@
 ##'       Current: Thu May 10 20:17:09 CEST 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,
-                    staticArgs, staticArgsOnly = FALSE)
+                    staticArgs, staticArgsOnly = FALSE, parUpdate4Pri = parUpdate)
 {
   ## The pre-saved information
   Mdl.par <- staticArgs[["Mdl.par"]]
@@ -128,7 +128,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       varSelArgs = varSelArgs,
       priArgs = priArgs,
       Mdl.logPri = Mdl.logPri,
-      parUpdate = parUpdate)
+      parUpdate = parUpdate4Pri)
 
   ## Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
 
@@ -151,14 +151,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
           u = Mdl.u,
           CplNM = CplNM,
           parCpl = Mdl.par[[CplNM]],
-          staticArgs = staticArgs) # n-by-1
+          staticArgs = staticArgs, logLik = TRUE) # n-by-1
 
-      Mdl.logPri.sum <- sum(unlist(Mdl.logPri))
+      Mdl.logPri.sum <- sum(unlist(Mdl.logPri), na.rm = TRUE)
       Mdl.logLikMargis.sum <- sum(Mdl.d)
 
-      ## Mdl.logPost <- Mdl.logPri.sum  + Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
 
-      Mdl.logPost <-  Mdl.logLikMargis.sum + Mdl.logLikCpl.sum
+      Mdl.logPost <-  Mdl.logLikMargis.sum + Mdl.logLikCpl.sum + Mdl.logPri.sum
 
       ## cat("Prior:    ", Mdl.logPri.sum, "\n")
       ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")

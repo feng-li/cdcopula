@@ -23,22 +23,22 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
-  tol <- .Machine$double.eps*1e8
-  u.bad1 <- (u > 1-tol)
-  u.bad0 <- (u < 0+tol)
+  ## tol <- .Machine$double.eps*1e8
+  ## u.bad1 <- (u > 1-tol)
+  ## u.bad0 <- (u < 0+tol)
 
-  if(any(u.bad1))
-    {
-      u[u.bad1] <- 1-tol
-      warning("u is to close to 1. Adjusted...",
-              immediate. = TRUE)
-    }
-  if(any(u.bad0))
-    {
-      u[u.bad0] <- 0 +tol
-      warning("u is to close to 0. Adjusted...",
-              immediate. = TRUE)
-    }
+  ## if(any(u.bad1))
+  ##   {
+  ##     u[u.bad1] <- 1-tol
+  ##     warning("u is to close to 1. Adjusted...",
+  ##             immediate. = TRUE)
+  ##   }
+  ## if(any(u.bad0))
+  ##   {
+  ##     u[u.bad0] <- 0 +tol
+  ##     warning("u is to close to 0. Adjusted...",
+  ##             immediate. = TRUE)
+  ##   }
 
 ###----------------------------------------------------------------------------
 ### Compute the copula likelihood
@@ -56,8 +56,6 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
       lambdaU <- as.vector(kendalltauInv(
           CplNM = CplNM, parRepCpl = parCpl,
           tauTabular = staticArgs[["tauTabular"]]))
-
-      print(lambdaL)
 
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).
@@ -124,7 +122,6 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
     {
       stop("The copula is not implemented yet!")
     }
-
 
   ## The output
   if(logLik)

@@ -185,8 +185,8 @@ MCMCUpdateOrder[[2]][[3]] <- 7
 MCMCUpdateOrder[[2]][[4]] <- 8
 
 
-MCMCUpdateOrder[[3]][[1]] <- 9
-MCMCUpdateOrder[[3]][[2]] <- 10
+MCMCUpdateOrder[[3]][[1]] <- 10
+MCMCUpdateOrder[[3]][[2]] <- 9
 
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
@@ -273,7 +273,7 @@ priArgs[[1]][["mu"]] <-
 priArgs[[1]][["phi"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 0.5, variance = 0.3),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -281,7 +281,7 @@ priArgs[[1]][["phi"]] <-
 priArgs[[1]][["df"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 8, variance = 10),
+           input = list(type = "lognorm",  mean = 6, variance = 10),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -306,7 +306,7 @@ priArgs[[2]][["mu"]] <-
 priArgs[[2]][["phi"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 0.5, variance = 0.3),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -314,7 +314,7 @@ priArgs[[2]][["phi"]] <-
 priArgs[[2]][["df"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 8, variance = 10),
+           input = list(type = "lognorm",  mean = 6, variance = 10),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = nObs)),
@@ -354,12 +354,12 @@ priArgs[[3]][["lambdaL"]] <-
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", or user-input).
 betaInit <- MdlDataStruc
-betaInit[[1]][[1]] <- "random"
+betaInit[[1]][[1]] <- "ols"
 betaInit[[1]][[2]] <- "random"
 betaInit[[1]][[3]] <- log(6)
 betaInit[[1]][[4]] <- log(1)
 
-betaInit[[2]][[1]] <- "random"
+betaInit[[2]][[1]] <- "ols"
 betaInit[[2]][[2]] <- "random"
 betaInit[[2]][[3]] <- log(6)
 betaInit[[2]][[4]] <- log(1)

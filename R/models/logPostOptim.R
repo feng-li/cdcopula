@@ -1,26 +1,27 @@
 ##' A wrapper of the log posterior with first argument as an vector
 ##'
 ##'
-##' @title log posterior function
-##' @param betaVec "vector"
-##' @param CplNM
-##' @param Mdl.Y
-##' @param Mdl.X
-##' @param Mdl.betaIdx
-##' @param Mdl.parLink
-##' @param varSelArgs
-##' @param MargisTypes
-##' @param priArgs
-##' @param parUpdate
-##' @param staticArgs
+##' @param betaVec "vector".
+##' @param CplNM "character".
+##' @param Mdl.Y "list".
+##' @param Mdl.X "list".
+##' @param Mdl.beta
+##' @param Mdl.betaIdx "list".
+##' @param Mdl.parLink "list".
+##' @param varSelArgs "list".
+##' @param MargisTypes "list".
+##' @param priArgs "list".
+##' @param parUpdate "list".
+##' @param staticArgs "list".
+##' @param parUpdate4Pri
 ##' @return "scaler" The log posterior.
-##' @references
+##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Sun Jun 03 19:13:54 CEST 2012;
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
 logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,varSelArgs, MargisTypes,
-                         priArgs,parUpdate,staticArgs)
+                         priArgs,parUpdate,staticArgs, parUpdate4Pri = parUpdate)
   {
     ## a wrapper of the log posterior function that can be used for directly
     ## optimization via Newton's method
@@ -42,7 +43,8 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         MargisTypes = MargisTypes,
         priArgs = priArgs,
         parUpdate = parUpdate,
-        staticArgs = staticArgs)[["Mdl.logPost"]]
+        staticArgs = staticArgs,
+        parUpdate4Pri = parUpdate4Pri)[["Mdl.logPost"]]
 
     return(out)
   }

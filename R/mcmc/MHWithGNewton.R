@@ -270,6 +270,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         }
     }
 
+  print(accept.prob)
   ## The final update, the acceptance prob are from the last MH update
   out <- list(beta =  beta.curr.full,
               betaIdx = betaIdx.curr,

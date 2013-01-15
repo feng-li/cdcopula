@@ -2,7 +2,7 @@
 ##'
 ##' The detailed description can be found in the main setting file for each
 ##' input variable.
-##' @param y "list".
+##' @param y "vector".
 ##'        The response variables for the marginal model.
 ##' @param type "vector" with character input.
 ##'        The type of the marginal model.
@@ -22,8 +22,8 @@ MargiModel <- function(y, type, par)
     if(tolower(type) == "gaussian")
       {
         ## The mean and standard deviation for Gaussian density
-        mu <- par[["mu"]] # scaler
-        phi <- par[["phi"]]   # scaler
+        mu <- par[["mu"]] # mean parameter
+        phi <- par[["phi"]]   # standard deviation
 
         ## The percentile representation
         u <- pnorm(y, mean = mu, sd = phi, log = FALSE)
@@ -50,7 +50,7 @@ MargiModel <- function(y, type, par)
 
         ## PDF
         d <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
-                     log = FALSE)
+                     log = TRUE)
 
         out <- list(u = u, d = d)
       }

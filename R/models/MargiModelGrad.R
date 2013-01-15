@@ -34,7 +34,7 @@ MargiModelGrad <- function(y, par, type, parCaller)
             out <- -(y-mu)/phi*exp(logMargiDens)
           }
       }
-    else if(tolower(margiType) == "splitt")
+    else if(tolower(type) == "splitt")
       {
         ## The marginal likelihood
         ## Literal translation from GSMMatlab code AsymStudT
