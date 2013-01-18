@@ -26,20 +26,9 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
 ##'       Current: Mon Mar 05 10:33:29 CET 2012.
-GNewtonMove <- function(
-    propArgs,
-    varSelArgs,
-    priArgs,
-    betaIdxProp,
-    parUpdate,
-    CplNM,
-    Mdl.Y,
-    Mdl.X,
-    Mdl.beta,
-    Mdl.betaIdx,
-    Mdl.parLink,
-    MargisTypes,
-    staticArgs)
+GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
+                        CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
+                        Mdl.parLink, MargisTypes, staticArgs)
 {
 
   ## The updating component parameter chain
@@ -47,6 +36,7 @@ GNewtonMove <- function(
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
+  errorFlag <- FALSE
 
   ## if(parCaller == "tau") browser()
 
@@ -98,22 +88,27 @@ GNewtonMove <- function(
           varSelArgs = varSelArgs,
           staticArgs = staticArgs.curr)
 
-      logLikGradHess.prop.num <- logLikelihoodGradHess(
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta,
-          MargisTypes = MargisTypes,
-          Mdl.betaIdx = Mdl.betaIdx,
-          parUpdate = parUpdate,
-          varSelArgs = varSelArgs,
-          staticArgs = staticArgs.curr,
-          gradMethods = "numeric")
+      ## logLikGradHess.prop.num <- logLikelihoodGradHess(
+      ##     CplNM = CplNM,
+      ##     Mdl.Y = Mdl.Y,
+      ##     Mdl.X = Mdl.X,
+      ##     Mdl.parLink = Mdl.parLink,
+      ##     Mdl.beta = Mdl.beta,
+      ##     MargisTypes = MargisTypes,
+      ##     Mdl.betaIdx = Mdl.betaIdx,
+      ##     parUpdate = parUpdate,
+      ##     varSelArgs = varSelArgs,
+      ##     staticArgs = staticArgs.curr,
+      ##     gradMethods = "numeric")
 
-      logLikGrad.prop.num <- logLikGradHess.prop.num[["logLikGradObs"]] # n-by-pp
+      ## logLikGrad.prop.num <- logLikGradHess.prop.num[["logLikGradObs"]] # n-by-pp
 
-
+      ## Break the loop if something went wrong in the gradient
+      if(logLikGradHess.prop$errorFlag)
+        {
+          errorFlag <- TRUE
+          break
+        }
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
@@ -135,8 +130,6 @@ GNewtonMove <- function(
 
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
 
-      if(any(is.infinite(logLikGrad.prop))) browser()
-
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
       logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
 
@@ -157,13 +150,13 @@ GNewtonMove <- function(
       ## logLikGrad.prop[idx] <- 0
       ## gradObs.pp0 <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop0)) + logPriGrad.pp) # pp-by-1
 
-
       ## The gradient and Hessian in the general Newton's update
       gradObs.pp <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop)) + logPriGrad.pp) # pp-by-1
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
 
       HessObsInv.pp <- solve(HessObs.pp) # pp-by-pp
+
 
       ## The general Newton's Update
       if((iStep <= kSteps))
@@ -231,9 +224,15 @@ GNewtonMove <- function(
                       gradObs = gradObs.pp,
                       HessObs = HessObs.pp,
                       HessObsInv = HessObsInv.pp,
-                      staticArgs = staticArgs.curr)
+                      staticArgs = staticArgs.curr,
+                      errorFlag = errorFlag)
           ## print(gradObs.pp)
         }
+    }
+
+  if(errorFlag)
+    {
+      out <- list(errorFlag = errorFlag)
     }
 
   return(out)

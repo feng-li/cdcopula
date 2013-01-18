@@ -58,25 +58,32 @@ MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(pathLibRoot, "data/SP100-SP600-n100.Rdata"))
+load(file.path(pathLibRoot, "data/SP100-SP600-20130116.Rdata"))
+
+## No. of Total Observations
+nObs <- length(Y[[1]])
+
+## Data subset used
+nObsUse <- (1 + nObs-300):nObs
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[, 1:10, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[, 1:10, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[, 1:1, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[, 1:1, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsUse, 1:1, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsUse, 1:10, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsUse, 1:1, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsUse, 1:1, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[, 1:10, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[, 1:10, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[, 1:1, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[, 1:1, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsUse, 1:1, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsUse, 1:10, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsUse, 1:1, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsUse, 1:1, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[, 1:19, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[, 1:19, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsUse, 1:1, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsUse, 1:1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
-Mdl.Y <- Y
+Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsUse)
+names(Mdl.Y) <- MargisNM
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
@@ -91,8 +98,8 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "log")
 Mdl.parLink[[2]][["df"]] <- list(type = "log")
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log")
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", b = 0.99)
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", b = 0.7)
+Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.7)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -259,8 +266,6 @@ LPDS.sampleProp = 0.05
 ## is will not affect the prior settings on the coefficients as long as we use
 ## a dynamic link function.
 
-nObs <- length(Mdl.Y[[1]]) ## the setting should be after cross validation
-
 priArgs <- MdlDataStruc
 priArgs[[1]][["mu"]] <-
   list("beta" = list(
@@ -339,7 +344,7 @@ priArgs[[3]][["tau"]] <-
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 0.15, a = 0.1, b = 0.9),
+           input = list(type = "gbeta",  mean = 0.3, variance = 0.07, a = 0.1, b = 0.7),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
@@ -352,7 +357,7 @@ priArgs[[3]][["lambdaL"]] <-
 ###----------------------------------------------------------------------------
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
-## The possible inputs are ("random", or user-input).
+## The possible inputs are ("random", "ols"  or user-input).
 betaInit <- MdlDataStruc
 betaInit[[1]][[1]] <- "ols"
 betaInit[[1]][[2]] <- "random"
@@ -365,7 +370,7 @@ betaInit[[2]][[3]] <- log(6)
 betaInit[[2]][[4]] <- log(1)
 
 betaInit[[3]][[1]] <- "random"
-betaInit[[3]][[2]] <- "random"
+betaInit[[3]][[2]] <- parLinkFun(0.1, Mdl.parLink[[3]][[2]])
 
 ################################################################################
 ###                                  THE END

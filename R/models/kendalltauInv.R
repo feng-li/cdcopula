@@ -20,7 +20,7 @@
 kendalltauInv <- function(
     CplNM,
     parRepCpl,
-    method = c("tabular", "iterative")[2],
+    method = c("tabular", "iterative")[1],
     tauTabular = NA)
   {
     if(tolower(method) == "tabular")

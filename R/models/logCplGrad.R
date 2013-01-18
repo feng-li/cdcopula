@@ -29,7 +29,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   if(any(u.bad1))
     {
       u[u.bad1] <- 1-tol
-      warning("u is to close to 1. Adjusted...",
+      warning("u is too close to 1. Adjusted...",
               immediate. = TRUE)
 
     }
@@ -37,7 +37,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   if(any(u.bad0))
     {
       u[u.bad0] <- 0 +tol
-      warning("u is to close to 1. Adjusted...",
+      warning("u is too close to 1. Adjusted...",
               immediate. = TRUE)
     }
 

@@ -15,7 +15,7 @@ DataTicker <- c("OEX", "SML") # SP100 and SP600
 StdData.method <- "norm-0-1"
 
 ## Save File
-SavePath <- "SP100-SP600-20130216.Rdata"
+SavePath <- "SP100-SP600-20130116.Rdata"
 
 ## Download the data
 Data <- list()
@@ -45,7 +45,8 @@ for(i in DataTicker)
     Y[[i]] <- as.matrix(Data[[i]]$Y[Idx])
   }
 
+## Save the ID in date format
+X.ID <- as.Date(ID, "%Y-%m-%d")
 
-save(X, Y, X.config, ID, file = SavePath)
-
+save(X, Y, X.config, X.ID = X.ID, file = SavePath)
 ## Construct Copula model style dataset

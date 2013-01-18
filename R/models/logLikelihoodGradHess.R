@@ -3,18 +3,27 @@
 ##' This function usually does not need to modify. Note that this function does
 ##' not give the complete posteriors but its components,  i.e. gradient for the
 ##' likelihood function, gradient for the prior,  gradient for the linkage.
-##' @title The gradient for the log posterior
-##' @param CplNM
-##' @param MargisTypes
-##' @param Mdl.Y
-##' @param Mdl.X
-##' @param Mdl.parLink
-##' @param Mdl.beta
-##' @param Mdl.betaIdx
-##' @param parUpdate
-##' @param priArgs
-##' @param staticArgs
-##' @return
+##' @param CplNM "character".
+##' @param MargisTypes "list".
+##' @param Mdl.Y "list".
+##' @param Mdl.X "list".
+##' @param Mdl.parLink "list".
+##' @param Mdl.beta "list".
+##' @param Mdl.betaIdx "list".
+##' @param parUpdate "list".
+##' @param varSelArgs "list".
+##' @param staticArgs "list".
+##' @param gradMethods "character"
+##'
+##'        If is "numeric", the numeric gradient is returned; else return the
+##' analytical gradient.
+##'
+##' @return "list".
+##'
+##'        errorFlag: If anything went wrong, quit with TRUE.
+##'
+##'        logLilGradObs: Gradient for the log likelihood
+##'
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012;
@@ -122,6 +131,12 @@ logLikelihoodGradHess <- function(
       cplCaller <- parCaller
     }
 
+  ## Error checking
+  if(any(is.na(FracGradObs)) || any(is.infinite(FracGradObs)))
+    {
+      return(list(errorFlag = TRUE))
+    }
+
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LIKELIHOOD
 ###----------------------------------------------------------------------------
@@ -131,6 +146,13 @@ logLikelihoodGradHess <- function(
       Mdl.par = Mdl.par,
       Mdl.parLink = Mdl.parLink,
       chainCaller = chainCaller)
+
+  ## Error checking
+  if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
+    {
+      return(list(errorFlag = TRUE))
+    }
+
 
   if("analytic" %in% tolower(gradMethods))
     {
@@ -162,14 +184,12 @@ logLikelihoodGradHess <- function(
           else
             {
               ## Calling copula parameters
-              parCpl[[parCaller]] <- x + 0.01
+              parCpl[[parCaller]] <- x
             }
-
           out <- logCplLik(u = u, CplNM = CplNM,
                            parCpl = parCpl,
                            staticArgs = staticArgs,
                            logLik = FALSE)
-
           return(out)
         }
 
@@ -212,14 +232,24 @@ logLikelihoodGradHess <- function(
       logCplGradObs <- logCplGradObs.num
     }
 
-  ## The gradient for the likelihood,  n-by-1
-  logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
+
+  ## Error checking
+  if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))
+    {
+      return(list(errorFlag = TRUE))
+    }
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
+
+  ## The gradient for the likelihood,  n-by-1
+  logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
+
+  ## The output
   out <- list(logLikGradObs = logLikGradObs,
-              logLikHessObs = NA)
+              logLikHessObs = NA,
+              errorFlag = FALSE)
 
   return(out)
 }

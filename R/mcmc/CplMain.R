@@ -4,7 +4,9 @@
 ##' @param setupfile "character".
 ##'        The path where the setup script is located.
 ##'
-##' @return
+##' @return "MCMC-details"
+##'
+##'        This will return the MCMC details into the global environment.
 ##'
 ##' @references Li, F., 2012 Covariate-dependent copula
 ##'
@@ -25,10 +27,9 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
   ## Generating the numerical tabular for the inverse Kendall's tau
 
-  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-1)
+  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
 
   ## Indices for training and testing sample according to cross-validation
-  nObs <- length(Mdl.Y[[1]])
   crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
   nCrossFold <- length(crossValidIdx[["training"]])
 
@@ -81,26 +82,6 @@ CplMain <- function(configfile)
                          f = subsetFun,
                          idx = Testing.Idx,
                          how = "replace")
-
-  ## Allocate the storage for the final parameters in current fold
-  MCMC.beta <- MdlDataStruc
-  MCMC.betaIdx <- MdlDataStruc
-  MCMC.par <- MdlDataStruc
-  MCMC.AccProb <- MdlDataStruc
-  for(i in names(MdlDataStruc))
-    {
-      for(j in names(MdlDataStruc[[i]]))
-        {
-          ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
-          ## The MCMC storage
-          MCMC.betaIdx[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
-          MCMC.beta[[i]][[j]] <- array(NA, c(nIter, ncolX.ij))
-          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining))
-          ## The Metropolis-Hasting acceptance rate
-          MCMC.AccProb[[i]][[j]] <- array(NA, c(nIter, 1))
-        }
-    }
-
 ###----------------------------------------------------------------------------
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
 ###----------------------------------------------------------------------------
@@ -129,7 +110,7 @@ CplMain <- function(configfile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
+  optimInit <- TRUE
   betaTest <- NULL
 
   if(optimInit == TRUE &&
@@ -227,6 +208,7 @@ CplMain <- function(configfile)
         }
     }
 
+  browser()
   ## Dry run to obtain staticArgs for the initial values
   staticArgs <- logPost(
       CplNM = CplNM,
@@ -245,6 +227,26 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
 ###----------------------------------------------------------------------------
+
+  ## Allocate the storage for the final parameters in current fold
+  MCMC.beta <- MdlDataStruc
+  MCMC.betaIdx <- MdlDataStruc
+  MCMC.par <- MdlDataStruc
+  MCMC.AccProb <- MdlDataStruc
+  for(i in names(MdlDataStruc))
+    {
+      for(j in names(MdlDataStruc[[i]]))
+        {
+          ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
+          ## The MCMC storage
+          MCMC.betaIdx[[i]][[j]] <- matrix(Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij, byrow = TRUE)
+          MCMC.beta[[i]][[j]] <- matrix(Mdl.beta[[i]][[j]], nIter, ncolX.ij, byrow = TRUE)
+          MCMC.par[[i]][[j]] <- matrix(staticArgs[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
+          ## The Metropolis-Hasting acceptance rate
+          MCMC.AccProb[[i]][[j]] <- matrix(NA, c(nIter, 1))
+        }
+    }
+
   ## Switch all the updating indicators OFF
   parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
 
@@ -283,19 +285,21 @@ CplMain <- function(configfile)
                   Mdl.parLink = Mdl.parLink,
                   staticArgs = staticArgs)
 
-              ## Update the MH results to the current parameter structure
-              staticArgs <- MHOut[["staticArgs"]]
-              Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
-              Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-              ## Export the parameters in each cross-validation fold
-              MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
-              MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
-              MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
+              if(MHOut$errorFlag == FALSE)
+                {
+                  ## Update the MH results to the current parameter structure
+                  staticArgs <- MHOut[["staticArgs"]]
+                  Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
+                  Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-              MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
-                staticArgs[["Mdl.par"]][[CompCaller]][[parCaller]]
-
+                  ## Export the parameters in each cross-validation fold
+                  MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
+                  MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
+                  MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
+                  MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
+                    staticArgs[["Mdl.par"]][[CompCaller]][[parCaller]]
+                }
             }
           else
             {
