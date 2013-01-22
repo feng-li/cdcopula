@@ -131,7 +131,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                     }
                   else if(tolower(covariance) == "identity")
                     {
-                      coVar <- diag(length(betaLen))
+                      coVar <- diag1(betaLen)
                     }
 
                   ## Calculate the log density

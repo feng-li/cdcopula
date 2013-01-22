@@ -28,15 +28,14 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
   u.bad0 <- (u < 0+tol)
   if(any(u.bad1))
     {
-      u[u.bad1] <- 1-tol
+      u[u.bad1] <- u[u.bad1]-tol
       warning("u is too close to 1. Adjusted...",
               immediate. = TRUE)
 
     }
-
   if(any(u.bad0))
     {
-      u[u.bad0] <- 0 +tol
+      u[u.bad0] <- u[u.bad0] +tol
       warning("u is too close to 1. Adjusted...",
               immediate. = TRUE)
     }
@@ -186,7 +185,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
 
             ## The chain gradient
             out <- logGradCpl.delta/grad.lambdaL.delta
-            if(any(is.na(out))) browser()
           }
         else if(tolower(cplCaller) == "tau")
           {
@@ -248,7 +246,6 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
 
             ## The chain gradient
             out <- logGradCpl.theta*(1/gradCpl.tau.theta)
-            if(any(is.na(out))) browser()
 
           }
         else

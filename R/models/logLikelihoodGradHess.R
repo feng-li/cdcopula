@@ -39,9 +39,9 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    gradMethods = c("analytic"))
+    ## gradMethods = c("analytic"))
   ## gradMethods = c("numeric"))
-  ## gradMethods = c("analytic", "numeric"))
+  gradMethods = c("analytic", "numeric"))
 {
 
 
@@ -114,6 +114,8 @@ logLikelihoodGradHess <- function(
             }
           FracGradObs <- FracGradObs.num
         }
+
+      ## plot(FracGradObs.ana, FracGradObs.num)
 
       ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
       cplCaller <- paste("u", which(names(MargisTypes)%in%CompCaller), sep = "")
@@ -232,6 +234,8 @@ logLikelihoodGradHess <- function(
       logCplGradObs <- logCplGradObs.num
     }
 
+  ## plot(logCplGradObs.ana, logCplGradObs.num)
+  ## Sys.sleep(1)
 
   ## Error checking
   if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))

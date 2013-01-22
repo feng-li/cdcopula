@@ -34,9 +34,22 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   ## Set a reject flag to handle unexpected situations. If TRUE, the proposal
   ## is rejected anyway regardless of other situations.
-  errorFlag <- FALSE
-  accept.prob <- NA
   MHUpdate <- "MH"
+
+###----------------------------------------------------------------------------
+### INITIAL COPY OF CURRENT VALUES
+###----------------------------------------------------------------------------
+
+  Mdl.beta.curr <- Mdl.beta
+  Mdl.betaIdx.curr <- Mdl.betaIdx
+  staticArgs.curr <- staticArgs
+
+  beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
+  betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
+  beta.curr <- beta.curr.full[betaIdx.curr]
+
+  ## Assume initial no variable selection
+  betaIdx.prop <- betaIdx.curr
 
 ###----------------------------------------------------------------------------
 ### VARIABLE SELECTION PROPOSAL
@@ -45,11 +58,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## Randomly propose a subset for covariates to change
   varSelCand <- varSelArgs[[CompCaller]][[parCaller]]$cand
   betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
-
-  ## The current and proposed variable selection indicators are the same by
-  ## assuming there is no variable selection
-  betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
-  betaIdx.prop <- betaIdx.curr
 
   ## No. of covariates
   nCovs <- length(betaIdx.curr)
@@ -73,10 +81,6 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               ## Propose a change
               betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
 
-              ## The jump density for the variable selection indicators
-              ## TODO: Add adaptive scheme
-              logJump.Idx.currATprop <- 1
-              logJump.Idx.propATcurr <- 1
               VSProp <- "VSProp"
             }
           else
@@ -84,6 +88,12 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               ## Situation when propose no changes
               VSProp <- NULL
             }
+
+          ## The jump density for the variable selection indicators
+          ## TODO: Add adaptive scheme
+          logJump.Idx.currATprop <- 1
+          logJump.Idx.propATcurr <- 1
+
         }
     }
   else
@@ -99,18 +109,16 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## i.e. betaIdx.prop = betaIdx.curr.
 
   MHUpdate <- c(VSProp, MHUpdate)
-  for(iMH in MHUpdate)
+  nMH <- length(MHUpdate)
+  errorFlags <- rep(FALSE, nMH)
+  accept.probs <- rep(NA, nMH)
+
+  for(iMH in 1:nMH)
     {
 
 ###----------------------------------------------------------------------------
 ### PROPOSAL A DRAW VIA K-STEP NEWTON'S METHOD
 ###----------------------------------------------------------------------------
-      beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
-      beta.curr <- beta.curr.full[betaIdx.curr]
-
-      Mdl.beta.curr <- Mdl.beta
-      Mdl.betaIdx.curr <- Mdl.betaIdx
-      staticArgs.curr <- staticArgs
 
       ## Newton method to approach the posterior based on the current draw
       beta.NTProp <- GNewtonMove(
@@ -126,7 +134,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta = Mdl.beta.curr,
           Mdl.betaIdx = Mdl.betaIdx.curr,
           MargisTypes = MargisTypes,
-          staticArgs = staticArgs.curr)
+          staticArgs = staticArgs)
 
 
       ## Check if it is a good proposal
@@ -135,9 +143,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
          ## is(try(chol(beta.prop.sigma), silent=TRUE), "try-error")
          )
         {## Something is wrong.
-          errorFlag <- TRUE
-          break
+          errorFlags[iMH] <- TRUE
+          betaIdx.prop <- betaIdx.curr
+          next
         }
+
       ## else # Continues with the Metropolis-Hastings
       ##   { ## Propose a draw from multivariate t-distribution based on the proposed
       ## An idea (out of loud) : Generate a matrix of param. Select the one
@@ -149,6 +159,8 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       beta.prop.type <- beta.propArgs[["type"]]
       beta.prop.mean <- matrix(beta.NTProp[["param"]], 1) # 1-by-p
       beta.prop.sigma <- -beta.NTProp[["HessObsInv"]]
+      ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.05
+
       staticArgs.prop <- beta.NTProp[["staticArgs"]]
 
 
@@ -171,10 +183,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ##   {
       beta.prop.full <- matrix(0, nCovs, 1)
       beta.prop.full[betaIdx.prop] <- beta.prop
-      Mdl.beta.prop <- Mdl.beta
+      Mdl.beta.prop <- Mdl.beta.curr
       Mdl.beta.prop[[CompCaller]][[parCaller]] <- beta.prop.full
 
-      Mdl.betaIdx.prop <- Mdl.betaIdx
+      Mdl.betaIdx.prop <- Mdl.betaIdx.curr
       Mdl.betaIdx.prop[[CompCaller]][[parCaller]] <- betaIdx.prop
 
       beta.NTPropRev <- GNewtonMove(
@@ -190,20 +202,22 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta = Mdl.beta.prop,
           Mdl.betaIdx = Mdl.betaIdx.prop,
           MargisTypes = MargisTypes,
-          staticArgs = staticArgs.prop)
+          staticArgs = staticArgs)
 
       if(beta.NTPropRev$errorFlag ## ||
          ## any(is.na(beta.prop.sigma)) ||
          ## is(try(chol(beta.prop.sigma), silent=TRUE), "try-error")
          )
         {## Something is wrong.
-          errorFlag <- TRUE
-          break
+          errorFlags[iMH] <- TRUE
+          betaIdx.prop <- betaIdx.curr
+          next
         }
 
       ## The information for proposed density via K-step Newton's method
       beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
       beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
+      ## beta.propRev.sigma <- diag1(length(beta.propRev.mean))*0.05
 
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
@@ -217,10 +231,12 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           df = beta.prop.df, log = TRUE)
 
       ## The jump density for curr draw at reverse proposed mode.
-      logJump.currATpropRev<- dmvt(
+      logJump.currATpropRev<- try(dmvt(
           x = beta.curr - beta.propRev.mean,
           sigma = beta.propRev.sigma,
-          df = beta.prop.df, log = TRUE)
+          df = beta.prop.df, log = TRUE))
+
+      if(is(logJump.currATpropRev, "try-error")) browser()
 
       ## The log posterior for the proposed draw
       logPost.propOut <- logPost(
@@ -234,7 +250,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           MargisTypes = MargisTypes,
           priArgs = priArgs,
           parUpdate = parUpdate,
-          staticArgs = staticArgs.prop)
+          staticArgs = staticArgs)
 
       logPost.prop <- logPost.propOut[["Mdl.logPost"]]
       staticArgs.prop <- logPost.propOut[["staticArgs"]]
@@ -261,10 +277,11 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ##  cat(logPost.prop, logPost.curr, logJump.currATpropRev, logJump.propATprop, "\n")
 
       ## the acceptance probability
-      accept.prob <- min(1, MHRatio)
+      accept.prob.curr <- min(1, MHRatio)
       ## print(round(accept.prob*100))
         ## }
         ## }
+
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
@@ -272,34 +289,41 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## if(is.na(accept.prob)) browser()
 
       if(## rejectFlag == FALSE &&
-         !is.na(accept.prob) &&
-         runif(1) < accept.prob) # keep update
+         !is.na(accept.prob.curr) &&
+         runif(1) < accept.prob.curr) # keep update
         {
           betaIdx.curr <- betaIdx.prop
-          beta.curr.full <- beta.prop.full
+          beta.curr <- beta.prop
+
+          Mdl.beta.curr <- Mdl.beta.prop
+          Mdl.betaIdx.curr <- Mdl.betaIdx.prop
+
           staticArgs.curr <- staticArgs.prop
+          ## browser()
         }
       else # keep current
         {
           betaIdx.prop <- betaIdx.curr
         }
+      accept.probs[iMH] <- accept.prob.curr
     }
 
-  if(CompCaller == "BB7") print(accept.prob)
-
+  print(accept.probs)
+  print(errorFlags)
 
   ## The final update, the acceptance prob are from the last MH update
-  if(errorFlag)
+  if(errorFlags[nMH] == TRUE)
     {
-      out <- list(errorFlag = errorFlag)
+      ## epic failure
+      out <- list(errorFlag = TRUE)
     }
   else
     {
-      out <- list(beta =  beta.curr.full,
-                  betaIdx = betaIdx.curr,
-                  accept.prob = accept.prob,
+      out <- list(beta =  Mdl.beta.curr[[CompCaller]][[parCaller]],
+                  betaIdx = Mdl.betaIdx.curr[[CompCaller]][[parCaller]],
+                  accept.prob = accept.probs[nMH],
                   staticArgs = staticArgs.curr,
-                  errorFlag = errorFlag)
+                  errorFlag = FALSE)
     }
   return(out)
 }

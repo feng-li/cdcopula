@@ -110,7 +110,7 @@ CplMain <- function(configfile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- TRUE
+  optimInit <- FALSE
   betaTest <- NULL
 
   if(optimInit == TRUE &&
@@ -208,8 +208,8 @@ CplMain <- function(configfile)
         }
     }
 
-  browser()
   ## Dry run to obtain staticArgs for the initial values
+  ## Again this time all the parameters should be updated.
   staticArgs <- logPost(
       CplNM = CplNM,
       Mdl.Y = MdlTraining.Y,
@@ -220,7 +220,7 @@ CplMain <- function(configfile)
       varSelArgs = varSelArgs,
       MargisTypes = MargisTypes,
       priArgs = priArgs,
-      parUpdate = parUpdate,
+      parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
       staticArgs = staticArgs,
       staticArgsOnly = TRUE)[["staticArgs"]]
 
@@ -284,7 +284,6 @@ CplMain <- function(configfile)
                   MargisTypes = MargisTypes,
                   Mdl.parLink = Mdl.parLink,
                   staticArgs = staticArgs)
-
 
               if(MHOut$errorFlag == FALSE)
                 {

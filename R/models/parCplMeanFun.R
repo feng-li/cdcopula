@@ -92,5 +92,6 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
         out <- Mdl.par
       }
 
+
     return(out)
   }

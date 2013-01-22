@@ -11,7 +11,7 @@ rm(list = ls()); gc()
 pathLibRoot <- "~/workspace/copula/code/"
 
 ## PATH TO THE MODEL CONFIGURATION FILE
-CplConfigFile <- file.path(pathLibRoot, "inst/config/config.main.sp100-600-n100.R")
+CplConfigFile <- file.path(pathLibRoot, "inst/config/config.main.sp100-600.R")
 
 ## Load the sourceDir tool
 sys.source(file.path(pathLibRoot, "R/flutils/sourceDir.R"),

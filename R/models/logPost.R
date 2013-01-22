@@ -114,7 +114,10 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                                  par = Mdl.par[[CompCaller]])
           Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
           Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
+
+          plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
         }
+
     }
 
 ###----------------------------------------------------------------------------
@@ -157,7 +160,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       Mdl.logLikMargis.sum <- sum(Mdl.d)
 
 
-      Mdl.logPost <-  Mdl.logLikMargis.sum + Mdl.logLikCpl.sum + Mdl.logPri.sum
+      Mdl.logPost <-  Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum + Mdl.logPri.sum
 
       ## cat("Prior:    ", Mdl.logPri.sum, "\n")
       ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")

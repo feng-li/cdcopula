@@ -112,7 +112,7 @@ logPriorsGradHess <- function(
               }
             else if(tolower(covariance) == "identity")
               {
-                coVar <- diag(length(betaLen))
+                coVar <- diag(betaLen)
               }
 
             ##--------------------The conditional gradient--------------------------
@@ -121,13 +121,13 @@ logPriorsGradHess <- function(
             if(Idx0Len == 0)
               {
                 ## 1. all are selected. Switch to unconditional prior.
-                ## The conditional gradient
                 SlopCondGrad[Idx1] <- DensGradHess(
                     B = betaCurr,
                     mean = meanVec,
                     covariance = coVar*shrinkage,
                     grad = TRUE, Hess = FALSE)[["grad"]]
               }
+
             else if(Idx0Len > 0 && Idx0Len < betaLen)
               {
                 ## 2. some are selected (the most common situation)
@@ -147,8 +147,15 @@ logPriorsGradHess <- function(
               }
             else
               {
-                ## 3. non are selected
-                SlopCondGrad[Idx] <- NA
+                ## 3. non are selected, do nothing
+                ##  Switch to unconditional prior.
+                ## browser()
+                ## SlopCondGrad[Idx1] <- DensGradHess(
+                ##     B = betaCurr,
+                ##     mean = meanVec,
+                ##     covariance = coVar*shrinkage,
+                ##     grad = TRUE, Hess = FALSE)[["grad"]]
+                ## SlopCondGrad[Idx1] <- NA
               }
 
             gradObsLst[["Slop"]] <- SlopCondGrad

@@ -2,21 +2,21 @@
 ##'
 ##' The function is used for bivariate copula C(U1<u2, U2<u1)
 ##' @title Copula distribution
-##' @param u
-##' @param theta
-##' @param copula
+##' @param u "matrix".
+##' @param theta "list".
+##' @param copula "character"
 ##' @param par "list"
 ##'     Any additional parameters needed in the copula. In the
 ##' t-copula, par$df: indicates the degrees of freedom.
-##' @return
-##' @references
+##' @return "vector"
+##' @references Nelsen 2006
 ##' @author
 ##'     Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note
 ##'     DEPENDS: nvtnorm
 ##'     Created: Mon Sep 26 13:54:13 CEST 2011;
 ##'     Current: Mon Sep 26 13:55:12 CEST 2011.
-uCpl <- function(u, theta, copula, par)
+uCpl <- function(u, theta = NA, CplNM, par = NA)
 {
   if(tolower(CplNM) == "bb7")
     {
@@ -72,6 +72,19 @@ uCpl <- function(u, theta, copula, par)
       percentile <- exp(-rowSums(u.tilde^theta)^(1/theta))
       out <- matrix(percentile)
     }
-  else stop("Given copula is not implemented.")
+  else if(tolower(CplNM) == "frechet-upper")
+    {
+      out <- apply(u, 1, min)
+    }
+  else if(tolower(CplNM) == "frechet-lower")
+    {
+      d <- ncol(u)
+      z <- cbind((rowSums(u)+1-d), 0)
+      out <- apply(z, 1, max)
+    }
+  else
+    {
+      stop("Given copula is not implemented.")
+    }
   return(out)
 }
