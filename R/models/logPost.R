@@ -67,6 +67,10 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,
                     staticArgs, staticArgsOnly = FALSE, parUpdate4Pri = parUpdate)
 {
+
+  ## Debugging symbol: if the warning should be printed out immediately.
+  immediate. <- FALSE
+
   ## The pre-saved information
   Mdl.par <- staticArgs[["Mdl.par"]]
   Mdl.u <- staticArgs[["Mdl.u"]]
@@ -95,7 +99,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
   if(any(is.na(unlist(Mdl.par))))
     {
       warning("DEBUGGING: NA happens when updating ``Mdl.par''...",
-              immediate. = TRUE)
+              immediate. = immediat.)
     }
 
 ### Update marginal pdf and cdf
@@ -115,7 +119,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
           Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
           Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
 
-          plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
+          ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
         }
 
     }

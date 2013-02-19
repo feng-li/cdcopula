@@ -22,15 +22,6 @@ empDist <- matrix(hatCpl(u = u[, 1], v = u[, 2],
                   nPoints)
 xlim <- c(0, 1)
 ylim <- c(0, 1)
-## filled.contour(x = u1, y = u2, z = empDist,
-##                xlim = xlim, ylim = xlim,
-##                xlab = expression(lambda[L]),
-##                ylab = expression(lambda[U]),
-##                key.title = title(main = expression(tau)),
-##                key.axes  =  {axis(4,  at  =  seq(0,  1,  0.1))},
-##                plot.axes = {
-                 ## axis(1,  at  =  xat)
-                 ## axis(2,  at  =  yat)
 
 frechet.l <- matrix(uCpl(u = u, CplNM = "frechet-lower"), nPoints)
 frechet.u <- matrix(uCpl(u = u, CplNM = "frechet-upper"), nPoints)

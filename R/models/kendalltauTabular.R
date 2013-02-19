@@ -24,17 +24,22 @@ kendalltauTabular <- function(CplNM, tol = 1e-4)
       ## the memory problem.
 
       lambdaLGrid <- seq(0+tol, 1-tol, tol)
-      lambdaUGrid <- lambdaLGrid
+      ## lambdaUGrid <- lambdaLGrid
+      lambdaUGrid <- seq(0+tol, 0.59-tol, tol)
+      warning("Tabular method set restricted theta interval!")
 
-      nGrid <- length(lambdaLGrid)
-      tauMat <- matrix(NA, nGrid, nGrid)
+      nGridL <- length(lambdaLGrid)
+      nGridU <- length(lambdaUGrid)
+
+      tauMat <- matrix(NA, nGridL, nGridU)
 
       ## Big table takes huge amount of memory. We split the calculation if we
       ## require a very precise table.
       ## Split the calculations
-      MaxLenCurr <- min(nGrid, 2000)
-      LoopIdx <- c(seq(1, nGrid, MaxLenCurr), nGrid)
+      MaxLenCurr <- round(min(nGridL*nGridU, 1e6)/nGridL)
+      LoopIdx <- c(seq(1, nGridU, MaxLenCurr), nGridU)
       LoopIdx[1] <- 0
+
       tauIdxCurr0 <- 0
 
       nLoops <- length(LoopIdx)-1
@@ -44,7 +49,7 @@ kendalltauTabular <- function(CplNM, tol = 1e-4)
         IdxCurr1 <- LoopIdx[j+1]
 
         lambdaL <- rep(lambdaLGrid, times = IdxCurr1-IdxCurr0+1)
-        lambdaU <- rep(lambdaUGrid[IdxCurr0:IdxCurr1], each = nGrid)
+        lambdaU <- rep(lambdaUGrid[IdxCurr0:IdxCurr1], each = nGridL)
 
         delta <- -log(2)/log(lambdaL)
         theta <- log(2)/log(2-lambdaU)
@@ -55,7 +60,8 @@ kendalltauTabular <- function(CplNM, tol = 1e-4)
       }
 
       out <- list(tauMat = tauMat,
-                  nGrid = nGrid,
+                  nGridL = nGridL,
+                  nGridU = nGridU,
                   tol = tol,
                   lambdaUGrid = lambdaUGrid)
     }

@@ -113,6 +113,8 @@ CplMain <- function(configfile)
   optimInit <- FALSE
   betaTest <- NULL
 
+  ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
+
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
     {
@@ -159,7 +161,7 @@ CplMain <- function(configfile)
           betaVecOptim <- try(optim(
               par = betaVecInit,
               fn = logPostOptim,
-              control = list(fnscale = -1, maxit = 200),
+              control = list(fnscale = -1, maxit = 1000),
               method = "L-BFGS-B",
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
@@ -238,10 +240,17 @@ CplMain <- function(configfile)
       for(j in names(MdlDataStruc[[i]]))
         {
           ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
+          namesX.ij <- colnames(MdlTraining.X[[i]][[j]])
+
           ## The MCMC storage
-          MCMC.betaIdx[[i]][[j]] <- matrix(Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij, byrow = TRUE)
-          MCMC.beta[[i]][[j]] <- matrix(Mdl.beta[[i]][[j]], nIter, ncolX.ij, byrow = TRUE)
-          MCMC.par[[i]][[j]] <- matrix(staticArgs[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
+          MCMC.betaIdx[[i]][[j]] <- matrix(
+              Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij, byrow = TRUE,
+              dimnames = list(NULL, namesX.ij))
+          MCMC.beta[[i]][[j]] <- matrix(
+              Mdl.beta[[i]][[j]], nIter, ncolX.ij, byrow = TRUE,
+              dimnames = list(NULL, namesX.ij))
+          MCMC.par[[i]][[j]] <- matrix(
+              staticArgs[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- matrix(NA, c(nIter, 1))
         }
@@ -307,6 +316,13 @@ CplMain <- function(configfile)
           ## Switch current updating parameter indicator off
           parUpdate[[CompCaller]][[parCaller]] <- FALSE
         }
+
+      ## MCMC trajectory
+      MCMC.trajectory(iIter = iIter, nIter = nIter, interval = 0.1,
+                      MCMC.beta = MCMC.beta,
+                      MCMC.betaIdx = MCMC.betaIdx,
+                      MCMC.par = MCMC.par,
+                      MCMC.AccProb = MCMC.AccProb)
     }
   out <- list(MCMC.beta = MCMC.beta,
               MCMC.betaIdx = MCMC.betaIdx,

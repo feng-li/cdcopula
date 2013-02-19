@@ -308,8 +308,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       accept.probs[iMH] <- accept.prob.curr
     }
 
-  print(accept.probs)
-  print(errorFlags)
+  ## cat("accept.probs", accept.probs, "\n")
+  ## cat("errorFlags:", errorFlags, "\n")
+  ## cat("logPost.prop", logPost.prop, "\n")
+  ## cat("logPost.curr", logPost.curr, "\n")
 
   ## The final update, the acceptance prob are from the last MH update
   if(errorFlags[nMH] == TRUE)

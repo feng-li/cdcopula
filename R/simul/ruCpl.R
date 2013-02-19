@@ -29,8 +29,8 @@ ruCpl <- function(n, parCpl, CplNM, exArgs)
                                tauTabular = exArgs[["tauTabular"]])
 
       ## The standard copula parameters (recycled if necessary).
-      delta <- -log(2)/log(lambdaL)
-      theta <- log(2)/log(2-lambdaU)
+      delta <- as.vector(matrix(-log(2)/log(lambdaL), n, 1))
+      theta <- as.vector(matrix(log(2)/log(2-lambdaU), n, 1))
 
       ## Parameters healthy conditions TODO: more serious check
       ## hCond <- (theta[1] >= 1) && (theta[2]>0)
@@ -73,9 +73,20 @@ ruCpl <- function(n, parCpl, CplNM, exArgs)
       ## Chris Sims solver.
       for(i in 1:n)
         {
-          out.u2 <- uniroot(f = logcondEQ, interval = c(0, 1),
-                            theta = theta[i], delta = delta[i], v = v[i,])
-          u[i, 2] <- out.u2[["root"]]
+          out.u2.try <- try(uniroot(f = logcondEQ, interval = c(0, 1),
+                            theta = theta[i], delta = delta[i], v = v[i,]),
+                            silent = TRUE)
+
+          if(is(out.u2.try, "try-error"))
+            {
+              out.u2 <- NA
+            }
+          else
+            {
+              out.u2 <- out.u2.try[["root"]]
+            }
+
+          u[i, 2] <- out.u2
           ## Very simple weighted sampling with upper tail dependence as
           ## prob to sample extreme situations.
           ## u[i, 2] <- sample(x=c(runif(1, 0, v[i, 1]),

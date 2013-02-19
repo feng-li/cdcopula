@@ -131,6 +131,12 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
             ## The gradient w.r.t. theta conditional on delta
             if(length(Idx12)>0)
               {
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 1.5
+                ## deltaCurr <- 2.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
                 thetaCurr <- theta[Idx12]
                 deltaCurr <- delta[Idx12]
 
@@ -156,8 +162,17 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
               }
             if(length(IdxLarge)>0)
               {
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 3.5
+                ## deltaCurr <- 4.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
+
+
                 thetaCurr <- theta[IdxLarge]
                 deltaCurr <- delta[IdxLarge]
+
                 out[IdxLarge] <- -2/((thetaCurr-2)*deltaCurr^2)-
                   4*pi*(digamma(3+deltaCurr)-
                         digamma(2/thetaCurr+deltaCurr+1)-
@@ -203,6 +218,13 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
               }
             if(length(Idx2)>0)
               {
+                ############################################
+                ## Debugging
+                ## thetaCurr <- 2
+                ## deltaCurr <- 4.5
+                ## PASSED with analytical expression in Mathematica
+                ############################################
+
                 thetaCurr <- theta[Idx2]
                 deltaCurr <- delta[Idx2]
 
@@ -214,9 +236,6 @@ kendalltauGrad <- function(CplNM, theta, delta, caller)
                 ## out[Idx2] <- (-1-digamma(1)+digamma(2+deltaCurr)-
                 ##               deltaCurr*trigamma(2+deltaCurr))/deltaCurr^2
               }
-
-
-
           }
         else
           {

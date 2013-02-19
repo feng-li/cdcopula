@@ -23,6 +23,9 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
   ## Fix u on the cliff if any u -> 0 or u -> 1.
   ## Thanks to the advice from M. Smith
 
+  ## Debugging symbol: if the warning should be printed out immediately.
+  immediate. <- FALSE
+
   tol <- .Machine$double.eps*1e8
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
@@ -30,13 +33,13 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
     {
       u[u.bad1] <- u[u.bad1] - tol
       warning("u is too close to 1. Adjusted...",
-              immediate. = TRUE)
+              immediate. = immediate.)
     }
   if(any(u.bad0))
     {
       u[u.bad0] <- u[u.bad0] + tol
       warning("u is to close to 0. Adjusted...",
-              immediate. = TRUE)
+              immediate. = immediate.)
     }
 
 ###----------------------------------------------------------------------------
@@ -56,6 +59,13 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
           CplNM = CplNM, parRepCpl = parCpl,
           tauTabular = staticArgs[["tauTabular"]]))
 
+      ## cat(lambdaL[1], lambdaU[1], tau[1], "\n")
+      ## points( lambdaL[1], lambdaU[2], col = "red", pch = 20)
+      ## Sys.sleep(0.5)
+
+      ## if(tau[1]>0.9) browser()
+
+      ## cat("tau", tau, "lambdaL", lambdaL, "lambdaU", lambdaU, "\n")
       ## The standard copula parameters (recycled if necessary, should not have
       ## dimension attributed).
 
@@ -73,14 +83,14 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
         {
           TC1[TC1.bad0] <- TC1[TC1.bad0] +  tol
           warning("Numerical unstable on TC1,  adjusted on the cliff...",
-                  immediate. = TRUE)
+                  immediate. = immediate.)
 
         }
       if(any(TC1.bad1))
         {
           TC1[TC1.bad1] <- TC1[TC1.bad1] - tol
           warning("Numerical unstable on TC1,  adjusted on the cliff...",
-                  immediate. = TRUE)
+                  immediate. = immediate.)
         }
 
       TC2 <- (1-u)^(-1+theta)
@@ -94,14 +104,14 @@ logCplLik <- function(u, CplNM, parCpl, staticArgs, logLik = TRUE)
         {
           TC2[TC2.bad0] <- TC2[TC2.bad0]+tol
           warning("Numerical unstable on TC2,  adjusted on the cliff...",
-                  immediate. = TRUE)
+                  immediate. = immediate.)
 
         }
       if(any(TC2.bad1))
         {
           TC2[TC2.bad1] <- TC2[TC2.bad1]-tol
           warning("Numerical unstable on TC2,  adjusted on the cliff...",
-                  immediate. = TRUE)
+                  immediate. = immediate.)
         }
 
       L5 <- rowSums(TC1^(-delta)) - 1

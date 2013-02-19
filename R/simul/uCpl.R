@@ -4,10 +4,14 @@
 ##' @title Copula distribution
 ##' @param u "matrix".
 ##' @param theta "list".
-##' @param copula "character"
+##' @param CplNM  "character".
+##'
+##'        The copula name.
+##'
 ##' @param par "list"
 ##'     Any additional parameters needed in the copula. In the
 ##' t-copula, par$df: indicates the degrees of freedom.
+##' @param copula "character"
 ##' @return "vector"
 ##' @references Nelsen 2006
 ##' @author

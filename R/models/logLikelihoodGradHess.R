@@ -39,9 +39,7 @@ logLikelihoodGradHess <- function(
     parUpdate,
     varSelArgs,
     staticArgs,
-    ## gradMethods = c("analytic"))
-  ## gradMethods = c("numeric"))
-  gradMethods = c("analytic", "numeric"))
+    gradMethods = c("analytic", "numeric")[1])
 {
 
 
@@ -55,6 +53,10 @@ logLikelihoodGradHess <- function(
 
   ## if(parCaller == "tau") browser()
 
+###----------------------------------------------------------------------------
+### GRADIENT FRACTION IN THE MARGINAL LIKELIHOOD
+###----------------------------------------------------------------------------
+
   if(tolower(CompCaller) != tolower(CplNM))
     {
       yCurr <- Mdl.Y[[CompCaller]]
@@ -64,12 +66,12 @@ logLikelihoodGradHess <- function(
       ## Gradient Fraction in the marginal component. n-by-1
       if("analytic" %in% tolower(gradMethods))
         {
-          FracGradObs.ana <- MargiModelGrad(
+          MargiGradObs.ana <- MargiModelGrad(
               par = parCurr,
               y = yCurr,
               type = typeCurr,
               parCaller = parCaller)
-          FracGradObs <- FracGradObs.ana
+          MargiGradObs <- MargiGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))
         {
@@ -92,7 +94,7 @@ logLikelihoodGradHess <- function(
             }
 
           nObs <- length(Mdl.Y[[1]])
-          FracGradObs.num <- matrix(NA, nObs, 1)
+          MargiGradObs.num <- matrix(NA, nObs, 1)
           for(i in 1:nObs)
             {
               gradTry <- try(numgrad(
@@ -105,17 +107,17 @@ logLikelihoodGradHess <- function(
 
               if(is(gradTry, "try-error"))
                 {
-                  FracGradObs.num[i] <- NA
+                  MargiGradObs.num[i] <- NA
                 }
               else
                 {
-                  FracGradObs.num[i] <- gradTry$g
+                  MargiGradObs.num[i] <- gradTry$g
                 }
             }
-          FracGradObs <- FracGradObs.num
+          MargiGradObs <- MargiGradObs.num
         }
 
-      ## plot(FracGradObs.ana, FracGradObs.num)
+      ## plot(MargiGradObs.ana, MargiGradObs.num)
 
       ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
       cplCaller <- paste("u", which(names(MargisTypes)%in%CompCaller), sep = "")
@@ -129,31 +131,20 @@ logLikelihoodGradHess <- function(
     {
       ## Only update the gradient for copula parameters
       ## Gradient Fraction in the copula component.
-      FracGradObs <- 1
+      MargiGradObs <- 1
       cplCaller <- parCaller
     }
 
   ## Error checking
-  if(any(is.na(FracGradObs)) || any(is.infinite(FracGradObs)))
+  if(any(is.na(MargiGradObs)) || any(is.infinite(MargiGradObs)))
     {
       return(list(errorFlag = TRUE))
     }
 
-###----------------------------------------------------------------------------
-### GRADIENT FRACTION IN THE LIKELIHOOD
-###----------------------------------------------------------------------------
-  ## The gradient for the link function n-by-1
-  LinkGradObs <- parCplMeanFunGrad(
-      CplNM = CplNM,
-      Mdl.par = Mdl.par,
-      Mdl.parLink = Mdl.parLink,
-      chainCaller = chainCaller)
 
-  ## Error checking
-  if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
-    {
-      return(list(errorFlag = TRUE))
-    }
+###----------------------------------------------------------------------------
+### GRADIENT FRACTION IN THE COPULA LIKELIHOOD
+###----------------------------------------------------------------------------
 
 
   if("analytic" %in% tolower(gradMethods))
@@ -170,10 +161,11 @@ logLikelihoodGradHess <- function(
           Mdl.beta = Mdl.beta)
       logCplGradObs <- logCplGradObs.ana
     }
-
   if("numeric" %in% tolower(gradMethods))
     {
       ## The gradient for the copula function. scaler input and output
+      ## NOTE: The numerical gradient may not work well if the tabular version
+      ## of Kendall's tau is used due to the precision
       logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
                                    CplNM, parCpl, staticArgs)
         {
@@ -210,6 +202,8 @@ logLikelihoodGradHess <- function(
               xCurr <- Mdl.par[[CompCaller]][[parCaller]][i]
             }
 
+          ## if(i == 144 && parCaller == "lambdaL") browser()
+
           gradTry <- try(numgrad(
               fcn = logCplGradNumFun,
               x = xCurr,
@@ -234,11 +228,32 @@ logLikelihoodGradHess <- function(
       logCplGradObs <- logCplGradObs.num
     }
 
-  ## plot(logCplGradObs.ana, logCplGradObs.num)
-  ## Sys.sleep(1)
-
+  if(parCaller %in% c("tau", "lambdaL"))
+    {
+      ## browser()
+      ## cat(parCaller, Mdl.par[[CompCaller]][[parCaller]][1], "\n")
+      ## plot(logCplGradObs.ana, logCplGradObs.num)
+    }
   ## Error checking
   if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))
+    {
+      return(list(errorFlag = TRUE))
+    }
+
+
+
+###----------------------------------------------------------------------------
+### GRADIENT FRACTION IN THE LINK FUNCTION
+###----------------------------------------------------------------------------
+  ## The gradient for the link function n-by-1
+  LinkGradObs <- parCplMeanFunGrad(
+      CplNM = CplNM,
+      Mdl.par = Mdl.par,
+      Mdl.parLink = Mdl.parLink,
+      chainCaller = chainCaller)
+
+  ## Error checking
+  if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
     {
       return(list(errorFlag = TRUE))
     }
@@ -248,7 +263,9 @@ logLikelihoodGradHess <- function(
 ###----------------------------------------------------------------------------
 
   ## The gradient for the likelihood,  n-by-1
-  logLikGradObs <- (logCplGradObs*FracGradObs)*LinkGradObs
+  logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
+
+  ## par(mfrow = c(1, 2))
 
   ## The output
   out <- list(logLikGradObs = logLikGradObs,

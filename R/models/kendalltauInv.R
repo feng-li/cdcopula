@@ -35,7 +35,7 @@ kendalltauInv <- function(
                                   parRepCpl = parRepCpl,
                                   parCaller = "theta")
       }
-      return(out)
+    return(out)
   }
 
 ###----------------------------------------------------------------------------
@@ -52,7 +52,9 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
         ## The dictionary look up method for the upper tail dependence given
         ## lower tail dependence and Kendall's tau.
         tol <- tauTabular$tol
-        nGrid <- tauTabular$nGrid
+        nGridL <- tauTabular$nGridL
+        nGridU <- tauTabular$nGridU
+
         tauMat <- tauTabular$tauMat
         lambdaUGrid <- tauTabular$lambdaUGrid
 
@@ -61,22 +63,28 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
         lambdaLIdxFloor <- round(lambdaLIdxRaw)
 
         ## Extra work to avoid under and over flow
-        lambdaLIdxFloor[lambdaLIdxFloor < 1] <- 1
-        lambdaLIdxFloor[lambdaLIdxFloor > nGrid] <- nGrid
-
+        lambdaLIdxFloor1 <- (lambdaLIdxFloor < 1)
+        lambdaLIdxFloor2 <- (lambdaLIdxFloor > nGridL)
+        if(any(lambdaLIdxFloor1))
+          {
+            lambdaLIdxFloor[lambdaLIdxFloor1] <- 1
+          }
+        if(any(lambdaLIdxFloor2))
+          {
+            lambdaLIdxFloor[lambdaLIdxFloor2] <- nGridL
+          }
         tauMatTabFloor <- tauMat[lambdaLIdxFloor, ,drop = FALSE]
 
         ## Find the indices of the closed values close to tau's left and right side
         nObs <- length(tau)
-        tauTest <- matrix(tau, nObs, nGrid)
+        tauTest <- matrix(tau, nObs, nGridU)
 
         tauFloorDev0 <- - abs(tauTest-tauMatTabFloor)
+
 
         ## The indices of lambdaU
         ## This is the bottom neck of speed.
         lambdaUFloorIdx0 <- max.col(tauFloorDev0)
-
-
         lambdaUFloor0 <- lambdaUGrid[lambdaUFloorIdx0]
 
         ## Make sure the output format is same as the input
@@ -101,8 +109,11 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
           {
             lambdaL <- parRepCpl[["lambdaL"]]
             tau <- parRepCpl[["tau"]]
-
             delta <- -log(2)/log(lambdaL)
+
+            ## theta.interval <- c(1, 1000)
+            theta.interval <- c(1, 1.9)
+            warning("Iteration method set restricted theta interval!")
 
             out.theta <- delta
             parLen <- length(delta)
@@ -120,7 +131,7 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
                                        parCpl = list(theta = x,
                                          delta = deltaCurr))-tauCurr
                           },
-                          interval = c(1, 1000), CplNM = CplNM,
+                          interval = theta.interval, CplNM = CplNM,
                           deltaCurr = deltaCurr,
                           tauCurr = tauCurr), silent = TRUE)
 
@@ -174,6 +185,7 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
       }
     return(out)
   }
+
 ###----------------------------------------------------------------------------
 ### TESTING
 ###----------------------------------------------------------------------------

@@ -84,8 +84,6 @@ MargiModelGrad <- function(y, par, type, parCaller)
                           )
                       )
                   )
-
-
           }
         else if(tolower(parCaller) == "phi")
           {
@@ -100,7 +98,40 @@ MargiModelGrad <- function(y, par, type, parCaller)
           }
         else if(tolower(parCaller) == "lmd")
           {
-            stop("Not implemented yet")
+            I0 <- (y<=mu)
+            I <- (!I0)
+
+            ## Reserve the storage
+            out <- mu
+            out[0:length(mu)] <- NA
+
+            if(any(I0))
+              {
+                y0 <- y[I0]
+                mu0 <- mu[I0]
+                phi0 <- phi[I0]
+                df0 <- df[I0]
+                lmd0 <- lmd[I0]
+
+                A0 <- df0*phi0^2/((y0-mu0)^2+df0*phi0^2)
+                out0 <- -ibeta(A0, df0/2, 1/2, reg = TRUE)/(1+lmd0)^2
+                out[I0] <- out0
+              }
+            if(any(I))
+              {
+                y1 <- y[1]
+                mu1 <- mu[I1]
+                phi1 <- phi[I1]
+                df1 <- df[I1]
+                lmd1 <- lmd[I1]
+
+                B1 <- ((y1-mu1)^2+df1*phi1^2*lmd1^2)
+                A1 <- df1*phi1^2*lmd1^2/B1
+
+                out1 <- -(2*(1+lmd1)*(y1-mu1)*sqrt(1/B1)*
+                    A1^(df1/2)+ibeta(A1, df1/2, 1/2))/((1+lmd)^2*beta(df1/2, 1/2))
+                out[I] <- out1
+              }
           }
         else
           {

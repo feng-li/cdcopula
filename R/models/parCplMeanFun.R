@@ -22,8 +22,8 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 
         ## Which parameter are conditionally considered
         ## Hard coded, maybe should treat it as an input
-        ## condPar <- c("lambdaL")
-        condPar <- c("tau")
+        condPar <- "tau"
+        ## condPar <- NULL
 
 ###----------------------------------------------------------------------------
 ### (1) update all the independent linkages
@@ -52,46 +52,47 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
         ## The parameter tau is updated individually. NOTE that the parameter
         ## tau depends on lambdaL. So when lambdal is updated, the information
         ## of tau should also be updated.
-
-        if(parUpdate[[CplNM]][["tau"]] == TRUE |
-           parUpdate[[CplNM]][["lambdaL"]] == TRUE)
+        if(length(condPar) != 0)
           {
-            ## linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
-            ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
-            ## betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
-
-            linkCurr <- Mdl.parLink[[CplNM]][["tau"]]
-            XCurr <- Mdl.X[[CplNM]][["tau"]]
-            betaCurr <- Mdl.beta[[CplNM]][["tau"]]
-
-            if(tolower(linkCurr[["type"]]) == "glogit")
+            if(parUpdate[[CplNM]][["tau"]] == TRUE |
+               parUpdate[[CplNM]][["lambdaL"]] == TRUE)
               {
-                ## tau <- Mdl.par[[CplNM]][["tau"]]
-                ## tau.a <- 0 ## The lower bound of generalized logit link
-                ## tau.b <- 2^(1/2-1/(2*tau)) ## the upper bound
+                ## linkCurr <- Mdl.parLink[[CplNM]][["lambdaL"]]
+                ## XCurr <- Mdl.X[[CplNM]][["lambdaL"]]
+                ## betaCurr <- Mdl.beta[[CplNM]][["lambdaL"]]
 
-                ## The lower and upper bounds of generalized logit link
-                lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
+                linkCurr <- Mdl.parLink[[CplNM]][["tau"]]
+                XCurr <- Mdl.X[[CplNM]][["tau"]]
+                betaCurr <- Mdl.beta[[CplNM]][["tau"]]
 
-                tau.a <- log(2)/(log(2)-log(lambdaL))
-                linkCurr$a <- tau.a
+                if(tolower(linkCurr[["type"]]) == "glogit")
+                  {
+                    ## tau <- Mdl.par[[CplNM]][["tau"]]
+                    ## tau.a <- 0 ## The lower bound of generalized logit link
+                    ## tau.b <- 2^(1/2-1/(2*tau)) ## the upper bound
 
-                ## tau.b <- linkCurr[["b"]] ## NOTE: Numerical stable. keep it slightly away
-                ## from 1.
-                ## linkCurr$b <- tau.b
+                    ## The lower and upper bounds of generalized logit link
+                    lambdaL <- Mdl.par[[CplNM]][["lambdaL"]]
 
+                    tau.a <- log(2)/(log(2)-log(lambdaL))
+                    linkCurr$a <- tau.a
+
+                    ## tau.b <- linkCurr[["b"]] ## NOTE: Numerical stable. keep it slightly away
+                    ## from 1.
+                    ## linkCurr$b <- tau.b
+
+                  }
+                else
+                  {
+                    stop("Such conditional linkage is not implemented!")
+                  }
+
+                Mdl.par[[CplNM]][["tau"]] <- parMeanFun(
+                    X = XCurr, beta = betaCurr, linkArgs = linkCurr)
               }
-            else
-              {
-                stop("Such conditional linkage is not implemented!")
-              }
-
-            Mdl.par[[CplNM]][["tau"]] <- parMeanFun(
-                X = XCurr, beta = betaCurr, linkArgs = linkCurr)
           }
         out <- Mdl.par
       }
-
 
     return(out)
   }

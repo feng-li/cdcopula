@@ -7,7 +7,10 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
 
         linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
-        if(tolower(parCaller) == "tau")
+        condPar <- "tau"
+        ## condPar <- NULL
+
+        if(tolower(parCaller) %in% condPar)
           {
             ## The conditional links
             ## TODO: link function for tau are actually connected with

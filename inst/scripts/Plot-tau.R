@@ -3,6 +3,7 @@
 
 CplNM <- "BB7"
 xlim <- c(0, 1)
+ylim <- c(0, 1)
 xat <- seq(0, 1, 0.1)
 yat <- xat
 
@@ -18,6 +19,7 @@ parCpl <- list(delta = delta, theta = theta)
 
 tau <- matrix(kendalltau(CplNM, parCpl), length(lambdaL))
 
+## Colored contour
 filled.contour(x = lambdaL, y = lambdaU, z = tau,
                xlim = xlim, ylim = xlim,
                xlab = expression(lambda[L]),
@@ -33,3 +35,9 @@ filled.contour(x = lambdaL, y = lambdaU, z = tau,
                          xlim  = xlim,  ylim  =  ylim)
 
                })
+
+
+## Contour line only
+contour(lambdaL,  lambdaU,  tau,  add  =  FALSE,
+        col  = "black",  lwd  =  0.8,  lty  = "solid",
+        xlim  = xlim,  ylim  =  ylim)

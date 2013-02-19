@@ -64,7 +64,7 @@ load(file.path(pathLibRoot, "data/SP100-SP600-20130116.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-200):nObsRaw
+nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -72,17 +72,17 @@ nObs <- length(nObsIdx)
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -101,8 +101,8 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "log")
 Mdl.parLink[[2]][["df"]] <- list(type = "log")
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log")
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", b = 0.7)
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.7)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99)
+Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -111,7 +111,7 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.7)
 varSelArgs <- MdlDataStruc
 varSelArgs[[1]][["mu"]] <- list(cand = NULL,
                              init = "random")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
                              init = "random")
 varSelArgs[[1]][["df"]] <- list(cand = NULL,
                              init = "random")
@@ -120,16 +120,16 @@ varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
 
 varSelArgs[[2]][["mu"]] <- list(cand = NULL,
                              init = "random")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL,
+varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
                              init = "random")
 varSelArgs[[2]][["df"]] <- list(cand = NULL,
                              init = "random")
 varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                              init = "random")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
                                  init = "random")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
                                      init = "random")
 
 ## varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
@@ -151,7 +151,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 50
 
 ## BURN-IN RATIO
 burnin <- 0.1 # zero indicates no burn-in
@@ -181,7 +181,7 @@ MCMCUpdate[[2]][[3]] <- F
 MCMCUpdate[[2]][[4]] <- F
 
 MCMCUpdate[[3]][[1]] <- T
-MCMCUpdate[[3]][[2]] <- F
+MCMCUpdate[[3]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -194,10 +194,8 @@ MCMCUpdateOrder[[2]][[2]] <- 6
 MCMCUpdateOrder[[2]][[3]] <- 7
 MCMCUpdateOrder[[2]][[4]] <- 8
 
-
-MCMCUpdateOrder[[3]][[1]] <- 10
-MCMCUpdateOrder[[3]][[2]] <- 9
-
+MCMCUpdateOrder[[3]][[1]] <- 9
+MCMCUpdateOrder[[3]][[2]] <- 10
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc
@@ -284,7 +282,7 @@ priArgs[[1]][["phi"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["df"]] <-
   list("beta" = list(
@@ -325,7 +323,7 @@ priArgs[[2]][["df"]] <-
            input = list(type = "lognorm",  mean = 6, variance = 10),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = 1)),
+           mean = 0, covariance = "g-prior", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["lmd"]] <-
   list("beta" = list(
@@ -339,7 +337,7 @@ priArgs[[2]][["lmd"]] <-
 priArgs[[3]][["tau"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.5, variance = 0.15, a = 0.01, b = 0.99),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
@@ -347,7 +345,7 @@ priArgs[[3]][["tau"]] <-
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.3, variance = 0.15, a = 0.01, b = 0.99),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "g-prior", shrinkage = 1*nObs)),
@@ -362,18 +360,18 @@ priArgs[[3]][["lambdaL"]] <-
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
 betaInit <- MdlDataStruc
-betaInit[[1]][[1]] <- "ols"
+betaInit[[1]][[1]] <- "random"
 betaInit[[1]][[2]] <- "random"
 betaInit[[1]][[3]] <- log(6)
 betaInit[[1]][[4]] <- log(1)
 
-betaInit[[2]][[1]] <- "ols"
+betaInit[[2]][[1]] <- "random"
 betaInit[[2]][[2]] <- "random"
 betaInit[[2]][[3]] <- log(6)
 betaInit[[2]][[4]] <- log(1)
 
-betaInit[[3]][[1]] <- log(0.4/(1-0.4))
-betaInit[[3]][[2]] <- parLinkFun(0.1, Mdl.parLink[[3]][[2]])
+betaInit[[3]][[1]] <- "random"
+betaInit[[3]][[2]] <- parLinkFun(0.5, Mdl.parLink[[3]][[2]])
 
 ################################################################################
 ###                                  THE END
