@@ -120,10 +120,10 @@ MargiModelGrad <- function(y, par, type, parCaller)
             if(any(I))
               {
                 y1 <- y[1]
-                mu1 <- mu[I1]
-                phi1 <- phi[I1]
-                df1 <- df[I1]
-                lmd1 <- lmd[I1]
+                mu1 <- mu[I]
+                phi1 <- phi[I]
+                df1 <- df[I]
+                lmd1 <- lmd[I]
 
                 B1 <- ((y1-mu1)^2+df1*phi1^2*lmd1^2)
                 A1 <- df1*phi1^2*lmd1^2/B1

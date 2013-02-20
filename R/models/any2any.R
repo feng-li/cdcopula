@@ -34,7 +34,7 @@ any2any <- function(densArgs, linkArgs)
 
         if(variance >= mean*(1-mean))
           {
-            stop("Mean and variance should be in intervals (a, b) and (0, mean(1-mean)),  respectively.")
+            stop("Mean and variance should be in intervals (0, 1) and (0, mean(1-mean)),  respectively.")
           }
 
         ## Transform to standard parametrization
@@ -52,7 +52,7 @@ any2any <- function(densArgs, linkArgs)
             stop("This link function has not been implemented yet!")
           }
       }
-    if(tolower(inType) == "gbeta")
+    else if(tolower(inType) == "gbeta")
       {
         ## The generalized Beta distribution in interval [a, b]
         ## Subtract the parameter input in a convenient way
@@ -72,7 +72,7 @@ any2any <- function(densArgs, linkArgs)
         ## shrinkage <- densArgs[["shrinkage"]] # Shrinkage
 
         ## Transform to standard parametrization
-        alpha0 <- - mean0*(mean0^2 -mean0 + variance0)/(variance0)
+        alpha0 <- -mean0*(mean0^2 -mean0 + variance0)/(variance0)
         beta0 <- (mean0-1)^2*mean0/(variance0) + mean0 -1
 
         if(tolower(linkType) == "glogit")
@@ -98,13 +98,35 @@ any2any <- function(densArgs, linkArgs)
         sigma2 <- log(1+variance/mean^2)
         mu <- log(mean) - sigma2/2
 
-
         if(tolower(linkType) == "log")
           {
             meanLinked<- mu
             varLinked <- sigma2
           }
       }
+    else if(tolower(inType) == "glognorm")
+      {
+        ## Lognormal distribution.
+        ## Subtract the parameter input in a convenient way
+        mean <- densArgs[["input"]][["mean"]] # mean of beta density
+        variance <- densArgs[["input"]][["variance"]] # Covariates
+        a <- densArgs[["input"]][["a"]]
+
+        mean0 <- mean-a
+        variance0 <- variance
+
+        ## Transform to standard parametrization
+        sigma2 <- log(1+variance0/mean0^2)
+        mu <- log(mean0) - sigma2/2
+
+        if(tolower(linkType) == "glog")
+          {
+            meanLinked<- mu
+            varLinked <- sigma2
+          }
+      }
+
+
     else if(tolower(inType) == "norm")
       {
         ## Lognormal distribution.

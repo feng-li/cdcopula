@@ -169,7 +169,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           ## The proposal parameters block
           beta.prop.df <- beta.propArgs[["df"]]
           beta.prop <- beta.prop.mean + rmvt(
-              sigma = beta.prop.sigma,
+              sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
               n = 1, df = beta.prop.df)
         }
     ## }
@@ -227,16 +227,16 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## The jump density for proposed point at proposed mode
       logJump.propATprop <- dmvt(
           x = beta.prop - beta.prop.mean,
-          sigma = beta.prop.sigma,
+          sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
           df = beta.prop.df, log = TRUE)
 
       ## The jump density for curr draw at reverse proposed mode.
-      logJump.currATpropRev<- try(dmvt(
+      logJump.currATpropRev<- dmvt(
           x = beta.curr - beta.propRev.mean,
-          sigma = beta.propRev.sigma,
-          df = beta.prop.df, log = TRUE))
+          sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
+          df = beta.prop.df, log = TRUE)
 
-      if(is(logJump.currATpropRev, "try-error")) browser()
+      ## if(is(logJump.currATpropRev, "try-error")) browser()
 
       ## The log posterior for the proposed draw
       logPost.propOut <- logPost(

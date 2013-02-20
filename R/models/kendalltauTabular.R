@@ -1,9 +1,8 @@
-##' Generating tabular data for the Kendall's tau with respect to its input
-##' arguments.
+##' Kendall's tau tabular
 ##'
-##' This file is used for the looking up dictionary if the inverse Kendall's is
-##' difficult to calculate.
-##' @title Kendall's tau tabular
+##' Generating tabular data for the Kendall's tau with respect to its input
+##' arguments. This file is used for the looking up dictionary if the inverse
+##' Kendall's is difficult to calculate.
 ##' @param CplNM "character" Copula name
 ##' @param tol "numeric" Scaler show how precise of the dictionary is needed.
 ##' @return "list" All needed information for the copula Kendall's tau inverse.

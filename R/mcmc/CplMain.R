@@ -318,11 +318,12 @@ CplMain <- function(configfile)
         }
 
       ## MCMC trajectory
-      MCMC.trajectory(iIter = iIter, nIter = nIter, interval = 0.1,
+      CplMCMC.summary(iIter = iIter, nIter = nIter, interval = 0.1, burnin = burnin,
                       MCMC.beta = MCMC.beta,
                       MCMC.betaIdx = MCMC.betaIdx,
                       MCMC.par = MCMC.par,
-                      MCMC.AccProb = MCMC.AccProb)
+                      MCMC.AccProb = MCMC.AccProb,
+                      MCMCUpdate = MCMCUpdate)
     }
   out <- list(MCMC.beta = MCMC.beta,
               MCMC.betaIdx = MCMC.betaIdx,
