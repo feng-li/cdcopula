@@ -55,8 +55,8 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                          function(x, iIter) mean(x[(n.burn+1):iIter]),
                          how = "replace", iIter = iIter)
       par.sd <- rapply(MCMC.par,
-                   function(x, iIter) sd(x[(n.burn+1):iIter]),
-                   how = "replace", iIter = iIter)
+                       function(x, iIter) sd(x[(n.burn+1):iIter]),
+                       how = "replace", iIter = iIter)
 
       betaIdx.mean <- rapply(MCMC.betaIdx,
                              function(x, iIter){
@@ -69,9 +69,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                           how = "replace", iIter = iIter)
 
       beta.sd <- rapply(MCMC.beta,
-                          function(x, iIter){
-                            colSds(x[(n.burn+1):iIter, , drop = FALSE])},
-                          how = "replace", iIter = iIter)
+                        function(x, iIter){
+                          colSds(x[(n.burn+1):iIter, , drop = FALSE])},
+                        how = "replace", iIter = iIter)
 
       for(i in names(MCMC.beta))
         {
@@ -99,9 +99,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 
 
       if(iIter == nIter)
-            {
-              cat("----------------------------------------------------------------------\n\n")
-            }
+        {
+          cat("----------------------------------------------------------------------\n\n")
+        }
     }
 
 }
