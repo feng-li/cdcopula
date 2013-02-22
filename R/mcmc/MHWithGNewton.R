@@ -36,6 +36,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## is rejected anyway regardless of other situations.
   MHUpdate <- "MH"
 
+
 ###----------------------------------------------------------------------------
 ### INITIAL COPY OF CURRENT VALUES
 ###----------------------------------------------------------------------------
@@ -159,7 +160,9 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       beta.prop.type <- beta.propArgs[["type"]]
       beta.prop.mean <- matrix(beta.NTProp[["param"]], 1) # 1-by-p
       beta.prop.sigma <- -beta.NTProp[["HessObsInv"]]
-      ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.05
+      ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.1
+      ## if(all(beta.prop.sigma<0.01)) cat("beta.prop.sigma too small")
+
 
       staticArgs.prop <- beta.NTProp[["staticArgs"]]
 
@@ -217,7 +220,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## The information for proposed density via K-step Newton's method
       beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
       beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
-      ## beta.propRev.sigma <- diag1(length(beta.propRev.mean))*0.05
+      ## beta.propRev.sigma <- diag1(length(beta.propRev.mean))*0.1
 
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO

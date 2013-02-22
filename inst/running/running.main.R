@@ -35,6 +35,10 @@ CplMain(configfile = CplConfigFile)
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
 
+## LPDS
+logPredMatrix <-
+
+LogPredDensScore(logPredMatrix = logPredMatrix)
 
 ###----------------------------------------------------------------------------
 ### SAVE THE OUTPUT AND QUIT

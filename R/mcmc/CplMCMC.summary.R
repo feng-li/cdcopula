@@ -73,6 +73,13 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                           colSds(x[(n.burn+1):iIter, , drop = FALSE])},
                         how = "replace", iIter = iIter)
 
+      ## Efficiency factor of MCMC
+      colIneffs <- function(x) {apply(x, 2, ineff)}
+      beta.ineff <- rapply(MCMC.beta,
+                           function(x, iIter){
+                             colIneffs(x[(n.burn+1):iIter, , drop = FALSE])},
+                           how = "replace", iIter = iIter)
+
       for(i in names(MCMC.beta))
         {
           for(j in names(MCMC.beta[[i]]))
@@ -85,9 +92,11 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                   rownames(obj.par) <- c("acc.prob", "par.mean", "par.sd")
                   colnames(obj.par) <- ""
 
-                  obj <- rbind(beta.mean[[i]][[j]], beta.sd[[i]][[j]],
-                               betaIdx.mean[[i]][[j]])
-                  rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean")
+                  obj <- rbind(beta.mean[[i]][[j]],
+                               beta.sd[[i]][[j]],
+                               betaIdx.mean[[i]][[j]],
+                               beta.ineff[[i]][[j]])
+                  rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean", "beta.ineff")
 
                   cat("\n", i, j, "(", donePercent, "% )\n")
                   cat(".....................................................................")

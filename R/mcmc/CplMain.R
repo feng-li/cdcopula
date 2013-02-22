@@ -110,7 +110,7 @@ CplMain <- function(configfile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
+  optimInit <- TRUE
   betaTest <- NULL
 
   ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
@@ -120,6 +120,9 @@ CplMain <- function(configfile)
     {
       InitGood <- FALSE
       nLoopInit <- 0
+
+      cat("Optimizing the initial values,  this may take a while...\n\n")
+
       while(InitGood == FALSE)
         {
           ## Reassign the initial values
@@ -162,7 +165,7 @@ CplMain <- function(configfile)
               par = betaVecInit,
               fn = logPostOptim,
               control = list(fnscale = -1, maxit = 1000),
-              method = "L-BFGS-B",
+              method = "BFGS",
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
@@ -191,19 +194,17 @@ CplMain <- function(configfile)
                   parUpdate = parUpdate)
 
               ## betaTest <- rbind(betaTest, betaVecOptim[["par"]])
-              print(betaVecOptim)
+              ## print(betaVecOptim)
             }
 
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 10)
+          if(nLoopInit >= 100)
             {
               ## InitGood <- TRUE
-              warning(paste(
-                  " The initializing algorithm failed more that",
-                  nLoopInit, "times.\n",
-                  "Continue without initial value optimization."), immediate. = TRUE)
+              cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
+              cat("Trying to continue without initial value optimization.\n\n")
               break
             }
 
@@ -229,6 +230,7 @@ CplMain <- function(configfile)
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
 ###----------------------------------------------------------------------------
+  cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
 
   ## Allocate the storage for the final parameters in current fold
   MCMC.beta <- MdlDataStruc
