@@ -1,8 +1,10 @@
 ##' The Main file for MCMC for the copula model.
 ##'
 ##' For details of individual variables, see the setup file.
-##' @param setupfile "character".
+##' @param CplConfigFile "character".
 ##'        The path where the setup script is located.
+##'
+##' @param Training.Idx "vector"
 ##'
 ##' @return "MCMC-details"
 ##'
@@ -14,13 +16,12 @@
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012;
 ##'       Current: Wed Mar 07 16:56:30 CET 2012.
-CplMain <- function(configfile)
+CplMain <- function(CplConfigFile, Training.Idx)
 {
-
 ###----------------------------------------------------------------------------
 ### Load user setup file
 ###----------------------------------------------------------------------------
-  source(configfile, local = TRUE)
+  source(CplConfigFile, local = TRUE)
 
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE
@@ -29,22 +30,18 @@ CplMain <- function(configfile)
 
   tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
 
-  ## Indices for training and testing sample according to cross-validation
-  crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
-  nCrossFold <- length(crossValidIdx[["training"]])
-
   ## Split the data into folds for cross validation,  if no cross-validation,
   ## only one fold used
-  MdlTraining.X <- vector("list", nCrossFold)
-  MdlTraining.Y <- vector("list", nCrossFold)
+  ## MdlTraining.X <- vector("list", nCrossFold)
+  ## MdlTraining.Y <- vector("list", nCrossFold)
 
-  MdlTesting.X <- vector("list", nCrossFold)
-  MdlTesting.Y <- vector("list", nCrossFold)
+  ## MdlTesting.X <- vector("list", nCrossFold)
+  ## MdlTesting.Y <- vector("list", nCrossFold)
 
-  MdlMCMC.beta <- vector("list", nCrossFold)
-  MdlMCMC.betaIdx <- vector("list", nCrossFold)
-  MdlMCMC.par <- vector("list", nCrossFold)
-  MdlMCMC.AccProb <- vector("list", nCrossFold)
+  ## MdlMCMC.beta <- vector("list", nCrossFold)
+  ## MdlMCMC.betaIdx <- vector("list", nCrossFold)
+  ## MdlMCMC.par <- vector("list", nCrossFold)
+  ## MdlMCMC.AccProb <- vector("list", nCrossFold)
 
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
@@ -53,12 +50,6 @@ CplMain <- function(configfile)
 ### cross-validation training and testing indices.
 ### TODO:crossValidIdx should be reorganized
 ###----------------------------------------------------------------------------
-
-  iCross <- 1
-  Training.Idx <- crossValidIdx[["training"]][[iCross]]
-  Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
-
-  nTraining <- length(Training.Idx)
 
   ## envCurr <- environment()
   ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
@@ -74,14 +65,6 @@ CplMain <- function(configfile)
                           f = subsetFun,
                           idx = Training.Idx,
                           how = "replace")
-  MdlTesting.X <- rapply(object=Mdl.X,
-                         f = subsetFun,
-                         idx = Testing.Idx,
-                         how = "replace")
-  MdlTesting.Y <- rapply(object=Mdl.Y,
-                         f = subsetFun,
-                         idx = Testing.Idx,
-                         how = "replace")
 ###----------------------------------------------------------------------------
 ### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
 ###----------------------------------------------------------------------------
@@ -327,10 +310,10 @@ CplMain <- function(configfile)
                       MCMC.AccProb = MCMC.AccProb,
                       MCMCUpdate = MCMCUpdate)
     }
-  out <- list(MCMC.beta = MCMC.beta,
-              MCMC.betaIdx = MCMC.betaIdx,
-              MCMC.par = MCMC.par,
-              MCMC.AccProb = MCMC.AccProb)
+  ## MCMC.out <- list(MCMC.beta = MCMC.beta,
+  ##                  MCMC.betaIdx = MCMC.betaIdx,
+  ##                  MCMC.par = MCMC.par,
+  ##                  MCMC.AccProb = MCMC.AccProb)
 
 ###----------------------------------------------------------------------------
 ### RUN THE MCMC
@@ -339,20 +322,8 @@ CplMain <- function(configfile)
 ### code with malapply().
 ### ---------------------------------------------------------------------------
 
-  ## Temporally Disabled for debugging mode
-  parallel <- FALSE
-  if(parallel == TRUE)
-    {
-      require(parallel)
-      ## Use mcmlapply function
-    }
-  else
-    {
-      ## Sequential loops over folds.
-      ## mapply(FUN = MCMCFun)
-    }
-
   ## Fetch everything at current environment to a list
   out <- as.list(environment())
-  list2env(out, envir = .GlobalEnv)
+  ## list2env(out, envir = .GlobalEnv)
+  return(out)
 }

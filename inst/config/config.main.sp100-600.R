@@ -153,9 +153,6 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
 ## NUMBER OF MCMC ITERATIONS
 nIter <- 50
 
-## BURN-IN RATIO
-burnin <- 0.1 # zero indicates no burn-in
-
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
 ## "save.output = FALSE" it will not save anything.
@@ -242,8 +239,11 @@ propArgs[[3]][[2]] <-
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 
-## CROSS-VALIDATION
+
+## POSTERIOR INFERENCE OPTIONS
 ##-----------------------------------------------------------------------------
+
+## CROSS VALIDATION
 ## "N.subsets" is no. of folds for cross-validation. If N.subsets  =  0, no
 ## cross-validation. And "partiMethod" tells how to partition the data. Testing
 ## percent is used if partiMethod is "time-series". (use the old data to
@@ -252,8 +252,15 @@ crossValidArgs <- list(N.subsets = 1,
                        partiMethod = "time-series",
                        testRatio = 0.2)
 
-## SAMPLER PROPORTION FOR LPDS
-LPDS.sampleProp = 0.05
+## Indices for training and testing sample according to cross-validation
+crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
+## nCrossFold <- length(crossValidIdx[["training"]])
+
+## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
+sampleProp <- 0.05
+
+## BURN-IN RATIO
+burnin <- 0.1 # zero indicates no burn-in
 
 ###----------------------------------------------------------------------------
 ### PRIOR SETTINGS
