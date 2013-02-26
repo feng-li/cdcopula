@@ -106,15 +106,15 @@ logPredDens <- function(CplMain.out,Testing.Idx = NA,
 
             ## logPost(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             ##         varSelArgs,MargisTypes,priArgs,parUpdate,
-            ##         staticArgs, staticArgsOnly = FALSE, parUpdate4Pri = parUpdate)
+            ##         staticCache, staticCacheOnly = FALSE, parUpdate4Pri = parUpdate)
 
 
-            Mdl.beta.curr <- rapply(object=Mdl.beta,
+            Mdl.beta.curr <- rapply(object=MCMC.beta,
                                     f = subsetFun,
                                     idx = j,
                                     how = "replace")
 
-            Mdl.betaIdx.curr <- rapply(object=Mdl.betaIdx,
+            Mdl.betaIdx.curr <- rapply(object=MCMC.betaIdx,
                                        f = subsetFun,
                                        idx = j,
                                        how = "replace")
@@ -130,7 +130,7 @@ logPredDens <- function(CplMain.out,Testing.Idx = NA,
                 MargisTypes = MargisTypes,
                 priArgs = priArgs,
                 parUpdate = parUpdate,
-                staticArgs = staticArgs,
+                staticCache = staticCache,
                 call.out = "likelihood")
 
             which.j <- which.j + 1

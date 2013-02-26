@@ -6,13 +6,13 @@
 ##' @param u
 ##' @param parCpl
 ##' @param cplCaller
-##' @param staticArgs
+##' @param staticCache
 ##' @return
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 12:42:20 CEST 2012;
 ##'       Current: Fri May 11 12:42:30 CEST 2012.
-logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
+logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticCache, Mdl.X, Mdl.beta)
   {
 
 ###----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, staticArgs, Mdl.X, Mdl.beta)
         lambdaU <- as.vector(kendalltauInv(
             CplNM = CplNM,
             parRepCpl = parCpl,
-            tauTabular = staticArgs[["tauTabular"]]))
+            tauTabular = staticCache[["tauTabular"]]))
 
         ## The standard copula parameters (recycled if necessary, should be a
         ## vector).

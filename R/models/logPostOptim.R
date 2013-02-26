@@ -12,7 +12,7 @@
 ##' @param MargisTypes "list".
 ##' @param priArgs "list".
 ##' @param parUpdate "list".
-##' @param staticArgs "list".
+##' @param staticCache "list".
 ##' @param parUpdate4Pri
 ##' @return "scaler" The log posterior.
 ##' @references Li 2012
@@ -21,7 +21,7 @@
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
 logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,varSelArgs, MargisTypes,
-                         priArgs,parUpdate,staticArgs, parUpdate4Pri = parUpdate)
+                         priArgs,parUpdate,staticCache)
   {
     ## a wrapper of the log posterior function that can be used for directly
     ## optimization via Newton's method
@@ -43,8 +43,7 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         MargisTypes = MargisTypes,
         priArgs = priArgs,
         parUpdate = parUpdate,
-        staticArgs = staticArgs,
-        parUpdate4Pri = parUpdate4Pri)[["Mdl.logPost"]]
+        staticCache = staticCache)[["Mdl.logPost"]]
 
     return(out)
   }

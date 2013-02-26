@@ -1,6 +1,9 @@
 ##' Log predictive density score
 ##'
-##' @param logPredLst
+##' @param logPredLst "list"
+##'
+##'        The log posterior predictive sampler from MCMC.
+##'
 ##' @return "list"
 ##'
 ##'        The LPDS and the numerical standard error.

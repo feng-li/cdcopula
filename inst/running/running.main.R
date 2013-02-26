@@ -37,8 +37,7 @@ if(parallel == TRUE)
   {
     require(parallel)
     ## Use mcmlapply function
-  }
-else
+  }else
   {
     ## Sequential loops over folds.
     ## mapply(FUN = CplMain)
@@ -46,7 +45,7 @@ else
     for(iCross in 1:length(crossValidIdx[["training"]]))
       {
         CplMain.CrossOut[[iCross]] <- CplMain(
-            CplConfigfile = CplConfigFile,
+            CplConfigFile = CplConfigFile,
             Training.Idx = crossValidIdx[["training"]][[iCross]])
       }
 
@@ -62,8 +61,7 @@ if(parallel == TRUE)
   {
     require(parallel)
     ## Use mcmlapply function
-  }
-else
+  }else
   {
     ## Sequential loops over folds.
     ## mapply(FUN = CplMain)
@@ -71,7 +69,7 @@ else
     for(iCross in 1:length(crossValidIdx[["testing"]]))
       {
         logPredLst[[iCross]] <- logPredDens(
-            CplMain.out = CplMain.CrossOut[[iCross]]
+            CplMain.out = CplMain.CrossOut[[iCross]],
             Testing.Idx = crossValidIdx[["testing"]][[iCross]])
       }
   }

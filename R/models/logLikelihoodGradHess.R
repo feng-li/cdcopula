@@ -12,7 +12,7 @@
 ##' @param Mdl.betaIdx "list".
 ##' @param parUpdate "list".
 ##' @param varSelArgs "list".
-##' @param staticArgs "list".
+##' @param staticCache "list".
 ##' @param gradMethods "character"
 ##'
 ##'        If is "numeric", the numeric gradient is returned; else return the
@@ -38,7 +38,7 @@ logLikelihoodGradHess <- function(
     Mdl.betaIdx,
     parUpdate,
     varSelArgs,
-    staticArgs,
+    staticCache,
     gradMethods = c("analytic", "numeric")[1])
 {
 
@@ -48,7 +48,7 @@ logLikelihoodGradHess <- function(
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
-  Mdl.par <- staticArgs[["Mdl.par"]]
+  Mdl.par <- staticCache[["Mdl.par"]]
   ## if(is(Mdl.par, "try-error")) browser()
 
   ## if(parCaller == "tau") browser()
@@ -122,7 +122,7 @@ logLikelihoodGradHess <- function(
       ## The Copula parameter caller is the marginal CDF, i.e. u1,  u2, ...
       cplCaller <- paste("u", which(names(MargisTypes)%in%CompCaller), sep = "")
 
-      staticArgs[["Mdl.u"]][, CompCaller] <- MargiModel(
+      staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
           y = yCurr,
           type = typeCurr,
           par = parCurr)[["u"]]
@@ -153,10 +153,10 @@ logLikelihoodGradHess <- function(
       ## The gradient for the copula function. n-by-1
       logCplGradObs.ana <- logCplGrad(
           CplNM = CplNM,
-          u = staticArgs$Mdl.u,
+          u = staticCache$Mdl.u,
           parCpl = Mdl.par[[CplNM]],
           cplCaller = cplCaller,
-          staticArgs = staticArgs,
+          staticCache = staticCache,
           Mdl.X = Mdl.X,
           Mdl.beta = Mdl.beta)
       logCplGradObs <- logCplGradObs.ana
@@ -167,12 +167,12 @@ logLikelihoodGradHess <- function(
       ## NOTE: The numerical gradient may not work well if the tabular version
       ## of Kendall's tau is used due to the precision
       logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
-                                   CplNM, parCpl, staticArgs)
+                                   CplNM, parCpl, staticCache)
         {
           if(tolower(cplCaller) %in% c("u1", "u2"))
             {
               ## Calling the marginal CDF u1, u2
-              ## u <- staticArgs$Mdl.u
+              ## u <- staticCache$Mdl.u
               u[, CompCaller] <- x
             }
           else
@@ -182,7 +182,7 @@ logLikelihoodGradHess <- function(
             }
           out <- logCplLik(u = u, CplNM = CplNM,
                            parCpl = parCpl,
-                           staticArgs = staticArgs,
+                           staticCache = staticCache,
                            logLik = FALSE)
           return(out)
         }
@@ -194,7 +194,7 @@ logLikelihoodGradHess <- function(
           if(tolower(cplCaller) %in% c("u1", "u2"))
             {
               ## Calling the marginal CDF u1, u2
-              xCurr <- staticArgs$Mdl.u[i, CompCaller]
+              xCurr <- staticCache$Mdl.u[i, CompCaller]
             }
           else
             {
@@ -207,13 +207,13 @@ logLikelihoodGradHess <- function(
           gradTry <- try(numgrad(
               fcn = logCplGradNumFun,
               x = xCurr,
-              u = staticArgs$Mdl.u[i, , drop = FALSE],
+              u = staticCache$Mdl.u[i, , drop = FALSE],
               CompCaller = CompCaller,
               parCaller = parCaller,
               cplCaller = cplCaller,
               CplNM =  CplNM,
               parCpl = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
-              staticArgs = staticArgs), silent = TRUE)
+              staticCache = staticCache), silent = TRUE)
           if(is(gradTry, "try-error"))
             {
               logCplGradObs.num[i] <- NA

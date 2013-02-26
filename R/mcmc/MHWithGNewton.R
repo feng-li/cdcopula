@@ -13,7 +13,7 @@
 ##' @param varSelArgs
 ##' @param propArgs
 ##' @param MargisTypes
-##' @param staticArgs
+##' @param staticCache
 ##' @return "list"
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
@@ -22,7 +22,7 @@
 ##' DEPENDS: mvtnorm
 MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                          propArgs, MargisTypes, staticArgs)
+                          propArgs, MargisTypes, staticCache)
 {
 
   ## The updating component parameter chain
@@ -43,7 +43,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   Mdl.beta.curr <- Mdl.beta
   Mdl.betaIdx.curr <- Mdl.betaIdx
-  staticArgs.curr <- staticArgs
+  staticCache.curr <- staticCache
 
   beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
   betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
@@ -135,7 +135,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta = Mdl.beta.curr,
           Mdl.betaIdx = Mdl.betaIdx.curr,
           MargisTypes = MargisTypes,
-          staticArgs = staticArgs)
+          staticCache = staticCache)
 
 
       ## Check if it is a good proposal
@@ -164,7 +164,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## if(all(beta.prop.sigma<0.01)) cat("beta.prop.sigma too small")
 
 
-      staticArgs.prop <- beta.NTProp[["staticArgs"]]
+      staticCache.prop <- beta.NTProp[["staticCache"]]
 
 
       if(tolower(beta.prop.type) == "mvt")
@@ -205,7 +205,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta = Mdl.beta.prop,
           Mdl.betaIdx = Mdl.betaIdx.prop,
           MargisTypes = MargisTypes,
-          staticArgs = staticArgs)
+          staticCache = staticCache)
 
       if(beta.NTPropRev$errorFlag ## ||
          ## any(is.na(beta.prop.sigma)) ||
@@ -253,10 +253,10 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           MargisTypes = MargisTypes,
           priArgs = priArgs,
           parUpdate = parUpdate,
-          staticArgs = staticArgs)
+          staticCache = staticCache)
 
       logPost.prop <- logPost.propOut[["Mdl.logPost"]]
-      staticArgs.prop <- logPost.propOut[["staticArgs"]]
+      staticCache.prop <- logPost.propOut[["staticCache"]]
 
       ## The log posterior for the current draw
       logPost.curr <- logPost(
@@ -270,7 +270,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           MargisTypes = MargisTypes,
           priArgs = priArgs,
           parUpdate = parUpdate,
-          staticArgs = staticArgs.curr)[["Mdl.logPost"]]
+          staticCache = staticCache.curr)[["Mdl.logPost"]]
 
       ## compute the MH ratio.
       MHRatio <- exp(logPost.prop - logPost.curr +
@@ -301,7 +301,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           Mdl.beta.curr <- Mdl.beta.prop
           Mdl.betaIdx.curr <- Mdl.betaIdx.prop
 
-          staticArgs.curr <- staticArgs.prop
+          staticCache.curr <- staticCache.prop
           ## browser()
         }
       else # keep current
@@ -327,7 +327,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       out <- list(beta =  Mdl.beta.curr[[CompCaller]][[parCaller]],
                   betaIdx = Mdl.betaIdx.curr[[CompCaller]][[parCaller]],
                   accept.prob = accept.probs[nMH],
-                  staticArgs = staticArgs.curr,
+                  staticCache = staticCache.curr,
                   errorFlag = FALSE)
     }
   return(out)

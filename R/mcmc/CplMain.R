@@ -72,11 +72,11 @@ CplMain <- function(CplConfigFile, Training.Idx)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
-  ## Initialize "staticArgs" structure
+  ## Initialize "staticCache" structure
   u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
               dimnames = list(NULL, names(MdlTraining.Y)))
 
-  staticArgs <- list(Mdl.logPri =  MdlDataStruc,
+  staticCache <- list(Mdl.logPri =  MdlDataStruc,
                      Mdl.par = MdlDataStruc,
                      Mdl.u = u,
                      Mdl.d = u,
@@ -117,11 +117,11 @@ CplMain <- function(CplConfigFile, Training.Idx)
           Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
           Mdl.beta <- initParOut[["Mdl.beta"]]
 
-          ## Dry run to obtain the initial "staticArgs"
+          ## Dry run to obtain the initial "staticCache"
           ## NOTE: As this is the very first run, the "parUpdate" should be all on for
           ## this time.
 
-          staticArgs <- logPost(
+          staticCache <- logPost(
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
@@ -132,9 +132,8 @@ CplMain <- function(CplConfigFile, Training.Idx)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-              staticArgs = staticArgs,
-              staticArgsOnly = TRUE,
-              parUpdate4Pri = parUpdate)[["staticArgs"]]
+              staticCache = staticCache,
+              call.out = "staticCache")[["staticCache"]]
 
           ## Optimize the initial values via BFGS.
           ## NOTE: The variable selection indicators are fixed (not optimized)
@@ -159,8 +158,7 @@ CplMain <- function(CplConfigFile, Training.Idx)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = parUpdate,
-              staticArgs = staticArgs,
-              parUpdate4Pri = parUpdate), silent = TRUE)
+              staticCache = staticCache), silent = TRUE)
 
           if(is(betaVecOptim, "try-error") == TRUE ||
              betaVecOptim$convergence != 0L)
@@ -194,9 +192,9 @@ CplMain <- function(CplConfigFile, Training.Idx)
         }
     }
 
-  ## Dry run to obtain staticArgs for the initial values
+  ## Dry run to obtain staticCache for the initial values
   ## Again this time all the parameters should be updated.
-  staticArgs <- logPost(
+  staticCache <- logPost(
       CplNM = CplNM,
       Mdl.Y = MdlTraining.Y,
       Mdl.X = MdlTraining.X,
@@ -207,8 +205,8 @@ CplMain <- function(CplConfigFile, Training.Idx)
       MargisTypes = MargisTypes,
       priArgs = priArgs,
       parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-      staticArgs = staticArgs,
-      staticArgsOnly = TRUE)[["staticArgs"]]
+      staticCache = staticCache,
+      call.out = "staticCache")[["staticCache"]]
 
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
@@ -235,7 +233,7 @@ CplMain <- function(CplConfigFile, Training.Idx)
               Mdl.beta[[i]][[j]], nIter, ncolX.ij, byrow = TRUE,
               dimnames = list(NULL, namesX.ij))
           MCMC.par[[i]][[j]] <- matrix(
-              staticArgs[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
+              staticCache[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- matrix(NA, c(nIter, 1))
         }
@@ -264,7 +262,7 @@ CplMain <- function(CplConfigFile, Training.Idx)
 
           if(tolower(algmArgs[["type"]]) == "gnewtonmove")
             {
-              ## staticArgs <- list(u = u, Mdl.par = Mdl.par)
+              ## staticCache <- list(u = u, Mdl.par = Mdl.par)
               MHOut <- MHWithGNewton(
                   CplNM = CplNM,
                   propArgs = propArgs,
@@ -277,12 +275,12 @@ CplMain <- function(CplConfigFile, Training.Idx)
                   Mdl.betaIdx = Mdl.betaIdx,
                   MargisTypes = MargisTypes,
                   Mdl.parLink = Mdl.parLink,
-                  staticArgs = staticArgs)
+                  staticCache = staticCache)
 
               if(MHOut$errorFlag == FALSE)
                 {
                   ## Update the MH results to the current parameter structure
-                  staticArgs <- MHOut[["staticArgs"]]
+                  staticCache <- MHOut[["staticCache"]]
                   Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
                   Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
@@ -291,7 +289,7 @@ CplMain <- function(CplConfigFile, Training.Idx)
                   MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
                   MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
                   MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
-                    staticArgs[["Mdl.par"]][[CompCaller]][[parCaller]]
+                    staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
                 }
             }
           else
@@ -323,7 +321,8 @@ CplMain <- function(CplConfigFile, Training.Idx)
 ### ---------------------------------------------------------------------------
 
   ## Fetch everything at current environment to a list
-  out <- as.list(environment())
   ## list2env(out, envir = .GlobalEnv)
+  browser()
+  out <- as.list(environment())
   return(out)
 }

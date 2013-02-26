@@ -35,12 +35,12 @@
 ##'        are doing conditional posterior which means some components are kept
 ##'        uncaged. This can reduce computing time.
 ##'
-##' @param staticArgs "list"
+##' @param staticCache "list"
 ##'        Miscellaneous arguments that are needed in the model.
 ##'
 ##' @param call.out
-##' @param staticArgsOnly "logical"
-##'        If TRUE,  only update the staticArgs,  otherwise, do a full log
+##' @param staticCacheOnly "logical"
+##'        If TRUE,  only update the staticCache,  otherwise, do a full log
 ##'        posterior updating.
 ##'
 ##' @param Mdl.beta "list".
@@ -65,21 +65,21 @@
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
 ##'       Current: Thu May 10 20:17:09 CEST 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
-                    varSelArgs,MargisTypes,priArgs,parUpdate,staticArgs = NA,
-                    call.out = c("prior", "likelihood", "posterior", "staticArgs"))
+                    varSelArgs,MargisTypes,priArgs,parUpdate,staticCache = NA,
+                    call.out = c("prior", "likelihood", "posterior", "staticCache")[3])
 {
   ## Debugging symbol: if the warning should be printed out immediately.
   immediate. <- FALSE
 
-  ## The pre-saved information. The idea is to make even staticArgs is not
+  ## The pre-saved information. The idea is to make even staticCache is not
   ## available, the log posterior is still working.
 
-  if(!is.na(staticArgs))
+  if(!is.na(staticCache))
     {
-      Mdl.par <- staticArgs[["Mdl.par"]]
-      Mdl.u <- staticArgs[["Mdl.u"]]
-      Mdl.d <- staticArgs[["Mdl.d"]]
-      Mdl.logPri <- staticArgs[["Mdl.logPri"]]
+      Mdl.par <- staticCache[["Mdl.par"]]
+      Mdl.u <- staticCache[["Mdl.u"]]
+      Mdl.d <- staticCache[["Mdl.d"]]
+      Mdl.logPri <- staticCache[["Mdl.logPri"]]
     }
   else
     {
@@ -96,7 +96,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  if(any(c("prior", "posterior", "staticArgs") %in% call.out))
+  if(any(c("prior", "posterior", "staticCache") %in% call.out))
     {
 
       Mdl.logPri <- logPriors(
@@ -116,7 +116,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ### THE MARGINAL LIKELIHOOD
 ###----------------------------------------------------------------------------
 
-  if(any(c("likelihood", "posterior", "staticArgs") %in% call.out))
+  if(any(c("likelihood", "posterior", "staticCache") %in% call.out))
     {
 ### Update Mdl.par
       Mdl.par <- parCplMeanFun(
@@ -170,7 +170,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
           u = Mdl.u,
           CplNM = CplNM,
           parCpl = Mdl.par[[CplNM]],
-          staticArgs = staticArgs, logLik = TRUE) # n-by-1
+          staticCache = staticCache, logLik = TRUE) # n-by-1
 
       Mdl.logLikMargis.sum <- sum(Mdl.d)
       Mdl.logLik <- Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum
@@ -185,12 +185,12 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ### THE STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
 
-  if("staticArgs" %in% call.out)
+  if("staticCache" %in% call.out)
     {
-      staticArgs[["Mdl.logPri"]] <- Mdl.logPri
-      staticArgs[["Mdl.par"]] <- Mdl.par
-      staticArgs[["Mdl.u"]] <- Mdl.u
-      staticArgs[["Mdl.d"]] <- Mdl.d
+      staticCache[["Mdl.logPri"]] <- Mdl.logPri
+      staticCache[["Mdl.par"]] <- Mdl.par
+      staticCache[["Mdl.u"]] <- Mdl.u
+      staticCache[["Mdl.d"]] <- Mdl.d
     }
 
 
@@ -208,6 +208,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
   out <- list(Mdl.logPost = Mdl.logPost,
               Mdl.logLik = Mdl.logLik,
               Mdl.logPri = Mdl.logPri,
-              staticArgs = staticArgs)
+              staticCache = staticCache)
   return(out)
 }
