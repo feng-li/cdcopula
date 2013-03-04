@@ -55,6 +55,8 @@ if(parallel == TRUE)
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
 
+browser()
+
 ## Temporally Disabled for debugging mode
 parallel <- FALSE
 if(parallel == TRUE)

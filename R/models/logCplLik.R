@@ -6,14 +6,13 @@
 ##' @param u
 ##' @param CplNM
 ##' @param parCpl
-##' @param staticCache
 ##' @param logLik "logical"
 ##' @return "matrix";
 ##' @references Joe 1997, p. 153
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
-logCplLik <- function(u, CplNM, parCpl, staticCache, logLik = TRUE)
+logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
 {
 
 ###----------------------------------------------------------------------------
@@ -56,8 +55,7 @@ logCplLik <- function(u, CplNM, parCpl, staticCache, logLik = TRUE)
       tau <- as.vector(parCpl[["tau"]])
       lambdaL <- as.vector(parCpl[["lambdaL"]])
       lambdaU <- as.vector(kendalltauInv(
-          CplNM = CplNM, parRepCpl = parCpl,
-          tauTabular = staticCache[["tauTabular"]]))
+          CplNM = CplNM, parRepCpl = parCpl))
 
       ## cat(lambdaL[1], lambdaU[1], tau[1], "\n")
       ## points( lambdaL[1], lambdaU[2], col = "red", pch = 20)

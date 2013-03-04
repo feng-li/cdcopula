@@ -38,24 +38,7 @@
 ##' @param staticCache "list"
 ##'        Miscellaneous arguments that are needed in the model.
 ##'
-##' @param call.out
-##' @param staticCacheOnly "logical"
-##'        If TRUE,  only update the staticCache,  otherwise, do a full log
-##'        posterior updating.
-##'
-##' @param Mdl.beta "list".
-##'        The beta coefficients for each parameter. Note that the length
-##'        should be same as the length of covariates in the covariates.
-##'
-##' @param Mdl.betaIdx "list".
-##'        The variable selection index. For each parameter. The second column
-##'        shows the proposal results, i.e. 1 for selected and 0 for not
-##'        selection in current MCMC draw.
-##'
-##' @param tauTabular "list".
-##'        The extra input for numerical dictionary looking up in the inverse
-##'        calculation for the inverse Kendall's tau. See the documentation for
-##'        "kendalltauTabular()" for details.
+##' @param call.out "character vector"
 ##'
 ##' @return "list".
 ##'        The list should contain the updated components.
@@ -65,29 +48,32 @@
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
 ##'       Current: Thu May 10 20:17:09 CEST 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
-                    varSelArgs,MargisTypes,priArgs,parUpdate,staticCache = NA,
+                    varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
                     call.out = c("prior", "likelihood", "posterior", "staticCache")[3])
 {
   ## Debugging symbol: if the warning should be printed out immediately.
   immediate. <- FALSE
 
-  ## The pre-saved information. The idea is to make even staticCache is not
-  ## available, the log posterior is still working.
+  ## The cached (pre-saved) information. The idea is to make even staticCache
+  ## is not available, the log posterior is still working.
+  if(missing(staticCache))
+    {
+      ## Initialize "staticCache" structure
+      u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                  dimnames = list(NULL, names(Mdl.Y)))
+      MdlDataStruc <- rapply(object = Mdl.beta,
+                        f = function(x)NA,
+                        how = "replace")
+      staticCache <- list(Mdl.logPri =  MdlDataStruc,
+                          Mdl.par = MdlDataStruc,
+                          Mdl.u = u,
+                          Mdl.d = u)
+    }
 
-  if(!is.na(staticCache))
-    {
-      Mdl.par <- staticCache[["Mdl.par"]]
-      Mdl.u <- staticCache[["Mdl.u"]]
-      Mdl.d <- staticCache[["Mdl.d"]]
-      Mdl.logPri <- staticCache[["Mdl.logPri"]]
-    }
-  else
-    {
-      Mdl.par <- NA
-      Mdl.u <- NA
-      Mdl.d <- NA
-      Mdl.logPri <- NA
-    }
+  Mdl.par <- staticCache[["Mdl.par"]]
+  Mdl.u <- staticCache[["Mdl.u"]]
+  Mdl.d <- staticCache[["Mdl.d"]]
+  Mdl.logPri <- staticCache[["Mdl.logPri"]]
 
   ## Allocate the output structure
   Mdl.logLik <- NA
@@ -98,7 +84,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
   if(any(c("prior", "posterior", "staticCache") %in% call.out))
     {
-
       Mdl.logPri <- logPriors(
           Mdl.X = Mdl.X,
           Mdl.parLink = Mdl.parLink,
@@ -118,7 +103,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if(any(c("likelihood", "posterior", "staticCache") %in% call.out))
     {
-### Update Mdl.par
+      ## Update Mdl.par
       Mdl.par <- parCplMeanFun(
           CplNM = CplNM,
           Mdl.X = Mdl.X,
@@ -133,7 +118,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       if(any(is.na(unlist(Mdl.par))))
         {
           warning("DEBUGGING: NA happens when updating ``Mdl.par''...",
-                  immediate. = immediat.)
+                  immediate. = immediate.)
         }
 
 ### Update marginal pdf and cdf
@@ -159,18 +144,16 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
     }
 
-
 ###----------------------------------------------------------------------------
 ### THE LOG LIKELIHOOD
 ###----------------------------------------------------------------------------
-
   if(any(c("likelihood", "posterior") %in% call.out))
     {
       Mdl.logLikCpl.sum <- logCplLik(
           u = Mdl.u,
           CplNM = CplNM,
           parCpl = Mdl.par[[CplNM]],
-          staticCache = staticCache, logLik = TRUE) # n-by-1
+          logLik = TRUE) # n-by-1
 
       Mdl.logLikMargis.sum <- sum(Mdl.d)
       Mdl.logLik <- Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum

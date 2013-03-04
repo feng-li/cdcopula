@@ -21,8 +21,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     source(file = DGPconfigfile, local = TRUE)
 
     ## THE RANDOM CDF VARIABLE IN THE COPULA
-    uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM,
-                  exArgs = list(tauTabular = tauTabular))
+    uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM)
 
     ## Generate the response variables
     Mdl.Y <- u2qtl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],

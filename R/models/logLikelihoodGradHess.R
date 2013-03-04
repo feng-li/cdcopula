@@ -156,7 +156,6 @@ logLikelihoodGradHess <- function(
           u = staticCache$Mdl.u,
           parCpl = Mdl.par[[CplNM]],
           cplCaller = cplCaller,
-          staticCache = staticCache,
           Mdl.X = Mdl.X,
           Mdl.beta = Mdl.beta)
       logCplGradObs <- logCplGradObs.ana
@@ -182,7 +181,6 @@ logLikelihoodGradHess <- function(
             }
           out <- logCplLik(u = u, CplNM = CplNM,
                            parCpl = parCpl,
-                           staticCache = staticCache,
                            logLik = FALSE)
           return(out)
         }

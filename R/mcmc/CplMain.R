@@ -26,22 +26,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE STORAGE AND DATA STRUCTURE
 ###----------------------------------------------------------------------------
-  ## Generating the numerical tabular for the inverse Kendall's tau
-
-  tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
-
-  ## Split the data into folds for cross validation,  if no cross-validation,
-  ## only one fold used
-  ## MdlTraining.X <- vector("list", nCrossFold)
-  ## MdlTraining.Y <- vector("list", nCrossFold)
-
-  ## MdlTesting.X <- vector("list", nCrossFold)
-  ## MdlTesting.Y <- vector("list", nCrossFold)
-
-  ## MdlMCMC.beta <- vector("list", nCrossFold)
-  ## MdlMCMC.betaIdx <- vector("list", nCrossFold)
-  ## MdlMCMC.par <- vector("list", nCrossFold)
-  ## MdlMCMC.AccProb <- vector("list", nCrossFold)
 
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
@@ -57,6 +41,7 @@ CplMain <- function(CplConfigFile, Training.Idx)
 
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
+  nTraining <- length(Training.Idx)
   MdlTraining.X <- rapply(object=Mdl.X,
                           f = subsetFun,
                           idx = Training.Idx,
@@ -73,14 +58,14 @@ CplMain <- function(CplConfigFile, Training.Idx)
   parUpdate <- MCMCUpdate
 
   ## Initialize "staticCache" structure
-  u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
-              dimnames = list(NULL, names(MdlTraining.Y)))
+  ## u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
+  ##             dimnames = list(NULL, names(MdlTraining.Y)))
 
-  staticCache <- list(Mdl.logPri =  MdlDataStruc,
-                     Mdl.par = MdlDataStruc,
-                     Mdl.u = u,
-                     Mdl.d = u,
-                     tauTabular = tauTabular)
+  ## staticCache <- list(Mdl.logPri =  MdlDataStruc,
+  ##                    Mdl.par = MdlDataStruc,
+  ##                    Mdl.u = u,
+  ##                    Mdl.d = u,
+  ##                    tauTabular = tauTabular)
 
   ## Assign the initial values
   initParOut <- initPar(
@@ -132,7 +117,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-              staticCache = staticCache,
               call.out = "staticCache")[["staticCache"]]
 
           ## Optimize the initial values via BFGS.
@@ -322,7 +306,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
 
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)
-  browser()
   out <- as.list(environment())
   return(out)
 }

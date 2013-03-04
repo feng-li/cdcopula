@@ -67,7 +67,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       priArgs = priArgs,
       parUpdate = parUpdate,
       staticCache = staticCache,
-      staticCacheOnly = TRUE)[["staticCache"]]
+      call.out = "staticCache")[["staticCache"]]
 
 ###----------------------------------------------------------------------------
 ### The k-step Generalized Newton Move
@@ -213,7 +213,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticCache = staticCache.curr,
-              staticCacheOnly = TRUE)[["staticCache"]]
+              call.out = "staticCache")[["staticCache"]]
 
           ## Mdl.par0 <- unlist(staticCache.curr[["Mdl.par"]])
           ## if(any(is.na(Mdl.par0))) browser()

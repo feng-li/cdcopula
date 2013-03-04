@@ -1,7 +1,6 @@
 ##' Trajectory MCMC.
 ##'
 ##' This function can also be used for summarizing the posterior results.
-##' @param 0Iter "integer"
 ##' @param nIter "integer"
 ##' @param iIter "integer"
 ##' @param interval e.g. 10%
@@ -38,8 +37,6 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
       ## format.name <- format(c("Done(%)|", parsList), width = 13, justify = "right")
       ## cat(format.name, "\n")
       ## }
-
-      options(digits = 3)
 
       par <- list(...)
       MCMC.betaIdx <- par$MCMC.betaIdx

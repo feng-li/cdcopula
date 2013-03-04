@@ -13,7 +13,7 @@
 ##'     DEPENDS: mvtnorm
 ##'     Created: Mon Sep 26 09:43:12 CEST 2011;
 ##'     Current: Mon Apr 16 13:40:47 CEST 2012.
-ruCpl <- function(n, parCpl, CplNM, exArgs)
+ruCpl <- function(n, parCpl, CplNM, exArgs = NA)
 {
   if(tolower(CplNM) == "bb7") # Joe 1997
     {
@@ -25,8 +25,7 @@ ruCpl <- function(n, parCpl, CplNM, exArgs)
 
       ## The upper tail dependence given lower tail dependence and Kendall's tau
       ## FIXME: Consider to speed it up if it is really slow
-      lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl,
-                               tauTabular = exArgs[["tauTabular"]])
+      lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl)
 
       ## The standard copula parameters (recycled if necessary).
       delta <- as.vector(matrix(-log(2)/log(lambdaL), n, 1))

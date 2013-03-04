@@ -20,11 +20,15 @@
 kendalltauInv <- function(
     CplNM,
     parRepCpl,
-    method = c("tabular", "iterative")[1],
-    tauTabular = NA)
+    method = c("tabular", "iterative")[1])
   {
     if(tolower(method) == "tabular")
       {
+        ## If the tauTabular not exist, create it
+        if(!exists("tauTabular", envir = .GlobalEnv))
+          {
+            tauTabular <<- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
+          }
         out <- kendalltauInv.tab(CplNM = CplNM,
                                  parRepCpl = parRepCpl,
                                  tauTabular = tauTabular)
@@ -48,6 +52,12 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
         ## out <- vector("list", length(parRepCpl))
         lambdaL <- parRepCpl[["lambdaL"]]
         tau <- parRepCpl[["tau"]]
+
+
+        if(length(lambdaL) !=length(tau))
+          {
+            stop("The input parameters should be of the same length.")
+          }
 
         ## The dictionary look up method for the upper tail dependence given
         ## lower tail dependence and Kendall's tau.

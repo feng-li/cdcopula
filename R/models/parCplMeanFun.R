@@ -17,7 +17,6 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
         ## BB7 copula (tau, lambdaL) representation requires that
         ## 0 < lambdaL < 2^(1/2-1/(2*tau)) See Li 2012 for the proof.
         ## The condition should be calculated in the end for safety.
-
         CompNM <- names(Mdl.beta)
 
         ## Which parameter are conditionally considered
