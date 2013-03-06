@@ -1,6 +1,6 @@
 ###############################################################################
 ### TITLE
-###        BIVARIATE COPULA MODEL WITH COVARIATE--DEPENDENT
+###        COPULA MODEL WITH COVARIATE--DEPENDENT
 ###
 ### SYSTEM REQUIREMENTS
 ###        R > = 2.14.0 with packages ``mvtnorm''
@@ -11,7 +11,7 @@
 ###        variables.
 ###
 ### OUTPUT VARIABLES
-###        The output variables are always started with ``OUT.''
+###        The output variables are always started with ``MCMC.''
 ###
 ### GENERALIZATION
 ###        If you are interested in developing new copula models based on the
@@ -19,7 +19,7 @@
 ###
 ### DATE
 ###        CREATED: Mon Jan 09 17:12:04 CET 2012
-###        CURRENT: Mon Apr 23 18:00:22 CEST 2012
+###        CURRENT: Tue Mar 05 17:22:35 CET 2013
 ###############################################################################
 
 ###----------------------------------------------------------------------------
@@ -27,7 +27,7 @@
 ###----------------------------------------------------------------------------
 
 ## SHORT MODEL DESCRIPTION
-ModelDescription <- "bb7_copula_with_variable_selection"
+ModelDescription <- "bb7_copula_with_vs"
 
 ## COPULA DENSITY NAME AND PARAMETERS
 CplNM <- "BB7"
@@ -58,7 +58,7 @@ MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(pathLibRoot, "data/SP100-SP600-20130116.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP600-20130116.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
@@ -131,19 +131,6 @@ varSelArgs[[3]][["tau"]] <- list(cand = NULL,
                                  init = "random")
 varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
                                      init = "random")
-
-## varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
-##                              init = "all-in")
-## varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
-##                              init = "all-out")
-## varSelArgs[[2]][[1]] <- list(cand = c(2, 3),
-##                              init = "random")
-## varSelArgs[[2]][[2]] <- list(cand = c(2, 3),
-##                              init = "all-out")
-## varSelArgs[[3]][[1]] <- list(cand = c(2, 3, 4),
-##                              init = c(2, 3))
-## varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
-##                              init = "random")
 
 
 ###----------------------------------------------------------------------------
@@ -248,7 +235,9 @@ propArgs[[3]][[2]] <-
 ## cross-validation. And "partiMethod" tells how to partition the data. Testing
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
-crossValidArgs <- list(N.subsets = 1,
+
+nCross <- 6
+crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
                        testRatio = 0.2)
 
@@ -257,7 +246,7 @@ crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
 ## nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
-sampleProp <- 0.05
+sampleProp <- 0.8
 
 ## BURN-IN RATIO
 burnin <- 0.1 # zero indicates no burn-in
@@ -281,7 +270,7 @@ priArgs[[1]][["mu"]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["phi"]] <-
   list("beta" = list(
@@ -289,7 +278,7 @@ priArgs[[1]][["phi"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["df"]] <-
   list("beta" = list(
@@ -297,7 +286,7 @@ priArgs[[1]][["df"]] <-
            input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["lmd"]] <-
   list("beta" = list(
@@ -305,7 +294,7 @@ priArgs[[1]][["lmd"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 0.8),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 priArgs[[2]][["mu"]] <-
@@ -314,7 +303,7 @@ priArgs[[2]][["mu"]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["phi"]] <-
   list("beta" = list(
@@ -322,7 +311,7 @@ priArgs[[2]][["phi"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["df"]] <-
   list("beta" = list(
@@ -330,7 +319,7 @@ priArgs[[2]][["df"]] <-
            input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["lmd"]] <-
   list("beta" = list(
@@ -338,7 +327,7 @@ priArgs[[2]][["lmd"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 0.8),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 priArgs[[3]][["tau"]] <-
@@ -347,7 +336,7 @@ priArgs[[3]][["tau"]] <-
            input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
@@ -355,7 +344,7 @@ priArgs[[3]][["lambdaL"]] <-
            input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "g-prior", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = nObs)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------

@@ -16,11 +16,31 @@
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012;
 ##'       Current: Wed Mar 07 16:56:30 CET 2012.
-CplMain <- function(CplConfigFile, Training.Idx)
+CplMain <- function(Training.Idx, CplConfigFile)
 {
 ###----------------------------------------------------------------------------
 ### Load user setup file
 ###----------------------------------------------------------------------------
+  ## Load dependences
+  require("mvtnorm", quietly = TRUE)
+
+  ## Load the sourceDir tool
+  R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
+  if(length(R_CPL_LIB_ROOT_DIR) == 0L)
+    {
+      stop("R_CPL_LIB_ROOT_DIR is not set properly!")
+    }
+
+  sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
+             envir = .GlobalEnv)
+
+  ## Load the whole library
+  Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
+                          byte.compile = 0,
+                          recursive = TRUE,
+                          ignore.error = TRUE)
+
+  ## Source the configuration file for the model
   source(CplConfigFile, local = TRUE)
 
 ###----------------------------------------------------------------------------
@@ -29,18 +49,12 @@ CplMain <- function(CplConfigFile, Training.Idx)
 
 ###----------------------------------------------------------------------------
 ### Initialize the MCMC
-### This section should be in a function so that it can be called easily for
-### parallel computing and other purpose. The input should be the
-### cross-validation training and testing indices.
-### TODO:crossValidIdx should be reorganized
 ###----------------------------------------------------------------------------
-
-  ## envCurr <- environment()
-  ## MCMCFun <- function(Traning.Idx, Testing.Idx, parent.env = envCurr)
-  ## {
 
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
+
+  ## Training.Idx <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
   nTraining <- length(Training.Idx)
   MdlTraining.X <- rapply(object=Mdl.X,
                           f = subsetFun,
@@ -57,16 +71,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
-  ## Initialize "staticCache" structure
-  ## u <- matrix(NA, dim(MdlTraining.Y[[1]])[1], length(MdlTraining.Y),
-  ##             dimnames = list(NULL, names(MdlTraining.Y)))
-
-  ## staticCache <- list(Mdl.logPri =  MdlDataStruc,
-  ##                    Mdl.par = MdlDataStruc,
-  ##                    Mdl.u = u,
-  ##                    Mdl.d = u,
-  ##                    tauTabular = tauTabular)
-
   ## Assign the initial values
   initParOut <- initPar(
       varSelArgs = varSelArgs,
@@ -79,7 +83,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
   optimInit <- TRUE
-  betaTest <- NULL
 
   ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
 
@@ -157,22 +160,18 @@ CplMain <- function(CplConfigFile, Training.Idx)
                   Mdl.beta = Mdl.beta,
                   Mdl.betaIdx = Mdl.betaIdx,
                   parUpdate = parUpdate)
-
-              ## betaTest <- rbind(betaTest, betaVecOptim[["par"]])
-              ## print(betaVecOptim)
             }
 
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 100)
+          if(nLoopInit >= 10)
             {
               ## InitGood <- TRUE
               cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
               cat("Trying to continue without initial value optimization.\n\n")
               break
             }
-
         }
     }
 
@@ -292,17 +291,6 @@ CplMain <- function(CplConfigFile, Training.Idx)
                       MCMC.AccProb = MCMC.AccProb,
                       MCMCUpdate = MCMCUpdate)
     }
-  ## MCMC.out <- list(MCMC.beta = MCMC.beta,
-  ##                  MCMC.betaIdx = MCMC.betaIdx,
-  ##                  MCMC.par = MCMC.par,
-  ##                  MCMC.AccProb = MCMC.AccProb)
-
-###----------------------------------------------------------------------------
-### RUN THE MCMC
-### Cross-validation is independent for all folds. In order to parallel it via
-### mcmlapply() function in the parallel package in R, we write the sequential
-### code with malapply().
-### ---------------------------------------------------------------------------
 
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)

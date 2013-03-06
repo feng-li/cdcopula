@@ -1,0 +1,144 @@
+#! /usr/bin/env Rscript
+args <- commandArgs(TRUE); if("--help" %in% args){cat("
+NAME:
+
+    CplRun - Run the covariate-dependent copula model
+
+DESCRIPTION:
+
+    An R script that performs the MCMC and cross-validation for
+    covariate-dependent copula model.
+
+USAGE:
+
+    CplRun <CplConfigFile.R>
+    CplRun --help
+
+ARGUMENTS:
+
+    <CplConfigFile.R>:
+
+        The copula configuration file. See example files under inst/config/.
+
+    --help:
+
+        Show the help file.
+
+ENVIRONMENT:
+
+     The script depends on the environment variable R_CPL_LIB_ROOT_DIR which
+     points to the location of the copula code to be set properly before
+     running the MCMC. One may set it in the .Renviron file under the $HOME
+     directory.
+
+     Make sure the file is executable and is available under $PATH environment
+     so that the computer can find it if you are at non-interactive mode.
+
+DETAILS:
+
+    The code are parallelized with ``parallel'' package and not designed for
+    Windows machine.
+
+VERSION:
+
+    Initial: Wed Jan 09 22:38:48 CET 2013
+    Current: Wed Mar 06 10:12:46 CET 2013
+
+AUTHOR:
+
+    Feng Li, Department of Statistics, Stockholm University
+
+");q()}
+require("methods", quietly = TRUE)
+###----------------------------------------------------------------------------
+### MODEL CONFIGURE PATH
+###----------------------------------------------------------------------------
+R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
+if(length(R_CPL_LIB_ROOT_DIR) == 0L)
+  {
+    stop("R_CPL_LIB_ROOT_DIR is not set properly!")
+  }
+
+{if(interactive())
+   { ## PASS INTERNALLY
+
+     ## PATH TO THE MODEL CONFIGURATION FILE
+     CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR, "/inst/config/config.main.sp100-600.R")
+
+   }
+else
+  {## Pass via command argument
+    if((length(args) == 1L))
+      {
+        CplConfigFile <- args
+      }
+    else
+      {
+        stop("One and only one configuration file required. Try --help.")
+      }
+  }
+}
+
+###----------------------------------------------------------------------------
+### LOAD THE CODE LIBRARY AND INITIALIZE R ENVIRONMENT
+###----------------------------------------------------------------------------
+
+## Load dependences
+require("mvtnorm", quietly = TRUE)
+require("parallel", quietly = TRUE)
+
+## Load the sourceDir tool
+sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
+           envir = .GlobalEnv)
+
+## Load the whole library
+Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
+                        byte.compile = 0,
+                        recursive = TRUE,
+                        ignore.error = TRUE)
+
+## Initialize R environment
+source(CplConfigFile, local = TRUE)
+
+## Set Parallel Computing environment
+cl <- makeCluster(crossValidArgs$N.subsets)
+
+## Recording starting time
+Starting.time <- proc.time()
+###----------------------------------------------------------------------------
+### MCMC
+###----------------------------------------------------------------------------
+
+OUT.CplCross <- parLapply(
+    cl = cl,
+    X = crossValidIdx[["training"]],
+    fun = CplMain,
+    CplConfigFile = CplConfigFile)
+
+###----------------------------------------------------------------------------
+### POSTERIOR INFERENCE, PREDICTION ETC
+###----------------------------------------------------------------------------
+
+## Calculate the LPDS
+logPredLst <- clusterMap(
+    cl = cl,
+    fun = logPredDens,
+    CplOut = OUT.CplCross,
+    Testing.Idx = crossValidIdx[["testing"]])
+
+LPDS <- logPredDensScore(logPredLst = logPredLst)
+
+###----------------------------------------------------------------------------
+### FINISH THE WORK AND SAVE THE OUTPUT
+###----------------------------------------------------------------------------
+
+## Stop the parallel environment
+stopCluster(cl)
+
+save.all(save.output = save.output,
+         ModelDescription = ModelDescription,
+         Starting.time = Starting.time)
+
+###----------------------------------------------------------------------------
+### THE END
+###----------------------------------------------------------------------------

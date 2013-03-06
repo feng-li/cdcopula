@@ -1,34 +1,32 @@
 ##' <title>
 ##'
 ##' <description>
-##' @param CplMain.out
-##' @param Testing.Idx
+##' @param CplOut
 ##' @param MdlTesting.X
 ##' @param MdlTesting.Y
+##' @param Testing.Idx
 ##' @return "matrix" "mcmc sample by Lik.len"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013;
 ##'       Current: Mon Feb 25 19:21:03 CET 2013.
-logPredDens <- function(CplMain.out,Testing.Idx = NA,
-                        MdlTesting.X, MdlTesting.Y)
+logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
   {
-
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
 ###----------------------------------------------------------------------------
-    list2env(CplMain.out, envir = environment())
+    list2env(CplOut, envir = environment())
 
 ###----------------------------------------------------------------------------
 ### The testing covariates
 ###----------------------------------------------------------------------------
     ## Unless user specify the predict covariates, use the default in the
     ## configure files.
-
-
-    subsetFun <- function(x, idx)x[idx, , drop = FALSE]
     if(missing(MdlTesting.X) || missing(MdlTesting.Y))
       {
+        subsetFun <- function(x, idx)x[idx, , drop = FALSE]
+        ## Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
+
         MdlTesting.X <- rapply(object=Mdl.X,
                                f = subsetFun,
                                idx = Testing.Idx,
