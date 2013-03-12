@@ -1,5 +1,5 @@
 #! /usr/bin/env Rscript
-args <- commandArgs(TRUE); if("--help" %in% args){cat("
+args <- commandArgs(TRUE); if(!interactive()&("--help" %in% args)){cat("
 NAME:
 
     CplRun - Run the covariate-dependent copula model
@@ -109,22 +109,41 @@ Starting.time <- proc.time()
 ### MCMC
 ###----------------------------------------------------------------------------
 
-OUT.CplCross <- parLapply(
-    cl = cl,
-    X = crossValidIdx[["training"]],
-    fun = CplMain,
-    CplConfigFile = CplConfigFile)
+if(!interactive())
+{
+  OUT.CplCross <- parLapply(
+      cl = cl,
+      X = crossValidIdx[["training"]],
+      fun = CplMain,
+      CplConfigFile = CplConfigFile)
+} else
+{
+  OUT.CplCross <- lapply(
+      X = crossValidIdx[["training"]],
+      FUN = CplMain,
+      CplConfigFile = CplConfigFile)
+}
 
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
 
 ## Calculate the LPDS
-logPredLst <- clusterMap(
-    cl = cl,
-    fun = logPredDens,
-    CplOut = OUT.CplCross,
-    Testing.Idx = crossValidIdx[["testing"]])
+if(!interactive())
+{
+  logPredLst <- clusterMap(
+      cl = cl,
+      fun = logPredDens,
+      CplOut = OUT.CplCross,
+      Testing.Idx = crossValidIdx[["testing"]])
+} else
+{
+  logPredLst <- mapply(
+      FUN = logPredDens,
+      CplOut = OUT.CplCross,
+      Testing.Idx = crossValidIdx[["testing"]],
+      SIMPLIFY = FALSE)
+}
 
 LPDS <- logPredDensScore(logPredLst = logPredLst)
 

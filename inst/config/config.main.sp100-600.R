@@ -3,7 +3,7 @@
 ###        COPULA MODEL WITH COVARIATE--DEPENDENT
 ###
 ### SYSTEM REQUIREMENTS
-###        R > = 2.14.0 with packages ``mvtnorm''
+###        R > = 2.15.3 with packages ``mvtnorm''
 ###        BLAS (optional)
 ###
 ### INPUT  VARIABLES
@@ -236,7 +236,7 @@ propArgs[[3]][[2]] <-
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
 
-nCross <- 6
+nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
                        testRatio = 0.2)
@@ -270,7 +270,7 @@ priArgs[[1]][["mu"]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["phi"]] <-
   list("beta" = list(
@@ -278,7 +278,7 @@ priArgs[[1]][["phi"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["df"]] <-
   list("beta" = list(
@@ -286,7 +286,7 @@ priArgs[[1]][["df"]] <-
            input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[1]][["lmd"]] <-
   list("beta" = list(
@@ -294,7 +294,7 @@ priArgs[[1]][["lmd"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 0.8),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 priArgs[[2]][["mu"]] <-
@@ -303,7 +303,7 @@ priArgs[[2]][["mu"]] <-
            input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["phi"]] <-
   list("beta" = list(
@@ -311,7 +311,7 @@ priArgs[[2]][["phi"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["df"]] <-
   list("beta" = list(
@@ -319,7 +319,7 @@ priArgs[[2]][["df"]] <-
            input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[2]][["lmd"]] <-
   list("beta" = list(
@@ -327,7 +327,7 @@ priArgs[[2]][["lmd"]] <-
            input = list(type = "lognorm",  mean = 1, variance = 0.8),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 priArgs[[3]][["tau"]] <-
@@ -336,7 +336,7 @@ priArgs[[3]][["tau"]] <-
            input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
@@ -344,7 +344,7 @@ priArgs[[3]][["lambdaL"]] <-
            input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
-           mean = 0, covariance = "identity", shrinkage = nObs)),
+           mean = 0, covariance = "identity", shrinkage = 1)),
        "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------

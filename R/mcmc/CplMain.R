@@ -71,6 +71,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
+  browser()
+  cat("test")
   ## Assign the initial values
   initParOut <- initPar(
       varSelArgs = varSelArgs,
