@@ -71,8 +71,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
 
-  browser()
-  cat("test")
   ## Assign the initial values
   initParOut <- initPar(
       varSelArgs = varSelArgs,
@@ -146,12 +144,13 @@ CplMain <- function(Training.Idx, CplConfigFile)
               varSelArgs = varSelArgs,
               MargisTypes = MargisTypes,
               priArgs = priArgs,
-              parUpdate = parUpdate,
-              staticCache = staticCache), silent = TRUE)
+              staticCache = staticCache,
+              parUpdate = parUpdate), silent = TRUE)
 
           if(is(betaVecOptim, "try-error") == TRUE ||
              betaVecOptim$convergence != 0L)
             {
+              cat("Initializing algorithm failed,  retry now...\n")
               InitGood <- FALSE
             }
           else
@@ -190,7 +189,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
       MargisTypes = MargisTypes,
       priArgs = priArgs,
       parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-      staticCache = staticCache,
       call.out = "staticCache")[["staticCache"]]
 
 ###----------------------------------------------------------------------------

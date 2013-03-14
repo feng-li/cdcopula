@@ -28,6 +28,7 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
   tol <- .Machine$double.eps*1e8
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
+
   if(any(u.bad1))
     {
       u[u.bad1] <- u[u.bad1] - tol

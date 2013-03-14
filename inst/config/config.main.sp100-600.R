@@ -3,7 +3,7 @@
 ###        COPULA MODEL WITH COVARIATE--DEPENDENT
 ###
 ### SYSTEM REQUIREMENTS
-###        R > = 2.15.3 with packages ``mvtnorm''
+###        R > = 2.15.3 with packages ``mvtnorm'',  ``parallel''
 ###        BLAS (optional)
 ###
 ### INPUT  VARIABLES
@@ -110,22 +110,22 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 
 varSelArgs <- MdlDataStruc
 varSelArgs[[1]][["mu"]] <- list(cand = NULL,
-                             init = "random")
+                                init = "random")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
-                             init = "random")
+                                 init = "random")
 varSelArgs[[1]][["df"]] <- list(cand = NULL,
-                             init = "random")
+                                init = "random")
 varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
-                             init = "random")
+                                 init = "random")
 
 varSelArgs[[2]][["mu"]] <- list(cand = NULL,
-                             init = "random")
+                                init = "random")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL,
-                             init = "random")
+                                 init = "random")
 varSelArgs[[2]][["df"]] <- list(cand = NULL,
-                             init = "random")
+                                init = "random")
 varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
-                             init = "random")
+                                 init = "random")
 
 varSelArgs[[3]][["tau"]] <- list(cand = NULL,
                                  init = "random")

@@ -54,6 +54,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
   ## Debugging symbol: if the warning should be printed out immediately.
   immediate. <- FALSE
 
+  browser()
   ## The cached (pre-saved) information. The idea is to make even staticCache
   ## is not available, the log posterior is still working.
   if(missing(staticCache))
@@ -192,5 +193,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
               Mdl.logLik = Mdl.logLik,
               Mdl.logPri = Mdl.logPri,
               staticCache = staticCache)
+  print(Mdl.logPost)
   return(out)
 }
