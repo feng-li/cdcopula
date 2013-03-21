@@ -92,7 +92,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
       InitGood <- FALSE
       nLoopInit <- 0
 
-      cat("Optimizing the initial values,  this may take a while...\n\n")
+      cat("Optimizing initial values, may take a few minutes...\n\n")
 
       while(InitGood == FALSE)
         {
@@ -133,8 +133,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
           betaVecOptim <- try(optim(
               par = betaVecInit,
               fn = logPostOptim,
-              control = list(fnscale = -1, maxit = 1000),
-              method = "BFGS",
+              control = list(fnscale = -1),
+              ## method = "BFGS", #Use the default,  BFGS sometimes collapses
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
@@ -147,10 +147,9 @@ CplMain <- function(Training.Idx, CplConfigFile)
               staticCache = staticCache,
               parUpdate = parUpdate), silent = TRUE)
 
-          if(is(betaVecOptim, "try-error") == TRUE ||
-             betaVecOptim$convergence != 0L)
+          if(is(betaVecOptim, "try-error") == TRUE) # It does not have to be converged.
             {
-              cat("Initializing algorithm failed,  retry now...\n")
+              cat("Initializing algorithm failed,  retry again...\n")
               InitGood <- FALSE
             }
           else

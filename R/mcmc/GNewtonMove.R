@@ -155,8 +155,9 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
 
-      HessObsInv.pp <- try(solve(HessObs.pp), silent = TRUE) # pp-by-pp
 
+      ## HessObsInv.pp <- qr.solve(HessObs.pp)
+      HessObsInv.pp <- try(solve(HessObs.pp), silent = TRUE) # pp-by-pp
       if(is(HessObsInv.pp, "try-error")) browser()
 
       ## The general Newton's Update

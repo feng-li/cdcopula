@@ -71,18 +71,18 @@ nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -267,7 +267,7 @@ priArgs <- MdlDataStruc
 priArgs[[1]][["mu"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0, variance = 1),
+           input = list(type = "norm",  mean = 0, variance = 10),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -283,7 +283,7 @@ priArgs[[1]][["phi"]] <-
 priArgs[[1]][["df"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
+           input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -291,7 +291,7 @@ priArgs[[1]][["df"]] <-
 priArgs[[1]][["lmd"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 1, variance = 0.8),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -300,7 +300,7 @@ priArgs[[1]][["lmd"]] <-
 priArgs[[2]][["mu"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0, variance = 1),
+           input = list(type = "norm",  mean = 0, variance = 10),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -316,7 +316,7 @@ priArgs[[2]][["phi"]] <-
 priArgs[[2]][["df"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "glognorm",  mean = 6, variance = 10, a = 4),
+           input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -324,7 +324,7 @@ priArgs[[2]][["df"]] <-
 priArgs[[2]][["lmd"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "lognorm",  mean = 1, variance = 0.8),
+           input = list(type = "lognorm",  mean = 1, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -333,7 +333,7 @@ priArgs[[2]][["lmd"]] <-
 priArgs[[3]][["tau"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.99),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -341,7 +341,7 @@ priArgs[[3]][["tau"]] <-
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.99),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),

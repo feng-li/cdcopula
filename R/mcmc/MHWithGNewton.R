@@ -221,7 +221,7 @@ MHWithGNewton <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
       beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
       ## beta.propRev.sigma <- diag1(length(beta.propRev.mean))*0.1
-
+      ## browser()
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
 ###----------------------------------------------------------------------------

@@ -30,6 +30,10 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         Mdl.betaIdx = Mdl.betaIdx,
         parUpdate = parUpdate)
 
+    ## cat(betaVec, "\n")
+
+    ## if(any(abs(betaVec)>1000)) browser()
+
     ## Update logPost
     out <- logPost(
         CplNM = CplNM,

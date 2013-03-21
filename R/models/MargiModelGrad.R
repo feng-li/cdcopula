@@ -3,10 +3,10 @@
 ##'
 ##' This should be exactly the same as the usual way we do.
 ##' @title Log likelihood for marginal densities
-##' @param parMargis
-##' @param Mdl.Y
-##' @param MargisTypes
-##' @param chainCaller
+##' @param y "vector"
+##' @param par "list"
+##' @param type "list" Type of the marginal model
+##' @param parCaller "character string" Indicates which parameter is called.
 ##' @return
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
@@ -59,6 +59,7 @@ MargiModelGrad <- function(y, par, type, parCaller)
                ((y-mu)^2+sign^2*df*phi^2))^(df/2)/
                 ((1+lmd)*beta(df/2, 1/2))
 
+            browser()
           }
         else if(tolower(parCaller) == "df")
           {
@@ -67,19 +68,18 @@ MargiModelGrad <- function(y, par, type, parCaller)
             sign <- 1*I0 + lmd*I
             sign2 <- I0*(-1) + I*1
 
-
             A <- cbind(1/2, df/2, df/2)
             B <- cbind(1+df/2, 1+df/2)
             Z <- (df*phi^2*sign^2)/((y-mu)^2+sign^2*df*phi^2)
 
             out <- (sign/(2*(1+lmd)*df^2*beta(df/2, 1/2)))*
               (
-                  sign2*4*(df*phi^2*sign^2/Z)^(df/2)*
+                  sign2*4*Z^(df/2)*
                   ghypergeo(A, B, Z)+
                   (
                       df*(
                           -2*(y-mu)*sqrt(1/((y-mu)^2+sign^2*df*phi^2))*Z^(df/2)-
-                          sign2*df*ibeta(x = Z, a = df/2, 1/2)*
+                          sign2*df*ibeta(x = Z, a = df/2, b = 1/2)*
                           (log(Z)-digamma(df/2)+digamma((1+df)/2))
                           )
                       )

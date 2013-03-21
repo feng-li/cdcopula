@@ -23,7 +23,7 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
   ## Thanks to the advice from M. Smith
 
   ## Debugging symbol: if the warning should be printed out immediately.
-  immediate. <- FALSE
+  immediate. <- TRUE
 
   tol <- .Machine$double.eps*1e8
   u.bad1 <- (u > 1-tol)
@@ -38,7 +38,7 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
   if(any(u.bad0))
     {
       u[u.bad0] <- u[u.bad0] + tol
-      warning("u is to close to 0. Adjusted...",
+      warning("u is too close to 0. Adjusted...",
               immediate. = immediate.)
     }
 
