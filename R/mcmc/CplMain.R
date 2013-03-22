@@ -124,17 +124,20 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
           ## Optimize the initial values via BFGS.
           ## NOTE: The variable selection indicators are fixed (not optimized)
+
+          ## First initialize via "Nelder-Mead" method. This may not converge
+          ## but it provide a good initial values for an other BFGS run in next step
           betaVecInit <- parCplSwap(
               betaInput = Mdl.beta,
               Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx,
               parUpdate = parUpdate)
 
-          betaVecOptim <- try(optim(
+          betaVecNM <- optim(
               par = betaVecInit,
               fn = logPostOptim,
               control = list(fnscale = -1),
-              ## method = "BFGS", #Use the default,  BFGS sometimes collapses
+              method = "Nelder-Mead", #Use the default,  BFGS sometimes collapses
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
@@ -145,7 +148,29 @@ CplMain <- function(Training.Idx, CplConfigFile)
               MargisTypes = MargisTypes,
               priArgs = priArgs,
               staticCache = staticCache,
-              parUpdate = parUpdate), silent = TRUE)
+              parUpdate = parUpdate)[["par"]]
+
+          Mdl.betaNM <- parCplSwap(
+              betaInput = betaVecNM,
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              parUpdate = parUpdate)
+          betaVecOptim <- try(optim(
+              par = betaVecNM,
+              fn = logPostOptim,
+              control = list(fnscale = -1),
+              method = "BFGS",
+              CplNM = CplNM,
+              Mdl.Y = MdlTraining.Y,
+              Mdl.X = MdlTraining.X,
+              Mdl.beta = Mdl.betaNM,
+              Mdl.betaIdx = Mdl.betaIdx,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              staticCache = staticCache,
+              parUpdate = parUpdate), silent = FALSE)
 
           if(is(betaVecOptim, "try-error") == TRUE) # It does not have to be converged.
             {
@@ -157,7 +182,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
               InitGood <- TRUE
               Mdl.beta <- parCplSwap(
                   betaInput = betaVecOptim[["par"]],
-                  Mdl.beta = Mdl.beta,
+                  Mdl.beta = Mdl.betaNM,
                   Mdl.betaIdx = Mdl.betaIdx,
                   parUpdate = parUpdate)
             }
@@ -165,7 +190,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 10)
+          if(nLoopInit >= 3)
             {
               ## InitGood <- TRUE
               cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
@@ -245,7 +270,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
           if(tolower(algmArgs[["type"]]) == "gnewtonmove")
             {
               ## staticCache <- list(u = u, Mdl.par = Mdl.par)
-              MHOut <- MHWithGNewton(
+              MHOut <- MHWithGNewtonMove(
                   CplNM = CplNM,
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
@@ -272,6 +297,14 @@ CplMain <- function(Training.Idx, CplConfigFile)
                   MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
                   MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
                     staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
+
+
+                  ## if(CompCaller  == "SP100"& parCaller  == "df"&
+                  ##    iIter>1  & MHOut[["accept.prob"]]>0.3 &
+                  ##    all(MCMC.par[[CompCaller]][[parCaller]][iIter, ] ==
+                  ##    MCMC.par[[CompCaller]][[parCaller]][iIter-1, ])) browser()
+                  print(MCMC.par[[CompCaller]][[parCaller]][iIter, 1])
+
                 }
             }
           else

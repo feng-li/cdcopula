@@ -101,7 +101,7 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 source(CplConfigFile, local = TRUE)
 
 ## Set Parallel Computing environment
-cl <- makeCluster(crossValidArgs$N.subsets)
+## cl <- makeCluster(crossValidArgs$N.subsets, outfile = "")
 
 ## Recording starting time
 Starting.time <- proc.time()
@@ -152,7 +152,7 @@ LPDS <- logPredDensScore(logPredLst = logPredLst)
 ###----------------------------------------------------------------------------
 
 ## Stop the parallel environment
-stopCluster(cl)
+## stopCluster(cl)
 
 save.all(save.output = save.output,
          ModelDescription = ModelDescription,

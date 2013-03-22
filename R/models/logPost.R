@@ -170,7 +170,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ### THE STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
 
-  if("staticCache" %in% call.out)
+  if(any(c("posterior","staticCache") %in% call.out))
     {
       staticCache[["Mdl.logPri"]] <- Mdl.logPri
       staticCache[["Mdl.par"]] <- Mdl.par

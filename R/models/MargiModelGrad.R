@@ -59,7 +59,6 @@ MargiModelGrad <- function(y, par, type, parCaller)
                ((y-mu)^2+sign^2*df*phi^2))^(df/2)/
                 ((1+lmd)*beta(df/2, 1/2))
 
-            browser()
           }
         else if(tolower(parCaller) == "df")
           {
@@ -84,6 +83,8 @@ MargiModelGrad <- function(y, par, type, parCaller)
                           )
                       )
                   )
+
+
           }
         else if(tolower(parCaller) == "phi")
           {
