@@ -1,6 +1,6 @@
-##' <title>
+##' The log predictive likelihood density.
 ##'
-##' <description>
+##' This is used for prediction and LPDS.
 ##' @param CplOut
 ##' @param MdlTesting.X
 ##' @param MdlTesting.Y
@@ -104,6 +104,8 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
                                        idx = j,
                                        how = "replace")
 
+            ## The log predictive likelihood.
+            ## Note that all the updating flags should be switched on
             logPred <- logPost(
                 CplNM = CplNM,
                 Mdl.Y = MdlTesting.Y.curr,
@@ -114,7 +116,7 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
                 varSelArgs = varSelArgs,
                 MargisTypes = MargisTypes,
                 priArgs = priArgs,
-                parUpdate = MCMCUpdate,
+                parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
                 call.out = c("likelihood"))[["Mdl.logLik"]]
 
             which.j <- which.j + 1
