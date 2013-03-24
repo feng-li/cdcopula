@@ -24,7 +24,6 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
 
   ## Debugging symbol: if the warning should be printed out immediately.
   immediate. <- FALSE
-  browser()
 
   tol <- .Machine$double.eps*1e8
   u.bad1 <- (u > 1-tol)
