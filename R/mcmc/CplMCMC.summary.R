@@ -23,15 +23,17 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
       printIter <- c(printIter, nIter)
     }
 
+  dev.width <- getOption("width")
+
   if(iIter %in% printIter)
     {
       donePercent <- round(iIter/nIter*100)
 
       welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
                        round(burnin*100), "% burnin)\n", sep = "")
-      cat("\n=====================================================================\n")
+      cat("\n", rep("=", dev.width), "\n", sep = "")
       cat(welcome)
-      cat(  "=====================================================================\n")
+      cat(rep("=", dev.width), "\n", sep = "")
 
       ## format.name0 <- c("Done(%)|", parsList)
       ## format.name <- format(c("Done(%)|", parsList), width = 13, justify = "right")
@@ -96,7 +98,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                   rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean", "beta.ineff")
 
                   cat("\n", i, j, "(", donePercent, "% )\n")
-                  cat(".....................................................................")
+                  cat(rep("-", dev.width), sep = "")
                   print(obj.par)
                   print(obj)
                 }
@@ -106,7 +108,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 
       if(iIter == nIter)
         {
-          cat("----------------------------------------------------------------------\n\n")
+          cat(rep("-", dev.width), "\n\n",  sep = "")
         }
     }
 
