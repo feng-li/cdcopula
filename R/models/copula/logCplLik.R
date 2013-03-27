@@ -29,6 +29,10 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
   u.bad1 <- (u > 1-tol)
   u.bad0 <- (u < 0+tol)
 
+
+  if(any(is.na(u.bad1))) browser()
+
+
   if(any(u.bad1))
     {
       u[u.bad1] <- u[u.bad1] - tol

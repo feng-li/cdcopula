@@ -109,6 +109,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           errorFlag <- TRUE
           break
         }
+
       ## Gradient Hessian for the prior *including non selected covariates*
       ## NOTE: The Hessian matrix of the prior is also approximated, we should
       ## use the explicit Hessian whenever possible.
@@ -155,10 +156,14 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
 
-
       ## HessObsInv.pp <- qr.solve(HessObs.pp)
-      HessObsInv.pp <- try(solve(HessObs.pp), silent = TRUE) # pp-by-pp
-      if(is(HessObsInv.pp, "try-error")) browser()
+      HessObsInv.pp <- try(qr.solve(HessObs.pp), silent = TRUE) # pp-by-pp
+
+      if(is(HessObsInv.pp, "try-error"))
+        {
+          errorFlag <- TRUE
+          break
+        }
 
       ## The general Newton's Update
       if((iStep <= kSteps))

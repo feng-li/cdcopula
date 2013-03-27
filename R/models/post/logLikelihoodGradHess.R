@@ -273,7 +273,8 @@ logLikelihoodGradHess <- function(
 
   ## plot(logLikGradObs)
   ## print(chainCaller)
-  ## if(chainCaller[2] == "df") browser()
+  ## if(chainCaller[2] == "df")
+  ## plot(logLikGradObs, xlab = paste(chainCaller))
 
   return(out)
 }

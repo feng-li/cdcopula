@@ -72,17 +72,17 @@ nObs <- length(nObsIdx)
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -109,36 +109,35 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = NULL,
-                                init = "random")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL,
-                                 init = "random")
-varSelArgs[[1]][["df"]] <- list(cand = NULL,
-                                init = "random")
-varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
-                                 init = "random")
+varSelArgs[[1]][["mu"]] <- list(cand = 2:9,
+                                init = "all-in")
+varSelArgs[[1]][["phi"]] <- list(cand = 2:9,
+                                 init = "all-in")
+varSelArgs[[1]][["df"]] <- list(cand = 2:9,
+                                init = "all-in")
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:9,
+                                 init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = NULL,
-                                init = "random")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL,
-                                 init = "random")
-varSelArgs[[2]][["df"]] <- list(cand = NULL,
-                                init = "random")
-varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
-                                 init = "random")
+varSelArgs[[2]][["mu"]] <- list(cand = 2:9,
+                                init = "all-in")
+varSelArgs[[2]][["phi"]] <- list(cand = 2:9,
+                                 init = "all-in")
+varSelArgs[[2]][["df"]] <- list(cand = 2:9,
+                                init = "all-in")
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:9,
+                                 init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL,
-                                 init = "random")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
-                                     init = "random")
-
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
+                                 init = "all-in")
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
+                                     init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 50
+nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -155,17 +154,17 @@ track.MCMC = TRUE
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
 MCMCUpdate[[1]][[1]] <- T
-MCMCUpdate[[1]][[2]] <- F
-MCMCUpdate[[1]][[3]] <- F
-MCMCUpdate[[1]][[4]] <- F
+MCMCUpdate[[1]][[2]] <- T
+MCMCUpdate[[1]][[3]] <- T
+MCMCUpdate[[1]][[4]] <- T
 
-MCMCUpdate[[2]][[1]] <- F
-MCMCUpdate[[2]][[2]] <- F
-MCMCUpdate[[2]][[3]] <- F
-MCMCUpdate[[2]][[4]] <- F
+MCMCUpdate[[2]][[1]] <- T
+MCMCUpdate[[2]][[2]] <- T
+MCMCUpdate[[2]][[3]] <- T
+MCMCUpdate[[2]][[4]] <- T
 
-MCMCUpdate[[3]][[1]] <- F
-MCMCUpdate[[3]][[2]] <- F
+MCMCUpdate[[3]][[1]] <- T
+MCMCUpdate[[3]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -356,31 +355,31 @@ priArgs[[3]][["lambdaL"]] <-
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
 betaInit <- MdlDataStruc
+betaInit[[1]][[1]] <- "random"
+betaInit[[1]][[2]] <- "random"
+betaInit[[1]][[3]] <- "random"
+betaInit[[1]][[4]] <- "random"
+
+betaInit[[2]][[1]] <- "random"
+betaInit[[2]][[2]] <- "random"
+betaInit[[2]][[3]] <- "random"
+betaInit[[2]][[4]] <- "random"
+
+betaInit[[3]][[1]] <- "random"
+betaInit[[3]][[2]] <- "random"
+
 ## betaInit[[1]][[1]] <- "random"
 ## betaInit[[1]][[2]] <- "random"
 ## betaInit[[1]][[3]] <- "random"
-## betaInit[[1]][[4]] <- "random"
+## betaInit[[1]][[4]] <- -0.11706760
 
 ## betaInit[[2]][[1]] <- "random"
 ## betaInit[[2]][[2]] <- "random"
 ## betaInit[[2]][[3]] <- "random"
-## betaInit[[2]][[4]] <- "random"
+## betaInit[[2]][[4]] <- -0.11707829
 
-## betaInit[[3]][[1]] <- "random"
-## betaInit[[3]][[2]] <- "random"
-
-betaInit[[1]][[1]] <- "random"
-betaInit[[1]][[2]] <- -0.07386206
-betaInit[[1]][[3]] <- -3.60276562
-betaInit[[1]][[4]] <- -0.11706760
-
-betaInit[[2]][[1]] <- 0.14084234
-betaInit[[2]][[2]] <- 0.02443366
-betaInit[[2]][[3]] <- -2.53630083
-betaInit[[2]][[4]] <- -0.11707829
-
-betaInit[[3]][[1]] <- -3.13519286
-betaInit[[3]][[2]] <- 0.60447399
+## betaInit[[3]][[1]] <- -3.13519286
+## betaInit[[3]][[2]] <- 0.60447399
 
 
  ## [1]  0.11535526 -0.07386206 -3.60276562 -0.11706760  0.14084234  0.02443366

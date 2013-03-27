@@ -190,7 +190,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 3)
+          if(nLoopInit >= 1)
             {
               ## InitGood <- TRUE
               cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
@@ -303,7 +303,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
                   ##    iIter>1  & MHOut[["accept.prob"]]>0.3 &
                   ##    all(MCMC.par[[CompCaller]][[parCaller]][iIter, ] ==
                   ##    MCMC.par[[CompCaller]][[parCaller]][iIter-1, ])) browser()
-                  print(MCMC.par[[CompCaller]][[parCaller]][iIter, 1])
+                  ## print(MCMC.par[[CompCaller]][[parCaller]][iIter, 1])
 
                 }
             }
