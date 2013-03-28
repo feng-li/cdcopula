@@ -128,20 +128,20 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
           return(list(errorFlag = TRUE))
         }
 
-      par(mfcol = c(5, 2))
-      plot(Mdl.par[[1]][[1]], type = "l")
-      plot(Mdl.par[[1]][[2]], type = "l")
-      plot(Mdl.par[[1]][[3]], type = "l")
-      plot(Mdl.par[[1]][[4]], type = "l")
+      ## par(mfcol = c(5, 2))
+      ## plot(Mdl.par[[1]][[1]], type = "l")
+      ## plot(Mdl.par[[1]][[2]], type = "l")
+      ## plot(Mdl.par[[1]][[3]], type = "l")
+      ## plot(Mdl.par[[1]][[4]], type = "l")
 
-      plot(Mdl.par[[3]][[1]], type = "l")
+      ## plot(Mdl.par[[3]][[1]], type = "l")
 
-      plot(Mdl.par[[2]][[1]], type = "l")
-      plot(Mdl.par[[2]][[2]], type = "l")
-      plot(Mdl.par[[2]][[3]], type = "l")
-      plot(Mdl.par[[2]][[4]], type = "l")
+      ## plot(Mdl.par[[2]][[1]], type = "l")
+      ## plot(Mdl.par[[2]][[2]], type = "l")
+      ## plot(Mdl.par[[2]][[3]], type = "l")
+      ## plot(Mdl.par[[2]][[4]], type = "l")
 
-      plot(Mdl.par[[3]][[2]], type = "l")
+      ## plot(Mdl.par[[3]][[2]], type = "l")
 
 ### Update marginal pdf and cdf
 ### the marginal u and only updated if the corresponding parameters are updated.

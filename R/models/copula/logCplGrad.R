@@ -22,25 +22,25 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
     ## Thanks to the advice from M. Smith
 
     ## Debugging symbol: if the warning should be printed out immediately.
-    immediate. <- FALSE
+    ## immediate. <- FALSE
 
-    tol <- .Machine$double.eps*1e8
+    ## tol <- .Machine$double.eps*1e8
 
-    u.bad1 <- (u > 1-tol)
-    u.bad0 <- (u < 0+tol)
-    if(any(u.bad1))
-      {
-        u[u.bad1] <- u[u.bad1]-tol
-        warning("u is too close to 1. Adjusted...",
-                immediate. = immediate.)
+    ## u.bad1 <- (u > 1-tol)
+    ## u.bad0 <- (u < 0+tol)
+    ## if(any(u.bad1))
+    ##   {
+    ##     u[u.bad1] <- u[u.bad1]-tol
+    ##     warning("u is too close to 1. Adjusted...",
+    ##             immediate. = immediate.)
 
-      }
-    if(any(u.bad0))
-      {
-        u[u.bad0] <- u[u.bad0] +tol
-        warning("u is too close to 1. Adjusted...",
-                immediate. = immediate.)
-      }
+    ##   }
+    ## if(any(u.bad0))
+    ##   {
+    ##     u[u.bad0] <- u[u.bad0] +tol
+    ##     warning("u is too close to 1. Adjusted...",
+    ##             immediate. = immediate.)
+    ##   }
 
 ###----------------------------------------------------------------------------
 ### Gradients for the copula
@@ -187,21 +187,21 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                 M12 <- 1-ub^theta
 
                 ## Numeric check if M12 is too close to 1 or 0.
-                tol <- .Machine$double.eps*1e8
-                M12.bad1 <- (M12> (1-tol))
-                if(any(M12.bad1))
-                  {
-                    M12[M12.bad1] <- 1 - tol
-                    warning("Numerical unstable on M12,  adjust on the cliff...",
-                            immediate. = immediate.)
-                  }
-                M12.bad0 <- (M12<tol)
-                if(any(M12.bad0))
-                  {
-                    M12[M12.bad0] <- tol
-                    warning("Numerical unstable on M12,  adjust on the cliff...",
-                            immediate. = immediate.)
-                  }
+                ## tol <- .Machine$double.eps*1e8
+                ## M12.bad1 <- (M12> (1-tol))
+                ## if(any(M12.bad1))
+                ##   {
+                ##     M12[M12.bad1] <- 1 - tol
+                ##     warning("Numerical unstable on M12,  adjust on the cliff...",
+                ##             immediate. = immediate.)
+                ##   }
+                ## M12.bad0 <- (M12<tol)
+                ## if(any(M12.bad0))
+                ##   {
+                ##     M12[M12.bad0] <- tol
+                ##     warning("Numerical unstable on M12,  adjust on the cliff...",
+                ##             immediate. = immediate.)
+                ##   }
 
 
                 M34 <- -log(M12) + ub^theta*delta*log(ub)*grad.delta.theta/M12
@@ -261,21 +261,21 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             T1 <- 1-(1-u)^theta
 
             ## Numeric check if T1 is too close to 1.
-            tol <- .Machine$double.eps*1e8
-            T1.bad1 <- (T1> (1-tol))
-            if(any(T1.bad1))
-              {
-                T1[T1.bad1] <- 1 - tol
-                warning("Numerical unstable on T1,  adjusted on the cliff...",
-                        immediate. = immediate.)
-              }
-            T1.bad0 <- (T1<tol)
-            if(any(T1.bad0))
-              {
-                T1[T1.bad0] <- tol
-                warning("Numerical unstable on T1,  adjusted on the cliff...",
-                        immediate. = immediate.)
-              }
+            ## tol <- .Machine$double.eps*1e8
+            ## T1.bad1 <- (T1> (1-tol))
+            ## if(any(T1.bad1))
+            ##   {
+            ##     T1[T1.bad1] <- 1 - tol
+            ##     warning("Numerical unstable on T1,  adjusted on the cliff...",
+            ##             immediate. = immediate.)
+            ##   }
+            ## T1.bad0 <- (T1<tol)
+            ## if(any(T1.bad0))
+            ##   {
+            ##     T1[T1.bad0] <- tol
+            ##     warning("Numerical unstable on T1,  adjusted on the cliff...",
+            ##             immediate. = immediate.)
+            ##   }
 
             L1 <- rowSums(T1^(-delta))-1
             PT1 <- matrix(T1[, 1]*T1[, 2])

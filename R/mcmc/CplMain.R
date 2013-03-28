@@ -82,7 +82,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- TRUE
+  optimInit <- FALSE
 
   ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
 
@@ -162,7 +162,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
           betaVecOptim <- try(optim(
               par = betaVecInit,
               fn = logPostOptim,
-              control = list(fnscale = -1),
+              control = list(fnscale = -1, maxit = 100),
               method = "BFGS",
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
