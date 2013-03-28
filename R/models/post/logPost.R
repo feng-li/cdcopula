@@ -51,6 +51,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
                     call.out = c("prior", "likelihood", "posterior", "staticCache")[3])
 {
+  errorFlag <- FALSE
+
   ## Debugging symbol: if the warning should be printed out immediately.
   immediate. <- FALSE
 
@@ -117,10 +119,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       ## print(Mdl.par$BB7$lambdaL)
       ## print(Mdl.beta$BB7$lambdaL)
 
-      if(any(is.na(unlist(Mdl.par))))
+      if(any(is.na(unlist(Mdl.par))) |
+         any(is.infinite((unlist(Mdl.par)))))
         {
           warning("DEBUGGING: NA happens when updating ``Mdl.par''...",
                   immediate. = immediate.)
+
+          return(list(errorFlag = TRUE))
         }
 
       par(mfcol = c(5, 2))
@@ -154,7 +159,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
               Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
               Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
 
-              if(any(is.na(Margi.ud[["u"]]))) browser()
+              ## if(any(is.na(Margi.ud[["u"]]))) browser()
 
               ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
             }
@@ -210,6 +215,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
   out <- list(Mdl.logPost = Mdl.logPost,
               Mdl.logLik = Mdl.logLik,
               Mdl.logPri = Mdl.logPri,
-              staticCache = staticCache)
+              staticCache = staticCache,
+              errorFlag = errorFlag)
   return(out)
 }

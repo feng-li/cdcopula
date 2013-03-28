@@ -133,37 +133,41 @@ CplMain <- function(Training.Idx, CplConfigFile)
               Mdl.betaIdx = Mdl.betaIdx,
               parUpdate = parUpdate)
 
-          betaVecNM <- optim(
-              par = betaVecInit,
-              fn = logPostOptim,
-              control = list(fnscale = -1),
-              method = "Nelder-Mead", #Use the default,  BFGS sometimes collapses
-              CplNM = CplNM,
-              Mdl.Y = MdlTraining.Y,
-              Mdl.X = MdlTraining.X,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              Mdl.parLink = Mdl.parLink,
-              varSelArgs = varSelArgs,
-              MargisTypes = MargisTypes,
-              priArgs = priArgs,
-              staticCache = staticCache,
-              parUpdate = parUpdate)[["par"]]
+          ## Update with Nelder-Mead method, slow
+          ## betaVecInit <- optim(
+          ##     par = betaVecInit,
+          ##     fn = logPostOptim,
+          ##     control = list(fnscale = -1),
+          ##     method = "Nelder-Mead", #Use the default,  BFGS sometimes collapses
+          ##     CplNM = CplNM,
+          ##     Mdl.Y = MdlTraining.Y,
+          ##     Mdl.X = MdlTraining.X,
+          ##     Mdl.beta = Mdl.beta,
+          ##     Mdl.betaIdx = Mdl.betaIdx,
+          ##     Mdl.parLink = Mdl.parLink,
+          ##     varSelArgs = varSelArgs,
+          ##     MargisTypes = MargisTypes,
+          ##     priArgs = priArgs,
+          ##     staticCache = staticCache,
+          ##     parUpdate = parUpdate)[["par"]]
 
-          Mdl.betaNM <- parCplSwap(
-              betaInput = betaVecNM,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              parUpdate = parUpdate)
+          ## Mdl.beta <- parCplSwap(
+          ##     betaInput = betaVecInit,
+          ##     Mdl.beta = Mdl.beta,
+          ##     Mdl.betaIdx = Mdl.betaIdx,
+          ##     parUpdate = parUpdate)
+
+
+          ## Update with BFGS method,  fast but might collapse
           betaVecOptim <- try(optim(
-              par = betaVecNM,
+              par = betaVecInit,
               fn = logPostOptim,
               control = list(fnscale = -1),
               method = "BFGS",
               CplNM = CplNM,
               Mdl.Y = MdlTraining.Y,
               Mdl.X = MdlTraining.X,
-              Mdl.beta = Mdl.betaNM,
+              Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx,
               Mdl.parLink = Mdl.parLink,
               varSelArgs = varSelArgs,
@@ -182,7 +186,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
               InitGood <- TRUE
               Mdl.beta <- parCplSwap(
                   betaInput = betaVecOptim[["par"]],
-                  Mdl.beta = Mdl.betaNM,
+                  Mdl.beta = Mdl.beta,
                   Mdl.betaIdx = Mdl.betaIdx,
                   parUpdate = parUpdate)
             }

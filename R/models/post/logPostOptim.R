@@ -31,11 +31,9 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         parUpdate = parUpdate)
 
     ## cat(betaVec, "\n")
-
     ## if(any(abs(betaVec)>1000)) browser()
-
     ## Update logPost
-    out <- logPost(
+    logPostOut <- logPost(
         CplNM = CplNM,
         Mdl.Y = Mdl.Y,
         Mdl.X = Mdl.X,
@@ -46,7 +44,18 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         MargisTypes = MargisTypes,
         priArgs = priArgs,
         staticCache = staticCache,
-        parUpdate = parUpdate)[["Mdl.logPost"]]
+        parUpdate = parUpdate)
+
+    if(logPostOut$errorFlag)
+      {
+        out <- -Inf
+      }
+    else
+      {
+        out <- logPostOut[["Mdl.logPost"]]
+      }
+
+    ## print(out)
 
     return(out)
   }
