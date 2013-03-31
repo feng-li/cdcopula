@@ -14,8 +14,7 @@
 CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 {
   ## Set the print interval and consider burnin
-  n.burn <- nIter*burnin
-  printIter <- seq(from = floor(nIter*interval)+n.burn,
+  printIter <- seq(from = floor(nIter*interval),
                    to = nIter,
                    by = floor(nIter*interval))
   if(printIter[length(printIter)] != nIter)
@@ -25,12 +24,16 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 
   dev.width <- getOption("width")
 
+  ## The burning
+  n.burn.default <- round(nIter*burnin)
+  n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
+
   if(iIter %in% printIter)
     {
       donePercent <- round(iIter/nIter*100)
 
       welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
-                       round(burnin*100), "% burnin)\n", sep = "")
+                       round(n.burn/nIter*100), "% burnin)\n", sep = "")
       cat("\n", rep("=", dev.width), "\n", sep = "")
       cat(welcome)
       cat(rep("=", dev.width), "\n", sep = "")
