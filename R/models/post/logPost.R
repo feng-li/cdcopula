@@ -51,10 +51,15 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
                     call.out = c("prior", "likelihood", "posterior", "staticCache")[3])
 {
+  ## Assume no error a priori
   errorFlag <- FALSE
 
+  ## vector format of updating indicators.
+  parUpdateVec <- unlist(parUpdate)
+
   ## Debugging symbol: if the warning should be printed out immediately.
-  immediate. <- FALSE
+  ## use options(warn = 1)
+  ## immediate. <- FALSE
 
   ## The cached (pre-saved) information. The idea is to make even staticCache
   ## is not available, the log posterior is still working.
@@ -86,7 +91,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
   if(any(c("prior", "posterior", "staticCache") %in% call.out))
     {
-      Mdl.logPri <- logPriors(
+      Mdl.logPriNew <- logPriors(
           Mdl.X = Mdl.X,
           Mdl.parLink = Mdl.parLink,
           Mdl.beta = Mdl.beta,
@@ -95,6 +100,11 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
           priArgs = priArgs,
           Mdl.logPri = Mdl.logPri,
           parUpdate = parUpdate)
+
+      Mdl.logPri <- mapply(function(x, z) ifelse(z, x, list(NA)),
+                           x = Mdl.logPriNew,
+                           z = parUpdate, SIMPLIFY = FALSE)
+
       ## Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
     }
 
@@ -119,14 +129,12 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       ## print(Mdl.par$BB7$lambdaL)
       ## print(Mdl.beta$BB7$lambdaL)
 
-      if(any(is.na(unlist(Mdl.par))) |
-         any(is.infinite((unlist(Mdl.par)))))
-        {
-          warning("DEBUGGING: NA happens when updating ``Mdl.par''...",
-                  immediate. = immediate.)
-
-          return(list(errorFlag = TRUE))
-        }
+      ## if(any(is.na(unlist(Mdl.par))) |
+      ##    any(is.infinite((unlist(Mdl.par)))))
+      ##   {
+      ##     warning("DEBUGGING: NA happens when updating ``Mdl.par''...")
+      ##     return(list(errorFlag = TRUE))
+      ##   }
 
       ## par(mfcol = c(5, 2))
       ## plot(Mdl.par[[1]][[1]], type = "l")
@@ -169,23 +177,21 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     }
 
 ###----------------------------------------------------------------------------
-### THE LOG LIKELIHOOD
+### THE COPULA LOG LIKELIHOOD
 ###----------------------------------------------------------------------------
   if(any(c("likelihood", "posterior") %in% call.out))
     {
-      Mdl.logLikCpl.sum <- logCplLik(
+      Mdl.logLikCpl <- logCplLik(
           u = Mdl.u,
           CplNM = CplNM,
           parCpl = Mdl.par[[CplNM]],
-          logLik = TRUE) # n-by-1
-
-      Mdl.logLikMargis.sum <- sum(Mdl.d)
-      Mdl.logLik <- Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum
+          logLik = FALSE) # scale
 
       ## cat("Prior:    ", Mdl.logPri.sum, "\n")
       ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")
       ## cat("MargisLik:", Mdl.logLikMargis.sum, "\n")
 
+      Mdl.logLik = cbind(Mdl.d, Mdl.logLikCpl)
     }
 
 ###----------------------------------------------------------------------------
@@ -207,10 +213,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if("posterior" %in% call.out)
     {
-      Mdl.logPri.sum <- sum(unlist(Mdl.logPri), na.rm = TRUE)
-      Mdl.logPost <- Mdl.logLik + Mdl.logPri.sum
-    }
 
+      Mdl.logPri.sum <- sum(unlist(Mdl.logPri), na.rm = TRUE)
+      Mdl.logLikMargis.sum <- sum(Mdl.d)
+      Mdl.logLikCpl.sum <- sum(Mdl.logLikCpl)
+
+      Mdl.logPost <-  Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum + Mdl.logPri.sum
+    }
 
   out <- list(Mdl.logPost = Mdl.logPost,
               Mdl.logLik = Mdl.logLik,

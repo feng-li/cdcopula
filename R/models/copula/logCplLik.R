@@ -138,12 +138,12 @@ logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
   ## The output
   if(logLik)
     {
-      ## The sum of log marginal density,  scaler
+      ## The sum of log copula density,  scaler
       out <- sum(logCplDensObs)
     }
   else
     {
-      ## The log marginal density,  vector
+      ## The log copula density,  vector
       out <- logCplDensObs
     }
   return(out)

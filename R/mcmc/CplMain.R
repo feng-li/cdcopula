@@ -64,9 +64,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
                           f = subsetFun,
                           idx = Training.Idx,
                           how = "replace")
-###----------------------------------------------------------------------------
-### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
-###----------------------------------------------------------------------------
 
   ## Switch all the updating indicators ON
   parUpdate <- MCMCUpdate
@@ -77,12 +74,17 @@ CplMain <- function(Training.Idx, CplConfigFile)
       betaInit = betaInit,
       Mdl.X = MdlTraining.X,
       Mdl.Y = MdlTraining.Y)
+
   Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
   Mdl.beta <- initParOut[["Mdl.beta"]]
 
+###----------------------------------------------------------------------------
+### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
+###----------------------------------------------------------------------------
+
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
+  optimInit <- TRUE
 
   ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
 
@@ -127,11 +129,11 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
           ## First initialize via "Nelder-Mead" method. This may not converge
           ## but it provide a good initial values for an other BFGS run in next step
-          betaVecInit <- parCplSwap(
-              betaInput = Mdl.beta,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              parUpdate = parUpdate)
+          ## betaVecInit <- parCplSwap(
+          ##     betaInput = Mdl.beta,
+          ##     Mdl.beta = Mdl.beta,
+          ##     Mdl.betaIdx = Mdl.betaIdx,
+          ##     parUpdate = parUpdate)
 
           ## Update with Nelder-Mead method, slow
           ## betaVecInit <- optim(
@@ -156,6 +158,53 @@ CplMain <- function(Training.Idx, CplConfigFile)
           ##     Mdl.beta = Mdl.beta,
           ##     Mdl.betaIdx = Mdl.betaIdx,
           ##     parUpdate = parUpdate)
+
+
+          ## loop over all the marginal models and copula via two stage
+          ## optimization
+
+          for(iComp in names(Mdl.beta))
+            {
+
+              ## Only current component is updated.
+              parUpdateComp <- rapply(parUpdate, function(x) FALSE, how = "replace")
+              parUpdateComp[[iComp]] <- parUpdate[[iComp]]
+
+
+              betaVecInitComp <- parCplSwap(
+                  betaInput = Mdl.beta,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  parUpdate = parUpdateComp)
+
+              ## Optimize the initial values
+              betaVecOptimComp <- try(optim(
+                  par = betaVecInitComp,
+                  fn = logPostOptim,
+                  control = list(fnscale = -1, maxit = 100),
+                  method = "BFGS",
+                  CplNM = CplNM,
+                  Mdl.Y = MdlTraining.Y,
+                  Mdl.X = MdlTraining.X,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  Mdl.parLink = Mdl.parLink,
+                  varSelArgs = varSelArgs,
+                  MargisTypes = MargisTypes,
+                  priArgs = priArgs,
+                  staticCache = staticCache,
+                  parUpdate = parUpdateComp
+                  ), silent = FALSE)
+
+              browser()
+
+              Mdl.beta <- parCplSwap(
+                  betaInput = betaVecOptimComp,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  parUpdate = parUpdateComp)
+
+            }
 
 
           ## Update with BFGS method,  fast but might collapse

@@ -16,21 +16,26 @@ parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = N
     ## Convert Mdl.beta -> betaVec
     if(class(betaInput)  == "list")
       {
-        for(CompCurr in names(Mdl.betaIdx))
-          {
-            for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
-              {
-                if(parUpdate[[CompCurr]][[parCurr]] == FALSE)
-                  {
-                    Mdl.beta[[CompCurr]][[parCurr]] <- NULL
-                    Mdl.betaIdx[[CompCurr]][[parCurr]] <- NULL
-                  }
-              }
-          }
-        betaVec <- unlist(Mdl.beta)
-        betaIdxVec <- unlist(Mdl.betaIdx)
-        betaVec <- betaVec[betaIdxVec]
-        names(betaVec) <- NULL
+        ## for(CompCurr in names(Mdl.betaIdx))
+        ##   {
+        ##     for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
+        ##       {
+        ##         ## delete current entry if not updated
+        ##         if(parUpdate[[CompCurr]][[parCurr]] == FALSE)
+        ##           {
+        ##             Mdl.beta[[CompCurr]][[parCurr]] <- NULL
+        ##             Mdl.betaIdx[[CompCurr]][[parCurr]] <- NULL
+        ##           }
+        ##       }
+        ##   }
+
+        betaVecFull <- unlist(Mdl.beta)
+        betaIdxVecFull <- unlist(Mdl.betaIdx)
+        parUpdateVec <- unlist(parUpdate)
+
+        ## Return updated parameters which are also selected via betaIdx
+        betaVec <- betaVecFull[betaIdxVecFull & parUpdateVec]
+        ## names(betaVec) <- NULL
         out <- betaVec
       }
     else ## Convert betaVec -> Mdl.beta
