@@ -95,7 +95,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
       nLoopInit <- 0
 
       cat("Optimizing initial values, may take a few minutes...\n\n")
-
       while(InitGood == FALSE)
         {
           ## Reassign the initial values
@@ -126,39 +125,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
           ## Optimize the initial values via BFGS.
           ## NOTE: The variable selection indicators are fixed (not optimized)
-
-          ## First initialize via "Nelder-Mead" method. This may not converge
-          ## but it provide a good initial values for an other BFGS run in next step
-          ## betaVecInit <- parCplSwap(
-          ##     betaInput = Mdl.beta,
-          ##     Mdl.beta = Mdl.beta,
-          ##     Mdl.betaIdx = Mdl.betaIdx,
-          ##     parUpdate = parUpdate)
-
-          ## Update with Nelder-Mead method, slow
-          ## betaVecInit <- optim(
-          ##     par = betaVecInit,
-          ##     fn = logPostOptim,
-          ##     control = list(fnscale = -1),
-          ##     method = "Nelder-Mead", #Use the default,  BFGS sometimes collapses
-          ##     CplNM = CplNM,
-          ##     Mdl.Y = MdlTraining.Y,
-          ##     Mdl.X = MdlTraining.X,
-          ##     Mdl.beta = Mdl.beta,
-          ##     Mdl.betaIdx = Mdl.betaIdx,
-          ##     Mdl.parLink = Mdl.parLink,
-          ##     varSelArgs = varSelArgs,
-          ##     MargisTypes = MargisTypes,
-          ##     priArgs = priArgs,
-          ##     staticCache = staticCache,
-          ##     parUpdate = parUpdate)[["par"]]
-
-          ## Mdl.beta <- parCplSwap(
-          ##     betaInput = betaVecInit,
-          ##     Mdl.beta = Mdl.beta,
-          ##     Mdl.betaIdx = Mdl.betaIdx,
-          ##     parUpdate = parUpdate)
-
 
           ## loop over all the marginal models and copula via two stage
           ## optimization
@@ -193,52 +159,29 @@ CplMain <- function(Training.Idx, CplConfigFile)
                   MargisTypes = MargisTypes,
                   priArgs = priArgs,
                   staticCache = staticCache,
-                  parUpdate = parUpdateComp
+                  parUpdate = parUpdateComp,
+                  split = TRUE,
                   ), silent = FALSE)
 
-              browser()
 
-              Mdl.beta <- parCplSwap(
-                  betaInput = betaVecOptimComp,
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  parUpdate = parUpdateComp)
+              if(is(betaVecOptim, "try-error") == TRUE) # It does not have to be converged.
+                {
+                  cat("Initializing algorithm failed,  retry again...\n")
+                  InitGood <- FALSE
+                  break
+                }
+              else
+                {
+                  InitGood <- TRUE
+                  Mdl.beta <- parCplSwap(
+                      betaInput = betaVecOptimComp[["par"]],
+                      Mdl.beta = Mdl.beta,
+                      Mdl.betaIdx = Mdl.betaIdx,
+                      parUpdate = parUpdateComp)
+                }
 
             }
 
-
-          ## Update with BFGS method,  fast but might collapse
-          betaVecOptim <- try(optim(
-              par = betaVecInit,
-              fn = logPostOptim,
-              control = list(fnscale = -1, maxit = 100),
-              method = "BFGS",
-              CplNM = CplNM,
-              Mdl.Y = MdlTraining.Y,
-              Mdl.X = MdlTraining.X,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              Mdl.parLink = Mdl.parLink,
-              varSelArgs = varSelArgs,
-              MargisTypes = MargisTypes,
-              priArgs = priArgs,
-              staticCache = staticCache,
-              parUpdate = parUpdate), silent = FALSE)
-
-          if(is(betaVecOptim, "try-error") == TRUE) # It does not have to be converged.
-            {
-              cat("Initializing algorithm failed,  retry again...\n")
-              InitGood <- FALSE
-            }
-          else
-            {
-              InitGood <- TRUE
-              Mdl.beta <- parCplSwap(
-                  betaInput = betaVecOptim[["par"]],
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  parUpdate = parUpdate)
-            }
 
           nLoopInit <- nLoopInit +1
 
@@ -250,6 +193,26 @@ CplMain <- function(Training.Idx, CplConfigFile)
               cat("Trying to continue without initial value optimization.\n\n")
               break
             }
+
+
+          ## Update with BFGS method,  fast but might collapse
+          ## betaVecOptim <- try(optim(
+          ##     par = betaVecInit,
+          ##     fn = logPostOptim,
+          ##     control = list(fnscale = -1, maxit = 100),
+          ##     method = "BFGS",
+          ##     CplNM = CplNM,
+          ##     Mdl.Y = MdlTraining.Y,
+          ##     Mdl.X = MdlTraining.X,
+          ##     Mdl.beta = Mdl.beta,
+          ##     Mdl.betaIdx = Mdl.betaIdx,
+          ##     Mdl.parLink = Mdl.parLink,
+          ##     varSelArgs = varSelArgs,
+          ##     MargisTypes = MargisTypes,
+          ##     priArgs = priArgs,
+          ##     staticCache = staticCache,
+          ##     parUpdate = parUpdate), silent = FALSE)
+
         }
     }
 

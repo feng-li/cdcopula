@@ -2,7 +2,8 @@
 ##'
 ##' The structure of the input are constructed via the design of variable
 ##' "MdlDataStuc" in the main setting file. See the individual description for
-##' each variable in the setting files.
+##' each variable in the setting files. This is used to calculate the
+##' conditional log posterior for the full copula model.
 ##' @param CplNM "character".
 ##'        The copula name.
 ##'
@@ -40,6 +41,11 @@
 ##'
 ##' @param call.out "character vector"
 ##'
+##' @param split "logical"
+##'
+##'        If TRUE, the marginal model and copula model are split. This can be
+##'        used in the two stage method.
+##'
 ##' @return "list".
 ##'        The list should contain the updated components.
 ##'
@@ -49,13 +55,11 @@
 ##'       Current: Thu May 10 20:17:09 CEST 2012.
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
-                    call.out = c("prior", "likelihood", "posterior", "staticCache")[3])
+                    call.out = c("prior", "likelihood", "posterior",
+                      "staticCache")[3], split = FALSE)
 {
   ## Assume no error a priori
   errorFlag <- FALSE
-
-  ## vector format of updating indicators.
-  parUpdateVec <- unlist(parUpdate)
 
   ## Debugging symbol: if the warning should be printed out immediately.
   ## use options(warn = 1)
@@ -80,10 +84,12 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
   Mdl.par <- staticCache[["Mdl.par"]]
   Mdl.u <- staticCache[["Mdl.u"]]
   Mdl.d <- staticCache[["Mdl.d"]]
-  Mdl.logPri <- staticCache[["Mdl.logPri"]]
+  ## Mdl.logPri <- staticCache[["Mdl.logPri"]]
 
   ## Allocate the output structure
-  Mdl.logLik <- NA
+  Mdl.logPri <- NA
+  Mdl.logLik <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.beta),
+                       dimnames = list(NULL, names(Mdl.beta)))
   Mdl.logPost <- NA
 
 ###----------------------------------------------------------------------------
@@ -91,19 +97,18 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
   if(any(c("prior", "posterior", "staticCache") %in% call.out))
     {
-      Mdl.logPriNew <- logPriors(
+      Mdl.logPri <- logPriors(
           Mdl.X = Mdl.X,
           Mdl.parLink = Mdl.parLink,
           Mdl.beta = Mdl.beta,
           Mdl.betaIdx = Mdl.betaIdx,
           varSelArgs = varSelArgs,
           priArgs = priArgs,
-          Mdl.logPri = Mdl.logPri,
           parUpdate = parUpdate)
 
-      Mdl.logPri <- mapply(function(x, z) ifelse(z, x, list(NA)),
-                           x = Mdl.logPriNew,
-                           z = parUpdate, SIMPLIFY = FALSE)
+      ## Mdl.logPri <- mapply(function(x, z) ifelse(z, x, list(NA)),
+      ##                      x = Mdl.logPriNew,
+      ##                      z = parUpdate, SIMPLIFY = FALSE)
 
       ## Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
     }
@@ -137,19 +142,21 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
       ##   }
 
       ## par(mfcol = c(5, 2))
-      ## plot(Mdl.par[[1]][[1]], type = "l")
-      ## plot(Mdl.par[[1]][[2]], type = "l")
-      ## plot(Mdl.par[[1]][[3]], type = "l")
-      ## plot(Mdl.par[[1]][[4]], type = "l")
+      ## try({
+      ##   plot(Mdl.par[[1]][[1]], type = "l")
+      ##   plot(Mdl.par[[1]][[2]], type = "l")
+      ##   plot(Mdl.par[[1]][[3]], type = "l")
+      ##   plot(Mdl.par[[1]][[4]], type = "l")
 
-      ## plot(Mdl.par[[3]][[1]], type = "l")
+      ##   plot(Mdl.par[[3]][[1]], type = "l")
 
-      ## plot(Mdl.par[[2]][[1]], type = "l")
-      ## plot(Mdl.par[[2]][[2]], type = "l")
-      ## plot(Mdl.par[[2]][[3]], type = "l")
-      ## plot(Mdl.par[[2]][[4]], type = "l")
+      ##   plot(Mdl.par[[2]][[1]], type = "l")
+      ##   plot(Mdl.par[[2]][[2]], type = "l")
+      ##   plot(Mdl.par[[2]][[3]], type = "l")
+      ##   plot(Mdl.par[[2]][[4]], type = "l")
 
-      ## plot(Mdl.par[[3]][[2]], type = "l")
+      ##   plot(Mdl.par[[3]][[2]], type = "l")
+      ## }, silent = TRUE)
 
 ### Update marginal pdf and cdf
 ### the marginal u and only updated if the corresponding parameters are updated.
@@ -168,7 +175,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
               Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
 
               ## if(any(is.na(Margi.ud[["u"]]))) browser()
-
+              Mdl.logLik[, CompCaller] <- Margi.ud[["d"]]
               ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
             }
 
@@ -179,20 +186,25 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE COPULA LOG LIKELIHOOD
 ###----------------------------------------------------------------------------
+  Mdl.logLikCpl <- NA
   if(any(c("likelihood", "posterior") %in% call.out))
     {
-      Mdl.logLikCpl <- logCplLik(
-          u = Mdl.u,
-          CplNM = CplNM,
-          parCpl = Mdl.par[[CplNM]],
-          logLik = FALSE) # scale
+      ## Update the copula likelihood only if the copula model is updated or
+      ## the full posterior (marginal+copula) is required.
+      if(any(parUpdate[[CplNM]] == TRUE) | split == FALSE)
+        {
+          Mdl.logLikCpl <- logCplLik(
+              u = Mdl.u,
+              CplNM = CplNM,
+              parCpl = Mdl.par[[CplNM]],
+              logLik = FALSE) # n-by-1
+          Mdl.logLik[, CplNM] <- Mdl.logLikCpl
+        }
 
+    }
       ## cat("Prior:    ", Mdl.logPri.sum, "\n")
       ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")
       ## cat("MargisLik:", Mdl.logLikMargis.sum, "\n")
-
-      Mdl.logLik = cbind(Mdl.d, Mdl.logLikCpl)
-    }
 
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE
@@ -200,7 +212,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if(any(c("posterior","staticCache") %in% call.out))
     {
-      staticCache[["Mdl.logPri"]] <- Mdl.logPri
+      ## staticCache[["Mdl.logPri"]] <- Mdl.logPri
       staticCache[["Mdl.par"]] <- Mdl.par
       staticCache[["Mdl.u"]] <- Mdl.u
       staticCache[["Mdl.d"]] <- Mdl.d
@@ -213,12 +225,15 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
   if("posterior" %in% call.out)
     {
-
       Mdl.logPri.sum <- sum(unlist(Mdl.logPri), na.rm = TRUE)
-      Mdl.logLikMargis.sum <- sum(Mdl.d)
-      Mdl.logLikCpl.sum <- sum(Mdl.logLikCpl)
 
-      Mdl.logPost <-  Mdl.logLikMargis.sum  + Mdl.logLikCpl.sum + Mdl.logPri.sum
+      ## Mdl.logLik = cbind(Mdl.d, Mdl.logLikCpl)
+      ## colnames <- names(Mdl.par)
+
+      Mdl.logLik.sum <- sum(Mdl.logLik, na.rm = TRUE)
+      ## Mdl.logLikCpl.sum <- sum(Mdl.logLikCpl)
+
+      Mdl.logPost <-  Mdl.logLik.sum + Mdl.logPri.sum
     }
 
   out <- list(Mdl.logPost = Mdl.logPost,

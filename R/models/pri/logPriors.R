@@ -4,20 +4,23 @@
 ##' @title Copula model prior settings.
 ##' @param Mdl.X
 ##' @param Mdl.parLink
-##' @param MdlCurr.beta
-##' @param MdlCurr.betaIdx
+##' @param Mdl.beta
+##' @param Mdl.betaIdx
 ##' @param varSelArgs
 ##' @param priArgs "list"
-##' @param priCurr "list"
 ##' @param parUpdate
+##' @param priCurr "list"
 ##' @return "list" synced
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 ##'       Current: Thu Dec 15 10:46:05 CET 2011.
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      varSelArgs, priArgs, parUpdate, Mdl.logPri)
+                      varSelArgs, priArgs, parUpdate)
 {
+  ## Allocate the structure.
+  Mdl.logPri <- rapply(Mdl.beta, function(x) NA, how = "replace")
+
   ## Loop over all updated parameter candidates
 
   CompNM <- names(priArgs)

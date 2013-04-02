@@ -20,7 +20,7 @@
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
 logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,varSelArgs, MargisTypes,
-                         priArgs,parUpdate, staticCache)
+                         priArgs,parUpdate, staticCache, split)
   {
     ## a wrapper of the log posterior function that can be used for directly
     ## optimization via Newton's method
@@ -44,16 +44,17 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         MargisTypes = MargisTypes,
         priArgs = priArgs,
         staticCache = staticCache,
-        parUpdate = parUpdate)
+        parUpdate = parUpdate,
+        split = split)
 
-    if(logPostOut$errorFlag)
-      {
-        out <- -Inf
-      }
-    else
-      {
-        out <- logPostOut[["Mdl.logPost"]]
-      }
+    ## if(logPostOut$errorFlag)
+    ##   {
+    ##     out <- -Inf
+    ##   }
+    ## else
+    ##   {
+    out <- logPostOut[["Mdl.logPost"]]
+    ## }
 
     ## print(out)
 
