@@ -71,18 +71,18 @@ nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:9, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:7, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:7, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -109,27 +109,27 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = 2:9,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = 2:9,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:4,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = 2:9,
+varSelArgs[[1]][["df"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = 2:9,
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:4,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:9,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = 2:9,
+varSelArgs[[2]][["phi"]] <- list(cand = 2:4,
                                  init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = 2:9,
+varSelArgs[[2]][["df"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = 2:9,
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:4,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:7,
                                  init = "all-in")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:7,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 5000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------

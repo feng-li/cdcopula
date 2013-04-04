@@ -2,15 +2,17 @@
 ##'
 ##' This is used for prediction and LPDS.
 ##' @param CplOut
+##' @param Testing.Idx
 ##' @param MdlTesting.X
 ##' @param MdlTesting.Y
-##' @param Testing.Idx
+##' @param pred "character" The predictive likelihood for marginal or copula
+##' likelihood.
 ##' @return "matrix" "mcmc sample by Lik.len"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013;
 ##'       Current: Mon Feb 25 19:21:03 CET 2013.
-logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
+logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = CplNM)
   {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
@@ -106,7 +108,7 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
 
             ## The log predictive likelihood.
             ## Note that all the updating flags should be switched on
-            logPred <- logPost(
+            logPredLik <- logPost(
                 CplNM = CplNM,
                 Mdl.Y = MdlTesting.Y.curr,
                 Mdl.X = MdlTesting.X.curr,
@@ -118,6 +120,18 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y)
                 priArgs = priArgs,
                 parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
                 call.out = c("likelihood"))[["Mdl.logLik"]]
+
+            ## The predictive likelihood
+            if(pred == CplNM)
+              {
+                ## The whole copula likelihood
+                logPred <-  sum(logPredLik)
+              }
+            else
+              {
+                ## Particular margin
+                logPred <- sum(logPredLik[, pred])
+              }
 
             which.j <- which.j + 1
 

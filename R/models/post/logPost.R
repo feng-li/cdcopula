@@ -241,5 +241,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
               Mdl.logPri = Mdl.logPri,
               staticCache = staticCache,
               errorFlag = errorFlag)
+
+  ## if(any(parUpdate[[CplNM]] == TRUE))
+  ##   {
+
+  ##     print(Mdl.logPost)
+  ##     ## if(!is.na(Mdl.logPost))
+  ##   }
+
   return(out)
 }

@@ -132,6 +132,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
           for(iComp in names(Mdl.beta))
             {
 
+              cat("Initializing model component:", iComp, "...\n")
+
               ## Only current component is updated.
               parUpdateComp <- rapply(parUpdate, function(x) FALSE, how = "replace")
               parUpdateComp[[iComp]] <- parUpdate[[iComp]]
@@ -163,8 +165,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
                   split = TRUE,
                   ), silent = FALSE)
 
-
-              if(is(betaVecOptim, "try-error") == TRUE) # It does not have to be converged.
+              if(is(betaVecOptimComp, "try-error") == TRUE) # It does not have to be converged.
                 {
                   cat("Initializing algorithm failed,  retry again...\n")
                   InitGood <- FALSE
@@ -186,7 +187,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
           nLoopInit <- nLoopInit +1
 
           ## Too many failures,  abort!
-          if(nLoopInit >= 1)
+          if(nLoopInit > 1)
             {
               ## InitGood <- TRUE
               cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
@@ -194,30 +195,12 @@ CplMain <- function(Training.Idx, CplConfigFile)
               break
             }
 
-
-          ## Update with BFGS method,  fast but might collapse
-          ## betaVecOptim <- try(optim(
-          ##     par = betaVecInit,
-          ##     fn = logPostOptim,
-          ##     control = list(fnscale = -1, maxit = 100),
-          ##     method = "BFGS",
-          ##     CplNM = CplNM,
-          ##     Mdl.Y = MdlTraining.Y,
-          ##     Mdl.X = MdlTraining.X,
-          ##     Mdl.beta = Mdl.beta,
-          ##     Mdl.betaIdx = Mdl.betaIdx,
-          ##     Mdl.parLink = Mdl.parLink,
-          ##     varSelArgs = varSelArgs,
-          ##     MargisTypes = MargisTypes,
-          ##     priArgs = priArgs,
-          ##     staticCache = staticCache,
-          ##     parUpdate = parUpdate), silent = FALSE)
-
         }
     }
 
   ## Dry run to obtain staticCache for the initial values
   ## Again this time all the parameters should be updated.
+  ## browser()
   staticCache <- logPost(
       CplNM = CplNM,
       Mdl.Y = MdlTraining.Y,
