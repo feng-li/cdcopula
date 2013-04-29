@@ -70,8 +70,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
 
         if(tolower(cplCaller) == "lambdal")
           {
-            ## condPar <- NULL
-            condPar <- "tau"
+            condPar <- NULL
+            ## condPar <- "tau"
             if("tau" %in% condPar)
               {
                 ## The commenting out part of the code is for the unconditional

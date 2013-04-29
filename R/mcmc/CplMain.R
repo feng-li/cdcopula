@@ -180,11 +180,13 @@ CplMain <- function(Training.Idx, CplConfigFile)
                       Mdl.betaIdx = Mdl.betaIdx,
                       parUpdate = parUpdateComp)
                 }
-
             }
 
 
           nLoopInit <- nLoopInit +1
+
+          cat("The initial values for beta (conditional on variable selection indicator) are:\n")
+          print(Mdl.beta)
 
           ## Too many failures,  abort!
           if(nLoopInit > 1)

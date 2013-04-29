@@ -7,8 +7,8 @@ parCplMeanFunGrad <- function(CplNM, Mdl.par, Mdl.parLink, chainCaller)
 
         linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
-        condPar <- "tau"
-        ## condPar <- NULL
+        ## condPar <- "tau"
+        condPar <- NULL
 
         if(tolower(parCaller) %in% condPar)
           {

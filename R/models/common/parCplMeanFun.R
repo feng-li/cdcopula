@@ -21,8 +21,8 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 
         ## Which parameter are conditionally considered
         ## Hard coded, maybe should treat it as an input
-        condPar <- "tau"
-        ## condPar <- NULL
+        ## condPar <- "tau"
+        condPar <- NULL
 
 ###----------------------------------------------------------------------------
 ### (1) update all the independent linkages

@@ -64,25 +64,25 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP600-20130116.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (700 + nObsRaw-nObsRaw):nObsRaw
+nObsIdx <- (0 + nObsRaw-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:4, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:7, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:7, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -101,35 +101,35 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "log")
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", a = 4)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log")
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99)
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.80)
+Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.80)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = 2:4,
+varSelArgs[[1]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = 2:4,
+varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = 2:4,
+varSelArgs[[1]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = 2:4,
+varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:4,
+varSelArgs[[2]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = 2:4,
+varSelArgs[[2]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = 2:4,
+varSelArgs[[2]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = 2:4,
+varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:7,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
                                  init = "all-in")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:7,
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:7,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 5000
+nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -183,45 +183,45 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc
 propArgs[[1]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[1]][[2]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[1]][[3]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[1]][[4]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 
 propArgs[[2]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[2]][[2]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[2]][[3]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[2]][[4]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 
 propArgs[[3]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[3]][[2]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
        "indicators" = list(type = "binom", prob = 0.5))
 
@@ -266,7 +266,7 @@ priArgs <- MdlDataStruc
 priArgs[[1]][["mu"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0, variance = 10),
+           input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -299,7 +299,7 @@ priArgs[[1]][["lmd"]] <-
 priArgs[[2]][["mu"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "norm",  mean = 0, variance = 10),
+           input = list(type = "norm",  mean = 0, variance = 1),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -332,7 +332,7 @@ priArgs[[2]][["lmd"]] <-
 priArgs[[3]][["tau"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.99),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -340,7 +340,7 @@ priArgs[[3]][["tau"]] <-
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.99),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
