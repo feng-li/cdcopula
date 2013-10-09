@@ -216,6 +216,66 @@ CplMain <- function(Training.Idx, CplConfigFile)
       parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
       call.out = "staticCache")[["staticCache"]]
 
+
+###----------------------------------------------------------------------------
+###
+###----------------------------------------------------------------------------
+  Mdl.par <- staticCache$Mdl.par
+  plot = TRUE
+  browser()
+  if(plot == TRUE)
+    {
+      ##      nTraining <- length(Mdl.Y[[1]])
+      X.ID0 <- X.ID[1:nTraining]
+
+      par(mfcol = c(5, 2), mar = c(2.5, 4, 2, 0))
+      plot(X.ID0, Mdl.par[[1]][[1]], type = "l", col = "blue", xlab = "",
+           ylab = expression(mu), main = "SP600", ylim = c(-1, 2))
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+      plot(X.ID0, Mdl.par[[1]][[2]], type = "l", col = "blue", xlab = "",
+           ylab = expression(phi), , log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[1]][[3]], type = "l", col = "blue", xlab = "",
+           ylab = expression(kappa),  log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[1]][[4]], type = "l", col = "blue", xlab = "",
+           ylab = expression(lambda), log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[3]][[1]], type = "l", col = "blue", xlab = "Time",
+           ylab = expression(tau), main = "Copula")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+
+
+
+
+      plot(X.ID0, Mdl.par[[2]][[1]], type = "l", col = "blue", xlab = "",
+           ylab = "", main = "SP100", , ylim = c(-1, 2))
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[2]][[2]], type = "l", col = "blue", xlab = "",
+           ylab = "", log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[2]][[3]], type = "l", col = "blue", xlab = "",
+           ylab = "", log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[2]][[4]], type = "l", col = "blue", xlab = "",
+           ylab = "", log = "y")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+      plot(X.ID0, Mdl.par[[3]][[2]], type = "l", col = "blue", xlab = "Time",
+           ylab = expression(lambda[L]), main = "Copula")
+      abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
+
+    }
+
+
+
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
 ###----------------------------------------------------------------------------

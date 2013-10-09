@@ -29,8 +29,8 @@ uCpl <- function(u, theta = NA, CplNM, par = NA)
       theta2 <- theta[2]
       u1 <- u[, 1]
       u2 <- u[, 2]
-      percentile <- 1 - (1 - ((1 - (1 - u)^theta1)^(-theta2) + (1 - (1 -
-         v)^theta1)^(-theta2) - 1)^(-1/theta2))^(1/theta1)
+      percentile <- 1 - (1 - ((1 - (1 - u1)^theta1)^(-theta2) + (1 - (1 -
+         u2)^theta1)^(-theta2) - 1)^(-1/theta2))^(1/theta1)
      out <- matrix(percentile)
     }
   else if(tolower(CplNM) == "gaussian")

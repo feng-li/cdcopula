@@ -101,30 +101,30 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "log")
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", a = 4)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log")
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.80)
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.80)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99)
+Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = NULL,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = NULL,
+varSelArgs[[1]][["df"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:10,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = NULL,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL,
+varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
                                  init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = NULL,
+varSelArgs[[2]][["df"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:10,
                                  init = "all-in")
 
 varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
@@ -238,7 +238,7 @@ propArgs[[3]][[2]] <-
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.2)
+                       testRatio = 0.001)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
@@ -332,7 +332,7 @@ priArgs[[2]][["lmd"]] <-
 priArgs[[3]][["tau"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.95),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
@@ -340,7 +340,7 @@ priArgs[[3]][["tau"]] <-
 priArgs[[3]][["lambdaL"]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
-           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.79),
+           input = list(type = "gbeta",  mean = 0.2, variance = 0.05, a = 0.01, b = 0.95),
            output = list(type = "norm", shrinkage = 1)),
          "slopes" = list(type = "cond-mvnorm",
            mean = 0, covariance = "identity", shrinkage = 1)),
