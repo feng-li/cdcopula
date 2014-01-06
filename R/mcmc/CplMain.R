@@ -221,11 +221,12 @@ CplMain <- function(Training.Idx, CplConfigFile)
 ###
 ###----------------------------------------------------------------------------
   Mdl.par <- staticCache$Mdl.par
-  plot = TRUE
-  browser()
+  plot <- TRUE
   if(plot == TRUE)
     {
-      ##      nTraining <- length(Mdl.Y[[1]])
+        browser()
+
+        ##      nTraining <- length(Mdl.Y[[1]])
       X.ID0 <- X.ID[1:nTraining]
 
       par(mfcol = c(5, 2), mar = c(2.5, 4, 2, 0))
@@ -247,10 +248,6 @@ CplMain <- function(Training.Idx, CplConfigFile)
       plot(X.ID0, Mdl.par[[3]][[1]], type = "l", col = "blue", xlab = "Time",
            ylab = expression(tau), main = "Copula")
       abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
-
-
-
-
 
       plot(X.ID0, Mdl.par[[2]][[1]], type = "l", col = "blue", xlab = "",
            ylab = "", main = "SP100", , ylim = c(-1, 2))
