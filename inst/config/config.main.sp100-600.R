@@ -34,7 +34,7 @@ CplNM <- "BB7"
 CplParNM <- list(c("tau", "lambdaL"))
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisNM <- c("SP600", "SP100")
+MargisNM <- c("^SML", "^OEX")
 MargisTypes <- c("SPLITT", "SPLITT")
 MargisParNM <- list(c("mu", "phi", "df", "lmd"),
                     c("mu", "phi", "df", "lmd"))
@@ -58,31 +58,31 @@ MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP600-20130116.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP600-20141219.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (0 + nObsRaw-nObsRaw):nObsRaw
+nObsIdx <- (1 + nObsRaw-100):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:10, drop = FALSE]
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:19, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -109,27 +109,27 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = 2:10,
+varSelArgs[[1]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
+varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = 2:10,
+varSelArgs[[1]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = 2:10,
+varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:10,
+varSelArgs[[2]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
+varSelArgs[[2]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = 2:10,
+varSelArgs[[2]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = 2:10,
+varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
+varSelArgs[[3]][["tau"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
+varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -151,7 +151,7 @@ save.output <- FALSE
 ## If TRUE,  the MCMC should be tracked during the evaluation.
 track.MCMC = TRUE
 
-## WHICH VARIABLE SHOULD BE UPDATED?
+## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
 MCMCUpdate[[1]][[1]] <- T
 MCMCUpdate[[1]][[2]] <- T

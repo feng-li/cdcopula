@@ -41,6 +41,6 @@ contour(u1,  u2,  empDist,  add  =  FALSE,
 contour(u1,  u2,  frechet.u,  add  =  FALSE,
         col  = "black",  lwd  =  0.8,  lty  = "solid",
         xlim  = xlim,  ylim  =  ylim,
-        xlab = "Fréchet-Hoeffding upper bound copula", ylab = "")
+        xlab = "Fréchet-oeffding upper bound copula", ylab = "")
 
                ## })

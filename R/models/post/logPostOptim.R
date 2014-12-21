@@ -56,8 +56,6 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
     out <- logPostOut[["Mdl.logPost"]]
     ## }
 
-    ## print(out)
-
 
     return(out)
   }

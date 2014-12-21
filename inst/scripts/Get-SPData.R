@@ -4,6 +4,7 @@
 ## In Yahoo Finance,  the first month is zero
 ## The starting day: a=07&b=2&c=1982  reads: 1982 August 02
 ## The ending dat:   d=00&e=17&f=2013 reads: 2013 January 17
+## NOTE: This script is not in use anymore. Use MVStocks() functions instead.
 
 StartingDay <- "a=07&b=16&c=1995" #The earliest day is "a=07&b=16&c=1995"
 EndingDay <- "d=00&e=17&f=2013"

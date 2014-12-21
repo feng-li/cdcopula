@@ -46,37 +46,38 @@ VERSION:
 
 AUTHOR:
 
-    Feng Li, Department of Statistics, Stockholm University
+    Feng Li, Central University of Finance and Economics
 
 ");q()}
 require("methods", quietly = TRUE)
 ###----------------------------------------------------------------------------
 ### MODEL CONFIGURE PATH
 ###----------------------------------------------------------------------------
+
 R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
 if(length(R_CPL_LIB_ROOT_DIR) == 0L)
-  {
-    stop("R_CPL_LIB_ROOT_DIR is not set properly!")
-  }
+    {
+        stop("R_CPL_LIB_ROOT_DIR is not set properly!")
+    }
 
 {if(interactive())
-   { ## PASS INTERNALLY
+     {   ## PASS INTERNALLY
+         ## PATH TO THE MODEL CONFIGURATION FILE
+         CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
+                                    "/inst/config/config.main.sp100-600.R")
 
-     ## PATH TO THE MODEL CONFIGURATION FILE
-     CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR, "/inst/config/config.main.sp100-600.R")
-
-   }
-else
-  {## Pass via command argument
-    if((length(args) == 1L))
-      {
-        CplConfigFile <- args
-      }
-    else
-      {
-        stop("One and only one configuration file required. Try --help.")
-      }
-  }
+     }
+ else
+     {## Pass via command argument
+         if((length(args) == 1L))
+             {
+                 CplConfigFile <- args
+             }
+         else
+             {
+                 stop("One and only one configuration file required. Try --help.")
+             }
+     }
 }
 
 ###----------------------------------------------------------------------------
@@ -91,39 +92,40 @@ require("parallel", quietly = TRUE)
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
 
-## Load the whole library
+## Load the whole Copula library
 Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
                         byte.compile = 0,
                         recursive = TRUE,
                         ignore.error = TRUE)
 
-## Initialize R environment
+## Initialize R environment FIXME: bad structure
 source(CplConfigFile, local = TRUE)
+
+###----------------------------------------------------------------------------
+### MCMC
+###----------------------------------------------------------------------------
 
 ## Set Parallel Computing environment
 ## cl <- makeCluster(crossValidArgs$N.subsets, outfile = "")
 
 ## Recording starting time
 Starting.time <- proc.time()
-###----------------------------------------------------------------------------
-### MCMC
-###----------------------------------------------------------------------------
+
 
 if(!interactive())
 {
-  OUT.CplCross <- parLapply(
-      cl = cl,
-      X = crossValidIdx[["training"]],
-      fun = CplMain,
-      CplConfigFile = CplConfigFile)
+    OUT.CplCross <- parLapply(
+        cl = cl,
+        X = crossValidIdx[["training"]],
+        fun = CplMain,
+        CplConfigFile = CplConfigFile)
 } else
 {
-  OUT.CplCross <- lapply(
-      X = crossValidIdx[["training"]],
-      FUN = CplMain,
-      CplConfigFile = CplConfigFile)
+    OUT.CplCross <- lapply(
+        X = crossValidIdx[["training"]],
+        FUN = CplMain,
+        CplConfigFile = CplConfigFile)
 }
-
 
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC
@@ -132,18 +134,18 @@ if(!interactive())
 ## Calculate the LPDS
 if(!interactive())
 {
-  logPredLst <- clusterMap(
-      cl = cl,
-      fun = logPredDens,
-      CplOut = OUT.CplCross,
-      Testing.Idx = crossValidIdx[["testing"]])
+    logPredLst <- clusterMap(
+        cl = cl,
+        fun = logPredDens,
+        CplOut = OUT.CplCross,
+        Testing.Idx = crossValidIdx[["testing"]])
 } else
 {
-  logPredLst <- mapply(
-      FUN = logPredDens,
-      CplOut = OUT.CplCross,
-      Testing.Idx = crossValidIdx[["testing"]],
-      SIMPLIFY = FALSE)
+    logPredLst <- mapply(
+        FUN = logPredDens,
+        CplOut = OUT.CplCross,
+        Testing.Idx = crossValidIdx[["testing"]],
+        SIMPLIFY = FALSE)
 }
 
 LPDS <- logPredDensScore(logPredLst = logPredLst)
