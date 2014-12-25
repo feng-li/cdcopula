@@ -87,6 +87,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
 ## Load dependences
 require("mvtnorm", quietly = TRUE)
 require("parallel", quietly = TRUE)
+require("optimx", quietly = TRUE)
 
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
@@ -138,13 +139,13 @@ if(!interactive())
         cl = cl,
         fun = logPredDens,
         CplOut = OUT.CplCross,
-        Testing.Idx = crossValidIdx[["testing"]])
+        Mdl.Idx.testing = crossValidIdx[["testing"]])
 } else
 {
     logPredLst <- mapply(
         FUN = logPredDens,
         CplOut = OUT.CplCross,
-        Testing.Idx = crossValidIdx[["testing"]],
+        Mdl.Idx.testing = crossValidIdx[["testing"]],
         SIMPLIFY = FALSE)
 }
 

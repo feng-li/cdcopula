@@ -2,9 +2,9 @@
 ##'
 ##' This is used for prediction and LPDS.
 ##' @param CplOut
-##' @param Testing.Idx
-##' @param MdlTesting.X
-##' @param MdlTesting.Y
+##' @param Mdl.Idx.testing
+##' @param Mdl.X.testing
+##' @param Mdl.Y.testing
 ##' @param pred "character" The predictive likelihood for marginal or copula
 ##' likelihood.
 ##' @return "matrix" "mcmc sample by Lik.len"
@@ -12,7 +12,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013;
 ##'       Current: Mon Feb 25 19:21:03 CET 2013.
-logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = CplNM)
+logPredDens <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing, pred = CplNM)
   {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
@@ -24,18 +24,18 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = 
 ###----------------------------------------------------------------------------
     ## Unless user specify the predict covariates, use the default in the
     ## configure files.
-    if(missing(MdlTesting.X) || missing(MdlTesting.Y))
+    if(missing(Mdl.X.testing) || missing(Mdl.Y.testing))
       {
         subsetFun <- function(x, idx)x[idx, , drop = FALSE]
-        ## Testing.Idx <- crossValidIdx[["testing"]][[iCross]]
+        ## Mdl.Idx.testing <- crossValidIdx[["testing"]][[iCross]]
 
-        MdlTesting.X <- rapply(object=Mdl.X,
+        Mdl.X.testing <- rapply(object=Mdl.X,
                                f = subsetFun,
-                               idx = Testing.Idx,
+                               idx = Mdl.Idx.testing,
                                how = "replace")
-        MdlTesting.Y <- rapply(object=Mdl.Y,
+        Mdl.Y.testing <- rapply(object=Mdl.Y,
                                f = subsetFun,
-                               idx = Testing.Idx,
+                               idx = Mdl.Idx.testing,
                                how = "replace")
       }
 
@@ -57,7 +57,7 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = 
     MCMC.sample.len <- length(MCMC.sampleIdxInv)
     MCMC.sampleIdx <- MCMC.sampleIdxInv[MCMC.sample.len:1]
 
-    nPred <- length(MdlTesting.Y[[1]])
+    nPred <- length(Mdl.Y.testing[[1]])
     if(partiMethod == "time-series")
       {
         ## Special case for time series where the dependence are used The LPDS
@@ -83,11 +83,11 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = 
     for(i in 1:LikLst.len)
       {
         idx.curr <- LikLst.Idx[[i]]
-        MdlTesting.X.curr <- rapply(object=MdlTesting.X,
+        Mdl.X.testing.curr <- rapply(object=Mdl.X.testing,
                                     f = subsetFun,
                                     idx = idx.curr,
                                     how = "replace")
-        MdlTesting.Y.curr <- rapply(object=MdlTesting.Y,
+        Mdl.Y.testing.curr <- rapply(object=Mdl.Y.testing,
                                     f = subsetFun,
                                     idx = idx.curr,
                                     how = "replace")
@@ -110,8 +110,8 @@ logPredDens <- function(CplOut, Testing.Idx, MdlTesting.X, MdlTesting.Y, pred = 
             ## Note that all the updating flags should be switched on
             logPredLik <- logPost(
                 CplNM = CplNM,
-                Mdl.Y = MdlTesting.Y.curr,
-                Mdl.X = MdlTesting.X.curr,
+                Mdl.Y = Mdl.Y.testing.curr,
+                Mdl.X = Mdl.X.testing.curr,
                 Mdl.beta = Mdl.beta.curr,
                 Mdl.betaIdx = Mdl.betaIdx.curr,
                 Mdl.parLink = Mdl.parLink,

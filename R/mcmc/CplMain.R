@@ -4,7 +4,7 @@
 ##' @param CplConfigFile "character".
 ##'        The path where the setup script is located.
 ##'
-##' @param Training.Idx "vector"
+##' @param Mdl.Idx.training "vector"
 ##'
 ##' @return "MCMC-details"
 ##'
@@ -12,11 +12,11 @@
 ##'
 ##' @references Li, F., 2012 Covariate-dependent copula
 ##'
-##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @author Feng Li, Central University of Finance and Economics.
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012;
-##'       Current: Wed Mar 07 16:56:30 CET 2012.
-CplMain <- function(Training.Idx, CplConfigFile)
+##'       Current: Sun Dec 21 22:58:16 CST 2014.
+CplMain <- function(Mdl.Idx.training, CplConfigFile)
 {
 ###----------------------------------------------------------------------------
 ### Load user setup file
@@ -54,15 +54,15 @@ CplMain <- function(Training.Idx, CplConfigFile)
     ## Extract the training and testing data according to cross-validation
     subsetFun <- function(x, idx)x[idx, , drop = FALSE]
 
-    ## Training.Idx <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
-    nTraining <- length(Training.Idx)
-    MdlTraining.X <- rapply(object=Mdl.X,
+    ## Mdl.Idx.training <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
+    nTraining <- length(Mdl.Idx.training)
+    Mdl.X.training <- rapply(object=Mdl.X,
                             f = subsetFun,
-                            idx = Training.Idx,
+                            idx = Mdl.Idx.training,
                             how = "replace")
-    MdlTraining.Y <- rapply(object=Mdl.Y,
+    Mdl.Y.training <- rapply(object=Mdl.Y,
                             f = subsetFun,
-                            idx = Training.Idx,
+                            idx = Mdl.Idx.training,
                             how = "replace")
 
     ## Switch all the updating indicators ON
@@ -72,8 +72,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
     initParOut <- initPar(
         varSelArgs = varSelArgs,
         betaInit = betaInit,
-        Mdl.X = MdlTraining.X,
-        Mdl.Y = MdlTraining.Y)
+        Mdl.X = Mdl.X.training,
+        Mdl.Y = Mdl.Y.training)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
@@ -104,8 +104,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
                     initParOut <- initPar(
                         varSelArgs = varSelArgs,
                         betaInit = betaInit,
-                        Mdl.X = MdlTraining.X,
-                        Mdl.Y = MdlTraining.Y)
+                        Mdl.X = Mdl.X.training,
+                        Mdl.Y = Mdl.Y.training)
                     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
                     Mdl.beta <- initParOut[["Mdl.beta"]]
 
@@ -115,8 +115,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
                     staticCache <- logPost(
                         CplNM = CplNM,
-                        Mdl.Y = MdlTraining.Y,
-                        Mdl.X = MdlTraining.X,
+                        Mdl.Y = Mdl.Y.training,
+                        Mdl.X = Mdl.X.training,
                         Mdl.beta = Mdl.beta,
                         Mdl.betaIdx = Mdl.betaIdx,
                         Mdl.parLink = Mdl.parLink,
@@ -135,7 +135,13 @@ CplMain <- function(Training.Idx, CplConfigFile)
                     for(iComp in names(Mdl.beta))
                         {
 
+                            ## If nothing to update,  optimization inside this components
+                            ## skipped.
+                            if(all(unlist(parUpdate[[iComp]]) == FALSE)) next
+
+
                             cat("Initializing model component:", iComp, "...\n")
+
 
                             ## Only current component is updated.
                             parUpdateComp <- rapply(parUpdate, function(x) FALSE, how = "replace")
@@ -155,8 +161,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
                                 control = list(maximize = TRUE, maxit = 100, all.methods = TRUE),
                                 ## method = "BFGS",
                                 CplNM = CplNM,
-                                Mdl.Y = MdlTraining.Y,
-                                Mdl.X = MdlTraining.X,
+                                Mdl.Y = Mdl.Y.training,
+                                Mdl.X = Mdl.X.training,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 Mdl.parLink = Mdl.parLink,
@@ -166,7 +172,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
                                 staticCache = staticCache,
                                 parUpdate = parUpdateComp,
                                 split = TRUE,
-                            ), silent = FALSE)
+                                ), silent = FALSE)
 
                             if(is(betaVecOptimComp, "try-error") == TRUE)
                                 {# It does not have to be converged.
@@ -189,7 +195,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
 
                     nLoopInit <- nLoopInit +1
 
-                    cat("The initial values for beta (conditional on variable selection indicator) are:\n")
+                    cat("The initial values for beta (conditional on variable selection indicators) are:\n")
                     print(Mdl.beta)
 
                     ## Too many failures,  abort!
@@ -209,8 +215,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
     ## browser()
     staticCache <- logPost(
         CplNM = CplNM,
-        Mdl.Y = MdlTraining.Y,
-        Mdl.X = MdlTraining.X,
+        Mdl.Y = Mdl.Y.training,
+        Mdl.X = Mdl.X.training,
         Mdl.beta = Mdl.beta,
         Mdl.betaIdx = Mdl.betaIdx,
         Mdl.parLink = Mdl.parLink,
@@ -219,8 +225,10 @@ CplMain <- function(Training.Idx, CplConfigFile)
         priArgs = priArgs,
         parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
         call.out = "staticCache")[["staticCache"]]
-    ## warningsClear(envir = parent.env()) #clear all warnings during initial value
+
+    ## Clear all warnings during initial value
     ## optimization. NOTE: not working
+    ## warningsClear(envir = environment())
 
 ###----------------------------------------------------------------------------
 ### HARD DEBUGGING CODE， should be removed
@@ -232,7 +240,7 @@ CplMain <- function(Training.Idx, CplConfigFile)
             ##      nTraining <- length(Mdl.Y[[1]])
             X.ID0 <- as.Date(ID[1:nTraining])
 
-            par(mfcol = c(5, 2), mar = c(2.5, 4, 2, 0))
+            ## par(mfcol = c(5, 2), mar = c(2.5, 4, 2, 0))
             plot(X.ID0, Mdl.par[[1]][[1]], type = "l", col = "blue", xlab = "",
                  ylab = expression(mu), main = names(Mdl.Y)[1], ylim = c(-1, 2))
             abline(v = X.ID0[3000], col = "red", lwd = 2, lty = "dashed")
@@ -290,8 +298,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
         {
             for(j in names(MdlDataStruc[[i]]))
                 {
-                    ncolX.ij <- ncol(MdlTraining.X[[i]][[j]])
-                    namesX.ij <- colnames(MdlTraining.X[[i]][[j]])
+                    ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
+                    namesX.ij <- colnames(Mdl.X.training[[i]][[j]])
 
                     ## The MCMC storage
                     MCMC.betaIdx[[i]][[j]] <- matrix(
@@ -338,8 +346,8 @@ CplMain <- function(Training.Idx, CplConfigFile)
                                 varSelArgs = varSelArgs,
                                 priArgs = priArgs,
                                 parUpdate = parUpdate,
-                                Mdl.Y = MdlTraining.Y,
-                                Mdl.X = MdlTraining.X,
+                                Mdl.Y = Mdl.Y.training,
+                                Mdl.X = Mdl.X.training,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 MargisTypes = MargisTypes,
