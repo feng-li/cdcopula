@@ -24,8 +24,8 @@ kendalltauTabular <- function(CplNM, tol = 1e-4)
 
       lambdaLGrid <- seq(0+tol, 1-tol, tol)
       ## lambdaUGrid <- lambdaLGrid
-      lambdaUGrid <- seq(0+tol, 0.59-tol, tol)
-      warning("Tabular method set restricted theta interval!")
+      lambdaUGrid <- seq(0+tol, 1-tol, tol)
+      ## warning("Tabular method set restricted theta interval!")
 
       nGridL <- length(lambdaLGrid)
       nGridU <- length(lambdaUGrid)

@@ -328,8 +328,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
 
 ################################################################################
             ## DEBUGGING
-            ## u <- matrix(c(0.6, 0.3), 1, )
-            ## theta <- 3.5
+            ## u <- matrix(c(0.2, 0.3), 1, )
+            ## theta <- 1.5
             ## delta <- 2.4
             ## PASSED
 ################################################################################
@@ -344,7 +344,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             S1 <- 1 - rowSums(D12^(-delta))
             S2 <- -1 + (-S1)^(1/delta)
 
-            gradCpl.u <- (D1^(-1-3*delta)*D2^(-2*delta)*
+            gradCpl.u <- -(D1^(-1-3*delta)*D2^(-2*delta)*
                           (rowSums(D12^delta)-D1^delta*D2^delta)^2*
                           (D1^(1+delta)*S1*(-1+theta)*
                            (1+(-S1)^(1/delta)*(-1+theta)-theta+S2^2*theta+S2^2*delta*theta)+
@@ -355,12 +355,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                            (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
                                   (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
 
-            ## FIXME: No idea where is the error, it is just has the opposite
-            ## sign from the numerical result. Assuming the numerical result is
-            ## right at the moment. Need further investigation.
-
-            ## out <- gradCpl.u
-            out <- -gradCpl.u
+            out <- gradCpl.u
 
           }
       }

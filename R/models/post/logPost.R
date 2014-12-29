@@ -1,58 +1,48 @@
 ##' The log posterior of the copula model
 ##'
-##' The structure of the input are constructed via the design of variable
-##' "MdlDataStuc" in the main setting file. See the individual description for
-##' each variable in the setting files. This is used to calculate the
-##' conditional log posterior for the full copula model.
-##' @param CplNM "character".
-##'        The copula name.
+##' The structure of the input are constructed via the design of variable "MdlDataStuc" in
+##' the main setting file. See the individual description for each variable in the setting
+##' files. This is used to calculate the conditional log posterior for the full copula
+##' model.
+##' @param CplNM "character".  The copula name.
 ##'
-##' @param Mdl.Y "list"
-##'        The responses of each marginal model.
+##' @param Mdl.Y "list" The responses of each marginal model.
 ##'
-##' @param Mdl.X "list".
-##'        The covariate used in each parameter components. The structure is
-##'        designed by "MdlDataStruc" variable in the main file. The intercept
-##'        is included if called in the data construction procedure.
+##' @param Mdl.X "list".  The covariate used in each parameter components. The structure
+##' is designed by "MdlDataStruc" variable in the main file. The intercept is included if
+##' called in the data construction procedure.
 ##'
 ##' @param Mdl.beta "list".
 ##'
 ##' @param Mdl.betaIdx "list".
 ##'
-##' @param Mdl.parLink "list".
-##'        The link function used in the MCMC procedure. See the main setting
-##'        file for details.
+##' @param Mdl.parLink "list".  The link function used in the MCMC procedure. See the main
+##' setting file for details.
 ##'
 ##' @param varSelArgs "list"
 ##'
-##' @param MargisTypes "list".
-##'        The model type in each marginal distribution.
+##' @param MargisTypes "list".  The model type in each marginal distribution.
 ##'
-##' @param priArgs "list".
-##'        The prior settings for each parameter components.
+##' @param priArgs "list".  The prior settings for each parameter components.
 ##'
-##' @param parUpdate "list".
-##'        The parameters list to be updated. In the MCMC draw. Most time we
-##'        are doing conditional posterior which means some components are kept
-##'        uncaged. This can reduce computing time.
+##' @param parUpdate "list".  The parameters list to be updated. In the MCMC draw. Most
+##' time we are doing conditional posterior which means some components are kept
+##' uncaged. This can reduce computing time.
 ##'
-##' @param staticCache "list"
-##'        Arguments that are cached in the model.
+##' @param staticCache "list" Arguments that are cached in the model.
 ##'
 ##' @param call.out "character vector"
 ##'
 ##' @param split "logical"
 ##'
-##'        If TRUE, the marginal model and copula model are split. This can be
-##'        used in the two stage method.
+##'        If TRUE, the marginal model and copula model are split. This can be used in the
+##' two stage method.
 ##'
-##' @return "list".
-##'        The list should contain the updated components.
+##' @return "list".  The list should contain the updated components.
 ##'
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Mon Oct 24 15:07:01 CEST 2011;
-##'       Current: Thu May 10 20:17:09 CEST 2012.
+##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current.
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
                     call.out = c("prior", "likelihood", "posterior",

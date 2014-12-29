@@ -7,7 +7,7 @@ ylim <- c(0, 1)
 xat <- seq(0, 1, 0.1)
 yat <- xat
 
-lambdaL <- seq(0.01, 0.99, 0.01)
+lambdaL <- seq(0.001, 0.999, 0.01)
 lambdaU <- lambdaL
 
 lambdaLU <- mesh.grid(lambdaL, lambdaU)
@@ -19,6 +19,22 @@ parCpl <- list(delta = delta, theta = theta)
 
 tau <- matrix(kendalltau(CplNM, parCpl), length(lambdaL))
 
+###----------------------------------------------------------------------------
+### Debuging code to check if inverse Kendall's tau is correctly calculated
+###----------------------------------------------------------------------------
+lambdaU.e <- kendalltauInv(CplNM = "BB7",
+                         parRepCpl = list(lambdaL = lambdaLU[, 1], tau = tau),
+                         method = "tabular")
+theta.e <- log(2)/log(2-lambdaU.e)
+## tau.e <- kendalltau(CplNM = "BB7",
+##                     parCpl = list(theta = theta1, delta = delta))
+idx <- which(abs(lambdaU.e-lambdaLU[, 2])>0.1)
+
+
+
+###----------------------------------------------------------------------------
+### Plot counter
+###----------------------------------------------------------------------------
 ## Colored contour
 filled.contour(x = lambdaL, y = lambdaU, z = tau,
                xlim = xlim, ylim = xlim,
@@ -33,6 +49,9 @@ filled.contour(x = lambdaL, y = lambdaU, z = tau,
                  contour(lambdaL,  lambdaU,  tau,  add  =  TRUE,
                          col  = "black",  lwd  =  0.8,  lty  = "solid",
                          xlim  = xlim,  ylim  =  ylim)
+
+                 ## DEBUGGING CODE:
+                 points(lambdaLU[idx, ], col = "blue", pch = 20)
 
                })
 

@@ -114,11 +114,12 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                     try(plot(g.num, g.math, main = as.character(chainCaller),
                              pch = 20, col = "blue"), silent = TRUE)
 
+                    print(g.num)
 
                     ## Define gradient accuracy coefficient. The TRUE coefficient should be one
                     ## if analytical and numerical methods are of the same.
-                    g.coef <- lm(g.math~0+g.num)$coef
-                    if(is.na(g.coef) || abs(g.coef-1)>0.1)
+                    g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
+                    if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
                         {
                             ## Sys.sleep(1)
                             ## browser(text = "Something Wrong!")

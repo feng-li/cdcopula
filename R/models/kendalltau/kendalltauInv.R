@@ -14,9 +14,8 @@
 ##' @note DEPENDS: flutils
 ##'       Created: Sat Dec 31 02:05:14 CET 2011;
 ##'       Current: Mon Apr 16 14:40:16 CEST 2012.
-##' TODO: Split the output by using a caller.
-
-
+##' TODO: Split the output by using a caller. The inverse look will fail when lambdaL>8.5
+##' due to the reason of non-monotonic.
 kendalltauInv <- function(
     CplNM,
     parRepCpl,
@@ -121,8 +120,8 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
             tau <- parRepCpl[["tau"]]
             delta <- -log(2)/log(lambdaL)
 
-            ## theta.interval <- c(1, 1000)
-            theta.interval <- c(1, 1.9)
+            theta.interval <- c(1, 1000)
+            ## theta.interval <- c(1, 1.9)
             warning("Iteration method set restricted theta interval!")
 
             out.theta <- delta
@@ -199,22 +198,11 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
 ###----------------------------------------------------------------------------
 ### TESTING
 ###----------------------------------------------------------------------------
-## nObs <- 5000 ## about 1.7sec
-## tauTabular <- kendalltauTabular("BB7", tol = 0.001)
+## grd <- mesh.grid(seq(0.001, 0.999, 0.01))
 
-## tau <- runif(nObs, 0.001, 0.999)
-## lambdaLMax <- 2^(1/2-1/(2*tau))
-
-## lambdaL <- NA
-## for(i in 1:nObs) lambdaL[i] <- runif(1, 0.002, lambdaLMax[i])
-
-## parRepCpl <- list(lambdaL = lambdaL, tau = tau)
-
-## a <- proc.time()
-## lambdaU <- kendalltauInv(CplNM = "BB7", parRepCpl = parRepCpl,
-##                         tauTabular = tauTabular)
-## print(proc.time()-a)
-
+## lambdaL <- grd[, 1]# runif(nObs)
+## lambdaU <- grd[, 2]# runif(nObs)
 ## delta <- -log(2)/log(lambdaL)
 ## theta <- log(2)/log(2-lambdaU)
-## tauEst <- kendalltau("BB7", parCpl = list(theta = theta, delta = delta))
+## tau <- kendalltau(CplNM = "BB7",
+##                   parCpl = list(theta = theta, delta = delta))
