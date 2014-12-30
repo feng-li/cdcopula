@@ -137,7 +137,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 1000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -163,7 +163,7 @@ MCMCUpdate[[2]][[2]] <- F
 MCMCUpdate[[2]][[3]] <- F
 MCMCUpdate[[2]][[4]] <- F
 
-MCMCUpdate[[3]][[1]] <- F
+MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
@@ -367,7 +367,7 @@ betaInit[[2]][[2]] <- "random"
 betaInit[[2]][[3]] <- "random"
 betaInit[[2]][[4]] <- "random"
 
-## betaInit[[3]][[1]] <- "random"
+betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"
 
 ## betaInit[[1]][[1]] <- "random"
@@ -380,7 +380,7 @@ betaInit[[3]][[2]] <- "random"
 ## betaInit[[2]][[3]] <- "random"
 ## betaInit[[2]][[4]] <- -0.11707829
 
-betaInit[[3]][[1]] <- -3.13519286
+## betaInit[[3]][[1]] <- -3.13519286
 ## betaInit[[3]][[2]] <- 0.60447399
 
 

@@ -57,13 +57,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## Mdl.Idx.training <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
     nTraining <- length(Mdl.Idx.training)
     Mdl.X.training <- rapply(object=Mdl.X,
-                            f = subsetFun,
-                            idx = Mdl.Idx.training,
-                            how = "replace")
+                             f = subsetFun,
+                             idx = Mdl.Idx.training,
+                             how = "replace")
     Mdl.Y.training <- rapply(object=Mdl.Y,
-                            f = subsetFun,
-                            idx = Mdl.Idx.training,
-                            how = "replace")
+                             f = subsetFun,
+                             idx = Mdl.Idx.training,
+                             how = "replace")
 
     ## Switch all the updating indicators ON
     parUpdate <- MCMCUpdate
@@ -97,6 +97,19 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
             nLoopInit <- 0
             maxLoopInit <- 3
 
+
+            Mdl.Idx.training.sample <-
+                Mdl.Idx.training[seq(1, nTraining, length.out = 50)]
+
+            Mdl.X.training.sample <- rapply(object=Mdl.X,
+                                            f = subsetFun,
+                                            idx = Mdl.Idx.training.sample,
+                                            how = "replace")
+            Mdl.Y.training.sample <- rapply(object=Mdl.Y,
+                                            f = subsetFun,
+                                            idx = Mdl.Idx.training.sample,
+                                            how = "replace")
+
             cat("Optimizing initial values, may take a few minutes...\n\n")
             while(InitGood == FALSE)
                 {
@@ -104,8 +117,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                     initParOut <- initPar(
                         varSelArgs = varSelArgs,
                         betaInit = betaInit,
-                        Mdl.X = Mdl.X.training,
-                        Mdl.Y = Mdl.Y.training)
+                        Mdl.X = Mdl.X.training.sample,
+                        Mdl.Y = Mdl.Y.training.sample)
                     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
                     Mdl.beta <- initParOut[["Mdl.beta"]]
 
@@ -113,7 +126,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                     ## NOTE: As this is the very first run, the "parUpdate" should be all on for
                     ## this time.
 
-                    staticCache <- logPost(
+                    staticCache.sample <- logPost(
                         CplNM = CplNM,
                         Mdl.Y = Mdl.Y.training,
                         Mdl.X = Mdl.X.training,
@@ -161,15 +174,15 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 control = list(maximize = TRUE, maxit = 100, all.methods = TRUE),
                                 ## method = "BFGS",
                                 CplNM = CplNM,
-                                Mdl.Y = Mdl.Y.training,
-                                Mdl.X = Mdl.X.training,
+                                Mdl.Y = Mdl.Y.training.sample,
+                                Mdl.X = Mdl.X.training.sample,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 Mdl.parLink = Mdl.parLink,
                                 varSelArgs = varSelArgs,
                                 MargisTypes = MargisTypes,
                                 priArgs = priArgs,
-                                staticCache = staticCache,
+                                staticCache = staticCache.sample,
                                 parUpdate = parUpdateComp,
                                 split = TRUE,
                                 ), silent = FALSE)
@@ -377,6 +390,12 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                     ##    MCMC.par[[CompCaller]][[parCaller]][iIter-1, ])) browser()
                                     ## print(MCMC.par[[CompCaller]][[parCaller]][iIter, 1])
 
+                                }
+                            else
+                                {
+                                    ## Set acceptance probability to zero if this
+                                    ## iteration fails.
+                                    MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
                                 }
                         }
                     else

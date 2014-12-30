@@ -69,32 +69,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
         theta <- log(2)/log(2-lambdaU) # ff(delta)
 
         if(tolower(cplCaller) == "lambdal")
-          {
-            condPar <- NULL
-            ## condPar <- "tau"
-            if("tau" %in% condPar)
-              {
-                ## The commenting out part of the code is for the unconditional
-                ## link function which is deprecated.
-
-                ## Gradient w.r.t delta
-                ## T1 <- 1-(1-u)^theta
-                ## L1 <- rowSums(T1^(-delta))-1
-                ## Delta1 <- -rowSums(T1^(-delta)*log(T1))
-
-                ## logGradCpl.delta <-  - rowSums(log(T1))-
-                ##   2*(1+delta)*Delta1/(delta*L1)-
-                ##     (1/theta-2)*(log(L1)-delta*Delta1/L1)/
-                ##       (delta^2*(L1^(1/delta)-1))+
-                ##         2*log(L1)/delta^2+
-                ##           (L1^(1/delta)-(1+delta)*L1^(1/delta)*
-                ##            (log(L1)-delta*Delta1/L1)/delta^2-1)/
-                ##              ((1+delta)*L1^(1/delta)-delta-1/theta)
-
-                ## theta <- theta[1]
-                ## delta <- delta[1]
-                ## u <- u[1, , drop = FALSE]
-
+            {
                 T1 <- 1-(1-u)^theta
                 Tu1 <- T1[, 1]
                 Tv1 <- T1[, 2]
@@ -112,10 +87,10 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                 logGradCpl.delta <- (
                     L5^2*D1*D2*(
                         (-1+L1^(1/delta))^2*delta^2*theta^2+log(L1)-
-                        1/L5*(-L5*theta*(delta+L1^(2/delta)*(1+delta)*theta-
-                                         L1^(1/delta)*(3+delta+(-1+delta)*theta)
-                                         )*log(L1) +
-                              delta*(
+                            1/L5*(-L5*theta*(delta+L1^(2/delta)*(1+delta)*theta-
+                                                 L1^(1/delta)*(3+delta+(-1+delta)*theta)
+                                             )*log(L1) +
+                                                 delta*(
                                   -L1^(2/delta)*(1+delta)*
                                   (L4*Tu1^delta*delta+Tv1^delta*(1+delta))*theta^2+
                                   (1+delta*theta)*(Tu1^delta*delta*theta-
@@ -138,117 +113,14 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                                   L1^(1/delta)*(1+theta+2*delta*theta)))
 
 
-                tauGrad.delta <- kendalltauGrad(CplNM = CplNM,
-                                                theta = theta,
-                                                delta = delta,
-                                                caller = "delta")
-                out <- logGradCpl.delta*(1/tauGrad.delta)
-              }
-            else
-              {
-###########################################################################
-                ## This should be obtained through the conditional linkage
-                ## TODO: This is kind of hard code, consider it in a more general
-                ## way.
-                ## Gradient w.r.t. tau
-                gradCpl.tau.theta <- kendalltauGrad(
+                gradCpl.tau.delta <- kendalltauGrad(
                     CplNM = CplNM, theta = theta,
-                    delta = delta, caller = "theta")
+                    delta = delta, caller = "delta")
 
-                ## The gradient for the parameters in conditional link
-                ## tau.b <- 1-0.1 ## NOTE: Numerical stable to not allow tau  =  1
-                ## tau.a <- log(2)/(log(2)-2*log(lambdaL))
-                ## if(any(tau<tau.a)) browser()
-                ## linPred.tau0 <-  log(tau-tau.a) - log(tau.b-tau)
-
-                X <- Mdl.X[[CplNM]][["tau"]]
-                beta <- Mdl.beta[[CplNM]][["tau"]]
-
-                linPred.tau <- as.vector(X%*%beta)
-
-                grad.glogit.a <- 1/(1+exp(linPred.tau))
-
-                grad.link.a.lambdaL <- grad.glogit.a*
-                  log(2)/(lambdaL*(log(2)-log(lambdaL))^2)
-
-                ## The gradient for the reparameterized parameters
-                ## lambdaL  =  2^(-1/delta)
-                grad.lambdaL.delta <- 2^(-1/delta)*log(2)/delta^2
-
-                ## grad.tauLink.theta <- (grad.link.a.lambdaL*grad.lambdaL.delta)
-
-                grad.delta.theta <- (1/gradCpl.tau.theta)*
-                  (grad.link.a.lambdaL*grad.lambdaL.delta)
-                ## (grad.link.a.lambdaL)
-
-###########################################################################
-
-                ub <- 1-u
-                M12 <- 1-ub^theta
-
-                ## Numeric check if M12 is too close to 1 or 0.
-                ## tol <- .Machine$double.eps*1e8
-                ## M12.bad1 <- (M12> (1-tol))
-                ## if(any(M12.bad1))
-                ##   {
-                ##     M12[M12.bad1] <- 1 - tol
-                ##     warning("Numerical unstable on M12,  adjust on the cliff...",
-                ##             immediate. = immediate.)
-                ##   }
-                ## M12.bad0 <- (M12<tol)
-                ## if(any(M12.bad0))
-                ##   {
-                ##     M12[M12.bad0] <- tol
-                ##     warning("Numerical unstable on M12,  adjust on the cliff...",
-                ##             immediate. = immediate.)
-                ##   }
-
-
-                M34 <- -log(M12) + ub^theta*delta*log(ub)*grad.delta.theta/M12
-
-                M5 <- -1 + rowSums(M12^(-delta))
-                M6 <- -1 + M5^(1/delta)
-
-                M7 <- (log(M5^(1/delta))-log(M6))*grad.delta.theta/theta^2
-                C1 <- rowSums((M12^(-delta)*M34))/M5
-                M8 <- C1*delta + log(M5)
-                M9 <- M7-(M8*(-1+1/theta))/(M6*delta^2)
-
-                P12 <- M6*(1+delta)*theta*log(ub)*grad.delta.theta
-                P34 <- -M12*log(M12)+(1+delta)*log(ub)*ub^theta*grad.delta.theta
-                P56 <- (-1+theta)*log(ub)*grad.delta.theta
-                P78 <- M6*P34*(1+delta)*theta/M12
-
-                C34 <- P34*(-1+theta)/M12
-
-                S1 <- M12^delta
-
-                logGradCpl.delta <- (
-                    (S1[, 1]*S1[, 2])^(-2)*(rowSums(S1)-S1[, 1]*S1[, 2])^2*
-                    (
-                        rowSums(C34+P12+P56+P78) - M6*theta/delta +
-                        M5^(1/delta)*(1-M5^(-1/delta))*M9*(1+delta)*theta+
-                        M6*(1+delta)*theta/delta-
-                        (M7-M8*(-2+1/theta)/(M6*delta^2))*(-1+1/theta)*theta-
-                        2*(-1+1/theta)*theta*(-C1*delta*(1+delta)+log(M5))/delta^2+
-                        M5^(1/delta)*(1-M5^(-1/delta))*(1+delta)*theta*
-                        (C1*(-2-1/delta)+log(M5)/delta^2)+ M6*(1+delta)*grad.delta.theta+
-                        grad.delta.theta/theta+(-1+theta*grad.delta.theta)/theta
-                        )
-                    )/(
-                        M5^2*(-1+(-delta+M5^(1/delta)*(1+delta))*theta)
-                        )
-
-
-                ## Gradient w.r.t. lambdaL
-                ## gradCpl.lambdaL <- 2^(-1/delta)*log(2)/delta^2
-
-                ## The chain gradient
-                out <- logGradCpl.delta/grad.lambdaL.delta
+                out <- logGradCpl.delta*(1/gradCpl.tau.delta)
             }
-          }
         else if(tolower(cplCaller) == "tau")
-          {
+            {
 ################################################################################
 ### DEBUGGING
             ## u <- matrix(c(0.6, 0.3), 1, )

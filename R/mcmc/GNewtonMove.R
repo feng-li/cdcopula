@@ -93,7 +93,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
             ## FIXME: DEBUGING code
             ## browser()
 
-            DEBUGING <- TRUE
+            DEBUGING <- FALSE
             if(DEBUGING == TRUE)
                 {
                     logLikGradHess.prop.num <- logLikelihoodGradHess(
@@ -114,7 +114,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                     try(plot(g.num, g.math, main = as.character(chainCaller),
                              pch = 20, col = "blue"), silent = TRUE)
 
-                    print(g.num)
+                    ## print(g.num)
 
                     ## Define gradient accuracy coefficient. The TRUE coefficient should be one
                     ## if analytical and numerical methods are of the same.

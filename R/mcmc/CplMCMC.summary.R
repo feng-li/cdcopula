@@ -82,12 +82,15 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                                      colIneffs(x[(n.burn+1):iIter, , drop = FALSE])},
                                  how = "replace", iIter = iIter)
 
+
             for(i in names(MCMC.beta))
                 {
                     for(j in names(MCMC.beta[[i]]))
                         {
                             if(MCMCUpdate[[i]][[j]])
                                 {
+                                    if(is.na(accept.prob.mean[[i]][[j]])) browser()
+
                                     obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
                                                      par.mean[[i]][[j]],
                                                      par.sd[[i]][[j]])

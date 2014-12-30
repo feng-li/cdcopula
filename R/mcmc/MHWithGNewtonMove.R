@@ -277,6 +277,7 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       ##  cat(logPost.prop, logPost.curr, logJump.currATpropRev, logJump.propATprop, "\n")
 
+
       ## the acceptance probability
       accept.prob.curr <- min(1, MHRatio)
       ## print(round(accept.prob*100))
@@ -286,8 +287,8 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
-
-      ## if(is.na(accept.prob)) browser()
+      ## print(accept.prob.curr)
+      ## if(is.na(accept.prob.curr)) browser()
 
       if(## rejectFlag == FALSE &&
          !is.na(accept.prob.curr) &&
@@ -303,9 +304,11 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           ## browser()
         }
       else # keep current
-        {
-          betaIdx.prop <- betaIdx.curr
-        }
+          {
+              betaIdx.prop <- betaIdx.curr
+          }
+
+
       accept.probs[iMH] <- accept.prob.curr
     }
 
@@ -313,8 +316,8 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## cat("errorFlags:", errorFlags, "\n")
   ## cat("logPost.prop", logPost.prop, "\n")
   ## cat("logPost.curr", logPost.curr, "\n")
+  ## if(is.na(accept.probs[nMH])) browser()
 
-  ## browser()
 
   ## The final update, the acceptance prob are from the last MH update or keep
   ## current draw.
