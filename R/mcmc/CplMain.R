@@ -97,9 +97,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
             nLoopInit <- 0
             maxLoopInit <- 3
 
-
             Mdl.Idx.training.sample <-
-                Mdl.Idx.training[seq(1, nTraining, length.out = 50)]
+                Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
 
             Mdl.X.training.sample <- rapply(object=Mdl.X,
                                             f = subsetFun,
@@ -128,8 +127,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
                     staticCache.sample <- logPost(
                         CplNM = CplNM,
-                        Mdl.Y = Mdl.Y.training,
-                        Mdl.X = Mdl.X.training,
+                        Mdl.Y = Mdl.Y.training.sample,
+                        Mdl.X = Mdl.X.training.sample,
                         Mdl.beta = Mdl.beta,
                         Mdl.betaIdx = Mdl.betaIdx,
                         Mdl.parLink = Mdl.parLink,
@@ -247,7 +246,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ### HARD DEBUGGING CODE， should be removed
 ###----------------------------------------------------------------------------
     Mdl.par <- staticCache$Mdl.par
-    plot <- TRUE
+    plot <- FALSE
     if(plot == TRUE)
         {
             ##      nTraining <- length(Mdl.Y[[1]])

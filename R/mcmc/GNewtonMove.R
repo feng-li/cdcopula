@@ -93,8 +93,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
             ## FIXME: DEBUGING code
             ## browser()
 
-            DEBUGING <- FALSE
-            if(DEBUGING == TRUE)
+            DEBUGGING <- FALSE
+            if(DEBUGGING == TRUE)
                 {
                     logLikGradHess.prop.num <- logLikelihoodGradHess(
                         CplNM = CplNM,

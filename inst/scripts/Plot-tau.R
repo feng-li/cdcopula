@@ -26,8 +26,8 @@ lambdaU.e <- kendalltauInv(CplNM = "BB7",
                          parRepCpl = list(lambdaL = lambdaLU[, 1], tau = tau),
                          method = "tabular")
 theta.e <- log(2)/log(2-lambdaU.e)
-## tau.e <- kendalltau(CplNM = "BB7",
-##                     parCpl = list(theta = theta1, delta = delta))
+tau.e <- kendalltau(CplNM = "BB7",
+                    parCpl = list(theta = theta1, delta = delta))
 idx <- which(abs(lambdaU.e-lambdaLU[, 2])>0.1)
 
 
