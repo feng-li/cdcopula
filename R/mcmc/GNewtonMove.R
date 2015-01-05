@@ -168,17 +168,23 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
             X.curr <- X[ , betaIdxCurr, drop = FALSE] # n-by-pc
 
 
-            ## Testing if a subset of gradients works, seems not
-            ## idx <- sample(1:80, 8)
-            ## logLikGrad.prop0 <- logLikGrad.prop
-            ## logLikGrad.prop[idx] <- 0
-            ## gradObs.pp0 <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop0)) +
-            ## logPriGrad.pp) # pp-by-1
-
             ## The gradient and Hessian in the general Newton's update
             gradObs.pp <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop)) + logPriGrad.pp) # pp-by-1
             HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
             HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
+
+
+            ## TODO: Testing if a subset of gradients works, seems not
+            ## nObs <- dim(X)[1]
+            ## ratio <- 0.3
+            ## idx <- sample(1:nObs, round(ratio*nObs))
+
+            ## gradObs.pp.sample <- matrix(1/ratio*rowSums(Md(t(X.prop[idx,, drop = FALSE ]),
+            ##                                        logLikGrad.prop[idx]))
+            ##                             + logPriGrad.pp) #
+
+            ## plot(sort(gradObs.pp.sample), gradObs.pp[order(gradObs.pp.sample)], pch = 20,
+            ##      type = "b")
 
             ## HessObsInv.pp <- qr.solve(HessObs.pp)
             HessObsInv.pp <- try(qr.solve(HessObs.pp), silent = TRUE) # pp-by-pp
@@ -217,19 +223,6 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                     ## Update the staticCache
                     ## Initial update staticCache for current Newton move
 
-                    ## staticCache.curr <- logPost(
-                    ##     CplNM = CplNM,
-                    ##     Mdl.Y = Mdl.Y,
-                    ##     Mdl.X = Mdl.X,
-                    ##     Mdl.beta = Mdl.beta,
-                    ##     Mdl.betaIdx = Mdl.betaIdx,
-                    ##     Mdl.parLink = Mdl.parLink,
-                    ##     varSelArgs = varSelArgs,
-                    ##     MargisTypes = MargisTypes,
-                    ##     priArgs = priArgs,
-                    ##     parUpdate = parUpdate,
-                    ##     staticCache = staticCache.curr,
-                    ##     staticCacheOnly = TRUE)[["staticCache"]]
 
                     staticCache.curr <- logPost(
                         CplNM = CplNM,

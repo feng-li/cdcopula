@@ -10,7 +10,7 @@
 ##'
 ##'        This will return the MCMC details into the global environment.
 ##'
-##' @references Li, F., 2012 Covariate-dependent copula
+##' @references Li, F., 2014 Covariate-dependent copula
 ##'
 ##' @author Feng Li, Central University of Finance and Economics.
 ##'
@@ -299,6 +299,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
 ### THE METROPOLIS-HASTINGS WITHIN GIBBS
 ###----------------------------------------------------------------------------
+### TODO: Add Two-stage Gibbs.
+
+
     cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
 
     ## Allocate the storage for the final parameters in current fold
@@ -330,89 +333,112 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## Switch all the updating indicators OFF
     parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
 
-    ## The updating matrix,  ordered
-    UpdateMat <- parCplCaller(parUpdate = MCMCUpdate,
-                              parUpdateOrder = MCMCUpdateOrder)
 
-    ## The MCMC loops
-    for(iIter in 1:nIter)
+    ## The Gibbs Sampler with Metropolis-Hastings nested in.
+    twoStage <- FALSE
+    if(twoStage == TRUE)
         {
-            ## The Gibbs loop
-            for(iUpdate in 1:dim(UpdateMat)[1])
+            ## This is the two-stage approach,  i.e. update each marginal models
+            ## independently first and update the joint model afterwards.
+            ## The updating matrix,  ordered
+            UpdateMat <- parCplCaller(parUpdate = MCMCUpdate,
+                                      parUpdateOrder = MCMCUpdateOrder,
+                                      nIter = nIter)
+        }
+    else
+        {
+            UpdateMat <- matrix(rep(
+                parCplCaller(
+                    parUpdate = MCMCUpdate,
+                    parUpdateOrder = MCMCUpdateOrder,
+                    nIter = 1),
+                nIter), nIter, 2)
+        }
+
+    browser()
+    ## This is the joint update the posterior
+    ## The Gibbs loop
+    for(iUpdate in 1:dim(UpdateMat)[1])
+        {
+            CompCaller <- UpdateMat[iUpdate, 1]
+            parCaller <- UpdateMat[iUpdate, 2]
+
+            iIter <- iUpdate%%nIter
+            if(iIter == 0)
                 {
-                    CompCaller <- UpdateMat[iUpdate, 1]
-                    parCaller <- UpdateMat[iUpdate, 2]
+                    iIter = nIter
+                }
 
-                    ## Switch current updating parameter indicator on
-                    parUpdate[[CompCaller]][[parCaller]] <- TRUE
+            ## Switch current updating parameter indicator on
+            parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
-                    ## Call the mail Metropolis--Hastings
-                    algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
+            ## Call the mail Metropolis--Hastings
+            algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
 
-                    if(tolower(algmArgs[["type"]]) == "gnewtonmove")
+            if(tolower(algmArgs[["type"]]) == "gnewtonmove")
+                {
+                    ## staticCache <- list(u = u, Mdl.par = Mdl.par)
+                    MHOut <- MHWithGNewtonMove(
+                        CplNM = CplNM,
+                        propArgs = propArgs,
+                        varSelArgs = varSelArgs,
+                        priArgs = priArgs,
+                        parUpdate = parUpdate,
+                        Mdl.Y = Mdl.Y.training,
+                        Mdl.X = Mdl.X.training,
+                        Mdl.beta = Mdl.beta,
+                        Mdl.betaIdx = Mdl.betaIdx,
+                        MargisTypes = MargisTypes,
+                        Mdl.parLink = Mdl.parLink,
+                        staticCache = staticCache)
+
+                    if(MHOut$errorFlag == FALSE)
                         {
-                            ## staticCache <- list(u = u, Mdl.par = Mdl.par)
-                            MHOut <- MHWithGNewtonMove(
-                                CplNM = CplNM,
-                                propArgs = propArgs,
-                                varSelArgs = varSelArgs,
-                                priArgs = priArgs,
-                                parUpdate = parUpdate,
-                                Mdl.Y = Mdl.Y.training,
-                                Mdl.X = Mdl.X.training,
-                                Mdl.beta = Mdl.beta,
-                                Mdl.betaIdx = Mdl.betaIdx,
-                                MargisTypes = MargisTypes,
-                                Mdl.parLink = Mdl.parLink,
-                                staticCache = staticCache)
+                            ## Update the MH results to the current parameter structure
+                            staticCache <- MHOut[["staticCache"]]
+                            Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
+                            Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-                            if(MHOut$errorFlag == FALSE)
-                                {
-                                    ## Update the MH results to the current parameter structure
-                                    staticCache <- MHOut[["staticCache"]]
-                                    Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
-                                    Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
+                            ## Export the parameters in each cross-validation fold
+                            MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <-
+                                MHOut[["beta"]]
+                            MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <-
+                                MHOut[["betaIdx"]]
+                            MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
+                                MHOut[["accept.prob"]]
+                            MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
+                                staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
 
-                                    ## Export the parameters in each cross-validation fold
-                                    MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <-
-                                        MHOut[["beta"]]
-                                    MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <-
-                                        MHOut[["betaIdx"]]
-                                    MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
-                                        MHOut[["accept.prob"]]
-                                    MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
-                                        staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
 
-                                    ## if(CompCaller  == "SP100"& parCaller  == "df"&
-                                    ##    iIter>1  & MHOut[["accept.prob"]]>0.3 &
-                                    ##    all(MCMC.par[[CompCaller]][[parCaller]][iIter, ] ==
-                                    ##    MCMC.par[[CompCaller]][[parCaller]][iIter-1, ])) browser()
-                                    ## print(MCMC.par[[CompCaller]][[parCaller]][iIter, 1])
-
-                                }
-                            else
-                                {
-                                    ## Set acceptance probability to zero if this
-                                    ## iteration fails.
-                                    MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
-                                }
                         }
                     else
                         {
-                            stop("Unknown proposal algorithm!")
+                            ## Set acceptance probability to zero if this
+                            ## iteration fails.
+                            MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
                         }
-                    ## Switch current updating parameter indicator off
-                    parUpdate[[CompCaller]][[parCaller]] <- FALSE
                 }
+            else
+                {
+                    stop("Unknown proposal algorithm!")
+                }
+            ## Switch current updating parameter indicator off
+            parUpdate[[CompCaller]][[parCaller]] <- FALSE
 
             ## MCMC trajectory
-            CplMCMC.summary(iIter = iIter, nIter = nIter, interval = 0.1, burnin = burnin,
-                            MCMC.beta = MCMC.beta,
-                            MCMC.betaIdx = MCMC.betaIdx,
-                            MCMC.par = MCMC.par,
-                            MCMC.AccProb = MCMC.AccProb,
-                            MCMCUpdate = MCMCUpdate)
+            if(track.MCMC == TRUE)
+                {
+                    CplMCMC.summary(iIter = iIter, nIter = nIter,
+                                    interval = 0.1, burnin = burnin,
+                                    MCMC.beta = MCMC.beta,
+                                    MCMC.betaIdx = MCMC.betaIdx,
+                                    MCMC.par = MCMC.par,
+                                    MCMC.AccProb = MCMC.AccProb,
+                                    MCMCUpdate = MCMCUpdate)
+                }
+
         }
+
 
     ## Fetch everything at current environment to a list
     ## list2env(out, envir = .GlobalEnv)
