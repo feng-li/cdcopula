@@ -335,6 +335,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
     ## The updating matrix
+
+    Starting.time <- Sys.time()
     UpdateMat <- parCplCaller(CplNM = CplNM,
                               parUpdate = MCMCUpdate,
                               parUpdateOrder = MCMCUpdateOrder)
@@ -342,7 +344,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     for(iUpdate in 1:(nInner*nIter))
         {
-            print(iUpdate)
             iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
             iIter <- floor(iUpdate/nInner)+1
 
@@ -406,14 +407,15 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                 }
 
             ## MCMC trajectory
-            if(track.MCMC == TRUE)
+            if(track.MCMC == TRUE && iInner == nInner)
                 {
                     CplMCMC.summary(iIter = iIter, nIter = nIter,
-                                    interval = 0.1, burnin = burnin,
+                                    interval = 0.01, burnin = burnin,
                                     MCMC.beta = MCMC.beta,
                                     MCMC.betaIdx = MCMC.betaIdx,
                                     MCMC.par = MCMC.par,
                                     MCMC.AccProb = MCMC.AccProb,
+                                    Starting.time = Starting.time,
                                     MCMCUpdate = MCMCUpdate)
                 }
 

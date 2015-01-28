@@ -105,12 +105,11 @@ source(CplConfigFile, local = TRUE)
 ###----------------------------------------------------------------------------
 ### MCMC
 ###----------------------------------------------------------------------------
+## Recording starting time
+Starting.time <- Sys.time()
 
 ## Set Parallel Computing environment
 ## cl <- makeCluster(crossValidArgs$N.subsets, outfile = "")
-
-## Recording starting time
-Starting.time <- proc.time()
 
 if(!interactive())
 {

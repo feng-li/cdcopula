@@ -32,8 +32,12 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
         {
             donePercent <- round(iIter/nIter*100)
 
+            TimeToGo <-  round(difftime(Sys.time(), Starting.time,
+                                        units = "hours")/iIter*(nIter-iIter), 2)
+
             welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
-                             round(n.burn/nIter*100), "% burnin)\n", sep = "")
+                             round(n.burn/nIter*100), "% burnin) "
+                            , TimeToGo, " hours to go.\n", sep = "")
             cat("\n", rep("=", dev.width), "\n", sep = "")
             cat(welcome)
             cat(rep("=", dev.width), "\n", sep = "")
@@ -89,7 +93,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                         {
                             if(MCMCUpdate[[i]][[j]])
                                 {
-                                    if(is.na(accept.prob.mean[[i]][[j]])) browser()
+                                    if(is.na(accept.prob.mean[[i]][[j]])) #browser()
 
                                     obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
                                                      par.mean[[i]][[j]],
