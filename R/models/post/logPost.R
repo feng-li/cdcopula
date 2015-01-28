@@ -42,207 +42,175 @@
 ##'
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current.
+##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Mon Jan 05 22:58:03 CST 2015
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
-                    call.out = c("prior", "likelihood", "posterior",
-                      "staticCache")[3], split = FALSE)
+                    MCMCUpdateStrategy)
 {
-  ## Assume no error a priori
-  errorFlag <- FALSE
+    ## Assume no error a priori
+    errorFlag <- FALSE
 
-  ## Debugging symbol: if the warning should be printed out immediately.
-  ## use options(warn = 1)
-  ## immediate. <- FALSE
+    ## Debugging symbol: if the warning should be printed out immediately.
+    ## use options(warn = 1)
+    ## immediate. <- FALSE
 
-  ## The cached (pre-saved) information. The idea is to make even staticCache
-  ## is not available, the log posterior is still working.
-  if(missing(staticCache))
-    {
-      ## Initialize "staticCache" structure
-      u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
-                  dimnames = list(NULL, names(Mdl.Y)))
-      MdlDataStruc <- rapply(object = Mdl.beta,
-                        f = function(x)NA,
-                        how = "replace")
-      staticCache <- list(Mdl.logPri =  MdlDataStruc,
-                          Mdl.par = MdlDataStruc,
-                          Mdl.u = u,
-                          Mdl.d = u)
-    }
+    ## The cached (pre-saved) information. The idea is to make even staticCache
+    ## is not available, the log posterior is still working.
+    ## TODO: Change staticCache.
+    if(missing(staticCache))
+        {
+            ## Initialize "staticCache" structure
+            u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                        dimnames = list(NULL, names(Mdl.Y)))
+            MdlDataStruc <- rapply(object = Mdl.beta,
+                                   f = function(x)NA,
+                                   how = "replace")
+            staticCache <- list(Mdl.logPri =  MdlDataStruc,
+                                Mdl.par = MdlDataStruc,
+                                Mdl.d = u,
+                                Mdl.u = u)
+        }
 
-  Mdl.par <- staticCache[["Mdl.par"]]
-  Mdl.u <- staticCache[["Mdl.u"]]
-  Mdl.d <- staticCache[["Mdl.d"]]
-  ## Mdl.logPri <- staticCache[["Mdl.logPri"]]
-
-  ## Allocate the output structure
-  Mdl.logPri <- NA
-  Mdl.logLik <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.beta),
-                       dimnames = list(NULL, names(Mdl.beta)))
-  Mdl.logPost <- NA
+    Mdl.par <- staticCache[["Mdl.par"]]
+    Mdl.u <- staticCache[["Mdl.u"]]
+    Mdl.d <- staticCache[["Mdl.d"]]
+    Mdl.logPri <- staticCache[["Mdl.logPri"]]
 
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
-  if(any(c("prior", "posterior", "staticCache") %in% call.out))
-    {
-      Mdl.logPri <- logPriors(
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta,
-          Mdl.betaIdx = Mdl.betaIdx,
-          varSelArgs = varSelArgs,
-          priArgs = priArgs,
-          parUpdate = parUpdate)
-
-      ## Mdl.logPri <- mapply(function(x, z) ifelse(z, x, list(NA)),
-      ##                      x = Mdl.logPriNew,
-      ##                      z = parUpdate, SIMPLIFY = FALSE)
-
-      ## Mdl.logPri <- unlist(Mdl.logPri, recursive = FALSE)[unlist(parUpdate)]
-    }
-
-  ## a <- Mdl.logPri[[1]]$df$beta$intercept
-  ## if(a< -1000) browser()
+    Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
+                            Mdl.parLink = Mdl.parLink,
+                            Mdl.beta = Mdl.beta,
+                            Mdl.betaIdx = Mdl.betaIdx,
+                            varSelArgs = varSelArgs,
+                            priArgs = priArgs,
+                            parUpdate = parUpdate,
+                            Mdl.logPri = Mdl.logPri)
 
 ###----------------------------------------------------------------------------
-### THE MARGINAL LIKELIHOOD
+### UPDATING THE LIKELIHOOD
 ###----------------------------------------------------------------------------
+    Mdl.par <- parCplMeanFun(CplNM = CplNM,
+                             Mdl.X = Mdl.X,
+                             Mdl.parLink = Mdl.parLink,
+                             Mdl.beta = Mdl.beta,
+                             parUpdate = parUpdate,
+                             Mdl.par = Mdl.par)
 
-  if(any(c("likelihood", "posterior", "staticCache") %in% call.out))
-    {
-      ## Update Mdl.par
-      Mdl.par <- parCplMeanFun(
-          CplNM = CplNM,
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta,
-          parUpdate = parUpdate,
-          Mdl.par = Mdl.par)
+### Update marginal pdf and/or cdf the marginal u and only updated if the corresponding
+### parameters are updated.
 
-      ## print(Mdl.par$BB7$lambdaL)
-      ## print(Mdl.beta$BB7$lambdaL)
+    CompNM <- names(Mdl.beta)
 
-      ## if(any(is.na(unlist(Mdl.par))) |
-      ##    any(is.infinite((unlist(Mdl.par)))))
-      ##   {
-      ##     warning("DEBUGGING: NA happens when updating ``Mdl.par''...")
-      ##     return(list(errorFlag = TRUE))
-      ##   }
+    ## Allocate the output structure
+    Mdl.logLik <- cbind(Mdl.d, NA)
+    colnames(Mdl.logLik) <- CompNM
 
-      ## par(mfcol = c(5, 2))
-      ## try({
-      ##   plot(Mdl.par[[1]][[1]], type = "l")
-      ##   plot(Mdl.par[[1]][[2]], type = "l")
-      ##   plot(Mdl.par[[1]][[3]], type = "l")
-      ##   plot(Mdl.par[[1]][[4]], type = "l")
+    CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
+    MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
-      ##   plot(Mdl.par[[3]][[1]], type = "l")
-
-      ##   plot(Mdl.par[[2]][[1]], type = "l")
-      ##   plot(Mdl.par[[2]][[2]], type = "l")
-      ##   plot(Mdl.par[[2]][[3]], type = "l")
-      ##   plot(Mdl.par[[2]][[4]], type = "l")
-
-      ##   plot(Mdl.par[[3]][[2]], type = "l")
-      ## }, silent = TRUE)
-
-### Update marginal pdf and cdf
-### the marginal u and only updated if the corresponding parameters are updated.
-      CompNM <- names(Mdl.beta)
-      MargisNM <- CompNM[CompNM != CplNM]
-      for(CompCaller in MargisNM)
+    ## The Marginal likelihoods
+    for(iComp in MargisUpNM)
         {
-          CompUpdate <- any(parUpdate[[CompCaller]] == TRUE)
-          ## Marginal Update available
-          if(CompUpdate == TRUE)
-            {
-              Margi.ud <- MargiModel(y = Mdl.Y[[CompCaller]],
-                                     type = MargisTypes[CompCaller],
-                                     par = Mdl.par[[CompCaller]])
-              Mdl.u[, CompCaller] <- Margi.ud[["u"]] # the marginal cdf
-              Mdl.d[, CompCaller] <- Margi.ud[["d"]] # the marginal pdf
+            if(tolower(MCMCUpdateStrategy) == "joint")
+                {
+                    densCaller <- c("u", "d")
+                }
+            else if(tolower(MCMCUpdateStrategy) == "twostage")
+                {
+                    ## Stage two of the two stage approach
+                    densCaller <- c("u", "d")
+                }
+            else if(tolower(MCMCUpdateStrategy) == "margin")
+                {
+                    densCaller <- c(NA, "d")
+                }
+            else
+                {
+                    stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                               "not implemented!"))
+                }
 
-              ## if(any(is.na(Margi.ud[["u"]]))) browser()
-              Mdl.logLik[, CompCaller] <- Margi.ud[["d"]]
-              ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
-            }
+            ## MARGINAL LIKELIHOOD
+            Mdl.ud <- MargiModel(
+                y = Mdl.Y[[iComp]],
+                type = MargisTypes[which(MargisNM == iComp)],
+                par = Mdl.par[[iComp]],
+                densCaller = densCaller)
+
+            if("u" %in% densCaller)
+                {
+                    Mdl.u[, iComp] <- Mdl.ud[["u"]]
+                }
+            if("d" %in% densCaller)
+                {
+                    Mdl.d[, iComp] <- Mdl.ud[["d"]]
+                    Mdl.logLik[, iComp] <- Mdl.ud[["d"]]
+                }
+            ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
 
         }
 
-    }
-
-###----------------------------------------------------------------------------
-### THE COPULA LOG LIKELIHOOD
-###----------------------------------------------------------------------------
-  Mdl.logLikCpl <- NA
-  if(any(c("likelihood", "posterior") %in% call.out))
-    {
-      ## Update the copula likelihood only if the copula model is updated or
-      ## the full posterior (marginal+copula) is required.
-      if(any(parUpdate[[CplNM]] == TRUE) | split == FALSE)
+    ## THE COPULA LOG LIKELIHOOD
+    if(tolower(MCMCUpdateStrategy) == "joint")
         {
-          Mdl.logLikCpl <- logCplLik(
-              u = Mdl.u,
-              CplNM = CplNM,
-              parCpl = Mdl.par[[CplNM]],
-              logLik = FALSE) # n-by-1
-          Mdl.logLik[, CplNM] <- Mdl.logLikCpl
+            evalCpl <- TRUE
+            PostComp <- lapply(parUpdate, function(x) TRUE)
+        }
+    else if(tolower(MCMCUpdateStrategy) == "twostage" |
+            tolower(MCMCUpdateStrategy) == "margin")
+        {
+            if(MargisUpNM[[CplNM]] == TRUE)
+                {
+                    ## Stage two of the two stage approach
+                    evalCpl <- TRUE
+
+                    PostComp <- lapply(parUpdate, function(x) FALSE)
+                    PostComp[[CplNM]] <- TRUE
+                }
+            else
+                {
+                    PostComp <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
+                }
+        }
+    else
+        {
+            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                       "not implemented!"))
         }
 
-    }
-      ## cat("Prior:    ", Mdl.logPri.sum, "\n")
-      ## cat("CplLik:   ", Mdl.logLikCpl.sum, "\n")
-      ## cat("MargisLik:", Mdl.logLikMargis.sum, "\n")
 
+    if(evalCpl == TRUE)
+        {
+            Mdl.logLikCpl <- logCplLik(
+                u = Mdl.u,
+                CplNM = CplNM,
+                parCpl = Mdl.par[[CplNM]],
+                logLik = FALSE) # n-by-1
+
+            Mdl.logLik[, CplNM] <- Mdl.logLikCpl
+        }
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
-
-  if(any(c("posterior","staticCache") %in% call.out))
-    {
-      ## staticCache[["Mdl.logPri"]] <- Mdl.logPri
-      staticCache[["Mdl.par"]] <- Mdl.par
-      staticCache[["Mdl.u"]] <- Mdl.u
-      staticCache[["Mdl.d"]] <- Mdl.d
-    }
-
+    staticCache[["Mdl.logPri"]] <- Mdl.logPri
+    staticCache[["Mdl.par"]] <- Mdl.par
+    staticCache[["Mdl.u"]] <- Mdl.u
+    staticCache[["Mdl.d"]] <- Mdl.d
 
 ###----------------------------------------------------------------------------
 ### THE LOG POSTERIOR
 ###----------------------------------------------------------------------------
+    Mdl.logPri.sub <- unlist(Mdl.logPri[unlist(PostComp)])
+    Mdl.logLik.sub <- Mdl.logLik[, unlist(PostComp)]
+    Mdl.logPost <-  sum(Mdl.logLik.sub, Mdl.logPri.sub)
 
-  if("posterior" %in% call.out)
-    {
-      Mdl.logPri.sum <- sum(unlist(Mdl.logPri), na.rm = TRUE)
+    out <- list(Mdl.logPost = Mdl.logPost,
+                Mdl.logLik = Mdl.logLik,
+                Mdl.logPri = Mdl.logPri,
+                staticCache = staticCache,
+                errorFlag = errorFlag)
 
-      ## Mdl.logLik = cbind(Mdl.d, Mdl.logLikCpl)
-      ## colnames <- names(Mdl.par)
-
-      Mdl.logLik.sum <- sum(Mdl.logLik, na.rm = TRUE)
-      ## Mdl.logLikCpl.sum <- sum(Mdl.logLikCpl)
-
-      Mdl.logPost <-  Mdl.logLik.sum + Mdl.logPri.sum
-    }
-
-  out <- list(Mdl.logPost = Mdl.logPost,
-              Mdl.logLik = Mdl.logLik,
-              Mdl.logPri = Mdl.logPri,
-              staticCache = staticCache,
-              errorFlag = errorFlag)
-
-  ## if(any(parUpdate[[CplNM]] == TRUE))
-  ##   {
-
-  ##     print(Mdl.logPost)
-  ##     ## if(!is.na(Mdl.logPost))
-  ##   }
-
-
-###----------------------------------------------------------------------------
-### Plot script
-###----------------------------------------------------------------------------
-
-  return(out)
+    return(out)
 }

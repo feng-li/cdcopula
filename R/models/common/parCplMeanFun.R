@@ -1,13 +1,13 @@
-##' Link function constrains for copula models.
+##' Link function constrains for copula models
 ##'
 ##'
-##' @title Constrains of link functions
+##' Constrains of link functions
 ##' @param CplNM
 ##' @return
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 09:34:09 CEST 2012;
-##'       Current: Fri May 11 09:34:16 CEST 2012.
+##'       Current: Tue Jan 27 21:56:12 CST 2015
 ##' TODO: Write it in a more elegant way
 parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
                           parUpdate, Mdl.par)
@@ -27,22 +27,22 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 ###----------------------------------------------------------------------------
 ### (1) update all the independent linkages
 ###----------------------------------------------------------------------------
-        for(CompCurr in CompNM)
-          {
-            parUpdateNM <- names(parUpdate[[CompCurr]] == TRUE)
-            for(ParCurr in parUpdateNM)
-              {
-                ## Check if particular constrain is needed.
-                if(!(tolower(ParCurr) %in% tolower(condPar)))
-                  {
-                    ## Update the parameters for the updated part
-                    Mdl.par[[CompCurr]][[ParCurr]] <- parMeanFun(
-                        X = Mdl.X[[CompCurr]][[ParCurr]],
-                        beta = Mdl.beta[[CompCurr]][[ParCurr]],
-                        linkArgs = Mdl.parLink[[CompCurr]][[ParCurr]])
-                  }
-              }
-          }
+        for(iComp in CompNM)
+            {
+                parUpdateNM <- names(parUpdate[[iComp]] == TRUE)
+                for(ParCurr in parUpdateNM)
+                    {
+                        ## Check if particular constrain is needed.
+                        if(!(tolower(ParCurr) %in% tolower(condPar)))
+                            {
+                                ## Update the parameters for the updated part
+                                Mdl.par[[iComp]][[ParCurr]] <- parMeanFun(
+                                    X = Mdl.X[[iComp]][[ParCurr]],
+                                    beta = Mdl.beta[[iComp]][[ParCurr]],
+                                    linkArgs = Mdl.parLink[[iComp]][[ParCurr]])
+                            }
+                    }
+            }
 
 ###----------------------------------------------------------------------------
 ### (2) Special case for conditional linkage

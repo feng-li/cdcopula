@@ -12,22 +12,21 @@
 ##' @return
 ##' @references Li 2014
 ##' @author Feng Li, Central University of Finance and Economics.
-parCplCaller <- function(parUpdate, parUpdateOrder, nIter = 1)
+parCplCaller <- function(CplNM, parUpdate, parUpdateOrder)
 {
-    ## check which parameter need to update
     CompNM <- names(parUpdate)
-    out.init <- NULL
-    for(i in CompNM)
-        {
-            parNM <- names(parUpdate[[i]])
-            parUpdateIdx <- parNM[parUpdate[[i]] == TRUE]
-            for(j in parUpdateIdx)
-                {
 
-                    out.init <- rbind(out.init , c(i, j))
+    ## check which parameter need to update
+    out.init <- NULL
+    for(iComp in CompNM)
+        {
+            parNM <- names(parUpdate[[iComp]])
+            parUpdateIdx <- parNM[parUpdate[[iComp]] == TRUE]
+            for(jPar in parUpdateIdx)
+                {
+                    out.init <- rbind(out.init , c(iComp, jPar))
                 }
         }
-
 
     ## Order the parameters if asked
     if(!missing(parUpdateOrder))

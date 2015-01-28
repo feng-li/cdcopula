@@ -112,7 +112,6 @@ source(CplConfigFile, local = TRUE)
 ## Recording starting time
 Starting.time <- proc.time()
 
-
 if(!interactive())
 {
     OUT.CplCross <- parLapply(

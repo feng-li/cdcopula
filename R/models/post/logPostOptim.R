@@ -1,6 +1,6 @@
+##' logPostOptim
+##'
 ##' A wrapper of the log posterior with first argument as an vector
-##'
-##'
 ##' @param betaVec "vector".
 ##' @param CplNM "character".
 ##' @param Mdl.Y "list".
@@ -20,7 +20,7 @@
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
 logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,varSelArgs, MargisTypes,
-                         priArgs,parUpdate, staticCache, split)
+                         priArgs,parUpdate, staticCache, MCMCUpdateStrategy)
   {
     ## a wrapper of the log posterior function that can be used for directly
     ## optimization via Newton's method
@@ -45,17 +45,9 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         priArgs = priArgs,
         staticCache = staticCache,
         parUpdate = parUpdate,
-        split = split)
+        MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-    ## if(logPostOut$errorFlag)
-    ##   {
-    ##     out <- -Inf
-    ##   }
-    ## else
-    ##   {
     out <- logPostOut[["Mdl.logPost"]]
-    ## }
-
 
     return(out)
   }

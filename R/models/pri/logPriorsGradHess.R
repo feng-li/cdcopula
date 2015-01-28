@@ -18,32 +18,26 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
-logPriorsGradHess <- function(
-    Mdl.X,
-    Mdl.beta,
-    Mdl.betaIdx,
-    Mdl.parLink,
-    varSelArgs,
-    priArgs,
-    chainCaller)
+logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
+                              varSelArgs, priArgs, chainCaller)
   {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior
-    CompCurr <- chainCaller[[1]]
-    parCurr <- chainCaller[[2]]
+    CompCaller <- chainCaller[[1]]
+    parCaller <- chainCaller[[2]]
 
     ## Reserve list structure of the gradient and Hessian
     gradObsLst <- list()
     HessObsLst <- list()
 
-    ## if(parCurr == "tau") browser()
+    ## if(parCaller == "tau") browser()
 
 ###----------------------------------------------------------------------------
 ### Gradient and Hessian for the intercept as a special case
 ###----------------------------------------------------------------------------
-    priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["intercept"]]
-    betaCurr <- Mdl.beta[[CompCurr]][[parCurr]][1] # the intercept
-    linkCurr <- Mdl.parLink[[CompCurr]][[parCurr]]
+    priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
+    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1] # the intercept
+    linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
     if(tolower(priArgsCurr[["type"]]) == "custom")
       {
@@ -67,12 +61,12 @@ logPriorsGradHess <- function(
 ### Gradient for beta|I and Hessian for beta (unconditional)
 ###----------------------------------------------------------------------------
 
-    priArgsCurr <- priArgs[[CompCurr]][[parCurr]][["beta"]][["slopes"]]
-    betaCurr <- Mdl.beta[[CompCurr]][[parCurr]][-1] # Slopes(taking away intercept)
-    betaIdxNoIntCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]][-1] # Variable section
+    priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
+    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1] # Slopes(taking away intercept)
+    betaIdxNoIntCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]][-1] # Variable section
                                         # indicator without intercept
 
-    X <- Mdl.X[[CompCurr]][[parCurr]][, -1, drop = FALSE]
+    X <- Mdl.X[[CompCaller]][[parCaller]][, -1, drop = FALSE]
     if(length(X) == 0L)
       {
         ## No covariates at all (only intercept in the model)

@@ -23,6 +23,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
     ## Load dependences
     require("mvtnorm", quietly = TRUE)
+    require("optimx", quietly = TRUE)
+
 
     ## Load the sourceDir tool
     R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
@@ -86,8 +88,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## Loop and count how many times tried for generating initial values
     optimInit <- TRUE
 
-    ## source("/home/fli/workspace/copula/code/inst/scripts/Plot-tau.R")
-
     if(optimInit == TRUE &&
        any(tolower(unlist(betaInit)) == "random"))
         {
@@ -121,9 +121,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
                     Mdl.beta <- initParOut[["Mdl.beta"]]
 
-                    ## Dry run to obtain the initial "staticCache"
-                    ## NOTE: As this is the very first run, the "parUpdate" should be all on for
-                    ## this time.
+                    ## Dry run to obtain the initial "staticCache" NOTE: As this is the
+                    ## very first run, the "parUpdate" should be all on for this time.
+
 
                     staticCache.sample <- logPost(
                         CplNM = CplNM,
@@ -135,42 +135,41 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         varSelArgs = varSelArgs,
                         MargisTypes = MargisTypes,
                         priArgs = priArgs,
-                        parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-                        call.out = "staticCache")[["staticCache"]]
+                        parUpdate = MCMCUpdate,
+                        MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
-                    ## Optimize the initial values via BFGS.
-                    ## NOTE: The variable selection indicators are fixed (not optimized)
-
-                    ## loop over all the marginal models and copula via two stage
-                    ## optimization
+                    ## Optimize the initial values via BFGS. NOTE: The variable selection
+                    ## indicators are fixed (not optimized) loop over all the marginal
+                    ## models and copula via TWO STAGE OPTIMIZATION
 
                     for(iComp in names(Mdl.beta))
                         {
 
-                            ## If nothing to update,  optimization inside this components
+                            ## If nothing to update, optimization inside this components
                             ## skipped.
                             if(all(unlist(parUpdate[[iComp]]) == FALSE)) next
-
 
                             cat("Initializing model component:", iComp, "...\n")
 
 
                             ## Only current component is updated.
-                            parUpdateComp <- rapply(parUpdate, function(x) FALSE, how = "replace")
-                            parUpdateComp[[iComp]] <- parUpdate[[iComp]]
+                            parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
+                                                    how = "replace")
+                            parUpdate[[iComp]] <- MCMCUpdate[[iComp]]
 
 
                             betaVecInitComp <- parCplSwap(
                                 betaInput = Mdl.beta,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
-                                parUpdate = parUpdateComp)
+                                parUpdate = parUpdate)
 
                             ## Optimize the initial values
                             betaVecOptimComp <- try(optimx(
                                 par = betaVecInitComp,
                                 fn = logPostOptim,
-                                control = list(maximize = TRUE, maxit = 100, all.methods = TRUE),
+                                control = list(maximize = TRUE, maxit = 100,
+                                    all.methods = TRUE),
                                 ## method = "BFGS",
                                 CplNM = CplNM,
                                 Mdl.Y = Mdl.Y.training.sample,
@@ -182,8 +181,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 MargisTypes = MargisTypes,
                                 priArgs = priArgs,
                                 staticCache = staticCache.sample,
-                                parUpdate = parUpdateComp,
-                                split = TRUE,
+                                parUpdate = parUpdate,
+                                MCMCUpdateStrategy = "twostage"
                                 ), silent = FALSE)
 
                             if(is(betaVecOptimComp, "try-error") == TRUE)
@@ -235,8 +234,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
         varSelArgs = varSelArgs,
         MargisTypes = MargisTypes,
         priArgs = priArgs,
-        parUpdate = rapply(parUpdate, function(x) TRUE, how = "replace"),
-        call.out = "staticCache")[["staticCache"]]
+        parUpdate = MCMCUpdate,
+        MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
     ## Clear all warnings during initial value
     ## optimization. NOTE: not working
@@ -249,7 +248,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     plot <- FALSE
     if(plot == TRUE)
         {
-            ##      nTraining <- length(Mdl.Y[[1]])
+            ## nTraining <- length(Mdl.Y[[1]])
             X.ID0 <- as.Date(ID[1:nTraining])
 
             ## par(mfcol = c(5, 2), mar = c(2.5, 4, 2, 0))
@@ -294,21 +293,21 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
         }
 
-
-
 ###----------------------------------------------------------------------------
-### THE METROPOLIS-HASTINGS WITHIN GIBBS
+###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------
-### TODO: Add Two-stage Gibbs.
 
-
-    cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
-
-    ## Allocate the storage for the final parameters in current fold
+    ## The final parameters in current fold
     MCMC.beta <- MdlDataStruc
     MCMC.betaIdx <- MdlDataStruc
     MCMC.par <- MdlDataStruc
     MCMC.AccProb <- MdlDataStruc
+    MCMC.density <- list()
+
+    MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+    MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+    ## FIXME: This is really big ~ 1G
+
     for(i in names(MdlDataStruc))
         {
             for(j in names(MdlDataStruc[[i]]))
@@ -325,54 +324,38 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         dimnames = list(NULL, namesX.ij))
                     MCMC.par[[i]][[j]] <- matrix(
                         staticCache[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
+
                     ## The Metropolis-Hasting acceptance rate
                     MCMC.AccProb[[i]][[j]] <- matrix(NA, c(nIter, 1))
                 }
         }
 
-    ## Switch all the updating indicators OFF
-    parUpdate <- rapply(parUpdate, function(x) FALSE, how = "replace")
+###----------------------------------------------------------------------------
+### THE METROPOLIS-HASTINGS WITHIN GIBBS
+###----------------------------------------------------------------------------
 
+    cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
+    ## The updating matrix
+    UpdateMat <- parCplCaller(CplNM = CplNM,
+                              parUpdate = MCMCUpdate,
+                              parUpdateOrder = MCMCUpdateOrder)
+    nInner <- nrow(UpdateMat)
 
-    ## The Gibbs Sampler with Metropolis-Hastings nested in.
-    twoStage <- FALSE
-    if(twoStage == TRUE)
+    for(iUpdate in 1:(nInner*nIter))
         {
-            ## This is the two-stage approach,  i.e. update each marginal models
-            ## independently first and update the joint model afterwards.
-            ## The updating matrix,  ordered
-            UpdateMat <- parCplCaller(parUpdate = MCMCUpdate,
-                                      parUpdateOrder = MCMCUpdateOrder,
-                                      nIter = nIter)
-        }
-    else
-        {
-            UpdateMat <- matrix(rep(
-                parCplCaller(
-                    parUpdate = MCMCUpdate,
-                    parUpdateOrder = MCMCUpdateOrder,
-                    nIter = 1),
-                nIter), nIter, 2)
-        }
+            iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
+            iIter <- floor(iUpdate/nInner)+1
 
-    browser()
-    ## This is the joint update the posterior
-    ## The Gibbs loop
-    for(iUpdate in 1:dim(UpdateMat)[1])
-        {
-            CompCaller <- UpdateMat[iUpdate, 1]
-            parCaller <- UpdateMat[iUpdate, 2]
+            chainCaller <- UpdateMat[iInner, ]
+            CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
+            parCaller <- UpdateMat[iInner, 2] ## mean,  df...
 
-            iIter <- iUpdate%%nIter
-            if(iIter == 0)
-                {
-                    iIter = nIter
-                }
-
-            ## Switch current updating parameter indicator on
+            ## Switch all the updating indicators OFF Switch current updating parameter
+            ## indicator ON
+            parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
             parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
-            ## Call the mail Metropolis--Hastings
+            ## Call the proposal algorithm
             algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
 
             if(tolower(algmArgs[["type"]]) == "gnewtonmove")
@@ -390,7 +373,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         Mdl.betaIdx = Mdl.betaIdx,
                         MargisTypes = MargisTypes,
                         Mdl.parLink = Mdl.parLink,
-                        staticCache = staticCache)
+                        staticCache = staticCache,
+                        MCMCUpdateStrategy = MCMCUpdateStrategy)
 
                     if(MHOut$errorFlag == FALSE)
                         {
@@ -408,8 +392,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 MHOut[["accept.prob"]]
                             MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
                                 staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
-
-
                         }
                     else
                         {
@@ -422,8 +404,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                 {
                     stop("Unknown proposal algorithm!")
                 }
-            ## Switch current updating parameter indicator off
-            parUpdate[[CompCaller]][[parCaller]] <- FALSE
 
             ## MCMC trajectory
             if(track.MCMC == TRUE)

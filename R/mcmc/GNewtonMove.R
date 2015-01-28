@@ -28,11 +28,12 @@
 ##'       Current: Mon Mar 05 10:33:29 CET 2012.
 GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                        Mdl.parLink, MargisTypes, staticCache)
+                        Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
 
+
     ## The updating component parameter chain
-    chainCaller <- parCplCaller(parUpdate)
+    chainCaller <- parCplCaller(CplNM = CplNM, parUpdate)
     CompCaller <- chainCaller[1]
     parCaller <- chainCaller[2]
 
@@ -67,10 +68,10 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
         priArgs = priArgs,
         parUpdate = parUpdate,
         staticCache = staticCache,
-        call.out = "staticCache")[["staticCache"]]
+        MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
 ###----------------------------------------------------------------------------
-### The k-step Generalized Newton Move
+### The K-step Generalized Newton Move
 ###----------------------------------------------------------------------------
 
     for(iStep in 1:(kSteps+1))
@@ -86,7 +87,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                 Mdl.betaIdx = Mdl.betaIdx,
                 parUpdate = parUpdate,
                 varSelArgs = varSelArgs,
-                staticCache = staticCache.curr)
+                staticCache = staticCache.curr,
+                MCMCUpdateStrategy = MCMCUpdateStrategy)
 
 
             ## DEBUGING
@@ -107,7 +109,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         parUpdate = parUpdate,
                         varSelArgs = varSelArgs,
                         staticCache = staticCache.curr,
-                        gradMethods = "numeric")
+                        gradMethods = "numeric",
+                        MCMCUpdateStrategy = MCMCUpdateStrategy)
 
                     g.math <- logLikGradHess.prop[["logLikGradObs"]]
                     g.num <- logLikGradHess.prop.num[["logLikGradObs"]]
@@ -236,7 +239,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         priArgs = priArgs,
                         parUpdate = parUpdate,
                         staticCache = staticCache.curr,
-                        call.out = "staticCache")[["staticCache"]]
+                        MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
                     ## Mdl.par0 <- unlist(staticCache.curr[["Mdl.par"]])
                     ## if(any(is.na(Mdl.par0))) browser()
