@@ -342,6 +342,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     for(iUpdate in 1:(nInner*nIter))
         {
+            print(iUpdate)
             iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
             iIter <- floor(iUpdate/nInner)+1
 

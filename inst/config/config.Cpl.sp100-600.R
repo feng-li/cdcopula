@@ -192,7 +192,7 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 ## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMCUpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
-MCMCUpdateStrategy <- "joint"
+MCMCUpdateStrategy <- "margin"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc

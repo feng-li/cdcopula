@@ -46,7 +46,6 @@ MargiModelGrad <- function(y, par, type, parCaller, densCaller)
                         stop("No such parameter!")
                     }
 
-
             }
         else if(tolower(type) == "splitt")
             {
@@ -59,11 +58,13 @@ MargiModelGrad <- function(y, par, type, parCaller, densCaller)
                 lmd = par[["lmd"]] # Skewness Parameter
 
                 ## PDF
-                ## logMargiDens <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
+                ## MargiDens <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
                 ##                         log = FALSE)
 
                 if(densCaller == "u" && tolower(parCaller) == "mu")
                     {
+                        ## NOTE: This is the gradient with respect to the CDF function.
+
                         I0 <- (y<=mu)
                         I <- (!I0)
                         sign <- 1*I0 + lmd*I
@@ -150,19 +151,44 @@ MargiModelGrad <- function(y, par, type, parCaller, densCaller)
                     }
                 else if(densCaller == "d" && tolower(parCaller) == "mu")
                     {
-                        stop("Not ready!")
+                        ## NOTE: This is the gradient with respect to the log density
+
+                        I0 <- (y<= mu) # % Logical values. 1,  if y < =  mu; 0,  if y >mu.
+                        I <- (y > mu)  # Logical values. 1,  if y > mu; 0,  if y <=  mu.
+                        Sign <- 1*I0 + lmd^2*I
+                        out <- - (1+df)*(mu-y)/((mu-y)^2+phi^2*df*Sign)
                     }
                 else if(densCaller == "d" && tolower(parCaller) == "phi")
                     {
-                        stop("Not ready!")
+                        I0 <- (y<= mu) # % Logical values. 1,  if y < =  mu; 0,  if y >mu.
+                        I <- (y > mu)  # Logical values. 1,  if y > mu; 0,  if y <=  mu.
+                        Sign <- 1*I0 + lmd^2*I
+                        C1 <- (mu-y)^2+phi^2*df*Sign
+                        C0 <- (mu-y)^2-phi^2*Sign
+
+                        out <- df*C0/phi/C1;
                     }
                 else if(densCaller == "d" && tolower(parCaller) == "df")
-                    {
-                        stop("Not ready!")
+                   {
+                       I0 <- (y<= mu) # % Logical values. 1,  if y < =  mu; 0,  if y >mu.
+                       I <- (y > mu)  # Logical values. 1,  if y > mu; 0,  if y <=  mu.
+                       Sign <- 1*I0 + lmd^2*I
+
+                       C1  =  (mu-y)^2+phi^2*df*Sign
+                       C0  =  (mu-y)^2-phi^2*Sign
+                       C3  =  log(df/(df+(mu-y)^2/(phi^2*Sign)))
+                       DigammaM = digamma(df/2) - digamma((1+df)/2)
+                       out =  (C0/C1 + C3-DigammaM)/2
+
                     }
                 else if(densCaller == "d" && tolower(parCaller) == "lmd")
                     {
-                        stop("Not ready!")
+                        I0 <- (y<= mu) # % Logical values. 1,  if y < =  mu; 0,  if y >mu.
+                        I <- (y > mu)  # Logical values. 1,  if y > mu; 0,  if y <=  mu.
+                        C1 = -((1+df+df*lmd)*(mu-y)^2-lmd^3*phi^2*df)/
+                            lmd/((mu-y)^2+lmd^2*phi^2*df)
+                        Sign  =  1*I0 + C1*I
+                        out  =  -1/(1+lmd)*Sign
                     }
                 else
                     {
