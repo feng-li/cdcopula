@@ -11,7 +11,7 @@
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri Oct 21 18:17:01 CEST 2011;
-##'       Current: Mon May 14 19:07:18 CEST 2012.
+##'       Current: Wed Jan 28 12:31:49 CST 2015.
 MargiModelGrad <- function(y, par, type, parCaller, densCaller)
     {
         if(tolower(type) == "gaussian")

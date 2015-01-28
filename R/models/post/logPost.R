@@ -57,6 +57,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     ## The cached (pre-saved) information. The idea is to make even staticCache
     ## is not available, the log posterior is still working.
     ## TODO: Change staticCache.
+
+
     if(missing(staticCache))
         {
             ## Initialize "staticCache" structure
@@ -161,7 +163,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     else if(tolower(MCMCUpdateStrategy) == "twostage" |
             tolower(MCMCUpdateStrategy) == "margin")
         {
-            if(MargisUpNM[[CplNM]] == TRUE)
+            if(length(MargisUpNM) == 0)
                 {
                     ## Stage two of the two stage approach
                     evalCpl <- TRUE
@@ -171,6 +173,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 }
             else
                 {
+                    evalCpl <- FALSE
                     PostComp <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
                 }
         }

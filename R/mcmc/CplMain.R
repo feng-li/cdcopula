@@ -157,7 +157,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                                     how = "replace")
                             parUpdate[[iComp]] <- MCMCUpdate[[iComp]]
 
-
                             betaVecInitComp <- parCplSwap(
                                 betaInput = Mdl.beta,
                                 Mdl.beta = Mdl.beta,
@@ -169,8 +168,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 par = betaVecInitComp,
                                 fn = logPostOptim,
                                 control = list(maximize = TRUE, maxit = 100,
-                                    all.methods = TRUE),
-                                ## method = "BFGS",
+                                    all.methods = FALSE),
+                                method = "BFGS",
                                 CplNM = CplNM,
                                 Mdl.Y = Mdl.Y.training.sample,
                                 Mdl.X = Mdl.X.training.sample,
@@ -200,7 +199,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                             1:length(betaVecOptimComp)]),
                                         Mdl.beta = Mdl.beta,
                                         Mdl.betaIdx = Mdl.betaIdx,
-                                        parUpdate = parUpdateComp)
+                                        parUpdate = parUpdate)
                                 }
                         }
 
