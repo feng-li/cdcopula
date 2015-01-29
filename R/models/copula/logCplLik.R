@@ -136,7 +136,7 @@ logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
     }
 
   ## The output
-  if(logLik)
+  if(sum)
     {
       ## The sum of log copula density,  scaler
       out <- sum(logCplDensObs)
