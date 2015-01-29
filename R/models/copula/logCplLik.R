@@ -12,7 +12,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
-logCplLik <- function(u, CplNM, parCpl, logLik = TRUE)
+logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
 {
 
 ###----------------------------------------------------------------------------

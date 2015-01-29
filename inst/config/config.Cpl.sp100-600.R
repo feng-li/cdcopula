@@ -52,9 +52,14 @@ MargisTypes <- c("SPLITT", "SPLITT")
 MargisParNM <- list(c("mu", "phi", "df", "lmd"),
                     c("mu", "phi", "df", "lmd"))
 
+## THE MODEL EVALUATION CRITERION
+## Set this to NULL to turn of evaluation.
+LPDS <- c("joint", CplNM, MargisNM)
+
 ## The object structure for the model components
 MdlDataStruc <- initDataStruc(CplNM, CplParNM, MargisNM, MargisParNM)
 names(MargisTypes) <- MargisNM
+
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL
 ###----------------------------------------------------------------------------
@@ -192,7 +197,12 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 ## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMCUpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
-MCMCUpdateStrategy <- "margin"
+
+## NOTE: If one want to use "margin" or "two-stage" options just to to estimate the copula
+## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
+## margins (i.e. u1,  u2, ...)
+
+MCMCUpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc

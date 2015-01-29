@@ -131,23 +131,29 @@ if(!interactive())
 ###----------------------------------------------------------------------------
 
 ## Calculate the LPDS
-if(!interactive())
-{
-    logPredLst <- clusterMap(
-        cl = cl,
-        fun = logPredDens,
-        CplOut = OUT.CplCross,
-        Mdl.Idx.testing = crossValidIdx[["testing"]])
-} else
-{
-    logPredLst <- mapply(
-        FUN = logPredDens,
-        CplOut = OUT.CplCross,
-        Mdl.Idx.testing = crossValidIdx[["testing"]],
-        SIMPLIFY = FALSE)
-}
+LPDS.OUT <- list()
+for(iLPDS in LPDS)
+    {
+        if(!interactive())
+            {
+                logPredLst <- clusterMap(
+                    cl = cl,
+                    fun = logPredDens,
+                    CplOut = OUT.CplCross,
+                    pred = iLPDS,
+                    Mdl.Idx.testing = crossValidIdx[["testing"]])
+            } else
+                {
+                    logPredLst <- mapply(
+                        FUN = logPredDens,
+                        CplOut = OUT.CplCross,
+                        pred = iLPDS,
+                        Mdl.Idx.testing = crossValidIdx[["testing"]],
+                        SIMPLIFY = FALSE)
+                }
 
-LPDS <- logPredDensScore(logPredLst = logPredLst)
+        LPDS.OUT[[iLPDS]] <- logPredDensScore(logPredLst = logPredLst)
+    }
 
 ###----------------------------------------------------------------------------
 ### FINISH THE WORK AND SAVE THE OUTPUT

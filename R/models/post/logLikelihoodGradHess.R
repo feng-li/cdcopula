@@ -222,7 +222,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                                 }
                             out <- logCplLik(u = u, CplNM = CplNM,
                                              parCpl = parCpl,
-                                             logLik = FALSE)
+                                             sum = FALSE)
                             return(out)
                         }
 

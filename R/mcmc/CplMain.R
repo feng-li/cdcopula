@@ -301,11 +301,14 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     MCMC.betaIdx <- MdlDataStruc
     MCMC.par <- MdlDataStruc
     MCMC.AccProb <- MdlDataStruc
-    MCMC.density <- list()
 
-    MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
-    MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
-    ## FIXME: This is really big ~ 1G
+    if(!exists("MCMC.density"))
+        {
+            MCMC.density <- list()
+            MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+            MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+            ## FIXME: This is really big ~ 1G
+        }
 
     for(i in names(MdlDataStruc))
         {
@@ -379,7 +382,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         staticCache = staticCache,
                         MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-
                     if(MHOut$errorFlag == FALSE)
                         {
                             ## Update the MH results to the current parameter structure
@@ -394,9 +396,16 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 MHOut[["betaIdx"]]
                             MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
                                 MHOut[["accept.prob"]]
-
                             MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
                                 staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
+
+                            ## Save the marginal densities.
+                            ## FIXME: This is not updated for every iteration.
+                            MCMC.density[["u"]][, , iIter] <-
+                                MHOut[["staticCache"]][["Mdl.u"]]
+                            MCMC.density[["d"]][, , iIter] <-
+                                MHOut[["staticCache"]][["Mdl.d"]]
+
                         }
                     else
                         {

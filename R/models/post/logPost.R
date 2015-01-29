@@ -110,6 +110,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     colnames(Mdl.logLik) <- CompNM
 
     CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
+    MargisNM <- CompNM[CompNM  != CplNM]
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
     ## The Marginal likelihoods
@@ -167,9 +168,26 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 {
                     ## Stage two of the two stage approach
                     evalCpl <- TRUE
-
                     PostComp <- lapply(parUpdate, function(x) FALSE)
                     PostComp[[CplNM]] <- TRUE
+
+                    if(any(is.na(Mdl.u)))
+                        {
+                            ## In stage two, Mdl.u is required to compute the copula
+                            ## density.
+                            for(iComp in MargisNM)
+                                {
+                                    Mdl.ud <- MargiModel(
+                                        y = Mdl.Y[[iComp]],
+                                        type = MargisTypes[which(MargisNM == iComp)],
+                                        par = Mdl.par[[iComp]],
+                                        densCaller = "u")
+                                    Mdl.u[, iComp] <- Mdl.ud[["u"]]
+                                }
+
+
+                        }
+
                 }
             else
                 {
@@ -190,7 +208,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 u = Mdl.u,
                 CplNM = CplNM,
                 parCpl = Mdl.par[[CplNM]],
-                logLik = FALSE) # n-by-1
+                sum = FALSE) # n-by-1
 
             Mdl.logLik[, CplNM] <- Mdl.logLikCpl
         }
@@ -205,13 +223,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE LOG POSTERIOR
 ###----------------------------------------------------------------------------
-    Mdl.logPri.sub <- unlist(Mdl.logPri[unlist(PostComp)])
-    Mdl.logLik.sub <- Mdl.logLik[, unlist(PostComp)]
-    Mdl.logPost <-  sum(Mdl.logLik.sub, Mdl.logPri.sub)
+    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri[unlist(PostComp)]))
+    Mdl.logLik.SubSum <- sum(Mdl.logLik[, unlist(PostComp)])
+    Mdl.logPost <-  Mdl.logLik.SubSum+Mdl.logPri.SubSum
 
     out <- list(Mdl.logPost = Mdl.logPost,
-                Mdl.logLik = Mdl.logLik,
-                Mdl.logPri = Mdl.logPri,
+                Mdl.logLik = Mdl.logLik.SubSum,
+                Mdl.logPri = Mdl.logPri.SubSum,
                 staticCache = staticCache,
                 errorFlag = errorFlag)
 
