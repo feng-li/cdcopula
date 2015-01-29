@@ -193,7 +193,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                             else
                                 {
                                     InitGood <- TRUE
-                                    print(betaVecOptimComp)
+                                    ## print(betaVecOptimComp)
                                     Mdl.beta <- parCplSwap(
                                         betaInput = as.numeric(betaVecOptimComp[1,
                                             1:length(betaVecOptimComp)]),
@@ -345,7 +345,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     for(iUpdate in 1:(nInner*nIter))
         {
             iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
-            iIter <- floor(iUpdate/nInner)+1
+            iIter <- floor((iUpdate-1)/nInner)+1
+
+            ##print(c(iUpdate, iInner, iIter))
 
             chainCaller <- UpdateMat[iInner, ]
             CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
@@ -377,6 +379,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         staticCache = staticCache,
                         MCMCUpdateStrategy = MCMCUpdateStrategy)
 
+
                     if(MHOut$errorFlag == FALSE)
                         {
                             ## Update the MH results to the current parameter structure
@@ -391,6 +394,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 MHOut[["betaIdx"]]
                             MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
                                 MHOut[["accept.prob"]]
+
                             MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
                                 staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
                         }
@@ -400,6 +404,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                             ## iteration fails.
                             MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
                         }
+
+                    ## print(MHOut[["accept.prob"]])
+
                 }
             else
                 {

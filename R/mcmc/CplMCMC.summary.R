@@ -57,6 +57,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
             accept.prob.mean <- rapply(MCMC.AccProb,
                                        function(x, iIter) mean(x[(n.burn+1):iIter]),
                                        how = "replace", iIter = iIter)
+
             par.mean <- rapply(MCMC.par,
                                function(x, iIter) mean(x[(n.burn+1):iIter]),
                                how = "replace", iIter = iIter)
@@ -93,8 +94,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                         {
                             if(MCMCUpdate[[i]][[j]])
                                 {
-                                    if(is.na(accept.prob.mean[[i]][[j]])) #browser()
-
+                                    ## if(is.na(accept.prob.mean[[i]][[j]])) #browser()
                                     obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
                                                      par.mean[[i]][[j]],
                                                      par.sd[[i]][[j]])
