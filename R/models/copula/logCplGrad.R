@@ -218,6 +218,7 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                 {
                     logGradCpl.df <- ??
 
+
                     gradCpl.lambda.df <- (1/(1 + c^2))^((1 + df)/2)*
                         (-1 + df*log(1/(1 + c^2)) - df*digamma(df/2)
                          + df*digamma((1 + df)/2))/(2*df^(3/2)*beta(df/2, 1/2))

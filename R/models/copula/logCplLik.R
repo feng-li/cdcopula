@@ -81,4 +81,6 @@ logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
             out <- logCplDensObs
         }
     return(out)
+
+
 }
