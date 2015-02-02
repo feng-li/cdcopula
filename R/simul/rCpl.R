@@ -13,7 +13,7 @@
 ##'     DEPENDS: mvtnorm
 ##'     Created: Mon Sep 26 09:43:12 CEST 2011;
 ##'     Current: Mon Apr 16 13:40:47 CEST 2012.
-ruCpl <- function(n, parCpl, CplNM, exArgs = NA)
+rCpl <- function(n, parCpl, CplNM, exArgs = NA)
 {
   if(tolower(CplNM) == "bb7") # Joe 1997
     {

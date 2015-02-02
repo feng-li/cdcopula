@@ -15,38 +15,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
   {
 
 ###----------------------------------------------------------------------------
-### Copula likelihood numerical correction if u -> 0 or 1
-###----------------------------------------------------------------------------
-
-    ## Fix u on the cliff if any u -> 0 or u -> 1.
-    ## Thanks to the advice from M. Smith
-
-    ## Debugging symbol: if the warning should be printed out immediately.
-    ## immediate. <- FALSE
-
-    ## tol <- .Machine$double.eps*1e8
-
-    ## u.bad1 <- (u > 1-tol)
-    ## u.bad0 <- (u < 0+tol)
-    ## if(any(u.bad1))
-    ##   {
-    ##     u[u.bad1] <- u[u.bad1]-tol
-    ##     warning("u is too close to 1. Adjusted...",
-    ##             immediate. = immediate.)
-
-    ##   }
-    ## if(any(u.bad0))
-    ##   {
-    ##     u[u.bad0] <- u[u.bad0] +tol
-    ##     warning("u is too close to 1. Adjusted...",
-    ##             immediate. = immediate.)
-    ##   }
-
-###----------------------------------------------------------------------------
 ### Gradients for the copula
 ###----------------------------------------------------------------------------
-
-
     if(tolower(CplNM) == "bb7")
       {
         ## The name of marginal model
@@ -230,6 +200,58 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             out <- gradCpl.u
 
           }
-      }
+    }
+    else if(tolower(CplNM) == "mvt")
+        {
+            ## The name of marginal model
+            MargisNM <- dimnames(u)[[2]]
+            nObs <- dim(u)[1]
+
+            tau <- as.vector(parCpl[["tau"]])
+            lambda <- as.vector(parCpl[["lambda"]])
+
+            rho <- sin(tau*pi/2)
+            df <- as.vector(lambdaInv(
+                CplNM = CplNM, parRepCpl = parCpl))
+
+            if(tolower(cplCaller) == "lambda")
+                {
+                    logGradCpl.df <- ??
+
+                    gradCpl.lambda.df <- (1/(1 + c^2))^((1 + df)/2)*
+                        (-1 + df*log(1/(1 + c^2)) - df*digamma(df/2)
+                         + df*digamma((1 + df)/2))/(2*df^(3/2)*beta(df/2, 1/2))
+
+                    ## The chain gradient
+                    out <- logGradCpl.df*(1/gradCpl.lambda.df)
+
+                }
+            else if(tolower(cplCaller) == "tau")
+                {
+                    logGradCpl.rho <- ??
+
+                    gradCpl.tau.rho <- 2/(pi*sqrt(1-rho^2))
+
+                    out <- logGradCpl.rho*(1/gradCpl.tau.rho)
+                }
+            else
+                {
+                    if(tolower(cplCaller) == "u1")
+                        {
+                            u <-  u[, 1:2, drop = FALSE]
+                        }
+                    else if(tolower(cplCaller) == "u2")
+                        {
+                            u <-  u[, 2:1, drop = FALSE]
+                        }
+                    else
+                        {
+                            stop("No such copula parameter!")
+                        }
+
+                    gradCpl.u <- ??
+                }
+        }
+
     return(matrix(out))
   }
