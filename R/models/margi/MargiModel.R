@@ -42,7 +42,7 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
                         out[["d"]] <- d
                     }
             }
-        else if (tolower(type) == "splitt")
+        else if (tolower(type)  == "splitt")
             {
                 ## The marginal likelihood
                 ## Literal translation from GSMMatlab code AsymStudT

@@ -132,10 +132,14 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
               1/(L1^3*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta))*
                 PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
                   (1/theta*PT1^(-delta)*(-SD12*(1+delta)*theta*(
-                      -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-L1*PT1^(1+delta)*(
-                          C1*(-1+theta)*(-1+theta-theta*delta+L1^(1/delta)*(1+delta)*theta)+
-                          theta*(C2+delta+C2*delta*theta-L1^(1/delta)*(1+delta)*(1+C2*theta))))+
-                   L1*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta)*
+                      -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-
+                          L1*PT1^(1+delta)*(C1*(-1+theta)*(
+                              -1+theta-theta*delta
+                              +L1^(1/delta)*(1+delta)*theta)+
+                                  theta*(C2+delta+C2*delta*theta-
+                                             L1^(1/delta)*(1+delta)*(1+C2*theta))))+
+                                                 L1*(-1-delta*theta+
+                                                         L1^(1/delta)*(1+delta)*theta)*
                    (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
 
 
@@ -189,7 +193,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             gradCpl.u <- -(D1^(-1-3*delta)*D2^(-2*delta)*
                           (rowSums(D12^delta)-D1^delta*D2^delta)^2*
                           (D1^(1+delta)*S1*(-1+theta)*
-                           (1+(-S1)^(1/delta)*(-1+theta)-theta+S2^2*theta+S2^2*delta*theta)+
+                               (1+(-S1)^(1/delta)*(-1+theta)-
+                                    theta+S2^2*theta+S2^2*delta*theta)+
                            D2^(-delta)*(D1^delta*(-1+D2^delta)*S2*(1+delta)*theta*
                            (-1+(1+S2+S2*delta)*theta)+D2^delta*
                             (1+theta*(-3+2*theta+S2*(1+delta)*
@@ -207,33 +212,81 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             MargisNM <- dimnames(u)[[2]]
             nObs <- dim(u)[1]
 
-            tau <- as.vector(parCpl[["tau"]])
-            lambda <- as.vector(parCpl[["lambda"]])
+            tau <- as.vector(parCpl[["tau"]]) # n-by-lp
+            lambda <- as.vector(parCpl[["lambda"]]) # n-by-lp
 
-            rho <- sin(tau*pi/2)
+            rho <- sin(tau*pi/2) # n-by-lp
             df <- as.vector(lambdaInv(
-                CplNM = CplNM, parRepCpl = parCpl))
+                CplNM = CplNM, parRepCpl = parCpl)) # n-by-lp
+
+            u.quantile <- qt(u, df)
 
             if(tolower(cplCaller) == "lambda")
                 {
-                    logGradCpl.df <- ??
+                    ## CopulaDensity-MVT.nb
+
+                    gradFun <- function(i, rho, df, u.quantile)
+                        {
+                            Sigma <- vech2m(rho[i, ])
+                            v <- df[i]
+                            x <- u.quantile[i, , drop = FALSE]
+                            mu <- 0
+                            q <- dim(Sigma)[1]
+
+                            C2 <- t(x-mu)%*%Sigma%*%(x-mu)
+                            logGradCpl.v <- (C2-q -(C2+v)*log((C2+v)/2)
+                                              +(C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
+                                                  (2*(C2+v))
+                            retun(logGradCpl.v)
+                        }
+                    logGradCpl.df <- apply(matrix(1:nObs), 1,
+                                           gradFun,
+                                           rho = rho,
+                                           df = df,
+                                           u.quantile = u.quantile) # n-by-q
 
 
-                    gradCpl.lambda.df <- (1/(1 + c^2))^((1 + df)/2)*
-                        (-1 + df*log(1/(1 + c^2)) - df*digamma(df/2)
-                         + df*digamma((1 + df)/2))/(2*df^(3/2)*beta(df/2, 1/2))
+                    C1 <- sqrt(1-rho)/sqrt(1+rho) # n-by-lq
+                    gradCpl.lambda.df <- (1/(1 + C1^2))^((1 + df)/2)*
+                        (-1 + df*log(1/(1 + C1^2)) - df*digamma(df/2)
+                         + df*digamma((1 + df)/2))/(2*df^(3/2)*beta(df/2, 1/2)) #n-by-lq
 
                     ## The chain gradient
-                    out <- logGradCpl.df*(1/gradCpl.lambda.df)
+                    out <- logGradCpl.df*(1/gradCpl.lambda.df) # n-by-lq
 
                 }
             else if(tolower(cplCaller) == "tau")
                 {
-                    logGradCpl.rho <- ??
+                    ## FIXME: This is only for bivariate case.
+                    u.quantile <- qt(u, df)
 
-                    gradCpl.tau.rho <- 2/(pi*sqrt(1-rho^2))
+                    gradFun <- function(i, rho, df, u.quantile)
+                        {
+                            Sigma <- vech2m(rho[i, ])
+                            v <- df[i]
+                            x <- u.quantile[i, , drop = FALSE]
+                            mu <- 0
 
-                    out <- logGradCpl.rho*(1/gradCpl.tau.rho)
+                            logGradCpl.Sigma <-
+                                -(v+p)/2*(1+1/v*t(x-mu)%*%Sigma%*%(x-mu))^(-1)*
+                                    1/v*(x-mu)%*%t(x-mu)-1/2*solve(Sigma)
+
+                            logGradCpl.rho <-
+                                logGradCpl.Sigma[lower.tri(logGradCpl.Sigma,
+                                                           diag = FALSE)]
+                            retun(logGradCpl.rho)
+                        }
+
+                    logGradCpl.rho <- apply(matrix(1:nObs), 1,
+                                            gradFun,
+                                            rho = rho,
+                                            df = df,
+                                            u.quantile = u.quantile) # n-by-lq
+
+                    gradCpl.tau.rho <- 2/(pi*sqrt(1-rho^2)) # n-by-lq
+
+                    out <- logGradCpl.rho*(1/gradCpl.tau.rho) # n-by-lq
+
                 }
             else
                 {
@@ -250,7 +303,42 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                             stop("No such copula parameter!")
                         }
 
-                    gradCpl.u <- ??
+                    ## The t copula and related copulas (6)
+
+
+                    fx <- dt(x = x, df = df) # n-by-1
+                    f1x <- -(x-mu)*df*df*(df/(df+(x-mu)^2))^(-1+(1+df)/2)/
+                        ((df+(x-mu)^2)^2*sqrt(df)*beta(df/2, 1/2))
+
+                    F1X <- matrix(NA, nObs, q)
+
+                    I0 <- (x<mu)
+                    I <- !I0
+
+                    if(any(I))
+                        {
+                            F1X.I <- (2*(x-mu)^3/((x-mu)^2+df)^2-2*(x-mu)/((x-mu)^2+df))*
+                                (1-(x-mu)^2/((x-mu)^2+df))^(-1+df/2)/
+                                    2*sqrt((x-mu)^2/((x-mu)^2+df))/beta(1/2, df/2)
+
+                            F1X[I] <- F1X.I
+                        }
+
+                    if(any(I0))
+                        {
+                            F1X.I0 <- (x-mu)*df*(df/((x-mu)^2+df))^(-1+df/2)/
+                                ((x-mu)^2+df)^2/sqrt(1-df/((x-mu)^2+df))/beta(df/2, 1/2)
+
+
+                            F1X[I0] <- F1X.I
+                        }
+
+
+
+                    C2 <- t(x-mu)%*%Sigma%*%(x-mu)
+                    gradCpl.u <- -(v+q)/2*1/C2*
+                        1/v*(2*Sigma%*%(x-mu))*(1/F1x)-
+                            1/fx*f1x/F1x
                 }
         }
 

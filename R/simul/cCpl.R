@@ -75,8 +75,8 @@ cCpl <- function(CplNM, u, ..., log = TRUE)
                 require("mvtnorm")
 
                 ## df, corr
-                df <- par[["df"]]
-                rho <- par[["rho"]]
+                df <- par[["df"]] # n-by-1
+                rho <- par[["rho"]] # n-by-lq
 
 
                 ## The quantile for *univariate* t

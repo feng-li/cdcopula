@@ -87,17 +87,10 @@ MargiModelGrad <- function(y, par, type, parCaller, densCaller)
                         Z <- (df*phi^2*sign^2)/((y-mu)^2+sign^2*df*phi^2)
 
                         out <- (sign/(2*(1+lmd)*df^2*beta(df/2, 1/2)))*
-                            (
-                                sign2*4*Z^(df/2)*
-                                    ghypergeo(A, B, Z)+
-                                        (
-                                            df*(
-                                                -2*(y-mu)*sqrt(1/((y-mu)^2+sign^2*df*phi^2))*Z^(df/2)-
-                                                    sign2*df*ibeta(x = Z, a = df/2, b = 1/2)*
-                                                        (log(Z)-digamma(df/2)+digamma((1+df)/2))
-                                                )
-                                            )
-                                )
+                            (sign2*4*Z^(df/2)*ghypergeo(A, B, Z)+(df*(
+                                -2*(y-mu)*sqrt(1/((y-mu)^2+sign^2*df*phi^2))*Z^(df/2)-
+                                    sign2*df*ibeta(x = Z, a = df/2, b = 1/2)*
+                                        (log(Z)-digamma(df/2)+digamma((1+df)/2)))))
 
 
                     }
@@ -144,8 +137,9 @@ MargiModelGrad <- function(y, par, type, parCaller, densCaller)
                                 B1 <- ((y1-mu1)^2+df1*phi1^2*lmd1^2)
                                 A1 <- df1*phi1^2*lmd1^2/B1
 
-                                out1 <- -(2*(1+lmd1)*(y1-mu1)*sqrt(1/B1)*
-                                              A1^(df1/2)+ibeta(A1, df1/2, 1/2))/((1+lmd1)^2*beta(df1/2, 1/2))
+                                out1 <- -(2*(1+lmd1)*(y1-mu1)*sqrt(1/B1)*A1^(df1/2)+
+                                              ibeta(A1, df1/2, 1/2))/
+                                                  ((1+lmd1)^2*beta(df1/2,1/2))
                                 out[I] <- out1
                             }
                     }

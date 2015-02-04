@@ -53,15 +53,15 @@ logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
         }
     else if((tolower(CplNM) == "mvt"))
         {
-            tau <- as.vector(parCpl[["tau"]])
-            lambda <- as.vector(parCpl[["lambda"]])
+            tau <- parCpl[["tau"]] # n-by-lq lq: lower triangular of q dimensional matrix.
+            lambda <- parCpl[["lambda"]] # n-by-lq
 
-            rho <- sin(tau*pi/2)
+            rho <- sin(tau*pi/2) # n-by-lq
             df <- as.vector(lambdaInv(
-                CplNM = CplNM, parRepCpl = parCpl))
+                CplNM = CplNM, parRepCpl = parCpl)) # n-by-1
 
             logCplDensObs <- cCpl(CplNM = CplNM, u = u,
-                                  df = df, rho = rho, log = TRUE)
+                                  df = df, rho = rho, log = TRUE) # # n-by-1
         }
 
     else
