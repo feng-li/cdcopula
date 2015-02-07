@@ -29,12 +29,12 @@
 ##'       Return log density instead of current form.
 dCpl <- function(CplNM, u, ..., log = TRUE)
     {
-        par <- list(...)
+        parCpl <- list(...)
         if(tolower(CplNM) == "bb7")
             {
                 ## theta,  delta
-                theta <- par[["theta"]]
-                delta <- par[["delta"]]
+                theta <- parCpl[["theta"]]
+                delta <- parCpl[["delta"]]
 
                 TC1 <- 1-(1-u)^theta
                 TC2 <- (1-u)^(-1+theta)
@@ -52,7 +52,7 @@ dCpl <- function(CplNM, u, ..., log = TRUE)
             }
         else if(tolower(CplNM) == "gaussian")
             {
-                theta <- par[["theta"]]
+                theta <- parCpl[["theta"]]
                 ## The quantile for normal CDF
                 u.quantile <- qnorm(u)
                 x1 <- u.quantile[, 1]
@@ -75,8 +75,8 @@ dCpl <- function(CplNM, u, ..., log = TRUE)
                 require("mvtnorm")
 
                 ## df, corr
-                df <- par[["df"]] # n-by-1
-                rho <- par[["rho"]] # n-by-lq
+                df <- parCpl[["df"]] # n-by-1
+                rho <- parCpl[["rho"]] # n-by-lq
 
                 browser()
 
@@ -121,7 +121,7 @@ dCpl <- function(CplNM, u, ..., log = TRUE)
             }
         else if(tolower(CplNM) == "gumbel")
             {
-                theta <- par[["theta"]]
+                theta <- parCpl[["theta"]]
                 pctl <- CCpl(u = u, theta, CplNM = "gumbel")
                 u.tilde <- -log(u)
 

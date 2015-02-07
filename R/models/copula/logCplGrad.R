@@ -11,7 +11,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 12:42:20 CEST 2012;
 ##'       Current: Fri May 11 12:42:30 CEST 2012.
-logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
+logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
   {
 
 ###----------------------------------------------------------------------------
@@ -25,8 +25,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
 
         ## Subtract the parameters list.
         ## NOTE: convert matrix into vector to match the calculation
-        tau <- as.vector(parCpl[["tau"]])
-        lambdaL <- as.vector(parCpl[["lambdaL"]])
+        tau <- as.vector(parCplRep[["tau"]])
+        lambdaL <- as.vector(parCplRep[["lambdaL"]])
 
         lambdaU <- as.vector(kendalltauInv(
             CplNM = CplNM,
@@ -212,8 +212,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
             MargisNM <- dimnames(u)[[2]]
             nObs <- dim(u)[1]
 
-            tau <- as.vector(parCpl[["tau"]]) # n-by-lp
-            lambda <- as.vector(parCpl[["lambda"]]) # n-by-lp
+            tau <- as.vector(parCplRep[["tau"]]) # n-by-lp
+            lambda <- as.vector(parCplRep[["lambda"]]) # n-by-lp
 
             rho <- sin(tau*pi/2) # n-by-lp
             df <- as.vector(lambdaInv(

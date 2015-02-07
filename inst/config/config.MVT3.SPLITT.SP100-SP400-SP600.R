@@ -44,7 +44,7 @@ ModelDescription <- "MVT3_copula_with_vs"
 
 ## COPULA DENSITY NAME AND PARAMETERS
 CplNM <- "MVT"
-CplParNM <- list(c("tau", "lambda"))
+CplParNM <- list(c("tau", "lambdaL"))
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisNM <- c("^SML","^MID" ,"^OEX")
@@ -101,7 +101,7 @@ Mdl.X[[3]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
-Mdl.X[[4]][["lambda"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
+Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -126,7 +126,7 @@ Mdl.parLink[[3]][["lmd"]] <- list(type = "log",  nPar = 1)
 
 Mdl.parLink[[4]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
                                   nPar = length(MargisNM)*(length(MargisNM)-1)/2)
-Mdl.parLink[[4]][["lambda"]] <- list(type = "glogit", a = 0.01, b = 0.8,
+Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.8,
                                      nPar = length(MargisNM)*(length(MargisNM)-1)/2)
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -163,7 +163,7 @@ varSelArgs[[3]][["lmd"]] <- list(cand = NULL,
 
 varSelArgs[[4]][["tau"]] <- list(cand = 2:4,
                                  init = "all-in")
-varSelArgs[[4]][["lambda"]] <- list(cand = 2:4,
+varSelArgs[[4]][["lambdaL"]] <- list(cand = 2:4,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -449,7 +449,7 @@ priArgs[[4]][["tau"]] <-
              "slopes" = list(type = "cond-mvnorm",
                  mean = 0, covariance = "identity", shrinkage = 1)),
          "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[4]][["lambda"]] <-
+priArgs[[4]][["lambdaL"]] <-
     list("beta" = list(
              "intercept" = list(type = "custom",
                  input = list(type = "gbeta",  mean = 0.2, variance = 0.05,

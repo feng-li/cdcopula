@@ -332,7 +332,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## The updating matrix
 
     Starting.time <- Sys.time()
-    UpdateMat <- parCplCaller(CplNM = CplNM,
+    UpdateMat <- parCplRepCaller(CplNM = CplNM,
                               parUpdate = MCMCUpdate,
                               parUpdateOrder = MCMCUpdateOrder)
     nInner <- nrow(UpdateMat)

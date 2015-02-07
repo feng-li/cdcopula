@@ -113,25 +113,35 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
     ## The Marginal likelihoods
-    for(iComp in MargisUpNM)
+    for(iComp in MargisNM)
         {
-            if(tolower(MCMCUpdateStrategy) == "joint")
+            if(iComp %in% MargisUpNM)
                 {
-                    densCaller <- c("u", "d")
-                }
-            else if(tolower(MCMCUpdateStrategy) == "twostage")
-                {
-                    ## Stage two of the two stage approach
-                    densCaller <- c("u", "d")
-                }
-            else if(tolower(MCMCUpdateStrategy) == "margin")
-                {
-                    densCaller <- c(NA, "d")
+                    if(tolower(MCMCUpdateStrategy) == "joint")
+                        {
+                            densCaller <- c("u", "d")
+                        }
+                    else if(tolower(MCMCUpdateStrategy) == "twostage")
+                        {
+                            ## Stage two of the two stage approach
+                            densCaller <- c("u", "d")
+                        }
+                    else if(tolower(MCMCUpdateStrategy) == "margin")
+                        {
+                            densCaller <- c(NA, "d")
+                        }
+                    else
+                        {
+                            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                                       "not implemented!"))
+                        }
                 }
             else
                 {
-                    stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
-                               "not implemented!"))
+                    if(tolower(MCMCUpdateStrategy) == "joint" && any(is.na(Mdl.u)))
+                        {
+                            densCaller <- c("u", "d")
+                        }
                 }
 
             ## MARGINAL LIKELIHOOD
@@ -150,7 +160,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     Mdl.d[, iComp] <- Mdl.ud[["d"]]
                     Mdl.logLik[, iComp] <- Mdl.ud[["d"]]
                 }
-            ## plot(Mdl.u, xlim = c(0, 1), ylim = c(0, 1))
 
         }
 
@@ -160,6 +169,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             evalCpl <- TRUE
             PostComp <- lapply(parUpdate, function(x) TRUE)
         }
+
     else if(tolower(MCMCUpdateStrategy) == "twostage" |
             tolower(MCMCUpdateStrategy) == "margin")
         {
@@ -206,7 +216,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             Mdl.logLikCpl <- logCplLik(
                 u = Mdl.u,
                 CplNM = CplNM,
-                parCpl = Mdl.par[[CplNM]],
+                parCplRep = Mdl.par[[CplNM]],
                 sum = FALSE) # n-by-1
 
             Mdl.logLik[, CplNM] <- Mdl.logLikCpl

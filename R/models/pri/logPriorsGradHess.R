@@ -62,9 +62,11 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 
     priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
-    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1] # Slopes(taking away intercept)
-    betaIdxNoIntCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]][-1] # Variable section
-                                        # indicator without intercept
+    nPar <- Mdl.parLink[[ComCaller]][[parCaller]][["nPar"]]
+
+    ## Slopes and variable selection indicators(taking away intercept)
+    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1, , drop = FALSE]
+    betaIdxNoIntCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]][-1, , drop = FALSE]
 
     X <- Mdl.X[[CompCaller]][[parCaller]][, -1, drop = FALSE]
     if(length(X) == 0L)
@@ -101,8 +103,14 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
 
             ## The covariance matrix for the whole beta vector
             if(tolower(covariance) == "g-prior")
-              {
-                coVar <- qr.solve(crossprod(X))
+                {
+
+                    coVar0 <- qr.solve(crossprod(X))
+                    coVar0Lst <- lapply(
+                        as.vector(rep(NA, nPar),"list"),
+                        function(x) coVar0)
+                    coVar <- block.diag(coVar0Lst)
+
               }
             else if(tolower(covariance) == "identity")
               {

@@ -12,65 +12,13 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
-logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
+logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
 {
+    parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
 
-###----------------------------------------------------------------------------
-### Copula likelihood numerical correction if u -> 0 or 1
-###----------------------------------------------------------------------------
+    logCplDensObs <- dCpl(CplNM = CplNM, u = u,
+                          parCpl = parCpl, log = TRUE)
 
-    ## Fix u on the cliff if any u -> 0 or u -> 1.
-    ## Thanks to the advice from M. Smith
-
-    ## Debugging symbol: if the warning should be printed out immediately.
-    immediate. <- FALSE
-
-
-###----------------------------------------------------------------------------
-### Compute the copula likelihood
-###----------------------------------------------------------------------------
-
-    ## The sum of log copula density
-    if(tolower(CplNM) == "bb7")
-        {
-            ## Subtract the parameters list.
-            tau <- as.vector(parCpl[["tau"]])
-            lambdaL <- as.vector(parCpl[["lambdaL"]])
-            lambdaU <- as.vector(kendalltauInv(
-                CplNM = CplNM, parRepCpl = parCpl))
-
-            delta <- -log(2)/log(lambdaL)
-            theta <- log(2)/log(2-lambdaU)
-
-            logCplDensObs <- dCpl(CplNM = CplNM, u = u,
-                                  theta = theta, delta = delta, log = TRUE)
-
-
-        }
-    else if(tolower(CplNM) == "gaussian")
-        {
-            ## The Gaussian copula
-        }
-    else if((tolower(CplNM) == "mvt"))
-        {
-            tau <- parCpl[["tau"]] # n-by-lq lq: lower triangular of q dimensional matrix.
-            lambda <- parCpl[["lambda"]] # n-by-lq
-
-
-            browser()
-
-            rho <- sin(tau*pi/2) # n-by-lq
-            df <- as.vector(lambdaInv(
-                CplNM = CplNM, parRepCpl = parCpl)) # n-by-1
-
-            logCplDensObs <- dCpl(CplNM = CplNM, u = u,
-                                  df = df, rho = rho, log = TRUE) # # n-by-1
-        }
-
-    else
-        {
-            stop("The copula is not implemented yet!")
-        }
 
     ## The output
     if(sum)

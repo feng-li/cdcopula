@@ -41,7 +41,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                                   MCMCUpdateStrategy)
 {
     ## The updating chain
-    chainCaller <- parCplCaller(CplNM = CplNM, parUpdate)
+    chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
 
     CompCaller <- chainCaller[1]
     parCaller <- chainCaller[2]
@@ -195,7 +195,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                     logCplGradObs.ana <- logCplGrad(
                         CplNM = CplNM,
                         u = staticCache$Mdl.u,
-                        parCpl = Mdl.par[[CplNM]],
+                        parCplRep = Mdl.par[[CplNM]],
                         cplCaller = cplCaller,
                         Mdl.X = Mdl.X,
                         Mdl.beta = Mdl.beta)
@@ -207,7 +207,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                     ## NOTE: The numerical gradient may not work well if the tabular version
                     ## of Kendall's tau is used due to the precision
                     logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
-                                                 CplNM, parCpl, staticCache)
+                                                 CplNM, parCplRep, staticCache)
                         {
                             if(tolower(cplCaller) %in% c("u1", "u2"))
                                 {
@@ -218,10 +218,10 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                             else
                                 {
                                     ## Calling copula parameters
-                                    parCpl[[parCaller]] <- x
+                                    parCplRep[[parCaller]] <- x
                                 }
                             out <- logCplLik(u = u, CplNM = CplNM,
-                                             parCpl = parCpl,
+                                             parCplRep = parCplRep,
                                              sum = FALSE)
                             return(out)
                         }
@@ -251,7 +251,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                                 parCaller = parCaller,
                                 cplCaller = cplCaller,
                                 CplNM =  CplNM,
-                                parCpl = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
+                                parCplRep = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
                                 staticCache = staticCache), silent = TRUE)
 
                             if(is(gradTry, "try-error"))

@@ -1,11 +1,14 @@
-funinv2d <- function(FUN, FUNAME, x1 y, x1lim, x2lim,...,
-                     method = c("tabular", "iterative")[1], tol = 1e-04)
+funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
+                     method = c("tabular", "iterative")[1], tol = 1e-03)
     {
         ## y = f(x1, x2) -> x2
         if(tolower(method) == "tabular")
             {
                 ## If the FUNNAME does not exist, create it
-                FUN.tabular <- paste(FUNNAME, ".tabular", sep = "")
+                set.seed(object.size(FUN))
+                FUNNAME <- runif(1, 1000, 9999)
+                FUN.tabular <- paste(".tabular.", FUNNAME, sep = "")
+
                 if(!exists(FUN.tabular, envir = .GlobalEnv))
                     {
                         assign(FUN.tabular, twowaytabular(
@@ -13,7 +16,8 @@ funinv2d <- function(FUN, FUNAME, x1 y, x1lim, x2lim,...,
                             x2lim = x2lim,tol = tol, ...),
                                envir = .GlobalEnv)
                     }
-                out <- funinv2d.tab(x1 = x1, y = y, tabular = FUN.tabular)
+                out <- funinv2d.tab(x1 = x1, y = y,
+                                    tabular = get(FUN.tabular, envir = .GlobalEnv))
             }
         else if(tolower(method) == "iterative")
             {
@@ -27,6 +31,7 @@ funinv2d.tab <- function(x1, y, tabular)
         ## x1 <- parRepCpl[["lambda"]]
         ## y <- parRepCpl[["tau"]]
         nObs <- length(y)
+        browser()
 
         if(length(x1) !=nObs)
             {
@@ -38,7 +43,6 @@ funinv2d.tab <- function(x1, y, tabular)
         nGrid1 <- tabular$nGrid1
         nGrid2 <- tabular$nGrid2
         x2Grid <- tabular$x2Grid
-
         Mat <- tabular$Mat # The dictionary
 
         ## The indices for x1.
@@ -98,7 +102,7 @@ twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-4, ...)
     LoopIdx <- c(seq(1, nGrid2, MaxLenCurr), nGrid2)
     LoopIdx[1] <- 0
 
-    tauIdxCurr0 <- 0
+    yIdxCurr0 <- 0
 
     nLoops <- length(LoopIdx)-1
     for(j in 1:nLoops)
@@ -109,10 +113,7 @@ twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-4, ...)
             x1 <- rep(x1Grid, times = IdxCurr1-IdxCurr0+1)
             x2 <- rep(x2Grid[IdxCurr0:IdxCurr1], each = nGrid1)
 
-            ## delta <- -log(2)/log(x1)
-            ## theta <- log(2)/log(2-x2)
-            ## parCpl <- list(theta = theta, delta = delta)
-            Mat[, IdxCurr0:IdxCurr1] <- FUN(x1, x2, ...)
+            Mat[, IdxCurr0:IdxCurr1] <- FUN(x1 = x1, x2 = x2, ...)
         }
 
     out <- list(Mat = Mat, nGrid1 = nGrid1, nGrid2 = nGrid2, x2Grid = x2Grid, tol = tol)

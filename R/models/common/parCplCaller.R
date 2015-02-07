@@ -1,4 +1,4 @@
-##' parCplCaller
+##' parCplRepCaller
 ##'
 ##' Generate the updating caller.
 ##' @param parUpdate
@@ -12,7 +12,7 @@
 ##' @return
 ##' @references Li 2014
 ##' @author Feng Li, Central University of Finance and Economics.
-parCplCaller <- function(CplNM, parUpdate, parUpdateOrder)
+parCplRepCaller <- function(CplNM, parUpdate, parUpdateOrder)
 {
     CompNM <- names(parUpdate)
 

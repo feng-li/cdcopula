@@ -25,7 +25,7 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                           propArgs, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
     ## The updating component parameter chain
-    chainCaller <- parCplCaller(CplNM = CplNM, parUpdate)
+    chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
 
     CompCaller <- chainCaller[1]
     parCaller <- chainCaller[2]
