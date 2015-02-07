@@ -58,24 +58,18 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     ## Mdl.Idx.training <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
     nTraining <- length(Mdl.Idx.training)
-    Mdl.X.training <- rapply(object=Mdl.X,
-                             f = subsetFun,
-                             idx = Mdl.Idx.training,
-                             how = "replace")
-    Mdl.Y.training <- rapply(object=Mdl.Y,
-                             f = subsetFun,
-                             idx = Mdl.Idx.training,
-                             how = "replace")
+    Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
+                             idx = Mdl.Idx.training, how = "replace")
+    Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
+                             idx = Mdl.Idx.training, how = "replace")
 
     ## Switch all the updating indicators ON
     parUpdate <- MCMCUpdate
 
     ## Assign the initial values
-    initParOut <- initPar(
-        varSelArgs = varSelArgs,
-        betaInit = betaInit,
-        Mdl.X = Mdl.X.training,
-        Mdl.Y = Mdl.Y.training)
+    initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
+                          Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
+                          Mdl.parLink = Mdl.parLink)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
@@ -100,14 +94,10 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
             Mdl.Idx.training.sample <-
                 Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
 
-            Mdl.X.training.sample <- rapply(object=Mdl.X,
-                                            f = subsetFun,
-                                            idx = Mdl.Idx.training.sample,
-                                            how = "replace")
-            Mdl.Y.training.sample <- rapply(object=Mdl.Y,
-                                            f = subsetFun,
-                                            idx = Mdl.Idx.training.sample,
-                                            how = "replace")
+            Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
+                                            idx = Mdl.Idx.training.sample, how = "replace")
+            Mdl.Y.training.sample <- rapply(object=Mdl.Y, f = subsetFun,
+                                            idx = Mdl.Idx.training.sample, how = "replace")
 
             cat("Optimizing initial values, may take a few minutes...\n\n")
             while(InitGood == FALSE)
@@ -117,7 +107,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                         varSelArgs = varSelArgs,
                         betaInit = betaInit,
                         Mdl.X = Mdl.X.training.sample,
-                        Mdl.Y = Mdl.Y.training.sample)
+                        Mdl.Y = Mdl.Y.training.sample,
+                        Mdl.parLink = Mdl.parLink)
                     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
                     Mdl.beta <- initParOut[["Mdl.beta"]]
 
@@ -315,20 +306,21 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
             for(j in names(MdlDataStruc[[i]]))
                 {
                     ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
-                    namesX.ij <- colnames(Mdl.X.training[[i]][[j]])
+                    nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
+                    namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
 
                     ## The MCMC storage
                     MCMC.betaIdx[[i]][[j]] <- matrix(
-                        Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij, byrow = TRUE,
+                        Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij*nPar.ij, byrow = TRUE,
                         dimnames = list(NULL, namesX.ij))
                     MCMC.beta[[i]][[j]] <- matrix(
-                        Mdl.beta[[i]][[j]], nIter, ncolX.ij, byrow = TRUE,
+                        Mdl.beta[[i]][[j]], nIter, ncolX.ij*nPar.ij, byrow = TRUE,
                         dimnames = list(NULL, namesX.ij))
-                    MCMC.par[[i]][[j]] <- matrix(
-                        staticCache[["Mdl.par"]][[i]][[j]], nIter, nTraining, byrow = TRUE)
+                    MCMC.par[[i]][[j]] <- array(
+                        staticCache[["Mdl.par"]][[i]][[j]], c(nIter, nTraining, nPar.ij))
 
                     ## The Metropolis-Hasting acceptance rate
-                    MCMC.AccProb[[i]][[j]] <- matrix(NA, c(nIter, 1))
+                    MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
                 }
         }
 
@@ -396,7 +388,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 MHOut[["betaIdx"]]
                             MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
                                 MHOut[["accept.prob"]]
-                            MCMC.par[[CompCaller]][[parCaller]][iIter, ] <-
+                            MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <-
                                 staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
 
                             ## Save the marginal densities.

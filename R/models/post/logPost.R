@@ -58,7 +58,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     ## is not available, the log posterior is still working.
     ## TODO: Change staticCache.
 
-
     if(missing(staticCache))
         {
             ## Initialize "staticCache" structure

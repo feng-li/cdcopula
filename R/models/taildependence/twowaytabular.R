@@ -35,9 +35,7 @@ twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-4, ...)
             ## delta <- -log(2)/log(x1)
             ## theta <- log(2)/log(2-x2)
             ## parCpl <- list(theta = theta, delta = delta)
-            tauCurr <- eval(call(FUN, x1, x2, ...))
-
-            tauMat[, IdxCurr0:IdxCurr1] <- tauCurr
+            Mat[, IdxCurr0:IdxCurr1] <- FUN(x1, x2, ...)
         }
 
     out <- list(Mat = Mat,

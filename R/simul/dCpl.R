@@ -27,7 +27,7 @@
 ##'     Current: Tue Sep 13 11:38:16 CEST 2011.
 ##' TODO: the first argument maybe should be x instead of u,
 ##'       Return log density instead of current form.
-cCpl <- function(CplNM, u, ..., log = TRUE)
+dCpl <- function(CplNM, u, ..., log = TRUE)
     {
         par <- list(...)
         if(tolower(CplNM) == "bb7")
@@ -78,6 +78,7 @@ cCpl <- function(CplNM, u, ..., log = TRUE)
                 df <- par[["df"]] # n-by-1
                 rho <- par[["rho"]] # n-by-lq
 
+                browser()
 
                 ## The quantile for *univariate* t
                 u.quantile <- qt(u, df = df)
@@ -85,18 +86,23 @@ cCpl <- function(CplNM, u, ..., log = TRUE)
 
                 ## The copula density function C_12(u1, u2)
                 nObs <- length(df)
-                if(length(dim(P)) == 1)
+                dmvtVecFun <- function(i, x, rho, df)
                     {
-                        rho <- matrix(rho,1)
-                    }
+                        Sigma = vech2m(rho[i, ], diag = FALSE)
 
-                dmvtVec <- function(x, rho, df)
-                    {
-                        dmvt(x = x[i],
-                             sigma = vech2m(rho[i, ], diag = FALSE),
-                             df = df[i], log = TRUE)
+                        if(!is.positivedefinite(Sigma))
+                            {
+                                out <- NA
+                            }
+                        else
+                            {
+                                out <- dmvt(x = x[i, , drop = FALSE],
+                                            sigma = Sigma,
+                                            df = df[i], log = TRUE)
+                            }
+                        return(out)
                     }
-                logDensUpper <- apply(matrix(1:nObs),1,dmvtVec,
+                logDensUpper <- apply(matrix(1:nObs),1,dmvtVecFun,
                                       x = u.quantile, rho = rho, df = df)
 
                 logDensLower <- apply(dt(u.quantile, df = df, log = TRUE), 1, sum)

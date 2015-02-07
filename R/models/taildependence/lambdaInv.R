@@ -1,8 +1,7 @@
-lambdaInv <- function(
-    CplNM,
-    parRepCpl,
-    method = c("tabular", "iterative")[1])
-    {
+lambdaInv <- function(CplNM, parRepCpl, method = c("tabular", "iterative")[1])
+    {        ## lambda, tau -> df
+
+
         if(tolower(method) == "tabular")
             {
                 ## If the tauTabular not exist, create it
@@ -31,7 +30,7 @@ lambdaInv.tab <- function(CplNM, parRepCpl, lambdaTabular)
                 lambda <- parRepCpl[["lambda"]]
                 tau <- parRepCpl[["tau"]]
 
-                if(length(lambdaL) !=length(tau))
+                if(length(lambda) !=length(tau))
                     {
                         stop("The input parameters should be of the same length.")
                     }
@@ -52,14 +51,14 @@ lambdaInv.tab <- function(CplNM, parRepCpl, lambdaTabular)
 
                 ## Extra work to avoid under and over flow
                 lambdaIdxFloor1 <- (lambdaIdxFloor < 1)
-                lambdaIdxFloor2 <- (lambdaIdxFloor > nGridL)
+                lambdaIdxFloor2 <- (lambdaIdxFloor > nGrid1)
                 if(any(lambdaIdxFloor1))
                     {
                         lambdaIdxFloor[lambdaIdxFloor1] <- 1
                     }
                 if(any(lambdaIdxFloor2))
                     {
-                        lambdaIdxFloor[lambdaIdxFloor2] <- nGridL
+                        lambdaIdxFloor[lambdaIdxFloor2] <- nGrid1
                     }
                 lambdaMatTabFloor <- Mat[lambdaIdxFloor, ,drop = FALSE]
 

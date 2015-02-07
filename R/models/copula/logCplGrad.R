@@ -329,10 +329,8 @@ logCplGrad <- function(CplNM, u, parCpl, cplCaller, Mdl.X, Mdl.beta)
                             F1X.I0 <- (x-mu)*df*(df/((x-mu)^2+df))^(-1+df/2)/
                                 ((x-mu)^2+df)^2/sqrt(1-df/((x-mu)^2+df))/beta(df/2, 1/2)
 
-
                             F1X[I0] <- F1X.I
                         }
-
 
 
                     C2 <- t(x-mu)%*%Sigma%*%(x-mu)

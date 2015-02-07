@@ -28,6 +28,15 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
     n.burn.default <- round(nIter*burnin)
     n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
+
+    subFun <- function(x, iIter, fun){
+        apply(x[(n.burn+1):iIter, ,drop = FALSE], 2, fun)
+    }
+
+    subFun3 <- function(x, iIter, fun){
+        apply(x[(n.burn+1):iIter, , ,drop = FALSE], 3, fun)
+    }
+
     if(iIter %in% printIter)
         {
             donePercent <- round(iIter/nIter*100)
@@ -54,39 +63,21 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
             MCMC.AccProb <- par$MCMC.AccProb
             MCMCUpdate <- par$MCMCUpdate
 
-            accept.prob.mean <- rapply(MCMC.AccProb,
-                                       function(x, iIter) mean(x[(n.burn+1):iIter]),
-                                       how = "replace", iIter = iIter)
+            accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace",
+                                       iIter = iIter,  fun = mean)
 
-            par.mean <- rapply(MCMC.par,
-                               function(x, iIter) mean(x[(n.burn+1):iIter]),
-                               how = "replace", iIter = iIter)
-            par.sd <- rapply(MCMC.par,
-                             function(x, iIter) sd(x[(n.burn+1):iIter]),
-                             how = "replace", iIter = iIter)
+            par.mean <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,  fun = mean)
+            par.sd <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,  fun = sd)
 
-            betaIdx.mean <- rapply(MCMC.betaIdx,
-                                   function(x, iIter){
-                                       colMeans(x[(n.burn+1):iIter, , drop = FALSE])},
-                                   how = "replace", iIter = iIter)
+            betaIdx.mean <- rapply(MCMC.betaIdx, subFun, how = "replace", iIter = iIter,
+                                   fun = mean)
+            beta.mean <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,  fun = mean)
+            beta.sd <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,  fun = sd)
 
-            beta.mean <- rapply(MCMC.beta,
-                                function(x, iIter){
-                                    colMeans(x[(n.burn+1):iIter, , drop = FALSE])},
-                                how = "replace", iIter = iIter)
-
-            beta.sd <- rapply(MCMC.beta,
-                              function(x, iIter){
-                                  colSds(x[(n.burn+1):iIter, , drop = FALSE])},
-                              how = "replace", iIter = iIter)
 
             ## Efficiency factor of MCMC
-            colIneffs <- function(x) {apply(x, 2, ineff)}
-            beta.ineff <- rapply(MCMC.beta,
-                                 function(x, iIter){
-                                     colIneffs(x[(n.burn+1):iIter, , drop = FALSE])},
-                                 how = "replace", iIter = iIter)
-
+            beta.ineff <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,
+                                 fun = ineff)
 
             for(i in names(MCMC.beta))
                 {

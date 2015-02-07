@@ -16,15 +16,15 @@ parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = N
     ## Convert Mdl.beta -> betaVec
     if(class(betaInput)  == "list")
       {
-        for(CompCurr in names(Mdl.betaIdx))
+        for(CompCaller in names(Mdl.betaIdx))
           {
-            for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
+            for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
               {
                 ## delete current entry if not updated
-                if(parUpdate[[CompCurr]][[parCurr]] == FALSE)
+                if(parUpdate[[CompCaller]][[parCaller]] == FALSE)
                   {
-                    Mdl.beta[[CompCurr]][[parCurr]] <- NULL
-                    Mdl.betaIdx[[CompCurr]][[parCurr]] <- NULL
+                    Mdl.beta[[CompCaller]][[parCaller]] <- NULL
+                    Mdl.betaIdx[[CompCaller]][[parCaller]] <- NULL
                   }
               }
           }
@@ -41,13 +41,13 @@ parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = N
         ## Convert the parameter vector into the model structure
         Idx0 <- NA # the initial parameter index
         Idx1 <- 0
-        for(CompCurr in names(Mdl.betaIdx))
+        for(CompCaller in names(Mdl.betaIdx))
           {
-            for(parCurr in names(Mdl.betaIdx[[CompCurr]]))
+            for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
               {
-                if(parUpdate[[CompCurr]][[parCurr]] == TRUE)
+                if(parUpdate[[CompCaller]][[parCaller]] == TRUE)
                   {
-                    betaIdxCurr <- Mdl.betaIdx[[CompCurr]][[parCurr]]
+                    betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
                     betaLen <- length(betaIdxCurr)
                     betaLenNoZero <-sum(betaIdxCurr)
 
@@ -57,7 +57,7 @@ parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = N
 
                     betaCurr <- matrix(0, betaLen, 1)
                     betaCurr[betaIdxCurr] <- betaInput[IdxCurr]
-                    Mdl.beta[[CompCurr]][[parCurr]] <- betaCurr
+                    Mdl.beta[[CompCaller]][[parCaller]] <- betaCurr
                   }
               }
 

@@ -2,16 +2,16 @@
 ##'
 ##' The detailed documentation is in the main setting file for each parameter.
 ##' @title Copula model prior settings.
-##' @param Mdl.X
-##' @param Mdl.parLink
-##' @param Mdl.beta
-##' @param Mdl.betaIdx
-##' @param varSelArgs
+##' @param Mdl.X "list"
+##' @param Mdl.parLink "list"
+##' @param Mdl.beta "list"
+##' @param Mdl.betaIdx "list"
+##' @param varSelArgs "list"
 ##' @param priArgs "list"
-##' @param parUpdate
+##' @param parUpdate "list"
 ##' @param priCurr "list"
 ##' @return "list" synced
-##' @references
+##' @references "list"
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
@@ -25,23 +25,22 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
     ## Loop over all updated parameter candidates
 
     CompNM <- names(priArgs)
-    for(iComp in CompNM)
+    for(ComCaller in CompNM)
         {
 ###----------------------------------------------------------------------------
 ### Only update priors for parameters that need to update.
 ###----------------------------------------------------------------------------
-            parUpdateIdx <- which(parUpdate[[iComp]] == TRUE)
-
-            for(iPar in parUpdateIdx)
-                {
-                    ## Initial the storage structure for current log prior
-                    outCurr <-  priArgs[[iComp]][[iPar]]
+            parUpdateIdx <- which(parUpdate[[ComCaller]] == TRUE)
+            for(parCaller in parUpdateIdx)
+                {   ## Initial the storage structure for current log prior
+                    outCurr <-  priArgs[[ComCaller]][[parCaller]]
 
 ###----------------------------------------------------------------------------
 ### Prior for variable selection indicators
 ###----------------------------------------------------------------------------
-                    priArgsCurr <- priArgs[[iComp]][[iPar]][["indicators"]]
-                    betaIdxCurr <- Mdl.betaIdx[[iComp]][[iPar]]
+                    priArgsCurr <- priArgs[[ComCaller]][[parCaller]][["indicators"]]
+                    betaIdxCurr <- Mdl.betaIdx[[ComCaller]][[parCaller]] # p-yb-lq
+                    nPar <- Mdl.parLink[[ComCaller]][[parCaller]][["nPar"]]
 
                     if(tolower(priArgsCurr[["type"]]) == "bern") # Bernoulli prior
                         {
@@ -51,16 +50,23 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                             prob <- priArgsCurr[["prob"]]
 
                             ## Variable section candidates
-                            candIdx <- varSelArgs[[iComp]][[iPar]][["cand"]]
-                            candLen <- length(candIdx)
-                            probVec <- matrix(prob, candLen, 1)
+                            candIdx <- varSelArgs[[ComCaller]][[parCaller]][["cand"]]
+                            if(length(candIdx)>0)
+                                {
+                                    probMat <- matrix(prob, length(candIdx), nPar)
+                                    ## TRUE or FALSE of variable selection candidates
+                                    varSelCandTF <- betaIdxCurr[candIdx, , drop = FALSE]
 
-                            ## TRUE or FALSE of variable selection candidates
-                            varSelCandTF <- betaIdxCurr[candIdx]
+                                    logDens <- sum(dbinom(x = varSelCandTF, size = 1,
+                                                          prob = probMat, log = TRUE))
+                                }
+                            else
+                                {
+                                    ## No variable selection is used, thus we don't need
+                                    ## prior.
 
-                            logDens <- sum(log(probVec[varSelCandTF])) +
-                                sum(log(1-probVec[!varSelCandTF]))
-
+                                    logDens <- NULL
+                                }
                             outCurr[["indicators"]] <- logDens
                         }
 
@@ -68,11 +74,10 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ### Prior for coefficients
 ###----------------------------------------------------------------------------
 
-### intercept as special case
-### The intercept should alway be included.
-                    priArgsCurr <- priArgs[[iComp]][[iPar]][["beta"]][["intercept"]]
-                    betaCurr <- Mdl.beta[[iComp]][[iPar]][1] # the intercept
-                    linkCurr <- Mdl.parLink[[iComp]][[iPar]]
+### intercept as special case. The intercept should alway be included.
+                    priArgsCurr <- priArgs[[ComCaller]][[parCaller]][["beta"]][["intercept"]]
+                    betaCurr <- Mdl.beta[[ComCaller]][[parCaller]][1,,drop = FALSE]#intercepts
+                    linkCurr <- Mdl.parLink[[ComCaller]][[parCaller]]
 
                     if(tolower(priArgsCurr[["type"]]) == "custom")
                         {
@@ -88,30 +93,28 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                             outCurr[["beta"]][["intercept"]] <- logDens
                         }
 
-### coefficients conditional on variable selection indicators
-                    priArgsCurr <- priArgs[[iComp]][[iPar]][["beta"]][["slopes"]]
-                    betaCurr <- Mdl.beta[[iComp]][[iPar]][-1] # Slopes(taking away intercept)
-                    betaIdxNoIntCurr <- Mdl.betaIdx[[iComp]][[iPar]][-1] # Variable section
-                                        # indicator without intercept
+### coefficients (conditional on variable selection indicators)
+                    priArgsCurr <- priArgs[[ComCaller]][[parCaller]][["beta"]][["slopes"]]
 
-                    ## The covariance matrix for the whole beta vector
-                    X <- Mdl.X[[iComp]][[iPar]][, -1, drop = FALSE]
+                    ## Slopes and variable selection indicators(taking away intercept)
+                    betaCurr <- Mdl.beta[[ComCaller]][[parCaller]][-1, , drop = FALSE]
+                    betaIdxNoIntCurr <- Mdl.betaIdx[[ComCaller]][[parCaller]][-1,,drop = FALSE]
 
-                    if(length(X) == 0L)
+
+                    if(length(betaIdxNoIntCurr) == 0L)
                         {
                             ## No covariates at all (only intercept in the model)
                             outCurr[["beta"]][["slopes"]] <- NULL
                         }
                     else
                         {
-
                             if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
                                 {
                                     ## Normal distribution condition normal The full beta
-                                    ## vector is assumed as normal. Since variable selection is
-                                    ## included in the MCMC, The final proposed beta are those
-                                    ## non zeros. We need to using the conditional normal
-                                    ## density See Mardia p. 63
+                                    ## vector is assumed as normal. Since variable
+                                    ## selection is included in the MCMC, The final
+                                    ## proposed beta are those non zeros. We need to using
+                                    ## the conditional normal density See Mardia p. 63
 
                                     ## Subtract the prior information for the full beta
                                     mean <- priArgsCurr[["mean"]] # mean of density
@@ -133,7 +136,15 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                                     ## The covariance matrix for the whole beta vector
                                     if(tolower(covariance) == "g-prior")
                                         {
-                                            coVar <- qr.solve(crossprod(X))
+                                            ## The covariance matrix for the whole beta vector
+                                            X <- Mdl.X[[ComCaller]][[parCaller]][, -1, drop = FALSE]
+                                            coVar0 <- qr.solve(crossprod(X))
+                                            coVar0Lst <- lapply(
+                                                as.vector(rep(NA, nPar),"list"),
+                                                function(x) coVar0)
+
+                                            coVar <- block.diag(coVar0Lst)
+
                                         }
                                     else if(tolower(covariance) == "identity")
                                         {
@@ -141,18 +152,15 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                                         }
 
                                     ## Calculate the log density
-                                    if(Idx0Len == 0L )
-                                        {
-                                            ## 1. all are selected or
+                                    if(Idx0Len == 0L)
+                                        {   ## 1. all are selected or
                                             ## Switch to unconditional prior.
-
                                             outCurr[["beta"]][["slopes"]] <- dmvnorm(
                                                 matrix(betaCurr, 1, betaLen,byrow = TRUE),
                                                 meanVec, coVar*shrinkage, log = TRUE)
                                         }
                                     else if( Idx0Len == betaLen)
-                                        {
-                                            ## 2. non are selected:
+                                        {   ## 2. non are selected:
                                             ## Switch to unconditional prior.
                                             outCurr[["beta"]][["slopes"]] <- dmvnorm(
                                                 matrix(betaCurr, 1, betaLen, byrow = TRUE),
@@ -180,7 +188,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### Update the output for prior
 ###----------------------------------------------------------------------------
-                    Mdl.logPri[[iComp]][[iPar]] <- outCurr
+                    Mdl.logPri[[ComCaller]][[parCaller]] <- outCurr
                 }
         }
     return(Mdl.logPri)

@@ -20,7 +20,7 @@
 ##'     DEPENDS: nvtnorm
 ##'     Created: Mon Sep 26 13:54:13 CEST 2011;
 ##'     Current: Mon Sep 26 13:55:12 CEST 2011.
-uCpl <- function(u, theta = NA, CplNM, par = NA)
+pCpl <- function(u, theta = NA, CplNM, par = NA)
 {
   if(tolower(CplNM) == "bb7")
     {

@@ -40,16 +40,17 @@ if(DEBUGGING)
 ###----------------------------------------------------------------------------
 
 ## SHORT MODEL DESCRIPTION
-ModelDescription <- "bb7_copula_with_vs"
+ModelDescription <- "MVT3_copula_with_vs"
 
 ## COPULA DENSITY NAME AND PARAMETERS
-CplNM <- "BB7"
-CplParNM <- list(c("tau", "lambdaL"))
+CplNM <- "MVT"
+CplParNM <- list(c("tau", "lambda"))
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisNM <- c("^SML", "^OEX")
-MargisTypes <- c("SPLITT", "SPLITT")
+MargisNM <- c("^SML","^MID" ,"^OEX")
+MargisTypes <- c("SPLITT", "SPLITT", "SPLITT")
 MargisParNM <- list(c("mu", "phi", "df", "lmd"),
+                    c("mu", "phi", "df", "lmd"),
                     c("mu", "phi", "df", "lmd"))
 
 ## THE MODEL EVALUATION CRITERION
@@ -71,13 +72,13 @@ names(MargisTypes) <- MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP600-20141219.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-1000):nObsRaw
+nObsIdx <- (1 + nObsRaw-200):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -94,8 +95,13 @@ Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
+Mdl.X[[3]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+
+Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
+Mdl.X[[4]][["lambda"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -103,19 +109,25 @@ names(Mdl.Y) <- MargisNM
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MdlDataStruc
-Mdl.parLink[[1]][["mu"]] <- list(type = "identity")
-Mdl.parLink[[1]][["phi"]] <- list(type = "log")
-Mdl.parLink[[1]][["df"]] <- list(type = "glog", a = 2)
-Mdl.parLink[[1]][["lmd"]] <- list(type = "log")
+Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
+Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
 
-Mdl.parLink[[2]][["mu"]] <- list(type = "identity")
-Mdl.parLink[[2]][["phi"]] <- list(type = "log")
-Mdl.parLink[[2]][["df"]] <- list(type = "glog", a = 2)
-Mdl.parLink[[2]][["lmd"]] <- list(type = "log")
+Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
+Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99)
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.8)
+Mdl.parLink[[3]][["mu"]] <- list(type = "identity", nPar = 1)
+Mdl.parLink[[3]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[3]][["lmd"]] <- list(type = "log",  nPar = 1)
 
+Mdl.parLink[[4]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
+                                  nPar = length(MargisNM)*(length(MargisNM)-1)/2)
+Mdl.parLink[[4]][["lambda"]] <- list(type = "glogit", a = 0.01, b = 0.8,
+                                     nPar = length(MargisNM)*(length(MargisNM)-1)/2)
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
@@ -139,9 +151,19 @@ varSelArgs[[2]][["df"]] <- list(cand = NULL,
 varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL,
+varSelArgs[[3]][["mu"]] <- list(cand = 2:3,
+                                init = "all-in")
+varSelArgs[[3]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
+varSelArgs[[3]][["df"]] <- list(cand = NULL,
+                                init = "all-in")
+varSelArgs[[3]][["lmd"]] <- list(cand = NULL,
+                                 init = "all-in")
+
+
+varSelArgs[[4]][["tau"]] <- list(cand = 2:4,
+                                 init = "all-in")
+varSelArgs[[4]][["lambda"]] <- list(cand = 2:4,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -165,18 +187,24 @@ track.MCMC <- TRUE
 
 ## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- T
-MCMCUpdate[[1]][[2]] <- T
-MCMCUpdate[[1]][[3]] <- T
-MCMCUpdate[[1]][[4]] <- T
+MCMCUpdate[[1]][[1]] <- F
+MCMCUpdate[[1]][[2]] <- F
+MCMCUpdate[[1]][[3]] <- F
+MCMCUpdate[[1]][[4]] <- F
 
-MCMCUpdate[[2]][[1]] <- T
-MCMCUpdate[[2]][[2]] <- T
-MCMCUpdate[[2]][[3]] <- T
-MCMCUpdate[[2]][[4]] <- T
+MCMCUpdate[[2]][[1]] <- F
+MCMCUpdate[[2]][[2]] <- F
+MCMCUpdate[[2]][[3]] <- F
+MCMCUpdate[[2]][[4]] <- F
 
-MCMCUpdate[[3]][[1]] <- T
-MCMCUpdate[[3]][[2]] <- T
+MCMCUpdate[[3]][[1]] <- F
+MCMCUpdate[[3]][[2]] <- F
+MCMCUpdate[[3]][[3]] <- F
+MCMCUpdate[[3]][[4]] <- F
+
+
+MCMCUpdate[[4]][[1]] <- T
+MCMCUpdate[[4]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -191,6 +219,11 @@ MCMCUpdateOrder[[2]][[4]] <- 8
 
 MCMCUpdateOrder[[3]][[1]] <- 9
 MCMCUpdateOrder[[3]][[2]] <- 10
+MCMCUpdateOrder[[3]][[3]] <- 11
+MCMCUpdateOrder[[3]][[4]] <- 12
+
+MCMCUpdateOrder[[4]][[1]] <- 13
+MCMCUpdateOrder[[4]][[2]] <- 14
 
 
 ## MCMC Updating Strategy
@@ -202,7 +235,7 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMCUpdateStrategy <- "twostage"
+MCMCUpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MdlDataStruc
@@ -240,11 +273,31 @@ propArgs[[2]][[4]] <-
          "beta" = list(type = "mvt", df = 6),
          "indicators" = list(type = "binom", prob = 0.5))
 
+
+
 propArgs[[3]][[1]] <-
     list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
          "beta" = list(type = "mvt", df = 6),
          "indicators" = list(type = "binom", prob = 0.5))
 propArgs[[3]][[2]] <-
+    list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+         "beta" = list(type = "mvt", df = 6),
+         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[3]] <-
+    list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+         "beta" = list(type = "mvt", df = 6),
+         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[4]] <-
+    list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+         "beta" = list(type = "mvt", df = 6),
+         "indicators" = list(type = "binom", prob = 0.5))
+
+
+propArgs[[4]][[1]] <-
+    list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+         "beta" = list(type = "mvt", df = 6),
+         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[4]][[2]] <-
     list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
          "beta" = list(type = "mvt", df = 6),
          "indicators" = list(type = "binom", prob = 0.5))
@@ -353,7 +406,41 @@ priArgs[[2]][["lmd"]] <-
                  mean = 0, covariance = "identity", shrinkage = 1)),
          "indicators" = list(type = "bern", prob = 0.5))
 
-priArgs[[3]][["tau"]] <-
+priArgs[[3]][["mu"]] <-
+    list("beta" = list(
+             "intercept" = list(type = "custom",
+                 input = list(type = "norm",  mean = 0, variance = 1),
+                 output = list(type = "norm", shrinkage = 1)),
+             "slopes" = list(type = "cond-mvnorm",
+                 mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["phi"]] <-
+    list("beta" = list(
+             "intercept" = list(type = "custom",
+                 input = list(type = "lognorm",  mean = 1, variance = 1),
+                 output = list(type = "norm", shrinkage = 1)),
+             "slopes" = list(type = "cond-mvnorm",
+                 mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["df"]] <-
+    list("beta" = list(
+             "intercept" = list(type = "custom",
+                 input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                 output = list(type = "norm", shrinkage = 1)),
+             "slopes" = list(type = "cond-mvnorm",
+                 mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["lmd"]] <-
+    list("beta" = list(
+             "intercept" = list(type = "custom",
+                 input = list(type = "lognorm",  mean = 1, variance = 1),
+                 output = list(type = "norm", shrinkage = 1)),
+             "slopes" = list(type = "cond-mvnorm",
+                 mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+
+
+priArgs[[4]][["tau"]] <-
     list("beta" = list(
              "intercept" = list(type = "custom",
                  input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
@@ -362,7 +449,7 @@ priArgs[[3]][["tau"]] <-
              "slopes" = list(type = "cond-mvnorm",
                  mean = 0, covariance = "identity", shrinkage = 1)),
          "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[3]][["lambdaL"]] <-
+priArgs[[4]][["lambda"]] <-
     list("beta" = list(
              "intercept" = list(type = "custom",
                  input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
@@ -393,23 +480,11 @@ betaInit[[2]][[4]] <- "random"
 
 betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"
+betaInit[[3]][[3]] <- "random"
+betaInit[[3]][[4]] <- "random"
 
-## betaInit[[1]][[1]] <- "random"
-## betaInit[[1]][[2]] <- "random"
-## betaInit[[1]][[3]] <- "random"
-## betaInit[[1]][[4]] <- -0.11706760
-
-## betaInit[[2]][[1]] <- "random"
-## betaInit[[2]][[2]] <- "random"
-## betaInit[[2]][[3]] <- "random"
-## betaInit[[2]][[4]] <- -0.11707829
-
-## betaInit[[3]][[1]] <- -3.13519286
-## betaInit[[3]][[2]] <- 0.60447399
-
-
-## [1]  0.11535526 -0.07386206 -3.60276562 -0.11706760  0.14084234  0.02443366
-## [7] -2.53630083 -0.11707829 -3.13519286  0.60447399
+betaInit[[4]][[1]] <- "random"
+betaInit[[4]][[2]] <- "random"
 
 ################################################################################
 ###                                  THE END

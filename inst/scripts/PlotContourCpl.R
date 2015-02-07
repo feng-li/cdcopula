@@ -52,9 +52,9 @@ for(i in as.vector(t(ID.cand)))
     theta1 <- theta[i]
     delta1 <- delta[i]
 
-    empDist <- matrix(uCpl(u = u, CplNM = CplNM,
+    empDist <- matrix(pCpl(u = u, CplNM = CplNM,
                            theta = c(theta1, delta1)), nPoints)
-    empDens <- matrix(cCpl(u = u, CplNM = CplNM, theta = c(theta1, delta1)), nPoints)
+    empDens <- matrix(dCpl(u = u, CplNM = CplNM, theta = c(theta1, delta1)), nPoints)
 
     if(j %in% normaldays)
       {

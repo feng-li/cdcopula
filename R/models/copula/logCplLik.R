@@ -42,7 +42,7 @@ logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
             delta <- -log(2)/log(lambdaL)
             theta <- log(2)/log(2-lambdaU)
 
-            logCplDensObs <- cCpl(CplNM = CplNM, u = u,
+            logCplDensObs <- dCpl(CplNM = CplNM, u = u,
                                   theta = theta, delta = delta, log = TRUE)
 
 
@@ -56,11 +56,14 @@ logCplLik <- function(u, CplNM, parCpl, sum = TRUE)
             tau <- parCpl[["tau"]] # n-by-lq lq: lower triangular of q dimensional matrix.
             lambda <- parCpl[["lambda"]] # n-by-lq
 
+
+            browser()
+
             rho <- sin(tau*pi/2) # n-by-lq
             df <- as.vector(lambdaInv(
                 CplNM = CplNM, parRepCpl = parCpl)) # n-by-1
 
-            logCplDensObs <- cCpl(CplNM = CplNM, u = u,
+            logCplDensObs <- dCpl(CplNM = CplNM, u = u,
                                   df = df, rho = rho, log = TRUE) # # n-by-1
         }
 
