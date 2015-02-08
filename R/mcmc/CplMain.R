@@ -133,20 +133,20 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                     ## indicators are fixed (not optimized) loop over all the marginal
                     ## models and copula via TWO STAGE OPTIMIZATION
 
-                    for(iComp in names(Mdl.beta))
+                    for(CompCaller in names(Mdl.beta))
                         {
 
                             ## If nothing to update, optimization inside this components
                             ## skipped.
-                            if(all(unlist(parUpdate[[iComp]]) == FALSE)) next
+                            if(all(unlist(parUpdate[[CompCaller]]) == FALSE)) next
 
-                            cat("Initializing model component:", iComp, "...\n")
+                            cat("Initializing model component:", CompCaller, "...\n")
 
 
                             ## Only current component is updated.
                             parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
                                                     how = "replace")
-                            parUpdate[[iComp]] <- MCMCUpdate[[iComp]]
+                            parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
 
                             betaVecInitComp <- parCplSwap(
                                 betaInput = Mdl.beta,

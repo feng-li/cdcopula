@@ -25,19 +25,19 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
 ###----------------------------------------------------------------------------
 ### (1) update all the independent linkages
 ###----------------------------------------------------------------------------
-        for(iComp in CompNM)
+        for(CompCaller in CompNM)
             {
-                parUpdateNM <- names(parUpdate[[iComp]] == TRUE)
+                parUpdateNM <- names(parUpdate[[CompCaller]] == TRUE)
                 for(ParCurr in parUpdateNM)
                     {
                         ## Check if particular constrain is needed.
                         if(!(tolower(ParCurr) %in% tolower(condPar)))
                             {
                                 ## Update the parameters for the updated part
-                                Mdl.par[[iComp]][[ParCurr]] <- parMeanFun(
-                                    X = Mdl.X[[iComp]][[ParCurr]],
-                                    beta = Mdl.beta[[iComp]][[ParCurr]],
-                                    linkArgs = Mdl.parLink[[iComp]][[ParCurr]])
+                                Mdl.par[[CompCaller]][[ParCurr]] <- parMeanFun(
+                                    X = Mdl.X[[CompCaller]][[ParCurr]],
+                                    beta = Mdl.beta[[CompCaller]][[ParCurr]],
+                                    linkArgs = Mdl.parLink[[CompCaller]][[ParCurr]])
                             }
                     }
             }

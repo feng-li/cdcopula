@@ -14,7 +14,6 @@
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
 logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
 {
-    browser()
     parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
 
     logCplDensObs <- dCpl(CplNM = CplNM, u = u,

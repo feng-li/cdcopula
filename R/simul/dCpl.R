@@ -77,8 +77,6 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                 df <- parCpl[["df"]] # n-by-1
                 rho <- parCpl[["rho"]] # n-by-lq
 
-                browser()
-
                 ## The quantile for *univariate* t
                 u.quantile <- qt(u, df = df)
                 ## u.quantile <- X

@@ -7,7 +7,7 @@
 ##' @return
 ##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: ; Current: .
+##' @note Created: Sun Feb 08 17:22:15 CST 2015; Current: Sun Feb 08 17:22:21 CST 2015.
 parCplRep2Std <- function(CplNM, parCplRep)
   {
       ## Initialize output Storage and name it
@@ -45,13 +45,19 @@ parCplRep2Std <- function(CplNM, parCplRep)
                       lambda(CplNM = "mvt", parCpl = parCpl)[["lambdaL"]]
                   }
 
-              df <- funinv2d(FUN = FUN,
-                             method = "tabular",
-                             x1 = rho,
-                             y = lambdaL,
-                             x1lim = c(0, 1),
-                             x2lim = c(2, 30),
-                             tol = 1e-3) # n-by-1
+              df0 <- funinv2d(FUN = FUN,
+                              method = "tabular",
+                              x1 = rho,
+                              y = lambdaL,
+                              x1lim = c(0, 1),
+                              x2lim = c(2, 30),
+                              tol = 1e-3) # n-by-lq
+
+              ## In multivariate case, lambda_ij = f(rho_ij, df) where df is independent
+              ## of i and j. to make the calculate stable. let df_ij = df and make the
+              ## mean of them. See Demarta & McNeil (2005) and Hult & Lindskog (2002)
+
+              df <- rowMeans(df0) # n-by-1
 
               out[["rho"]] <- rho
               out[["df"]] <- df

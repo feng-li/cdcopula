@@ -18,13 +18,13 @@ parCplRepCaller <- function(CplNM, parUpdate, parUpdateOrder)
 
     ## check which parameter need to update
     out.init <- NULL
-    for(iComp in CompNM)
+    for(CompCaller in CompNM)
         {
-            parNM <- names(parUpdate[[iComp]])
-            parUpdateIdx <- parNM[parUpdate[[iComp]] == TRUE]
+            parNM <- names(parUpdate[[CompCaller]])
+            parUpdateIdx <- parNM[parUpdate[[CompCaller]] == TRUE]
             for(jPar in parUpdateIdx)
                 {
-                    out.init <- rbind(out.init , c(iComp, jPar))
+                    out.init <- rbind(out.init , c(CompCaller, jPar))
                 }
         }
 
