@@ -90,7 +90,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                             Mdl.logPri = Mdl.logPri)
 
 ###----------------------------------------------------------------------------
-### UPDATING THE LIKELIHOOD
+### UPDATING THE MODEL PARAMETERS
 ###----------------------------------------------------------------------------
     Mdl.par <- parCplMeanFun(CplNM = CplNM,
                              Mdl.X = Mdl.X,
@@ -99,9 +99,10 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                              parUpdate = parUpdate,
                              Mdl.par = Mdl.par)
 
-### Update marginal pdf and/or cdf the marginal u and only updated if the corresponding
-### parameters are updated.
-
+###----------------------------------------------------------------------------
+### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
+### PARAMETERS ARE UPDATED.
+###----------------------------------------------------------------------------
     CompNM <- names(Mdl.beta)
 
     ## Allocate the output structure
@@ -112,23 +113,24 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     MargisNM <- CompNM[CompNM  != CplNM]
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
-    ## The Marginal likelihoods
-    for(iComp in MargisNM)
+    ## THE MARGINAL LIKELIHOODS
+    densCaller <- list()
+    for(CompCaller in MargisNM)
         {
-            if(iComp %in% MargisUpNM)
+            if(CompCaller %in% MargisUpNM)
                 {
                     if(tolower(MCMCUpdateStrategy) == "joint")
                         {
-                            densCaller <- c("u", "d")
+                            densCaller[[CompCaller]] <- c("u", "d")
                         }
                     else if(tolower(MCMCUpdateStrategy) == "twostage")
                         {
                             ## Stage two of the two stage approach
-                            densCaller <- c("u", "d")
+                            densCaller[[CompCaller]] <- c("u", "d")
                         }
                     else if(tolower(MCMCUpdateStrategy) == "margin")
                         {
-                            densCaller <- c(NA, "d")
+                            densCaller[[CompCaller]] <- c(NA, "d")
                         }
                     else
                         {
@@ -138,29 +140,18 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 }
             else
                 {
-                    if(tolower(MCMCUpdateStrategy) == "joint" && any(is.na(Mdl.u)))
+                    if(any(is.na(Mdl.u)))
                         {
-                            densCaller <- c("u", "d")
-                        }
+                            if(tolower(MCMCUpdateStrategy) == "joint")
+                                {
+                                    densCaller[[CompCaller]] <- c("u", "d")
+                                }
+                            else
+                                {
+                                    stop("Two-stage updating without providing \"u\" is not possible!")
+                                }
+                       }
                 }
-
-            ## MARGINAL LIKELIHOOD
-            Mdl.ud <- MargiModel(
-                y = Mdl.Y[[iComp]],
-                type = MargisTypes[which(MargisNM == iComp)],
-                par = Mdl.par[[iComp]],
-                densCaller = densCaller)
-
-            if("u" %in% densCaller)
-                {
-                    Mdl.u[, iComp] <- Mdl.ud[["u"]]
-                }
-            if("d" %in% densCaller)
-                {
-                    Mdl.d[, iComp] <- Mdl.ud[["d"]]
-                    Mdl.logLik[, iComp] <- Mdl.ud[["d"]]
-                }
-
         }
 
     ## THE COPULA LOG LIKELIHOOD
@@ -179,24 +170,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     evalCpl <- TRUE
                     PostComp <- lapply(parUpdate, function(x) FALSE)
                     PostComp[[CplNM]] <- TRUE
-
-                    if(any(is.na(Mdl.u)))
-                        {
-                            ## In stage two, Mdl.u is required to compute the copula
-                            ## density.
-                            for(iComp in MargisNM)
-                                {
-                                    Mdl.ud <- MargiModel(
-                                        y = Mdl.Y[[iComp]],
-                                        type = MargisTypes[which(MargisNM == iComp)],
-                                        par = Mdl.par[[iComp]],
-                                        densCaller = "u")
-                                    Mdl.u[, iComp] <- Mdl.ud[["u"]]
-                                }
-
-
-                        }
-
                 }
             else
                 {
@@ -209,8 +182,34 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
                        "not implemented!"))
         }
+###----------------------------------------------------------------------------
+### UPDATING THE LIKELIHOOD
+###----------------------------------------------------------------------------
+
+    ## Updating the marginal models
+    for(CompCaller in names(densCaller))
+        {
+            Mdl.ud <- MargiModel(
+                y = Mdl.Y[[CompCaller]],
+                type = MargisTypes[which(MargisNM == CompCaller)],
+                par = Mdl.par[[CompCaller]],
+                densCaller = densCaller[[CompCaller]])
+                    Mdl.u[, CompCaller] <- Mdl.ud[["u"]]
+
+            if("u" %in% densCaller[[CompCaller]])
+                {
+                    Mdl.u[,  CompCaller] <- Mdl.ud[["u"]]
+                }
+            if("d" %in% densCaller[[CompCaller]])
+                {
+                    Mdl.d[,  CompCaller] <- Mdl.ud[["d"]]
+                    Mdl.logLik[,  CompCaller] <- Mdl.ud[["d"]]
+                }
+        }
 
 
+    ## Updating the copula model if required
+    browser()
     if(evalCpl == TRUE)
         {
             Mdl.logLikCpl <- logCplLik(

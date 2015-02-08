@@ -31,7 +31,6 @@ funinv2d.tab <- function(x1, y, tabular)
         ## x1 <- parRepCpl[["lambda"]]
         ## y <- parRepCpl[["tau"]]
         nObs <- length(y)
-        browser()
 
         if(length(x1) !=nObs)
             {

@@ -27,9 +27,8 @@
 ##'     Current: Tue Sep 13 11:38:16 CEST 2011.
 ##' TODO: the first argument maybe should be x instead of u,
 ##'       Return log density instead of current form.
-dCpl <- function(CplNM, u, ..., log = TRUE)
+dCpl <- function(CplNM, u, parCpl, log = TRUE)
     {
-        parCpl <- list(...)
         if(tolower(CplNM) == "bb7")
             {
                 ## theta,  delta

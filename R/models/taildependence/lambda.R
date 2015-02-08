@@ -1,11 +1,10 @@
 lambda <- function(CplNM, parCpl)
 {
-
     out <- list()
     if(tolower(CplNM) == "mvt")
         {
-            df = parCpl[["df"]]
-            rho <- parCpl[["rho"]]
+            df = parCpl[["df"]] # n-by-1
+            rho <- parCpl[["rho"]] # n-by-lq
             out[["lambdaL"]] <- 2*dt(-sqrt(df+1)*sqrt(1-rho)/sqrt(1+rho), df = df+1)
         }
     else if (tolower(CplNM) == "bb7")
