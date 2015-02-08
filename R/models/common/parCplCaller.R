@@ -22,9 +22,9 @@ parCplRepCaller <- function(CplNM, parUpdate, parUpdateOrder)
         {
             parNM <- names(parUpdate[[CompCaller]])
             parUpdateIdx <- parNM[parUpdate[[CompCaller]] == TRUE]
-            for(jPar in parUpdateIdx)
+            for(parCaller in parUpdateIdx)
                 {
-                    out.init <- rbind(out.init , c(CompCaller, jPar))
+                    out.init <- rbind(out.init , c(CompCaller, parCaller))
                 }
         }
 

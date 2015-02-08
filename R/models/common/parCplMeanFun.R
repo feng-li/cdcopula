@@ -28,16 +28,16 @@ parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
         for(CompCaller in CompNM)
             {
                 parUpdateNM <- names(parUpdate[[CompCaller]] == TRUE)
-                for(ParCurr in parUpdateNM)
+                for(parCaller in parUpdateNM)
                     {
                         ## Check if particular constrain is needed.
-                        if(!(tolower(ParCurr) %in% tolower(condPar)))
+                        if(!(tolower(parCaller) %in% tolower(condPar)))
                             {
                                 ## Update the parameters for the updated part
-                                Mdl.par[[CompCaller]][[ParCurr]] <- parMeanFun(
-                                    X = Mdl.X[[CompCaller]][[ParCurr]],
-                                    beta = Mdl.beta[[CompCaller]][[ParCurr]],
-                                    linkArgs = Mdl.parLink[[CompCaller]][[ParCurr]])
+                                Mdl.par[[CompCaller]][[parCaller]] <- parMeanFun(
+                                    X = Mdl.X[[CompCaller]][[parCaller]],
+                                    beta = Mdl.beta[[CompCaller]][[parCaller]],
+                                    linkArgs = Mdl.parLink[[CompCaller]][[parCaller]])
                             }
                     }
             }
