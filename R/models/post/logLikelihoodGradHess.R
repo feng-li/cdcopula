@@ -100,8 +100,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
             densCaller <- NA
         }
 
-
-
     if(evalMargi == TRUE)
         {
             yCurr <- Mdl.Y[[CompCaller]]

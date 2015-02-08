@@ -11,12 +11,12 @@ chainFracCplGrad <- function(CplNM, parCpl, chainCaller)
           }
         else if(all.equal(tolower(chainCaller), c("delta", "tau")))
           {
-            out <- 1/(kendalltauGrad(CplNM = CplNM, theta = theta,
+            out <- 1/(kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
                                           parCaller = "delta"))
           }
         else if(all.equal(tolower(chainCaller), c("theta", "tau")))
           {
-            out <- 1/(kendalltauGrad(CplNM = CplNM, theta = theta,
+            out <- 1/(kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
                                      parCaller = "theta"))
           }
         else

@@ -84,8 +84,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
 
                 gradCpl.tau.delta <- kendalltauGrad(
-                    CplNM = CplNM, theta = theta,
-                    delta = delta, caller = "delta")
+                    CplNM = CplNM, parCpl = parCpl, caller = "delta")
 
                 out <- logGradCpl.delta*(1/gradCpl.tau.delta)
             }
@@ -146,8 +145,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
             ## Gradient w.r.t. tau
             gradCpl.tau.theta <- kendalltauGrad(
                 CplNM = CplNM,
-                theta = theta,
-                delta = delta,
+                parCpl = parCpl,
                 caller = "theta")
 
             ## The chain gradient
@@ -212,16 +210,12 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
             MargisNM <- dimnames(u)[[2]]
             nObs <- dim(u)[1]
 
-            tau <- as.vector(parCplRep[["tau"]]) # n-by-lp
-            lambda <- as.vector(parCplRep[["lambda"]]) # n-by-lp
-
-            rho <- sin(tau*pi/2) # n-by-lp
-            df <- as.vector(lambdaInv(
-                CplNM = CplNM, parRepCpl = parCpl)) # n-by-lp
+            parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
+            df <- parCpl[["df"]] # n-by-1
+            rho <- parCpl[["rho"]] # n-by-lq
 
             u.quantile <- qt(u, df)
-
-            if(tolower(cplCaller) == "lambda")
+            if(tolower(cplCaller) == "lambdal")
                 {
                     ## CopulaDensity-MVT.nb
 
@@ -290,31 +284,26 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                 }
             else
                 {
-                    if(tolower(cplCaller) == "u1")
-                        {
-                            u <-  u[, 1:2, drop = FALSE]
-                        }
-                    else if(tolower(cplCaller) == "u2")
-                        {
-                            u <-  u[, 2:1, drop = FALSE]
-                        }
-                    else
-                        {
-                            stop("No such copula parameter!")
-                        }
+                    ## Reorder the parameters.
+                    q <- dim(u)[2]
+                    imar <- substr(cplCaller, 2, nchar(cplCaller))
 
-                    ## The t copula and related copulas (6)
+                    uIdx <- 1:q
+                    uIdx[1] <- imar
+                    uIdx[imar] <- 1
 
+                    u <- u[, uIdx]
+                    x <- u.quantile[, uIdx]
+                    mu <- 0
 
+                    ## The t copula and related copulas EQ.(6)
                     fx <- dt(x = x, df = df) # n-by-1
                     f1x <- -(x-mu)*df*df*(df/(df+(x-mu)^2))^(-1+(1+df)/2)/
-                        ((df+(x-mu)^2)^2*sqrt(df)*beta(df/2, 1/2))
+                        ((df+(x-mu)^2)^2*sqrt(df)*beta(df/2, 1/2)) # n-by-1
 
                     F1X <- matrix(NA, nObs, q)
-
                     I0 <- (x<mu)
                     I <- !I0
-
                     if(any(I))
                         {
                             F1X.I <- (2*(x-mu)^3/((x-mu)^2+df)^2-2*(x-mu)/((x-mu)^2+df))*
@@ -333,11 +322,24 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                         }
 
 
-                    C2 <- t(x-mu)%*%Sigma%*%(x-mu)
-                    gradCpl.u <- -(v+q)/2*1/C2*
-                        1/v*(2*Sigma%*%(x-mu))*(1/F1x)-
-                            1/fx*f1x/F1x
-                }
+                    FUN <- function(i, x, mu, df, rho, uIdx, q)
+                        {
+                            Sigma0 <- vech2m(rho[i, ], diag = FALSE)
+                            Sigma <- Sigma0[uIdx, uIdx]
+
+                            v <- df[i]
+
+                            C2 <- t(x-mu)%*%Sigma%*%(x-mu)
+                            gradCpl.u <- -(v+q)/2*1/C2*
+                                1/v*(2*Sigma%*%(x-mu))*(1/F1x)-
+                                    1/fx*f1x/F1x
+                            return(gradCpl.u)
+                        }
+
+                    gradCpl.u <- apply(matrix(1:nObs), 1, FUN,
+                                       df = df, x = x, mu = mu,
+                                       rho = rho, uIdx = uIdx, q = q)
+
         }
 
     return(matrix(out))

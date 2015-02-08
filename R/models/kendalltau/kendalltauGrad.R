@@ -1,23 +1,26 @@
-kendalltauGrad <- function(CplNM, theta, delta, caller)
+kendalltauGrad <- function(CplNM, parCpl, caller)
   {
     if(tolower(CplNM) == "bb7")
       {
-        ## The storage
-        nObs <- length(theta)
-        out <- theta
-        out[0:nObs] <- NA
+          ## The storage
+          theta <- parCpl[["theta"]]
+          delta <- parCpl[["delta"]]
 
-        ## Healthy condition for the stepwise Kendall's tau
-        tol = 0.001
-        deltaHcond <- (delta > 0+tol)
-        ## A special case when delta is very close to zero (almost no tail
-        ## dependence)
-        deltaHcondSmall <- (delta <=  0+tol & delta > 0)
+          nObs <- length(theta)
+          out <- theta
+          out[0:nObs] <- NA
 
-        Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
-        IdxLarge <- which(theta > 2+tol & deltaHcond)
-        Idx2 <- which(abs(theta-2)<tol & deltaHcond) # You will never reach this
-        IdxDeltaSmall <- which(deltaHcondSmall) # sometimes you hit this,  use
+          ## Healthy condition for the stepwise Kendall's tau
+          tol = 0.001
+          deltaHcond <- (delta > 0+tol)
+          ## A special case when delta is very close to zero (almost no tail
+          ## dependence)
+          deltaHcondSmall <- (delta <=  0+tol & delta > 0)
+
+          Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
+          IdxLarge <- which(theta > 2+tol & deltaHcond)
+          Idx2 <- which(abs(theta-2)<tol & deltaHcond) # You will never reach this
+          IdxDeltaSmall <- which(deltaHcondSmall) # sometimes you hit this,  use
                                         # the asymptotic results.
 
         if(tolower(caller) == "theta")
