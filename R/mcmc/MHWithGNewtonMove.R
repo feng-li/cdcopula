@@ -30,9 +30,6 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     CompCaller <- chainCaller[1]
     parCaller <- chainCaller[2]
 
-
-    ## cat(chainCaller, "\n")
-
     ## Set a reject flag to handle unexpected situations. If TRUE, the proposal
     ## is rejected anyway regardless of other situations.
     MHUpdate <- "MH"
@@ -45,9 +42,9 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     Mdl.betaIdx.curr <- Mdl.betaIdx
     staticCache.curr <- staticCache
 
-    beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]]
-    betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
-    beta.curr <- beta.curr.full[betaIdx.curr]
+    beta.curr.full <- Mdl.beta[[CompCaller]][[parCaller]] # p-by-lq
+    betaIdx.curr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-by-lq
+    beta.curr <- beta.curr.full[betaIdx.curr] # p*lq
 
     ## Assume initial no variable selection
     betaIdx.prop <- betaIdx.curr
@@ -56,55 +53,65 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### VARIABLE SELECTION PROPOSAL
 ###----------------------------------------------------------------------------
 
+    ## No. of covariates
+    nCovs <- dim(betaIdx.curr)[1]
+    nPar <- dim(betaIdx.curr)[2]
+
     ## Randomly propose a subset for covariates to change
-    varSelCand <- varSelArgs[[CompCaller]][[parCaller]]$cand
+    beta01Mat <- matrix(1:(nCovs*nPar), nCovs, nPar)
+    varSelCandRow <- varSelArgs[[CompCaller]][[parCaller]]$cand # sub.q-by-1
+    varSelCand <- beta01Mat[varSelCandRow, ] # sub.p-by-lq
+
     betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
 
-    ## No. of covariates
-    nCovs <- length(betaIdx.curr)
 
-    ## If variable selection is available, make a change proposal
-    ## Otherwise no variable selection.
+    ## If variable selection is available, make a change proposal Otherwise no variable
+    ## selection.
     if(length(varSelCand) > 0)
         {
             if(betaIdxArgs$type == "binom")
                 {
                     ## Binomial proposal a small subset
                     betaIdx.propCandIdx <- which(rbinom(
-                        n = length(varSelCand) ,
+                        n = length(varSelCand),
                         size = 1L,
                         prob = betaIdxArgs$prob) == 1L)
 
                     if(length(betaIdx.propCandIdx) != 0)
                         {
-                            ## Situation when propose a change
+                            ## Situation when propose a change with prob = betaIdxArgs$prob
                             betaIdx.propCand <- varSelCand[betaIdx.propCandIdx]
-                            ## Propose a change
                             betaIdx.prop[betaIdx.propCand] <- !betaIdx.curr[betaIdx.propCand]
 
                             VSProp <- "VSProp"
                         }
                     else
                         {
-                            ## Situation when propose no changes
+                            ## Situation when propose no changes  =  no variable selection
                             VSProp <- NULL
                         }
-
-                    ## The jump density for the variable selection indicators
-                    ## TODO: Add adaptive scheme
-                    logJump.Idx.currATprop <- 1
-                    logJump.Idx.propATcurr <- 1
-
+                }
+            else
+                {
+                    stop("No such variable selection proposals!")
                 }
         }
     else
-        {
-            logJump.Idx.currATprop <- 1
-            logJump.Idx.propATcurr <- 1
+        {   ## No variable selection
             VSProp <- NULL
         }
 
-    ## Loop over the MH schemes
+
+
+    ## The jump density for the variable selection indicators
+    ## TODO: Add adaptive scheme
+    logJump.Idx.currATprop <- 1
+    logJump.Idx.propATcurr <- 1
+
+
+###----------------------------------------------------------------------------
+### LOOP OVER THE MH SCHEMES.
+###----------------------------------------------------------------------------
     ## If variable selection is proposed,  add an extra MHNewton at the
     ## beginning,  else the usual update without variable selection,
     ## i.e. betaIdx.prop = betaIdx.curr.

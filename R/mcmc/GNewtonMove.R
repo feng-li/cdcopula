@@ -30,8 +30,6 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                         Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
-
-
     ## The updating component parameter chain
     chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
     CompCaller <- chainCaller[1]
@@ -39,21 +37,19 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
     errorFlag <- FALSE
 
-    ## if(parCaller == "tau") browser()
-
     ## The current parameters
     X <- Mdl.X[[CompCaller]][[parCaller]]
-    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]] # p-by-1
-    betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-by-1
+    betaCurr <- Mdl.beta[[CompCaller]][[parCaller]] # p-by-lq
+    betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-by-lq
 
-    ## Finite Newton move. K steps to approach the mode plus one more step to
-    ## update the gradient and Hessian at i:th step.
+    ## Finite Newton move. K steps to approach the mode plus one more step to update the
+    ## gradient and Hessian at i:th step.
     kSteps <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["ksteps"]]
     hessMethod <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["hess"]]
 
     ## Initialize the Newton move with the proposed variable selection indicator
     Mdl.betaIdx[[CompCaller]][[parCaller]] <- betaIdxProp
-    param <- betaCurr[betaIdxCurr, , drop = FALSE]
+    param <- matrix(betaCurr[betaIdxCurr]) # col-vector
 
     ## Initial update staticCache for current Newton move
     staticCache.curr <- logPost(
@@ -76,6 +72,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
     for(iStep in 1:(kSteps+1))
         {
+            browser()
+
             ## The gradient and Hessian in the likelihood
             logLikGradHess.prop <- logLikelihoodGradHess(
                 CplNM = CplNM,
