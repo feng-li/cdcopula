@@ -89,17 +89,21 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                                     obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
                                                      par.mean[[i]][[j]],
                                                      par.sd[[i]][[j]])
-                                    rownames(obj.par) <- c("acc.prob", "par.mean", "par.sd")
-                                    colnames(obj.par) <- ""
+                                    rownames(obj.par) <- c("acc.prob", "par.mean",
+                                                           "par.sd")
+                                    colnames(obj.par) <- paste(j, 1:ncol(obj.par), sep = ".")
 
                                     obj <- rbind(beta.mean[[i]][[j]],
                                                  beta.sd[[i]][[j]],
                                                  betaIdx.mean[[i]][[j]],
                                                  beta.ineff[[i]][[j]])
                                     rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean", "beta.ineff")
-
+                                    colnames(obj) <- paste(paste(j, rep(
+                                        1:ncol(obj.par),
+                                        each = ncol(obj)/ncol(obj.par)), colnames(obj),
+                                                                 sep = "."))
                                     cat("\n", i, j, "(", donePercent, "% )\n")
-                                    cat(rep("-", dev.width), sep = "")
+                                    cat(rep("-", dev.width-1), sep = "")
                                     print(obj.par)
                                     print(obj)
                                 }

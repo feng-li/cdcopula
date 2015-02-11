@@ -72,8 +72,6 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
     for(iStep in 1:(kSteps+1))
         {
-            browser()
-
             ## The gradient and Hessian in the likelihood
             logLikGradHess.prop <- logLikelihoodGradHess(
                 CplNM = CplNM,
@@ -150,23 +148,34 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
             logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
 
 
-            ## cbind(logLikGrad.prop, logLikGrad.prop.num)
-            ## browser()
-
-            logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod)
+            logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod) # diag elements only
 
             logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
-            logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
+
+            logPriHess.prop <- diag(as.vector(hessApprox(logPriGrad.prop, hessMethod)),
+                                    nrow = length(logPriGrad.prop))
+            ## logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
 
 
             ## The gradient and Hessian subsets in the priors due to variable selection
-            logPriGrad.pp <- logPriGrad.prop[betaIdxProp, , drop = FALSE] # pp-by-1
+            logPriGrad.pp <- matrix(logPriGrad.prop[betaIdxProp]) # pp-by-1
             logPriHess.pp <- logPriHess.prop[betaIdxProp, betaIdxProp, drop = FALSE] # pp-by-pp
             logPriHess.pc <- logPriHess.prop[betaIdxProp, betaIdxCurr, drop = FALSE] # pp-by-pc
 
             ## The selected covariates in the proposed and current draw
-            X.prop <- X[ , betaIdxProp, drop = FALSE] # n-by-pp
-            X.curr <- X[ , betaIdxCurr, drop = FALSE] # n-by-pc
+
+            ## mu  =  X%*%beta where X is p-by-q,  beta is q-by-lq. we have
+            ## vec(mu)  =  (I %k% X) vec(beta). This generalized Villani (2009)'s
+            ## generalized Newton algorithm that allows mu to be a matrix and
+            nPar <- dim(betaCurr)[2]
+
+            X.KR <- kronecker(diag1(nPar), X)
+
+            betaIdxPropRep <- unlist(apply(betaIdxProp, 2, function(x) which(x == TRUE)))
+            betaIdxCurrRep <- unlist(apply(betaIdxCurr, 2, function(x) which(x == TRUE)))
+
+            X.prop <- X.KR[ , betaIdxPropRep, drop = FALSE]# n-by-pp
+            X.curr <- X.KR[ , betaIdxCurrRep, drop = FALSE]# n-by-pp
 
 
             ## The gradient and Hessian in the general Newton's update
@@ -217,7 +226,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                     betaIdxCurr <- betaIdxProp
 
                     ## the full parameters including zeros.
-                    param.full <- matrix(0, length(betaIdxCurr), 1)
+                    param.full <- array(0, dim(betaCurr))
                     param.full[betaIdxProp] <- param
                     Mdl.beta[[CompCaller]][[parCaller]] <- param.full
 

@@ -209,7 +209,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
 
     ## Updating the copula model if required
-    browser()
     if(evalCpl == TRUE)
         {
             Mdl.logLikCpl <- logCplLik(
