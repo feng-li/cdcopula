@@ -49,7 +49,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 {
     ## Assume no error a priori
     errorFlag <- FALSE
-
     ## Debugging symbol: if the warning should be printed out immediately.
     ## use options(warn = 1)
     ## immediate. <- FALSE
@@ -160,7 +159,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             evalCpl <- TRUE
             PostComp <- lapply(parUpdate, function(x) TRUE)
         }
-
     else if(tolower(MCMCUpdateStrategy) == "twostage" |
             tolower(MCMCUpdateStrategy) == "margin")
         {
@@ -230,7 +228,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE LOG POSTERIOR
 ###----------------------------------------------------------------------------
-    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri[unlist(PostComp)]))
+    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
+                                        # solution.
     Mdl.logLik.SubSum <- sum(Mdl.logLik[, unlist(PostComp)])
     Mdl.logPost <-  Mdl.logLik.SubSum+Mdl.logPri.SubSum
 

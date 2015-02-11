@@ -14,9 +14,9 @@
 CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 {
     ## Set the print interval and consider burnin
-    printIter <- seq(from = floor(nIter*interval),
+    printIter <- c(1, seq(from = floor(nIter*interval),
                      to = nIter,
-                     by = floor(nIter*interval))
+                     by = floor(nIter*interval)))
     if(printIter[length(printIter)] != nIter)
         {
             printIter <- c(printIter, nIter)
@@ -43,6 +43,13 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 
             TimeToGo <-  round(difftime(Sys.time(), Starting.time,
                                         units = "hours")/iIter*(nIter-iIter), 2)
+
+            if(iIter  == printIter[1])
+                {
+                    cat(TimeToGo, " hours to go.\n", sep = "")
+                    return()
+                }
+
 
             welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
                              round(n.burn/nIter*100), "% burnin) "
@@ -103,8 +110,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                                         each = ncol(obj)/ncol(obj.par)), colnames(obj),
                                                                  sep = "."))
                                     cat("\n", i, j, "(", donePercent, "% )\n")
-                                    cat(rep("-", dev.width-1), sep = "")
+                                    cat(rep("-", dev.width-1), "\n", sep = "")
                                     print(obj.par)
+                                    cat("\n")
                                     print(obj)
                                 }
                         }

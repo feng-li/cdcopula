@@ -135,7 +135,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
                     for(CompCaller in names(Mdl.beta))
                         {
-
                             ## If nothing to update, optimization inside this components
                             ## skipped.
                             if(all(unlist(parUpdate[[CompCaller]]) == FALSE)) next
@@ -155,7 +154,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 parUpdate = parUpdate)
 
                             ## Optimize the initial values
-                            betaVecOptimComp <- try(optimx(
+                            betaVecOptimComp <- optimx(
                                 par = betaVecInitComp,
                                 fn = logPostOptim,
                                 control = list(maximize = TRUE, maxit = 100,
@@ -173,7 +172,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 staticCache = staticCache.sample,
                                 parUpdate = parUpdate,
                                 MCMCUpdateStrategy = "twostage"
-                                ), silent = FALSE)
+                                )#, silent = FALSE)
 
                             if(is(betaVecOptimComp, "try-error") == TRUE)
                                 {# It does not have to be converged.

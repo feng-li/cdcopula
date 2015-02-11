@@ -25,7 +25,6 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
     ## a wrapper of the log posterior function that can be used for directly optimization
     ## via Newton's method
 
-
       Mdl.beta <- parCplSwap(betaInput = betaVec,
                              Mdl.beta = Mdl.beta,
                              Mdl.betaIdx = Mdl.betaIdx,

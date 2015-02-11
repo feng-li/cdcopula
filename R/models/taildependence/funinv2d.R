@@ -51,6 +51,8 @@ funinv2d.tab <- function(x1, y, tabular)
         ## Extra work to avoid under and over flow
         x1IdxFloor1 <- (x1IdxFloor < 1)
         x1IdxFloor2 <- (x1 > nGrid1)
+
+
         if(any(x1IdxFloor1))
             {
                 ## Below the lowest index

@@ -12,57 +12,57 @@
 ##' @note Created: Thu Mar 14 13:36:29 CET 2013;
 ##'       Current: Thu Mar 14 13:36:35 CET 2013.
 parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = NA)
-  {
-    ## Convert Mdl.beta -> betaVec
-    if(class(betaInput)  == "list")
-      {
-        for(CompCaller in names(Mdl.betaIdx))
-          {
-            for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
-              {
-                ## delete current entry if not updated
-                if(parUpdate[[CompCaller]][[parCaller]] == FALSE)
-                  {
-                    Mdl.beta[[CompCaller]][[parCaller]] <- NULL
-                    Mdl.betaIdx[[CompCaller]][[parCaller]] <- NULL
-                  }
-              }
-          }
+    {
+        ## Convert Mdl.beta -> betaVec
+        if(class(betaInput)  == "list")
+            {
+                for(CompCaller in names(Mdl.betaIdx))
+                    {
+                        for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
+                            {
+                                ## delete current entry if not updated
+                                if(parUpdate[[CompCaller]][[parCaller]] == FALSE)
+                                    {
+                                        Mdl.beta[[CompCaller]][[parCaller]] <- NULL
+                                        Mdl.betaIdx[[CompCaller]][[parCaller]] <- NULL
+                                    }
+                            }
+                    }
 
-        betaVec <- unlist(Mdl.beta)
-        betaIdxVec <- unlist(Mdl.betaIdx)
-        betaVec <- betaVec[betaIdxVec]
+                betaVec <- unlist(Mdl.beta)
+                betaIdxVec <- unlist(Mdl.betaIdx)
+                betaVec <- betaVec[betaIdxVec]
 
-        ## names(betaVec) <- NULL
-        out <- betaVec
-      }
-    else ## Convert betaVec -> Mdl.beta
-      {
-        ## Convert the parameter vector into the model structure
-        Idx0 <- NA # the initial parameter index
-        Idx1 <- 0
-        for(CompCaller in names(Mdl.betaIdx))
-          {
-            for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
-              {
-                if(parUpdate[[CompCaller]][[parCaller]] == TRUE)
-                  {
-                    betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
-                    betaLen <- length(betaIdxCurr)
-                    betaLenNoZero <-sum(betaIdxCurr)
+                ## names(betaVec) <- NULL
+                out <- betaVec
+            }
+        else ## Convert betaVec -> Mdl.beta
+            {
+                ## Convert the parameter vector into the model structure
+                Idx0 <- NA # the initial parameter index
+                Idx1 <- 0
+                for(CompCaller in names(Mdl.betaIdx))
+                    {
+                        for(parCaller in names(Mdl.betaIdx[[CompCaller]]))
+                            {
+                                if(parUpdate[[CompCaller]][[parCaller]] == TRUE)
+                                    {
+                                        betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]]
+                                        betaLen <- length(betaIdxCurr)
+                                        betaLenNoZero <-sum(betaIdxCurr)
 
-                    Idx0 <- Idx1+1
-                    Idx1 <- Idx0 + betaLenNoZero -1
-                    IdxCurr <-Idx0:Idx1
+                                        Idx0 <- Idx1+1
+                                        Idx1 <- Idx0 + betaLenNoZero -1
+                                        IdxCurr <-Idx0:Idx1
 
-                    betaCurr <- matrix(0, betaLen, 1)
-                    betaCurr[betaIdxCurr] <- betaInput[IdxCurr]
-                    Mdl.beta[[CompCaller]][[parCaller]] <- betaCurr
-                  }
-              }
+                                        betaCurr <- array(0, dim(betaIdxCurr))
+                                        betaCurr[betaIdxCurr] <- betaInput[IdxCurr]
+                                        Mdl.beta[[CompCaller]][[parCaller]] <- betaCurr
+                                    }
+                            }
 
-          }
-        out <- Mdl.beta
-      }
-    return(out)
-  }
+                    }
+                out <- Mdl.beta
+            }
+        return(out)
+    }
