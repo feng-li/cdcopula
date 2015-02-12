@@ -154,12 +154,14 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 parUpdate = parUpdate)
 
                             ## Optimize the initial values
-                            betaVecOptimComp <- optimx(
+                            betaVecOptimComp <- try(optimx(
                                 par = betaVecInitComp,
                                 fn = logPostOptim,
-                                control = list(maximize = TRUE, maxit = 100,
-                                    all.methods = FALSE),
+                                control = list(maximize = TRUE,
+                                    all.methods = FALSE,
+                                    maxit = 10),
                                 method = "BFGS",
+                                hessian = FALSE,
                                 CplNM = CplNM,
                                 Mdl.Y = Mdl.Y.training.sample,
                                 Mdl.X = Mdl.X.training.sample,
@@ -172,7 +174,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                 staticCache = staticCache.sample,
                                 parUpdate = parUpdate,
                                 MCMCUpdateStrategy = "twostage"
-                                )#, silent = FALSE)
+                                ), silent = FALSE)
 
                             if(is(betaVecOptimComp, "try-error") == TRUE)
                                 {# It does not have to be converged.

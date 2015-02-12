@@ -239,5 +239,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 staticCache = staticCache,
                 errorFlag = errorFlag)
 
+
     return(out)
 }

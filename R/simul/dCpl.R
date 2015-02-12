@@ -87,16 +87,14 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                     {
                         Sigma = vech2m(rho[i, ], diag = FALSE)
 
-                        if(!is.positivedefinite(Sigma))
+                        out <- try(dmvt(x = x[i, , drop = FALSE],
+                                        sigma = Sigma,
+                                        df = df[i], log = TRUE))
+                        if(is(out, "try-error"))
                             {
                                 out <- NA
                             }
-                        else
-                            {
-                                out <- dmvt(x = x[i, , drop = FALSE],
-                                            sigma = Sigma,
-                                            df = df[i], log = TRUE)
-                            }
+
                         return(out)
                     }
                 logDensUpper <- apply(matrix(1:nObs),1,dmvtVecFun,

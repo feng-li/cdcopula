@@ -14,7 +14,7 @@
 CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 {
     ## Set the print interval and consider burnin
-    printIter <- c(1, seq(from = floor(nIter*interval),
+    printIter <- c(10, seq(from = floor(nIter*interval),
                      to = nIter,
                      by = floor(nIter*interval)))
     if(printIter[length(printIter)] != nIter)
