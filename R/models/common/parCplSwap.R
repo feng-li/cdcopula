@@ -57,6 +57,8 @@ parCplSwap <- function(betaInput, Mdl.beta = NA, Mdl.betaIdx = NA, parUpdate = N
 
                                         betaCurr <- array(0, dim(betaIdxCurr))
                                         betaCurr[betaIdxCurr] <- betaInput[IdxCurr]
+
+                                        if(!is.matrix(betaCurr)) browser()
                                         Mdl.beta[[CompCaller]][[parCaller]] <- betaCurr
                                     }
                             }

@@ -58,26 +58,26 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                             L5^2*D1*D2*(
                                 (-1+L1^(1/delta))^2*delta^2*theta^2+log(L1)-
                                     1/L5*(-L5*theta*(delta+L1^(2/delta)*(1+delta)*theta-
-                                                         L1^(1/delta)*(3+delta+(-1+delta)*theta)
-                                                     )*log(L1) +
-                                                         delta*(
-                                                             -L1^(2/delta)*(1+delta)*
-                                                                 (L4*Tu1^delta*delta+Tv1^delta*(1+delta))*theta^2+
-                                                                     (1+delta*theta)*(Tu1^delta*delta*theta-
-                                                                                          Tv1^delta*(1+(1+Tu1^delta)*delta*theta))+
-                                                                                              L1^(1/delta)*theta*(
-                                                                                                  L4*Tu1^delta*delta*(1+theta+2*delta*theta)
-                                                                                                  + Tv1^delta*(3-theta+2*delta*(1+theta+theta*delta))
-                                                                                                  ))*log(Tu1)+
-                                                                                                      delta*(
-                                                                                                          -L1^(2/delta)*(1+delta)*
-                                                                                                              (L3*Tv1^delta*delta+Tu1^delta*(1+delta))*theta^2+
-                                                                                                                  (1+delta*theta)*(
-                                                                                                                      -L3*Tv1^delta*delta*theta-Tu1^delta*(1+delta*theta))+
-                                                                                                                          L1^(1/delta)*theta*(
-                                                                                                                              L3*Tv1^delta*delta*(1+theta+2*delta*theta)+
-                                                                                                                                  Tu1^delta*(3-theta+2*delta*(1+theta+delta*theta))
-                                                                                                                              ))*log(Tv1)
+                          L1^(1/delta)*(3+delta+(-1+delta)*theta)
+                      )*log(L1) +
+                          delta*(
+                              -L1^(2/delta)*(1+delta)*
+                                  (L4*Tu1^delta*delta+Tv1^delta*(1+delta))*theta^2+
+                                      (1+delta*theta)*(Tu1^delta*delta*theta-
+                       Tv1^delta*(1+(1+Tu1^delta)*delta*theta))+
+                           L1^(1/delta)*theta*(
+                               L4*Tu1^delta*delta*(1+theta+2*delta*theta)
+                               + Tv1^delta*(3-theta+2*delta*(1+theta+theta*delta))
+                               ))*log(Tu1)+
+                                   delta*(
+                                       -L1^(2/delta)*(1+delta)*
+                                           (L3*Tv1^delta*delta+Tu1^delta*(1+delta))*theta^2+
+                                               (1+delta*theta)*(
+                                                   -L3*Tv1^delta*delta*theta-Tu1^delta*(1+delta*theta))+
+                                                       L1^(1/delta)*theta*(
+                                                           L3*Tv1^delta*delta*(1+theta+2*delta*theta)+
+                                                               Tu1^delta*(3-theta+2*delta*(1+theta+delta*theta))
+                                                           ))*log(Tv1)
                                           )))/(L1^2*delta^2*theta*(
                                               1+delta*theta+L1^(2/delta)*(1+delta)*theta-
                                                   L1^(1/delta)*(1+theta+2*delta*theta)))
@@ -131,15 +131,15 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                             1/(L1^3*(-1-delta*theta+L1^(1/delta)*(1+delta)*theta))*
                                 PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
                                     (1/theta*PT1^(-delta)*(-SD12*(1+delta)*theta*(
-                                        -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-
-                                            L1*PT1^(1+delta)*(C1*(-1+theta)*(
-                                                -1+theta-theta*delta
-                                                +L1^(1/delta)*(1+delta)*theta)+
-                                                    theta*(C2+delta+C2*delta*theta-
-                                                               L1^(1/delta)*(1+delta)*(1+C2*theta))))+
-                                                                   L1*(-1-delta*theta+
-                                                                           L1^(1/delta)*(1+delta)*theta)*
-                                                                               (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
+                                    -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-
+                                    L1*PT1^(1+delta)*(C1*(-1+theta)*(
+                                   -1+theta-theta*delta
+                                   +L1^(1/delta)*(1+delta)*theta)+
+                                   theta*(C2+delta+C2*delta*theta-
+                                       L1^(1/delta)*(1+delta)*(1+C2*theta))))+
+                                           L1*(-1-delta*theta+
+                                                   L1^(1/delta)*(1+delta)*theta)*
+                                   (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
 
 
                         ## Gradient w.r.t. tau
@@ -189,16 +189,16 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                         S2 <- -1 + (-S1)^(1/delta)
 
                         gradCpl.u <- -(D1^(-1-3*delta)*D2^(-2*delta)*
-                                           (rowSums(D12^delta)-D1^delta*D2^delta)^2*
-                                               (D1^(1+delta)*S1*(-1+theta)*
-                                                    (1+(-S1)^(1/delta)*(-1+theta)-
-                                                         theta+S2^2*theta+S2^2*delta*theta)+
-                                                             D2^(-delta)*(D1^delta*(-1+D2^delta)*S2*(1+delta)*theta*
-                                                                              (-1+(1+S2+S2*delta)*theta)+D2^delta*
-                                                                                  (1+theta*(-3+2*theta+S2*(1+delta)*
-                                                                                                (-2+(2+S2*delta)*theta))))*ub1^theta))/
-                                                                                                    (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
-                                                                                                               (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
+                    (rowSums(D12^delta)-D1^delta*D2^delta)^2*
+                        (D1^(1+delta)*S1*(-1+theta)*
+                             (1+(-S1)^(1/delta)*(-1+theta)-
+                                  theta+S2^2*theta+S2^2*delta*theta)+
+                                      D2^(-delta)*(D1^delta*(-1+D2^delta)*S2*(1+delta)*theta*
+                              (-1+(1+S2+S2*delta)*theta)+D2^delta*
+                                  (1+theta*(-3+2*theta+S2*(1+delta)*
+                      (-2+(2+S2*delta)*theta))))*ub1^theta))/
+                          (S1^3*(1+delta*theta+(-S1)^(2/delta)*(1+delta)*theta-
+                                     (-S1)^(1/delta)*(1+theta+2*theta*delta))*ub1)
 
                         out <- gradCpl.u
 
@@ -221,17 +221,24 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
                         gradFun <- function(i, rho, df, u.quantile)
                             {
-                                Sigma <- vech2m(rho[i, ])
+                                Sigma <- vech2m(rho[i, ], diag = FALSE)
+
+                                if(!is.positivedefinite(Sigma))
+                                    {
+                                        out <- NA
+                                    }
+
+
                                 v <- df[i]
                                 x <- u.quantile[i, , drop = FALSE]
                                 mu <- 0
                                 q <- dim(Sigma)[1]
 
                                 C2 <- t(x-mu)%*%solve(Sigma)%*%(x-mu)
-                                logGradCpl.v <- (C2-q -(C2+v)*log((C2+v)/2)
+                                out <- (C2-q -(C2+v)*log((C2+v)/2)
                                                  +(C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
                                                      (2*(C2+v))
-                                retun(logGradCpl.v)
+                                return(out)
                             }
                         logGradCpl.df <- apply(matrix(1:nObs), 1,
                                                gradFun,
@@ -255,6 +262,13 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                         gradFun <- function(i, rho, df, u.quantile)
                             {
                                 Sigma <- vech2m(rho[i, ], diag = FALSE)
+
+                                if(!is.positivedefinite(Sigma))
+                                    {
+                                        out <- NA
+                                    }
+
+
                                 v <- df[i]
                                 x <- t(u.quantile[i, , drop = FALSE]) # col-vector
                                 mu <- 0
@@ -265,10 +279,10 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                                     (v+p)/2*(1+C0/v)^(-1)*
                                         (-solve(Sigma)%*%(x-mu)%*%t(x-mu)%*%solve(Sigma))/v
 
-                                logGradCpl.rho <- logGradCpl.Sigma[lower.tri(
+                                out <- logGradCpl.Sigma[lower.tri(
                                     logGradCpl.Sigma, diag = FALSE)]
 
-                                return(logGradCpl.rho)
+                                return(out)
                             }
                         logGradCpl.rho <- t(apply(matrix(1:nObs), 1,
                                                 gradFun,
@@ -327,13 +341,19 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                             {
                                 Sigma0 <- vech2m(rho[i, ], diag = FALSE)
                                 Sigma <- Sigma0[uIdx, uIdx]
+
+                                if(!is.positivedefinite(Sigma))
+                                    {
+                                        out <- NA
+                                    }
+
                                 q <- dim(Sigma)
                                 v <- df[i]
 
                                 C2 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
-                                gradLogCpl.x1 <- -(v+q)/2*C2^(-1)*
+                                out <- -(v+q)/2*C2^(-1)*
                                     1/v*(2*solve(Sigma)%*%(x-mu))
-                                return(gradLogCpl.u)
+                                return(out)
                             }
                         gradLogCpl.x1 <- t(apply(matrix(1:nObs), 1, FUN,
                                                  df = df, x = x, mu = mu,

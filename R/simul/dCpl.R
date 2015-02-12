@@ -87,13 +87,15 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                     {
                         Sigma = vech2m(rho[i, ], diag = FALSE)
 
-                        out <- try(dmvt(x = x[i, , drop = FALSE],
-                                        sigma = Sigma,
-                                        df = df[i], log = TRUE))
-                        if(is(out, "try-error"))
+                        if(!is.positivedefinite(Sigma))
                             {
                                 out <- NA
                             }
+
+
+                        out <- dmvt(x = x[i, , drop = FALSE],
+                                        sigma = Sigma,
+                                        df = df[i], log = TRUE)
 
                         return(out)
                     }

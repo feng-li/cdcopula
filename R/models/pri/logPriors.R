@@ -76,7 +76,11 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 
 ### intercept as special case. The intercept should alway be included.
                     priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
+
                     betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1,,drop = FALSE]#intercepts
+
+                    ## if(is(betaCurr, "try-error")) browser()
+
                     linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
                     if(tolower(priArgsCurr[["type"]]) == "custom")

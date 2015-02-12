@@ -42,7 +42,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
             donePercent <- round(iIter/nIter*100)
 
             TimeToGo <-  round(difftime(Sys.time(), Starting.time,
-                                        units = "hours")/iIter*(nIter-iIter), 2)
+                                        units = "hours")/(iIter-1)*(nIter-iIter), 2)
 
             if(iIter  == printIter[1])
                 {

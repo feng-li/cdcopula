@@ -116,7 +116,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
                             }
                         else # Do nothing and use user input
                             {
-                                Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, nPar))
+                                Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, nPar.ij))
                             }
 
                     }

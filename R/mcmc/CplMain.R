@@ -89,7 +89,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
             InitGood <- FALSE
             nLoopInit <- 0
-            maxLoopInit <- 3
+            maxLoopInit <- 1
 
             Mdl.Idx.training.sample <-
                 Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
@@ -331,17 +331,23 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
     ## The updating matrix
-
-    Starting.time <- Sys.time()
     UpdateMat <- parCplRepCaller(CplNM = CplNM,
                               parUpdate = MCMCUpdate,
                               parUpdateOrder = MCMCUpdateOrder)
     nInner <- nrow(UpdateMat)
+    Starting.time <- NA
 
     for(iUpdate in 1:(nInner*nIter))
         {
             iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
             iIter <- floor((iUpdate-1)/nInner)+1
+
+
+            if(iIter  == 2)
+                {
+                    ## Starting time after warming up
+                    Starting.time <- Sys.time()
+                }
 
             ##print(c(iUpdate, iInner, iIter))
 

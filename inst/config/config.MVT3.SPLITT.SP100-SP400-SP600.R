@@ -78,7 +78,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-200):nObsRaw
+nObsIdx <- (1 + nObsRaw-100):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -171,7 +171,7 @@ varSelArgs[[4]][["lambdaL"]] <- list(cand = 2:4,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 1000
+nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -204,7 +204,7 @@ MCMCUpdate[[3]][[4]] <- F
 
 
 MCMCUpdate[[4]][[1]] <- T
-MCMCUpdate[[4]][[2]] <- F
+MCMCUpdate[[4]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
