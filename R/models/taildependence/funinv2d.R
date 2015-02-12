@@ -65,9 +65,7 @@ funinv2d.tab <- function(x1, y, tabular)
             }
 
 
-        yMatTabFloor <- try(Mat[x1IdxFloor, ,drop = FALSE])
-
-        if(is(yMatTabFloor, "try-error")) browser()
+        yMatTabFloor <- Mat[x1IdxFloor, ,drop = FALSE]
 
         ## Find the indices of the closed values close to y's left and right side
         yTest <- matrix(y, nObs, nGrid2)
