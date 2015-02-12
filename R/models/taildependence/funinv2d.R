@@ -50,7 +50,7 @@ funinv2d.tab <- function(x1, y, tabular)
 
         ## Extra work to avoid under and over flow
         x1IdxFloor1 <- (x1IdxFloor < 1)
-        x1IdxFloor2 <- (x1 > nGrid1)
+        x1IdxFloor2 <- (x1IdxFloor > nGrid1)
 
 
         if(any(x1IdxFloor1))
@@ -63,7 +63,11 @@ funinv2d.tab <- function(x1, y, tabular)
                 ## Above the highest index
                 x1IdxFloor[x1IdxFloor2] <- nGrid1
             }
-        yMatTabFloor <- Mat[x1IdxFloor, ,drop = FALSE]
+
+
+        yMatTabFloor <- try(Mat[x1IdxFloor, ,drop = FALSE])
+
+        if(is(yMatTabFloor, "try-error")) browser()
 
         ## Find the indices of the closed values close to y's left and right side
         yTest <- matrix(y, nObs, nGrid2)
