@@ -300,7 +300,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                     {
                         ## Reorder the parameters.
                         q <- dim(u)[2]
-                        imar <- substr(cplCaller, 2, nchar(cplCaller))
+                        imar <- as.numeric(substr(cplCaller, 2, nchar(cplCaller)))
 
                         uIdx <- 1:q
                         uIdx[1] <- imar
@@ -308,7 +308,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
                         u <- u[, uIdx]
                         x <- u.quantile[, uIdx]
-                        x1 <- u.quantile[1, ]
+                        x1 <- x[, 1]
                         mu <- 0
 
                         ## The t copula and related copulas EQ.(6)
@@ -316,28 +316,39 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                         f1x1 <- -(x1-mu)*df*(1+df)*(df/(df+(x1-mu)^2))^(-1+(1+df)/2)/
                             ((df+(x1-mu)^2)^2*sqrt(df)*beta(df/2, 1/2)) # n-by-q
 
+
+                        ## The first marginal CDF derivative with respect to x1.
                         F1x1 <- matrix(NA, nObs, 1) # n-by-1
-                        I0 <- (x<mu)
+                        I0 <- (x1<mu)
                         I <- !I0
                         if(any(I))
                             {
-                                F1x1.I <- -(2*(x1-mu)^3/((x1-mu)^2+df)^2-2*(x1-mu)/
-                                               ((x1-mu)^2+df))* (1-(x1-mu)^2/
-                                                                     ((x1-mu)^2+df))^(-1+df/2)/
-                                        (2*sqrt((x1-mu)^2/((x1-mu)^2+df))*beta(1/2, df/2))
+                                df.1 <- df[I]
+                                x1.1 <- x1[I]
+
+                                F1x1.I <- -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/
+                                                ((x1.1-mu)^2+df.1))*
+                                  (1-(x1.1-mu)^2/((x1.1-mu)^2+df.1))^(-1+df.1/2)/
+                                      (2*sqrt((x1.1-mu)^2/((x1.1-mu)^2+df.1))*
+                                           beta(1/2, df.1/2))
 
                                 F1x1[I] <- F1x1.I
                             }
 
                         if(any(I0))
                             {
-                                F1X.I0 <- -(x1-mu)*df*(df/((x1-mu)^2+df))^(-1+df/2)/
-                                    ((x1-mu)^2+df)^2/sqrt(1-df/((x1-mu)^2+df))/beta(df/2, 1/2)
+                                df.0 <- df[I0]
+                                x1.0 <- x1[I0]
 
-                                F1X[I0] <- F1X.I
+                                F1X.I0 <- -(x1.0-mu)*df.0*
+                                    (df.0/((x1.0-mu)^2+df.0))^(-1+df.0/2)/((x1.0-mu)^2+df.0)^2/
+                                        sqrt(1-df.0/((x1.0-mu)^2+df.0))/beta(df.0/2, 1/2)
+
+                                F1x1[I0] <- F1X.I0
                             }
 
 
+                        ## The gradient for copula with respect to x1.
                         FUN <- function(i, x, mu, df, rho, uIdx)
                             {
                                 Sigma0 <- vech2m(rho[i, ], diag = FALSE)
@@ -348,12 +359,13 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                                         out <- NA
                                     }
 
-                                q <- dim(Sigma)
+                                p <- dim(Sigma)[1]
                                 v <- df[i]
+                                x_i <- matrix(x[i, ])
 
-                                C2 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
-                                out <- -(v+q)/2*C2^(-1)*
-                                    1/v*(2*solve(Sigma)%*%(x-mu))
+                                C2 <- as.vector(t(x_i-mu)%*%solve(Sigma)%*%(x_i-mu))
+                                out <- -(v+p)/2*C2^(-1)*
+                                    1/v*(2*solve(Sigma)%*%(x_i-mu))
                                 return(out)
                             }
                         gradLogCpl.x1 <- t(apply(matrix(1:nObs), 1, FUN,
