@@ -230,11 +230,12 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
 
                                 v <- df[i]
-                                x <- u.quantile[i, , drop = FALSE]
+                                x <- matrix(u.quantile[i, ]) # col-vector
                                 mu <- 0
                                 q <- dim(Sigma)[1]
 
-                                C2 <- t(x-mu)%*%solve(Sigma)%*%(x-mu)
+                                C2 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
+
                                 out <- (C2-q -(C2+v)*log((C2+v)/2)
                                                  +(C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
                                                      (2*(C2+v))
@@ -270,7 +271,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
 
                                 v <- df[i]
-                                x <- t(u.quantile[i, , drop = FALSE]) # col-vector
+                                x <- matrix(u.quantile[i, ]) # col-vector
                                 mu <- 0
                                 p <- dim(Sigma)[1]
 

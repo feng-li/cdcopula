@@ -49,8 +49,19 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
                             ## The probability is recycled if necessary
                             prob <- priArgsCurr[["prob"]]
 
-                            ## Variable section candidates
-                            candIdx <- varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+                            ## Variable section candidates.
+                            if(dim(betaIdxCurr)[1] == 1)
+                                {
+                                    ## Only intercept is in, do not allow for variable
+                                    ## selection.
+                                    candIdx <- NULL
+                                }
+                            else
+                                {
+                                    candIdx <- varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+                                }
+
+
                             if(length(candIdx)>0)
                                 {
                                     probMat <- matrix(prob, length(candIdx), nPar)

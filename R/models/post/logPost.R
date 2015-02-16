@@ -112,46 +112,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
     MargisNM <- CompNM[CompNM  != CplNM]
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
-    ## THE MARGINAL LIKELIHOODS
-    densCaller <- list()
-    for(CompCaller in MargisNM)
-        {
-            if(CompCaller %in% MargisUpNM)
-                {
-                    if(tolower(MCMCUpdateStrategy) == "joint")
-                        {
-                            densCaller[[CompCaller]] <- c("u", "d")
-                        }
-                    else if(tolower(MCMCUpdateStrategy) == "twostage")
-                        {
-                            ## Stage two of the two stage approach
-                            densCaller[[CompCaller]] <- c("u", "d")
-                        }
-                    else if(tolower(MCMCUpdateStrategy) == "margin")
-                        {
-                            densCaller[[CompCaller]] <- c(NA, "d")
-                        }
-                    else
-                        {
-                            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
-                                       "not implemented!"))
-                        }
-                }
-            else
-                {
-                    if(any(is.na(Mdl.u)))
-                        {
-                            if(tolower(MCMCUpdateStrategy) == "joint")
-                                {
-                                    densCaller[[CompCaller]] <- c("u", "d")
-                                }
-                            else
-                                {
-                                    stop("Two-stage updating without providing \"u\" is not possible!")
-                                }
-                       }
-                }
-        }
+
+
 
     ## THE COPULA LOG LIKELIHOOD
     if(tolower(MCMCUpdateStrategy) == "joint")
@@ -180,6 +142,51 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
             stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
                        "not implemented!"))
         }
+
+
+
+    ## THE MARGINAL LIKELIHOODS
+    densCaller <- list()
+    for(CompCaller in MargisNM)
+        {
+            if(CompCaller %in% MargisUpNM)
+                {
+                    if(tolower(MCMCUpdateStrategy) == "joint")
+                        {
+                            densCaller[[CompCaller]] <- c("u", "d")
+                        }
+                    else if(tolower(MCMCUpdateStrategy) == "twostage")
+                        {
+                            ## Stage two of the two stage approach
+                            densCaller[[CompCaller]] <- c("u", "d")
+                        }
+                    else if(tolower(MCMCUpdateStrategy) == "margin")
+                        {
+                            densCaller[[CompCaller]] <- c(NA, "d")
+                        }
+                    else
+                        {
+                            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                                       "not implemented!"))
+                        }
+                }
+            else
+                {
+                    if(evalCpl == TRUE && any(is.na(Mdl.u)))
+                        {
+                            ## if(tolower(MCMCUpdateStrategy) == "joint")
+                            ##     {
+                            densCaller[[CompCaller]] <- c("u", "d")
+                            ##     }
+                            ## else
+                            ##     {
+                            ##         browser()
+                            ##         stop("Two-stage updating without providing \"u\" is not possible!")
+                            ##     }
+                       }
+                }
+        }
+
 ###----------------------------------------------------------------------------
 ### UPDATING THE LIKELIHOOD
 ###----------------------------------------------------------------------------
@@ -192,7 +199,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                 type = MargisTypes[which(MargisNM == CompCaller)],
                 par = Mdl.par[[CompCaller]],
                 densCaller = densCaller[[CompCaller]])
-                    Mdl.u[, CompCaller] <- Mdl.ud[["u"]]
 
             if("u" %in% densCaller[[CompCaller]])
                 {

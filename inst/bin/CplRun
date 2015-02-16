@@ -141,15 +141,16 @@ for(iLPDS in LPDS)
                     CplOut = OUT.CplCross,
                     pred = iLPDS,
                     Mdl.Idx.testing = crossValidIdx[["testing"]])
-            } else
-                {
-                    logPredLst <- mapply(
-                        FUN = logPredDens,
-                        CplOut = OUT.CplCross,
-                        pred = iLPDS,
-                        Mdl.Idx.testing = crossValidIdx[["testing"]],
-                        SIMPLIFY = FALSE)
-                }
+            }
+        else
+            {
+                logPredLst <- mapply(
+                    FUN = logPredDens,
+                    CplOut = OUT.CplCross,
+                    pred = iLPDS,
+                    Mdl.Idx.testing = crossValidIdx[["testing"]],
+                    SIMPLIFY = FALSE)
+            }
 
         LPDS.OUT[[iLPDS]] <- logPredDensScore(logPredLst = logPredLst)
     }
