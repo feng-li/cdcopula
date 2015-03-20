@@ -41,7 +41,7 @@
 ##' @return "list".  The list should contain the updated components.
 ##'
 ##' @references Li 2012
-##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Mon Jan 05 22:58:03 CST 2015
 logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
@@ -79,6 +79,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
+    # print(Mdl.beta)
+
     Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
                             Mdl.parLink = Mdl.parLink,
                             Mdl.beta = Mdl.beta,
@@ -104,7 +106,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
     CompNM <- names(Mdl.beta)
 
-    ## Allocate the output structure
+    ## Allocate the output structure: Margins + Copula (NA)
     Mdl.logLik <- cbind(Mdl.d, NA)
     colnames(Mdl.logLik) <- CompNM
 
@@ -183,7 +185,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                             ##         browser()
                             ##         stop("Two-stage updating without providing \"u\" is not possible!")
                             ##     }
-                       }
+                        }
                 }
         }
 
