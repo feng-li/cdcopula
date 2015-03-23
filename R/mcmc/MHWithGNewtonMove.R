@@ -198,8 +198,6 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       Mdl.betaIdx.prop <- Mdl.betaIdx.curr
       Mdl.betaIdx.prop[[CompCaller]][[parCaller]] <- betaIdx.prop
 
-      browser()
-
       beta.NTPropRev <- GNewtonMove(
           propArgs = propArgs,
           varSelArgs = varSelArgs,

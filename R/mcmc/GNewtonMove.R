@@ -30,8 +30,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                         Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
-  browser()
-
+  require(MASS)
 
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
@@ -119,8 +118,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
           ## print(g.num)
 
-          ## Define gradient accuracy coefficient. The TRUE coefficient should be one
-          ## if analytical and numerical methods are of the same.
+          ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
+          ## analytical and numerical methods are of the same.
           g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
           if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
             {
@@ -150,12 +149,9 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
       ## Gradient and Hessian for the likelihood
       logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
-
-
       logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod) # diag elements only
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
-
       logPriHess.prop <- diag(as.vector(hessApprox(logPriGrad.prop, hessMethod)),
                               nrow = length(logPriGrad.prop))
       ## logPriHess.prop <- logPriGradHess.prop[["HessObs"]] # pp-by-pp
@@ -168,25 +164,22 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
       ## The selected covariates in the proposed and current draw
 
-      ## mu  =  X%*%beta where X is p-by-q,  beta is q-by-lq. we have
-      ## vec(mu)  =  (I %k% X) vec(beta). This generalized Villani (2009)'s
+      ## Let mu = X%*%beta where X is n-by-q, beta is q-by-lq. Then we have "vec(mu) = (I
+      ## %k% X) vec(beta)" where I is lq-by-lq. This generalized Villani (2009)'s
       ## generalized Newton algorithm that allows mu to be a matrix and
+
       nPar <- dim(betaCurr)[2]
+      X.KR <- kronecker(diag1(nPar), X) # (n*lq)-by-(q*lq)
 
-      X.KR <- kronecker(diag1(nPar), X)
-
-      betaIdxPropRep <- unlist(apply(betaIdxProp, 2, function(x) which(x == TRUE)))
-      betaIdxCurrRep <- unlist(apply(betaIdxCurr, 2, function(x) which(x == TRUE)))
-
-      X.prop <- X.KR[ , betaIdxPropRep, drop = FALSE]# n-by-pp
-      X.curr <- X.KR[ , betaIdxCurrRep, drop = FALSE]# n-by-pp
+      X.prop <- X.KR[ , betaIdxProp, drop = FALSE]# n-by-pp
+      X.curr <- X.KR[ , betaIdxCurr, drop = FALSE]# n-by-pp
 
 
       ## The gradient and Hessian in the general Newton's update
-      gradObs.pp <- matrix(rowSums(Md(t(X.prop), logLikGrad.prop)) + logPriGrad.pp) # pp-by-1
+      gradObs.pp <- t(X.prop)%*%matrix(logLikGrad.prop) + logPriGrad.pp # pp-by-1
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
-
+      HessObs.pp.Inv <- try(ginv(HessObs.pp), silent = TRUE) # pp-by-pp
 
       ## TODO: Testing if a subset of gradients works, seems not
       ## nObs <- dim(X)[1]
@@ -200,10 +193,8 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       ## plot(sort(gradObs.pp.sample), gradObs.pp[order(gradObs.pp.sample)], pch = 20,
       ##      type = "b")
 
-      ## HessObsInv.pp <- qr.solve(HessObs.pp)
-      HessObsInv.pp <- try(qr.solve(HessObs.pp), silent = TRUE) # pp-by-pp
 
-      if(is(HessObsInv.pp, "try-error"))
+      if(is(HessObs.pp.Inv, "try-error"))
         {
           errorFlag <- TRUE
           break
@@ -212,21 +203,13 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       ## The general Newton's Update
       if((iStep <= kSteps))
         {
-          ## if(iStep == 2) browser()
           ## update the proposed parameters via the general Newton formula
-          ## if(any(is.na(gradObs.pp))) browser()
+          param <- HessObs.pp.Inv%*%(HessObs.pc%*%param - gradObs.pp)
 
-          param <- HessObsInv.pp%*%(HessObs.pc%*%param - gradObs.pp)
-
-          ## param <- param - diag(length(gradObs.pp))%*%gradObs.pp
-
-          ## print(HessObsInv.pp%*%gradObs.pp)
-
-          ## Update the parameter with current updated results.
-          ## If variable selection did not chose pth covariate,  then the pth
-          ## coefficient is zero naturally. After the first
-          ## variable-dimensional move, the algorithm switches to usual
-          ## Newton's move.
+          ## Update the parameter with current updated results. If variable selection did
+          ## not chose pth covariate, then the pth coefficient is zero naturally. After
+          ## the first variable-dimensional move, the algorithm switches to usual Newton's
+          ## move.
           betaIdxCurr <- betaIdxProp
 
           ## the full parameters including zeros.
@@ -236,7 +219,6 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
           ## Update the staticCache
           ## Initial update staticCache for current Newton move
-
 
           staticCache.curr <- logPost(
               CplNM = CplNM,
@@ -261,7 +243,7 @@ GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           out <- list(param = param,
                       gradObs = gradObs.pp,
                       HessObs = HessObs.pp,
-                      HessObsInv = HessObsInv.pp,
+                      HessObsInv = HessObs.pp.Inv,
                       staticCache = staticCache.curr,
                       errorFlag = errorFlag)
           ## print(gradObs.pp)
