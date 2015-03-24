@@ -109,8 +109,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                                         1:ncol(obj.par),
                                         each = ncol(obj)/ncol(obj.par)), colnames(obj),
                                                                  sep = "."))
-                                    cat("\n", i, j, "(", donePercent, "% )\n")
-                                    cat(rep("-", dev.width-1), "\n", sep = "")
+
+                                    cat("\n", rep("-", dev.width-1), "\n", sep = "")
+                                    cat(i, j, "(", donePercent, "% )\n")
                                     print(obj.par)
                                     cat("\n")
                                     print(obj)

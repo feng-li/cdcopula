@@ -78,7 +78,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-100):nObsRaw
+nObsIdx <- (1 + nObsRaw-30):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -100,8 +100,8 @@ Mdl.X[[3]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
-Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:5, drop = FALSE]
+Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
@@ -188,24 +188,24 @@ track.MCMC <- TRUE
 
 ## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- F
-MCMCUpdate[[1]][[2]] <- F
-MCMCUpdate[[1]][[3]] <- F
-MCMCUpdate[[1]][[4]] <- F
+MCMCUpdate[[1]][[1]] <- T
+MCMCUpdate[[1]][[2]] <- T
+MCMCUpdate[[1]][[3]] <- T
+MCMCUpdate[[1]][[4]] <- T
 
-MCMCUpdate[[2]][[1]] <- F
-MCMCUpdate[[2]][[2]] <- F
-MCMCUpdate[[2]][[3]] <- F
-MCMCUpdate[[2]][[4]] <- F
+MCMCUpdate[[2]][[1]] <- T
+MCMCUpdate[[2]][[2]] <- T
+MCMCUpdate[[2]][[3]] <- T
+MCMCUpdate[[2]][[4]] <- T
 
-MCMCUpdate[[3]][[1]] <- F
-MCMCUpdate[[3]][[2]] <- F
-MCMCUpdate[[3]][[3]] <- F
-MCMCUpdate[[3]][[4]] <- F
+MCMCUpdate[[3]][[1]] <- T
+MCMCUpdate[[3]][[2]] <- T
+MCMCUpdate[[3]][[3]] <- T
+MCMCUpdate[[3]][[4]] <- T
 
 
 MCMCUpdate[[4]][[1]] <- T
-MCMCUpdate[[4]][[2]] <- F
+MCMCUpdate[[4]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -333,12 +333,11 @@ burnin <- 0.1 # zero indicates no burn-in
 ###----------------------------------------------------------------------------
 
 ## PRIOR FOR THE COPULA PARAMETERS
-##-----------------------------------------------------------------------------
-## NOTE: The variable are recycled if needed. For example indicators$prob can
-## be a scaler or a vector with same length of variable section
-## candidates. There might be connections between parameters in the models but
-## is will not affect the prior settings on the coefficients as long as we use
-## a dynamic link function.
+## -----------------------------------------------------------------------------
+## NOTE: The variable are recycled if needed. For example indicators$prob can be a scaler
+## or a vector with same length of variable section candidates. There might be connections
+## between parameters in the models but is will not affect the prior settings on the
+## coefficients as long as we use a dynamic link function.
 
 priArgs <- MdlDataStruc
 priArgs[[1]][["mu"]] <-
