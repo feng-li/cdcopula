@@ -254,8 +254,6 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
             ## The chain gradient
             out <- logGradCpl.df*(1/gradCpl.lambda.df) # n-by-lq
-            out <- 2*out ## FIXME: for some reason, the analytical result is always 1/2 of
-            ## the numerical result. need further verification.
 
           }
         else if(tolower(cplCaller) == "tau")
@@ -264,11 +262,11 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
             gradFun <- function(i, rho, df, u.quantile)
               {
                 Sigma <- vech2m(rho[i, ], diag = FALSE)
-                if(!is.positivedefinite(Sigma))
-                  {
-                    out <- NA
-                    return(out)
-                  }
+                ## if(!is.positivedefinite(Sigma))
+                ##   {
+                ##     out <- NA
+                ##     return(out)
+                ##   }
                 v <- df[i]
                 x <- matrix(u.quantile[i, ]) # col-vector
                 mu <- 0
@@ -293,6 +291,11 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
             gradCpl.tau.rho <- 2/(pi*sqrt(1-rho^2)) # n-by-lq
 
             out <- logGradCpl.rho*(1/gradCpl.tau.rho) # n-by-lq
+            ## if(is(out, "try-error")) browser()
+
+            out <- 2*out ## FIXME: for some reason, the analytical result is always 1/2 of
+            ## the numerical result. need further verification.
+
             ## browser()
           }
         else

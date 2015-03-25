@@ -298,7 +298,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
       return(list(errorFlag = TRUE))
     }
 
-browser()
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LINK FUNCTION
 ###----------------------------------------------------------------------------
@@ -320,7 +319,7 @@ browser()
 ###----------------------------------------------------------------------------
 
   ## The gradient for the likelihood,  n-by-1
-  ## browser()
+  browser()
 
   logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
 

@@ -204,7 +204,7 @@ MCMCUpdate[[3]][[3]] <- F
 MCMCUpdate[[3]][[4]] <- F
 
 
-MCMCUpdate[[4]][[1]] <- T
+MCMCUpdate[[4]][[1]] <- F
 MCMCUpdate[[4]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc
