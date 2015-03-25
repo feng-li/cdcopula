@@ -47,8 +47,7 @@ parCplRep2Std <- function(CplNM, parCplRep)
 
         FUN <- function(x1, x2)
           {
-            ## x1 = rho
-            ## x2  =  df
+            ## x1 = rho; x2  =  df
 
             parCpl <- list(rho = x1, df = x2)
             lambda(CplNM = "mvt", parCpl = parCpl)[["lambdaL"]]
@@ -65,6 +64,8 @@ parCplRep2Std <- function(CplNM, parCplRep)
         ## In multivariate case, lambda_ij = f(rho_ij, df) where df is independent of i
         ## and j. To make the calculate stable. let df_ij = df and make the mean of
         ## them. See Demarta & McNeil (2005) and Hult & Lindskog (2002)
+
+        ## browser()
 
         df <- rowMeans(df0) # n-by-1
 

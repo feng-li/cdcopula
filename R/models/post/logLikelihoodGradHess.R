@@ -54,7 +54,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
   names(MargisTypes) <- MargisNM
 
 ###----------------------------------------------------------------------------
-### GRADIENT FRACTION IN THE MARGINAL LIKELIHOOD
+### SPLIT THE GRADIENT INTO COPULA AND MARGINAL ACCORDING TO MCMC STRATEGY
 ###----------------------------------------------------------------------------
   if(CompCaller != CplNM)
     {
@@ -99,6 +99,9 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
       evalMargi <- FALSE
       densCaller <- NA
     }
+###----------------------------------------------------------------------------
+### GRADIENT FRACTION IN THE MARGINAL LIKELIHOOD
+###----------------------------------------------------------------------------
 
   if(evalMargi == TRUE)
     {
@@ -123,8 +126,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
           ## parameters NOTE: The numeric gradient depends on numDeriv package
 
           require(numDeriv)
-          MargiModelGradNumFun <- function(
-              x, parCaller, parCurr, yCurr, typeCurr)
+          MargiModelGradNumFun <- function(x, parCaller, parCurr, yCurr, typeCurr)
             {
               parCurr[[parCaller]] <- x
               MargiLogLikObs <- MargiModel(
@@ -160,7 +162,8 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
         }
 
       ## Evaluate if the numeric and analytic gradients are consistent
-      plot(sort(MargiGradObs.ana), MargiGradObs.num[order(MargiGradObs.ana)],
+      plot(sort(MargiGradObs.ana),
+           MargiGradObs.num[order(MargiGradObs.ana)],
            type = "l", pch = 20, main = chainCaller)
 
       staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
@@ -207,61 +210,76 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
           ## is used due to the precision.
 
           require(numDeriv)
-          logCplGradNumFun <- function(x, u,  CompCaller, parCaller, cplCaller,
+          logCplGradNumFun <- function(x, u, iRun, CompCaller, parCaller, cplCaller,
                                        CplNM, parCplRep, staticCache)
             {
               if(tolower(cplCaller) %in% paste("u", 1:ncol(u), sep = ""))
                 {
-                  ## Calling the marginal CDF u1, u2
-                  ## u <- staticCache$Mdl.u
-                  u[, CompCaller] <- x
+                  u[iRun] <- x
                 }
               else
-                {
-                  ## Calling copula parameters
-                  parCplRep[[parCaller]] <- x
+                { ## Calling copula parameters
+                  parCplRep[[parCaller]][iRun] <- x
                 }
-              out <- logCplLik(u = u, CplNM = CplNM,
-                               parCplRep = parCplRep,
+
+              nObs <- nrow(u)
+              iRunInRow = iRun%%nObs
+              iRunInRow[iRunInRow == 0] <- nObs
+
+              ## if(iRun == 30) browser()
+              out <- logCplLik(CplNM = CplNM,
+                               u = u[iRunInRow, , drop = FALSE],
+                               parCplRep = lapply(parCplRep, function(x) x[iRunInRow, , drop = FALSE]),
                                sum = FALSE)
               return(out)
             }
 
-          nObs <- length(Mdl.Y[[1]])
           nDim <- length(Mdl.Y)
+          if(tolower(cplCaller) %in% paste("u", 1:nDim, sep = ""))
+            { ## Calling the marginal CDF u1, u2
+              nDimGrad <- 1
+            }
+          else
+            { ## Calling copula parameters
+              nDimGrad <- nDim
+            }
 
-          logCplGradObs.num <- matrix(NA, nObs, 1)
-          for(i in 1:nObs)
+          nObs <- length(Mdl.Y[[1]])
+          logCplGradObs.num <- matrix(NA, nObs, nDimGrad)
+
+          for(iRun in 1:(nObs*nDimGrad))
             {
               if(tolower(cplCaller) %in% paste("u", 1:nDim, sep = ""))
                 {
-                  ## Calling the marginal CDF u1, u2
-                  xCurr <- staticCache$Mdl.u[i, CompCaller]
+                  ## Calling the marginal CDF u_i
+                  xCurr <- staticCache$Mdl.u[iRun, CompCaller]
                 }
               else
                 {
                   ## Calling copula parameters
-                  xCurr <- Mdl.par[[CompCaller]][[parCaller]][i]
+                  xCurr <- Mdl.par[[CompCaller]][[parCaller]][iRun]
                 }
 
-              gradTry <- try(grad(
-                  func = logCplGradNumFun,
-                  x = xCurr,
-                  u = staticCache$Mdl.u[i, , drop = FALSE],
-                  CompCaller = CompCaller,
-                  parCaller = parCaller,
-                  cplCaller = cplCaller,
-                  CplNM =  CplNM,
-                  parCplRep = lapply(Mdl.par[[CplNM]], function(x, i)x[i], i = i),
-                  staticCache = staticCache), silent = TRUE)
+              gradTry <- try(
+                grad(
+                    func = logCplGradNumFun,
+                    x = xCurr,
+                    u = staticCache$Mdl.u,
+                    iRun = iRun,
+                    CompCaller = CompCaller,
+                    parCaller = parCaller,
+                    cplCaller = cplCaller,
+                    CplNM =  CplNM,
+                    parCplRep = Mdl.par[[CplNM]],
+                    staticCache = staticCache), silent = TRUE)
 
               if(is(gradTry, "try-error"))
                 {
-                  logCplGradObs.num[i] <- NA
+                  logCplGradObs.num[iRun] <- NA
                 }
               else
                 {
-                  logCplGradObs.num[i] <- gradTry
+                  logCplGradObs.num[iRun] <- gradTry
                 }
             }
 
@@ -280,8 +298,7 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
       return(list(errorFlag = TRUE))
     }
 
-
-
+browser()
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LINK FUNCTION
 ###----------------------------------------------------------------------------

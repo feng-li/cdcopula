@@ -188,20 +188,20 @@ track.MCMC <- TRUE
 
 ## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- T
-MCMCUpdate[[1]][[2]] <- T
-MCMCUpdate[[1]][[3]] <- T
-MCMCUpdate[[1]][[4]] <- T
+MCMCUpdate[[1]][[1]] <- F
+MCMCUpdate[[1]][[2]] <- F
+MCMCUpdate[[1]][[3]] <- F
+MCMCUpdate[[1]][[4]] <- F
 
-MCMCUpdate[[2]][[1]] <- T
-MCMCUpdate[[2]][[2]] <- T
-MCMCUpdate[[2]][[3]] <- T
-MCMCUpdate[[2]][[4]] <- T
+MCMCUpdate[[2]][[1]] <- F
+MCMCUpdate[[2]][[2]] <- F
+MCMCUpdate[[2]][[3]] <- F
+MCMCUpdate[[2]][[4]] <- F
 
-MCMCUpdate[[3]][[1]] <- T
-MCMCUpdate[[3]][[2]] <- T
-MCMCUpdate[[3]][[3]] <- T
-MCMCUpdate[[3]][[4]] <- T
+MCMCUpdate[[3]][[1]] <- F
+MCMCUpdate[[3]][[2]] <- F
+MCMCUpdate[[3]][[3]] <- F
+MCMCUpdate[[3]][[4]] <- F
 
 
 MCMCUpdate[[4]][[1]] <- T

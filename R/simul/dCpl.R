@@ -93,7 +93,6 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                 out <- NA
               }
 
-
             out <- dmvt(x = x[i, , drop = FALSE],
                         sigma = Sigma,
                         df = df[i], log = TRUE)
