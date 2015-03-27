@@ -35,8 +35,9 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
-logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
-                                  Mdl.beta, Mdl.betaIdx, parUpdate, varSelArgs,staticCache,
+logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
+                                  Mdl.beta, Mdl.betaIdx, parUpdate, varSelArgs,
+                                  staticCache,
                                   gradMethods = c("analytic", "numeric")[1:2],
                                   MCMCUpdateStrategy)
 {
@@ -49,7 +50,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
   Mdl.par <- staticCache[["Mdl.par"]]
 
   CompNM <- names(Mdl.beta)
-  ## CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
   MargisNM <- CompNM[(CompNM  != CplNM)]
   names(MargisTypes) <- MargisNM
 
@@ -65,7 +65,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
 
           evalMargi <- TRUE
           densCaller <- c("u")
-
         }
       else if(tolower(MCMCUpdateStrategy) == "twostage")
         {
@@ -89,7 +88,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
           stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
                      "not implemented!"))
         }
-
     }
   else
     {
@@ -113,11 +111,11 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
       if("analytic" %in% tolower(gradMethods))
         {
           MargiGradObs.ana <- MargiModelGrad(
-              par = parCurr,
-              y = yCurr,
-              type = typeCurr,
-              parCaller = parCaller,
-              densCaller = densCaller)
+                  par = parCurr,
+                  y = yCurr,
+                  type = typeCurr,
+                  parCaller = parCaller,
+                  densCaller = densCaller)
           MargiGradObs <- MargiGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))
@@ -130,9 +128,9 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
             {
               parCurr[[parCaller]] <- x
               MargiLogLikObs <- MargiModel(
-                  par = parCurr,
-                  y = yCurr,
-                  type = typeCurr)$u
+                      par = parCurr,
+                      y = yCurr,
+                      type = typeCurr)$u
               out <- MargiLogLikObs
               return(out)
             }
@@ -142,12 +140,12 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
           for(i in 1:nObs)
             {
               gradTry <- try(grad(
-                  func = MargiModelGradNumFun,
-                  x = parCurr[[parCaller]][i],
-                  parCaller = parCaller,
-                  parCurr = lapply(parCurr, function(x, i)x[i], i = i),
-                  yCurr = yCurr[i],
-                  typeCurr = typeCurr), silent = TRUE)
+                      func = MargiModelGradNumFun,
+                      x = parCurr[[parCaller]][i],
+                      parCaller = parCaller,
+                      parCurr = lapply(parCurr, function(x, i)x[i], i = i),
+                      yCurr = yCurr[i],
+                      typeCurr = typeCurr), silent = TRUE)
 
               if(is(gradTry, "try-error"))
                 {
@@ -167,13 +165,12 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
            type = "l", pch = 20, main = chainCaller)
 
       staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
-          y = yCurr,
-          type = typeCurr,
-          par = parCurr)[["u"]]
+              y = yCurr,
+              type = typeCurr,
+              par = parCurr)[["u"]]
     }
   else
-    {
-      ## Only update the gradient for copula parameters
+    { ## Only update the gradient for copula parameters
       ## Gradient Fraction in the copula component.
       MargiGradObs <- 1
     }
@@ -195,12 +192,12 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
 
           ## The gradient for the copula function. n-by-1
           logCplGradObs.ana <- logCplGrad(
-              CplNM = CplNM,
-              u = staticCache$Mdl.u,
-              parCplRep = Mdl.par[[CplNM]],
-              cplCaller = cplCaller,
-              Mdl.X = Mdl.X,
-              Mdl.beta = Mdl.beta)
+                  CplNM = CplNM,
+                  u = staticCache$Mdl.u,
+                  parCplRep = Mdl.par[[CplNM]],
+                  cplCaller = cplCaller,
+                  Mdl.X = Mdl.X,
+                  Mdl.beta = Mdl.beta)
           logCplGradObs <- logCplGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))
@@ -260,18 +257,17 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
                   xCurr <- Mdl.par[[CompCaller]][[parCaller]][iRun]
                 }
 
-              gradTry <- try(
-                grad(
-                    func = logCplGradNumFun,
-                    x = xCurr,
-                    u = staticCache$Mdl.u,
-                    iRun = iRun,
-                    CompCaller = CompCaller,
-                    parCaller = parCaller,
-                    cplCaller = cplCaller,
-                    CplNM =  CplNM,
-                    parCplRep = Mdl.par[[CplNM]],
-                    staticCache = staticCache), silent = TRUE)
+              gradTry <- try(grad(
+                      func = logCplGradNumFun,
+                      x = xCurr,
+                      u = staticCache$Mdl.u,
+                      iRun = iRun,
+                      CompCaller = CompCaller,
+                      parCaller = parCaller,
+                      cplCaller = cplCaller,
+                      CplNM =  CplNM,
+                      parCplRep = Mdl.par[[CplNM]],
+                      staticCache = staticCache), silent = TRUE)
 
               if(is(gradTry, "try-error"))
                 {
@@ -303,10 +299,10 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
 ###----------------------------------------------------------------------------
   ## The gradient for the link function n-by-1
   LinkGradObs <- parCplMeanFunGrad(
-      CplNM = CplNM,
-      Mdl.par = Mdl.par,
-      Mdl.parLink = Mdl.parLink,
-      chainCaller = chainCaller)
+          CplNM = CplNM,
+          Mdl.par = Mdl.par,
+          Mdl.parLink = Mdl.parLink,
+          chainCaller = chainCaller)
 
   ## Error checking
   if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
@@ -319,8 +315,6 @@ logLikelihoodGradHess <- function( CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink
 ###----------------------------------------------------------------------------
 
   ## The gradient for the likelihood,  n-by-1
-  browser()
-
   logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
 
   ## par(mfrow = c(1, 2))
