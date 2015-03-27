@@ -1,5 +1,4 @@
-##' Metropolis–Hastings algorithm with K-step Newton method with variable
-##' selection.
+##' Metropolis–Hastings algorithm with K-step Newton method with variable selection.
 ##'
 ##' Metropolis-Hastings with generalized Newton method
 ##' @param CplNM
@@ -17,10 +16,8 @@
 ##' @return "list"
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Initial: Thu Feb 17 14:03:14 CET 2011;
-##'       Current: Fri May 18 11:05:06 CEST 2012.
-##' DEPENDS: mvtnorm
-MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
+##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
+MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               Mdl.parLink, parUpdate, priArgs, varSelArgs,
                               propArgs, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
@@ -29,10 +26,6 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
-
-  ## Set a reject flag to handle unexpected situations. If TRUE, the proposal
-  ## is rejected anyway regardless of other situations.
-  MHUpdate <- "MH"
 
 ###----------------------------------------------------------------------------
 ### INITIAL COPY OF CURRENT VALUES
@@ -64,7 +57,6 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
 
-
   ## If variable selection is available, make a change proposal Otherwise no variable
   ## selection.
   if(length(varSelCand) > 0)
@@ -73,9 +65,9 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         {
           ## Binomial proposal a small subset
           betaIdx.propCandIdx <- which(rbinom(
-              n = length(varSelCand),
-              size = 1L,
-              prob = betaIdxArgs$prob) == 1L)
+                  n = length(varSelCand),
+                  size = 1L,
+                  prob = betaIdxArgs$prob) == 1L)
 
           if(length(betaIdx.propCandIdx) != 0)
             {
@@ -101,48 +93,52 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       VSProp <- NULL
     }
 
+  ## The jump density for the variable selection indicators. TODO: Add adaptive scheme
 
-
-  ## The jump density for the variable selection indicators
-  ## TODO: Add adaptive scheme
   logJump.Idx.currATprop <- 1
   logJump.Idx.propATcurr <- 1
 
-
 ###----------------------------------------------------------------------------
-### LOOP OVER THE MH SCHEMES.
+### INITIALIZING THE MH SCHEMES.
 ###----------------------------------------------------------------------------
-  ## If variable selection is proposed,  add an extra MHNewton at the
-  ## beginning,  else the usual update without variable selection,
-  ## i.e. betaIdx.prop = betaIdx.curr.
 
+  ## Initially we assume there is only mh step.
+  MHUpdate <- "MH"
+
+  ## If variable selection (VS) is proposed, add an extra MH step with VS at the
+  ## beginning. otherwise we do the usual update without variable selection,
+  ## i.e. betaidx.prop = betaidx.curr.
   MHUpdate <- c(VSProp, MHUpdate)
+
+  ## For each mh step, we obtain an acceptance probability
   nMH <- length(MHUpdate)
-  errorFlags <- rep(FALSE, nMH)
   accept.probs <- rep(NA, nMH)
 
+  ## Set a reject flag to handle unexpected situations. If TRUE, the proposal is rejected
+  ## anyway regardless of other situations.
+  errorFlags <- rep(FALSE, nMH)
+
+###----------------------------------------------------------------------------
+### METROPOLIS-HASTINGS ALGORITHM
+###----------------------------------------------------------------------------
   for(iMH in 1:nMH)
     {
-###----------------------------------------------------------------------------
-### PROPOSAL A DRAW VIA K-STEP NEWTON'S METHOD
-###----------------------------------------------------------------------------
-
       ## Newton method to approach the posterior based on the current draw
       beta.NTProp <- GNewtonMove(
-          propArgs = propArgs,
-          varSelArgs = varSelArgs,
-          priArgs = priArgs,
-          betaIdxProp = betaIdx.prop,
-          parUpdate = parUpdate,
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta.curr,
-          Mdl.betaIdx = Mdl.betaIdx.curr,
-          MargisTypes = MargisTypes,
-          staticCache = staticCache.curr,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)
+              propArgs = propArgs,
+              varSelArgs = varSelArgs,
+              priArgs = priArgs,
+              betaIdxProp = betaIdx.prop,
+              parUpdate = parUpdate,
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.parLink = Mdl.parLink,
+              Mdl.beta = Mdl.beta.curr,
+              Mdl.betaIdx = Mdl.betaIdx.curr,
+              MargisTypes = MargisTypes,
+              staticCache = staticCache.curr,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
 
       ## Check if it is a good proposal
       if(beta.NTProp$errorFlag ## ||
@@ -170,26 +166,23 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.1
       ## if(all(beta.prop.sigma<0.01)) cat("beta.prop.sigma too small")
 
-
       staticCache.prop <- beta.NTProp[["staticCache"]]
-
 
       if(tolower(beta.prop.type) == "mvt")
         {
+          ## require("mvtnorm")
           ## The proposal parameters block
           beta.prop.df <- beta.propArgs[["df"]]
           beta.prop <- beta.prop.mean + rmvt(
-              sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-              n = 1, df = beta.prop.df)
+                  sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
+                  n = 1, df = beta.prop.df)
         }
-      ## }
 
 ###----------------------------------------------------------------------------
-### REVERSE OF THE NEWTON METHOD
+### REVERSE PROBABILITY OF THE PROPOSALS
 ###----------------------------------------------------------------------------
 
       ## Newton method to approach the posterior for the proposed draw
-
       beta.prop.full <- matrix(0, nCovs, nPar)
       beta.prop.full[betaIdx.prop] <- beta.prop
       Mdl.beta.prop <- Mdl.beta.curr
@@ -199,20 +192,20 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       Mdl.betaIdx.prop[[CompCaller]][[parCaller]] <- betaIdx.prop
 
       beta.NTPropRev <- GNewtonMove(
-          propArgs = propArgs,
-          varSelArgs = varSelArgs,
-          priArgs = priArgs,
-          betaIdxProp = betaIdx.curr,
-          parUpdate = parUpdate,
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta.prop,
-          Mdl.betaIdx = Mdl.betaIdx.prop,
-          MargisTypes = MargisTypes,
-          staticCache = staticCache,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)
+              propArgs = propArgs,
+              varSelArgs = varSelArgs,
+              priArgs = priArgs,
+              betaIdxProp = betaIdx.curr,
+              parUpdate = parUpdate,
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.parLink = Mdl.parLink,
+              Mdl.beta = Mdl.beta.prop,
+              Mdl.betaIdx = Mdl.betaIdx.prop,
+              MargisTypes = MargisTypes,
+              staticCache = staticCache,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
 
       if(beta.NTPropRev$errorFlag ## ||
          ## any(is.na(beta.prop.sigma)) ||
@@ -227,84 +220,74 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## The information for proposed density via K-step Newton's method
       beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
       beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
-      ## beta.propRev.sigma <- diag1(length(beta.propRev.mean))*0.1
       ## browser()
+
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
 ###----------------------------------------------------------------------------
-      ## if(all(!is.na(beta.propRev.sigma)))
-      ##   {
+
       ## The jump density for proposed point at proposed mode
       logJump.propATprop <- dmvt(
-          x = beta.prop - beta.prop.mean,
-          sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-          df = beta.prop.df, log = TRUE)
+              x = beta.prop - beta.prop.mean,
+              sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
+              df = beta.prop.df, log = TRUE)
 
       ## The jump density for curr draw at reverse proposed mode.
       logJump.currATpropRev<- dmvt(
-          x = beta.curr - beta.propRev.mean,
-          sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
-          df = beta.prop.df, log = TRUE)
+              x = beta.curr - beta.propRev.mean,
+              sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
+              df = beta.prop.df, log = TRUE)
 
       ## if(is(logJump.currATpropRev, "try-error")) browser()
 
       ## The log posterior for the proposed draw
       logPost.propOut <- logPost(
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.beta = Mdl.beta.prop,
-          Mdl.betaIdx = Mdl.betaIdx.prop,
-          Mdl.parLink = Mdl.parLink,
-          varSelArgs = varSelArgs,
-          MargisTypes = MargisTypes,
-          priArgs = priArgs,
-          parUpdate = parUpdate,
-          staticCache = staticCache,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.beta = Mdl.beta.prop,
+              Mdl.betaIdx = Mdl.betaIdx.prop,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticCache = staticCache,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
 
       logPost.prop <- logPost.propOut[["Mdl.logPost"]]
       staticCache.prop <- logPost.propOut[["staticCache"]]
 
       ## The log posterior for the current draw
       logPost.curr <- logPost(
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.beta = Mdl.beta.curr,
-          Mdl.betaIdx = Mdl.betaIdx.curr,
-          Mdl.parLink = Mdl.parLink,
-          varSelArgs = varSelArgs,
-          MargisTypes = MargisTypes,
-          priArgs = priArgs,
-          parUpdate = parUpdate,
-          staticCache = staticCache,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)[["Mdl.logPost"]]
+              CplNM = CplNM,
+              Mdl.Y = Mdl.Y,
+              Mdl.X = Mdl.X,
+              Mdl.beta = Mdl.beta.curr,
+              Mdl.betaIdx = Mdl.betaIdx.curr,
+              Mdl.parLink = Mdl.parLink,
+              varSelArgs = varSelArgs,
+              MargisTypes = MargisTypes,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              staticCache = staticCache,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)[["Mdl.logPost"]]
 
-      ## compute the MH ratio.
+      ## Compute the MH ratio.
       MHRatio <- exp(logPost.prop - logPost.curr +
                        logJump.currATpropRev - logJump.propATprop +
                          logJump.Idx.currATprop - logJump.Idx.propATcurr)
 
-      ##  cat(logPost.prop, logPost.curr, logJump.currATpropRev, logJump.propATprop, "\n")
-
-
-      ## the acceptance probability
+      ## The acceptance probability
       accept.prob.curr <- min(1, MHRatio)
-      ## print(round(accept.prob*100))
-      ## }
-      ## }
 
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
-      ## print(accept.prob.curr)
-      ## if(is.na(accept.prob.curr)) browser()
 
-      if(## rejectFlag == FALSE &&
-          !is.na(accept.prob.curr) &&
-          runif(1) < accept.prob.curr) # keep update
-        {
+      if(!is.na(accept.prob.curr) &&
+         runif(1) < accept.prob.curr)
+        {## keep the proposal
           betaIdx.curr <- betaIdx.prop
           beta.curr <- beta.prop
 
@@ -314,23 +297,18 @@ MHWithGNewtonMove <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
           staticCache.curr <- staticCache.prop
           ## browser()
         }
-      else # keep current
-        {
+      else
+        {## keep the current
           betaIdx.prop <- betaIdx.curr
         }
-
-
       accept.probs[iMH] <- accept.prob.curr
     }
 
-  ## cat("accept.probs", accept.probs, "\n")
-  ## cat("errorFlags:", errorFlags, "\n")
-  ## cat("logPost.prop", logPost.prop, "\n")
-  ## cat("logPost.curr", logPost.curr, "\n")
-  ## if(is.na(accept.probs[nMH])) browser()
 
-  ## The final update, the acceptance prob are from the last MH update or keep
-  ## current draw.
+###----------------------------------------------------------------------------
+### THE FINAL OUTPUT
+###----------------------------------------------------------------------------
+  ## The acceptance prob are from the last MH update or keep current draw.
   if(errorFlags[nMH] == TRUE)
     {
       ## epic failure

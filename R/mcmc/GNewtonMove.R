@@ -24,9 +24,8 @@
 ##'         {"matrix". The updated parameters after K step Newton integrations.}
 ##' @references Li Villani Kohn 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Wed Sep 29 17:18:22 CEST 2010;
-##'       Current: Mon Mar 05 10:33:29 CET 2012.
-GNewtonMove <- function( propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
+##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
+GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                         Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
 {

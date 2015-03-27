@@ -14,12 +14,11 @@
 ##'
 ##' @author Feng Li, Central University of Finance and Economics.
 ##'
-##' @note Created: Thu Feb 02 13:33:06 CET 2012;
-##'       Current: Sun Dec 21 22:58:16 CST 2014.
+##' @note Created: Thu Feb 02 13:33:06 CET 2012; Current: Fri Mar 27 12:08:32 CST 2015.
 CplMain <- function(Mdl.Idx.training, CplConfigFile)
 {
 ###----------------------------------------------------------------------------
-### Load user setup file
+### LOAD USER SETUP FILE
 ###----------------------------------------------------------------------------
   ## Load dependences
   require("mvtnorm", quietly = TRUE)
@@ -43,12 +42,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Source the configuration file for the model
   source(CplConfigFile, local = TRUE)
 
-###----------------------------------------------------------------------------
-### INITIALIZE THE STORAGE AND DATA STRUCTURE
-###----------------------------------------------------------------------------
 
 ###----------------------------------------------------------------------------
-### Initialize the MCMC
+### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
 ###----------------------------------------------------------------------------
 
   ## Extract the training and testing data according to cross-validation
@@ -60,9 +56,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                            idx = Mdl.Idx.training, how = "replace")
   Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
                            idx = Mdl.Idx.training, how = "replace")
-
-  ## Switch all the updating indicators ON
-  parUpdate <- MCMCUpdate
 
   ## Assign the initial values
   initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
@@ -85,9 +78,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     {
       require(optimx)
 
-      Mdl.Idx.training.sample <-
-        Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
-
+      Mdl.Idx.training.sample <- Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
       Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
                                       idx = Mdl.Idx.training.sample, how = "replace")
       Mdl.Y.training.sample <- rapply(object=Mdl.Y, f = subsetFun,
@@ -99,7 +90,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
         {
           ## If nothing to update, optimization inside this components skipped.
           if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
-
 
           cat("\nInitializing model component:", CompCaller, "...\n")
           InitGoodCompCurr <- FALSE
@@ -115,11 +105,11 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
             {
               ## Reassign the initial values
               initParOut.CompCurr <- initPar(
-                  varSelArgs = varSelArgs,
-                  betaInit = betaInit,
-                  Mdl.X = Mdl.X.training.sample,
-                  Mdl.Y = Mdl.Y.training.sample,
-                  Mdl.parLink = Mdl.parLink)
+                      varSelArgs = varSelArgs,
+                      betaInit = betaInit,
+                      Mdl.X = Mdl.X.training.sample,
+                      Mdl.Y = Mdl.Y.training.sample,
+                      Mdl.parLink = Mdl.parLink)
               Mdl.betaIdx[[CompCaller]] <- initParOut.CompCurr[["Mdl.betaIdx"]][[CompCaller]]
               Mdl.beta[[CompCaller]] <- initParOut.CompCurr[["Mdl.beta"]][[CompCaller]]
 
@@ -127,69 +117,67 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
               ## very first run, the "parUpdate" should be all on for this time.
 
               staticCache.sample <- logPost(
-                  CplNM = CplNM,
-                  Mdl.Y = Mdl.Y.training.sample,
-                  Mdl.X = Mdl.X.training.sample,
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  Mdl.parLink = Mdl.parLink,
-                  varSelArgs = varSelArgs,
-                  MargisTypes = MargisTypes,
-                  priArgs = priArgs,
-                  parUpdate = MCMCUpdate,
-                  MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+                      CplNM = CplNM,
+                      Mdl.Y = Mdl.Y.training.sample,
+                      Mdl.X = Mdl.X.training.sample,
+                      Mdl.beta = Mdl.beta,
+                      Mdl.betaIdx = Mdl.betaIdx,
+                      Mdl.parLink = Mdl.parLink,
+                      varSelArgs = varSelArgs,
+                      MargisTypes = MargisTypes,
+                      priArgs = priArgs,
+                      parUpdate = MCMCUpdate,
+                      MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
               ## Optimize the initial values via BFGS. NOTE: The variable selection
               ## indicators are fixed (not optimized) loop over all the marginal
               ## models and copula via TWO STAGE OPTIMIZATION
 
               betaVecInitComp <- parCplSwap(
-                  betaInput = Mdl.beta,
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  parUpdate = parUpdate)
+                      betaInput = Mdl.beta,
+                      Mdl.beta = Mdl.beta,
+                      Mdl.betaIdx = Mdl.betaIdx,
+                      parUpdate = parUpdate)
 
               ## Optimize the initial values
               betaVecOptimComp <- try(optimx(
-                  par = betaVecInitComp,
-                  fn = logPostOptim,
-                  control = list(maximize = TRUE,
-                    ## all.methods = TRUE,
-                    maxit = 100),
-                  method = "BFGS",
-                  hessian = FALSE,
-                  CplNM = CplNM,
-                  Mdl.Y = Mdl.Y.training.sample,
-                  Mdl.X = Mdl.X.training.sample,
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  Mdl.parLink = Mdl.parLink,
-                  varSelArgs = varSelArgs,
-                  MargisTypes = MargisTypes,
-                  priArgs = priArgs,
-                  staticCache = staticCache.sample,
-                  parUpdate = parUpdate,
-                  MCMCUpdateStrategy = "twostage"
-                  ), silent = FALSE)
+                      par = betaVecInitComp,
+                      fn = logPostOptim,
+                      control = list(maximize = TRUE,
+                        ## all.methods = TRUE,
+                        maxit = 100),
+                      method = "BFGS",
+                      hessian = FALSE,
+                      CplNM = CplNM,
+                      Mdl.Y = Mdl.Y.training.sample,
+                      Mdl.X = Mdl.X.training.sample,
+                      Mdl.beta = Mdl.beta,
+                      Mdl.betaIdx = Mdl.betaIdx,
+                      Mdl.parLink = Mdl.parLink,
+                      varSelArgs = varSelArgs,
+                      MargisTypes = MargisTypes,
+                      priArgs = priArgs,
+                      staticCache = staticCache.sample,
+                      parUpdate = parUpdate,
+                      MCMCUpdateStrategy = "twostage"
+                      ), silent = FALSE)
 
               if(is(betaVecOptimComp, "try-error") == TRUE)
                 {# It does not have to be converged.
                   cat("Initializing algorithm failed,  retry...\n")
                   InitGoodCompCurr <- FALSE
-                                        # break
+                  ## break
                 }
               else
                 {
                   InitGoodCompCurr <- TRUE
                   Mdl.beta <- parCplSwap(
-                      betaInput = as.numeric(betaVecOptimComp[1,
-                        1:length(betaVecOptimComp)]),
-                      Mdl.beta = Mdl.beta,
-                      Mdl.betaIdx = Mdl.betaIdx,
-                      parUpdate = parUpdate)
+                          betaInput = as.numeric(betaVecOptimComp[1,
+                            1:length(betaVecOptimComp)]),
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          parUpdate = parUpdate)
                 }
-
-
               nLoopInit <- nLoopInit +1
               if((nLoopInit >= maxLoopInit) & InitGoodCompCurr  == FALSE)
                 {
@@ -199,36 +187,11 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                   cat("Trying to continue without initial value optimization in this component.\n\n")
                   break
                 }
-
-
             }
-
           cat("The initial values for beta coefficients are:\n(conditional on variable selection indicators)\n")
           print(Mdl.beta[[CompCaller]])
-
-
         }
     }
-
-  ## Dry run to obtain staticCache for the initial values
-  ## Again this time all the parameters should be updated.
-
-  staticCache <- logPost(
-      CplNM = CplNM,
-      Mdl.Y = Mdl.Y.training,
-      Mdl.X = Mdl.X.training,
-      Mdl.beta = Mdl.beta,
-      Mdl.betaIdx = Mdl.betaIdx,
-      Mdl.parLink = Mdl.parLink,
-      varSelArgs = varSelArgs,
-      MargisTypes = MargisTypes,
-      priArgs = priArgs,
-      parUpdate = MCMCUpdate,
-      MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
-
-  ## Clear all warnings during initial value
-  ## optimization. NOTE: not working
-  ## warningsClear(envir = environment())
 
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
@@ -257,14 +220,11 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
           namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
 
           ## The MCMC storage
-          MCMC.betaIdx[[i]][[j]] <- matrix(
-              Mdl.betaIdx[[i]][[j]], nIter, ncolX.ij*nPar.ij, byrow = TRUE,
-              dimnames = list(NULL, namesX.ij))
-          MCMC.beta[[i]][[j]] <- matrix(
-              Mdl.beta[[i]][[j]], nIter, ncolX.ij*nPar.ij, byrow = TRUE,
-              dimnames = list(NULL, namesX.ij))
-          MCMC.par[[i]][[j]] <- array(
-              staticCache[["Mdl.par"]][[i]][[j]], c(nIter, nTraining, nPar.ij))
+          MCMC.betaIdx[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
+                                           dimnames = list(NULL, namesX.ij))
+          MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
+                                        dimnames = list(NULL, namesX.ij))
+          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij))
 
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
@@ -272,10 +232,32 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     }
 
 ###----------------------------------------------------------------------------
-### THE METROPOLIS-HASTINGS WITHIN GIBBS
+### THE GIBBS SAMPLER (WITH METROPOLIS-HASTINGS)
 ###----------------------------------------------------------------------------
 
   cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
+
+
+## Dry run to obtain staticcache for the initial values. Again this time all the
+## parameters should be updated.
+
+  staticCache <- logPost(
+          CplNM = CplNM,
+          Mdl.Y = Mdl.Y.training,
+          Mdl.X = Mdl.X.training,
+          Mdl.beta = Mdl.beta,
+          Mdl.betaIdx = Mdl.betaIdx,
+          Mdl.parLink = Mdl.parLink,
+          varSelArgs = varSelArgs,
+          MargisTypes = MargisTypes,
+          priArgs = priArgs,
+          parUpdate = MCMCUpdate,
+          MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+
+  ## Clear all warnings during initial value
+  ## optimization. NOTE: not working
+  ## warningsClear(envir = environment())
+
   ## The updating matrix
   UpdateMat <- parCplRepCaller(CplNM = CplNM,
                                parUpdate = MCMCUpdate,
@@ -287,7 +269,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     {
       iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
       iIter <- floor((iUpdate-1)/nInner)+1
-
 
       if(iIter  == 2)
         {
@@ -312,20 +293,20 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         {
           ## staticCache <- list(u = u, Mdl.par = Mdl.par)
-          MHOut <- MHWithGNewtonMove(
-              CplNM = CplNM,
-              propArgs = propArgs,
-              varSelArgs = varSelArgs,
-              priArgs = priArgs,
-              parUpdate = parUpdate,
-              Mdl.Y = Mdl.Y.training,
-              Mdl.X = Mdl.X.training,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              MargisTypes = MargisTypes,
-              Mdl.parLink = Mdl.parLink,
-              staticCache = staticCache,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+          MHOut <- MetropolisHastings(
+                  CplNM = CplNM,
+                  propArgs = propArgs,
+                  varSelArgs = varSelArgs,
+                  priArgs = priArgs,
+                  parUpdate = parUpdate,
+                  Mdl.Y = Mdl.Y.training,
+                  Mdl.X = Mdl.X.training,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  MargisTypes = MargisTypes,
+                  Mdl.parLink = Mdl.parLink,
+                  staticCache = staticCache,
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
 
           if(MHOut$errorFlag == FALSE)
             {

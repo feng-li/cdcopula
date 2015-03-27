@@ -14,32 +14,32 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 parCplRepCaller <- function(CplNM, parUpdate, parUpdateOrder)
 {
-    CompNM <- names(parUpdate)
+  CompNM <- names(parUpdate)
 
-    ## check which parameter need to update
-    out.init <- NULL
-    for(CompCaller in CompNM)
+  ## check which parameter need to update
+  out.init <- NULL
+  for(CompCaller in CompNM)
+    {
+      parNM <- names(parUpdate[[CompCaller]])
+      parUpdateIdx <- parNM[parUpdate[[CompCaller]] == TRUE]
+      for(parCaller in parUpdateIdx)
         {
-            parNM <- names(parUpdate[[CompCaller]])
-            parUpdateIdx <- parNM[parUpdate[[CompCaller]] == TRUE]
-            for(parCaller in parUpdateIdx)
-                {
-                    out.init <- rbind(out.init , c(CompCaller, parCaller))
-                }
+          out.init <- rbind(out.init , c(CompCaller, parCaller))
         }
+    }
 
-    ## Order the parameters if asked
-    if(!missing(parUpdateOrder))
-        {
-            parOrder <- unlist(parUpdateOrder)
-            parUpdate <- unlist(parUpdate)
-            parUpdateOrderVec <- order(parOrder[parUpdate])
-            out <- out.init[parUpdateOrderVec, , drop = FALSE]
-        }
-    else
-        {
-            out <- matrix(out.init, , 2)
-        }
+  ## Order the parameters if asked
+  if(!missing(parUpdateOrder))
+    {
+      parOrder <- unlist(parUpdateOrder)
+      parUpdate <- unlist(parUpdate)
+      parUpdateOrderVec <- order(parOrder[parUpdate])
+      out <- out.init[parUpdateOrderVec, , drop = FALSE]
+    }
+  else
+    {
+      out <- matrix(out.init, , 2)
+    }
 
-    return(out)
+  return(out)
 }
