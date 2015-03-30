@@ -23,9 +23,13 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 {
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
-
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
+
+  ## The proposal methods
+  algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
+  beta.propArgs <- propArgs[[CompCaller]][[parCaller]][["beta"]]
+  betaIdx.propArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
 
 ###----------------------------------------------------------------------------
 ### INITIAL COPY OF CURRENT VALUES
@@ -52,22 +56,20 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   ## Randomly propose a subset for covariates to change
   beta01Mat <- matrix(1:(nCovs*nPar), nCovs, nPar)
-  varSelCandRow <- varSelArgs[[CompCaller]][[parCaller]]$cand # sub.q-by-1
+  varSelCandRow <- varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
   varSelCand <- beta01Mat[varSelCandRow, ] # sub.p-by-lq
 
-  betaIdxArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
-
-  ## If variable selection is available, make a change proposal Otherwise no variable
+  ## If variable selection is available, make a change proposal. Otherwise no variable
   ## selection.
   if(length(varSelCand) > 0)
     {
-      if(betaIdxArgs$type == "binom")
+      if(betaIdx.propArgs[["type"]] == "binom")
         {
           ## Binomial proposal a small subset
           betaIdx.propCandIdx <- which(rbinom(
                   n = length(varSelCand),
                   size = 1L,
-                  prob = betaIdxArgs$prob) == 1L)
+                  prob = betaIdx.propArgs[["prob"]]) == 1L)
 
           if(length(betaIdx.propCandIdx) != 0)
             {
@@ -170,8 +172,6 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## probability.)
 
       ## The information for proposed density via K-step Newton's method
-      beta.propArgs <- propArgs[[CompCaller]][[parCaller]][["beta"]]
-      beta.prop.type <- beta.propArgs[["type"]]
       beta.prop.mean <- matrix(beta.NTProp[["param"]], 1) # 1-by-p
       beta.prop.sigma <- -beta.NTProp[["HessObsInv"]]
       ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.1
@@ -179,14 +179,13 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       staticCache.prop <- beta.NTProp[["staticCache"]]
 
-      if(tolower(beta.prop.type) == "mvt")
+      if(tolower(beta.propArgs[["type"]]) == "mvt")
         {
           ## require("mvtnorm")
           ## The proposal parameters block
-          beta.prop.df <- beta.propArgs[["df"]]
           beta.prop <- beta.prop.mean + rmvt(
                   sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-                  n = 1, df = beta.prop.df)
+                  n = 1, df = beta.propArgs[["df"]])
         }
 
 ###----------------------------------------------------------------------------
@@ -248,19 +247,20 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
 ###----------------------------------------------------------------------------
 
-      ## The jump density for proposed point at proposed mode
-      logJump.propATprop <- dmvt(
-              x = beta.prop - beta.prop.mean,
-              sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-              df = beta.prop.df, log = TRUE)
+      ## The jump density for proposed point at proposed mode and the jump density for
+      ## current draw at reverse proposed mode.
+      if(tolower(beta.propArgs[["type"]]) == "mvt")
+        {
+          logJump.propATprop <- dmvt(
+                  x = beta.prop - beta.prop.mean,
+                  sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
+                  df = beta.propArgs[["df"]], log = TRUE)
 
-      ## The jump density for curr draw at reverse proposed mode.
-      logJump.currATpropRev<- dmvt(
-              x = beta.curr - beta.propRev.mean,
-              sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
-              df = beta.prop.df, log = TRUE)
-
-      ## if(is(logJump.currATpropRev, "try-error")) browser()
+          logJump.currATpropRev<- dmvt(
+                  x = beta.curr - beta.propRev.mean,
+                  sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
+                  df = beta.propArgs[["df"]], log = TRUE)
+        }
 
       ## The log posterior for the proposed draw
       logPost.propOut <- logPost(
@@ -296,12 +296,12 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               MCMCUpdateStrategy = MCMCUpdateStrategy)[["Mdl.logPost"]]
 
       ## Compute the MH ratio.
-      MHRatio <- exp(logPost.prop - logPost.curr +
-                       logJump.currATpropRev - logJump.propATprop +
-                         logJump.Idx.currATprop - logJump.Idx.propATcurr)
+      logMHRatio <- logPost.prop - logPost.curr +
+                     logJump.currATpropRev - logJump.propATprop +
+                     logJump.Idx.currATprop - logJump.Idx.propATcurr
 
       ## The acceptance probability
-      accept.prob.curr <- min(1, MHRatio)
+      accept.prob.curr <- exp(min(0, logMHRatio))
 
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
