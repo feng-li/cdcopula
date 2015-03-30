@@ -124,21 +124,32 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   for(iMH in 1:nMH)
     {
       ## Newton method to approach the posterior based on the current draw
-      beta.NTProp <- GNewtonMove(
-              propArgs = propArgs,
-              varSelArgs = varSelArgs,
-              priArgs = priArgs,
-              betaIdxProp = betaIdx.prop,
-              parUpdate = parUpdate,
-              CplNM = CplNM,
-              Mdl.Y = Mdl.Y,
-              Mdl.X = Mdl.X,
-              Mdl.parLink = Mdl.parLink,
-              Mdl.beta = Mdl.beta.curr,
-              Mdl.betaIdx = Mdl.betaIdx.curr,
-              MargisTypes = MargisTypes,
-              staticCache = staticCache.curr,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+      if(tolower(algmArgs[["type"]]) == "gnewtonmove")
+        {
+          beta.NTProp <- GNewtonMove(
+                  propArgs = propArgs,
+                  varSelArgs = varSelArgs,
+                  priArgs = priArgs,
+                  betaIdxProp = betaIdx.prop,
+                  parUpdate = parUpdate,
+                  CplNM = CplNM,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.X = Mdl.X,
+                  Mdl.parLink = Mdl.parLink,
+                  Mdl.beta = Mdl.beta.curr,
+                  Mdl.betaIdx = Mdl.betaIdx.curr,
+                  MargisTypes = MargisTypes,
+                  staticCache = staticCache.curr,
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+        }
+      else if(tolower(algmArgs[["type"]])  == "randomwalk")
+        {
+          stop("Not implement yet!")
+        }
+      else
+        {
+          stop("Not implement yet!")
+        }
 
       ## Check if it is a good proposal
       if(beta.NTProp$errorFlag ## ||
@@ -191,21 +202,32 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       Mdl.betaIdx.prop <- Mdl.betaIdx.curr
       Mdl.betaIdx.prop[[CompCaller]][[parCaller]] <- betaIdx.prop
 
-      beta.NTPropRev <- GNewtonMove(
-              propArgs = propArgs,
-              varSelArgs = varSelArgs,
-              priArgs = priArgs,
-              betaIdxProp = betaIdx.curr,
-              parUpdate = parUpdate,
-              CplNM = CplNM,
-              Mdl.Y = Mdl.Y,
-              Mdl.X = Mdl.X,
-              Mdl.parLink = Mdl.parLink,
-              Mdl.beta = Mdl.beta.prop,
-              Mdl.betaIdx = Mdl.betaIdx.prop,
-              MargisTypes = MargisTypes,
-              staticCache = staticCache,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+      if(tolower(algmArgs[["type"]]) == "gnewtonmove")
+        {
+          beta.NTPropRev <- GNewtonMove(
+                  propArgs = propArgs,
+                  varSelArgs = varSelArgs,
+                  priArgs = priArgs,
+                  betaIdxProp = betaIdx.curr,
+                  parUpdate = parUpdate,
+                  CplNM = CplNM,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.X = Mdl.X,
+                  Mdl.parLink = Mdl.parLink,
+                  Mdl.beta = Mdl.beta.prop,
+                  Mdl.betaIdx = Mdl.betaIdx.prop,
+                  MargisTypes = MargisTypes,
+                  staticCache = staticCache,
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+        }
+      else if(tolower(algmArgs[["type"]])  == "randomwalk")
+        {
+          stop("Not implement yet!")
+        }
+      else
+        {
+          stop("Not implement yet!")
+        }
 
       if(beta.NTPropRev$errorFlag ## ||
          ## any(is.na(beta.prop.sigma)) ||

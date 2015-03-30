@@ -290,63 +290,59 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       ## Call the proposal algorithm
       algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
 
-      if(tolower(algmArgs[["type"]]) == "gnewtonmove")
-        {
+      ## if(tolower(algmArgs[["type"]]) == "gnewtonmove")
+      ##   {
           ## staticCache <- list(u = u, Mdl.par = Mdl.par)
-          MHOut <- MetropolisHastings(
-                  CplNM = CplNM,
-                  propArgs = propArgs,
-                  varSelArgs = varSelArgs,
-                  priArgs = priArgs,
-                  parUpdate = parUpdate,
-                  Mdl.Y = Mdl.Y.training,
-                  Mdl.X = Mdl.X.training,
-                  Mdl.beta = Mdl.beta,
-                  Mdl.betaIdx = Mdl.betaIdx,
-                  MargisTypes = MargisTypes,
-                  Mdl.parLink = Mdl.parLink,
-                  staticCache = staticCache,
-                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+      MHOut <- MetropolisHastings(
+              CplNM = CplNM,
+              propArgs = propArgs,
+              varSelArgs = varSelArgs,
+              priArgs = priArgs,
+              parUpdate = parUpdate,
+              Mdl.Y = Mdl.Y.training,
+              Mdl.X = Mdl.X.training,
+              Mdl.beta = Mdl.beta,
+              Mdl.betaIdx = Mdl.betaIdx,
+              MargisTypes = MargisTypes,
+              Mdl.parLink = Mdl.parLink,
+              staticCache = staticCache,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-          if(MHOut$errorFlag == FALSE)
-            {
-              ## Update the MH results to the current parameter structure
-              staticCache <- MHOut[["staticCache"]]
-              Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
-              Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
+      if(MHOut$errorFlag == FALSE)
+        {
+          ## Update the MH results to the current parameter structure
+          staticCache <- MHOut[["staticCache"]]
+          Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
+          Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-              ## Export the parameters in each cross-validation fold
-              MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <-
-                MHOut[["beta"]]
-              MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <-
-                MHOut[["betaIdx"]]
-              MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <-
-                MHOut[["accept.prob"]]
-              MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <-
-                staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
+          ## Export the parameters in each cross-validation fold
+          MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
+          MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
+          MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
+          MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <-
+            staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
 
-              ## Save the marginal densities.
-              ## FIXME: This is not updated for every iteration.
-              MCMC.density[["u"]][, , iIter] <-
-                MHOut[["staticCache"]][["Mdl.u"]]
-              MCMC.density[["d"]][, , iIter] <-
-                MHOut[["staticCache"]][["Mdl.d"]]
-
-            }
-          else
-            {
-              ## Set acceptance probability to zero if this
-              ## iteration fails.
-              MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
-            }
-
-          ## print(MHOut[["accept.prob"]])
-
+          ## Save the marginal densities.
+          ## FIXME: This is not updated for every iteration.
+          MCMC.density[["u"]][, , iIter] <-
+            MHOut[["staticCache"]][["Mdl.u"]]
+          MCMC.density[["d"]][, , iIter] <-
+            MHOut[["staticCache"]][["Mdl.d"]]
         }
       else
         {
-          stop("Unknown proposal algorithm!")
+          ## Set acceptance probability to zero if this
+          ## iteration fails.
+          MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
         }
+
+          ## print(MHOut[["accept.prob"]])
+
+      ##   }
+      ## else
+      ##   {
+      ##     stop("Unknown proposal algorithm!")
+      ##   }
 
       ## MCMC trajectory
       if(track.MCMC == TRUE && iInner == nInner)
