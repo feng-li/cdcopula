@@ -254,8 +254,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
           parUpdate = MCMCUpdate,
           MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
-  ## Clear all warnings during initial value
-  ## optimization. NOTE: not working
+  ## Clear all warnings during initial value optimization. NOTE: not working
   ## warningsClear(envir = environment())
 
   ## The updating matrix
@@ -263,18 +262,14 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                parUpdate = MCMCUpdate,
                                parUpdateOrder = MCMCUpdateOrder)
   nInner <- nrow(UpdateMat)
-  Starting.time <- NA
+
+  Starting.time <- Sys.time()
 
   for(iUpdate in 1:(nInner*nIter))
     {
       iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
       iIter <- floor((iUpdate-1)/nInner)+1
 
-      if(iIter  == 2)
-        {
-          ## Starting time after warming up
-          Starting.time <- Sys.time()
-        }
 
       ##print(c(iUpdate, iInner, iIter))
 
@@ -282,17 +277,12 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
       parCaller <- UpdateMat[iInner, 2] ## mean,  df...
 
-      ## Switch all the updating indicators OFF Switch current updating parameter
-      ## indicator ON
+      ## Switch all the updating indicators OFF and switch current updating parameter
+      ## indicator ON.
       parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
       parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
-      ## Call the proposal algorithm
-      algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
-
-      ## if(tolower(algmArgs[["type"]]) == "gnewtonmove")
-      ##   {
-          ## staticCache <- list(u = u, Mdl.par = Mdl.par)
+      ## Call the Metropolis-Hastings algorithm
       MHOut <- MetropolisHastings(
               CplNM = CplNM,
               propArgs = propArgs,
@@ -336,19 +326,11 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
           MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
         }
 
-          ## print(MHOut[["accept.prob"]])
-
-      ##   }
-      ## else
-      ##   {
-      ##     stop("Unknown proposal algorithm!")
-      ##   }
-
       ## MCMC trajectory
       if(track.MCMC == TRUE && iInner == nInner)
         {
           CplMCMC.summary(iIter = iIter, nIter = nIter,
-                          interval = 0.01, burnin = burnin,
+                          interval = 0.1, burnin = burnin,
                           MCMC.beta = MCMC.beta,
                           MCMC.betaIdx = MCMC.betaIdx,
                           MCMC.par = MCMC.par,
