@@ -247,13 +247,11 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
           for(iRun in 1:(nObs*nDimGrad))
             {
               if(tolower(cplCaller) %in% paste("u", 1:nDim, sep = ""))
-                {
-                  ## Calling the marginal CDF u_i
+                { ## Calling the marginal CDF u_i
                   xCurr <- staticCache$Mdl.u[iRun, CompCaller]
                 }
               else
-                {
-                  ## Calling copula parameters
+                { ## Calling copula parameters
                   xCurr <- Mdl.par[[CompCaller]][[parCaller]][iRun]
                 }
 
@@ -294,6 +292,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       return(list(errorFlag = TRUE))
     }
 
+  browser()
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LINK FUNCTION
 ###----------------------------------------------------------------------------

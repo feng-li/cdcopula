@@ -125,9 +125,8 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
   for(iMH in 1:nMH)
     {
-      ## Newton method to approach the posterior based on the current draw
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
-        {
+        { ## Newton method to approach the posterior based on the current draw
           beta.NTProp <- GNewtonMove(
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
@@ -145,8 +144,12 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                   MCMCUpdateStrategy = MCMCUpdateStrategy)
         }
       else if(tolower(algmArgs[["type"]])  == "randomwalk")
-        {
+        { ## Random walk metropolis (with/without variable selection)
           stop("Not implement yet!")
+
+          ## beta.NTProp <- list(errorFlag = FALSE,
+          ##                     param = ??,
+          ##                     HessObsInv = ??)
         }
       else
         {
@@ -154,31 +157,26 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
         }
 
       ## Check if it is a good proposal
-      if(beta.NTProp$errorFlag ## ||
-         ## any(is.na(beta.prop.sigma)) ||
-         ## is(try(chol(beta.prop.sigma), silent=TRUE), "try-error")
-         )
-        {## Something is wrong. Skip this MH update(if is VS, jump to pure
-          ## update without variable selection) or terminate the algorithm.
+      if(beta.NTProp$errorFlag)
+        { ## Something is wrong. Skip this MH update(if is VS, jump to pure update without
+          ## variable selection) or terminate the algorithm.
+
           errorFlags[iMH] <- TRUE
           betaIdx.prop <- betaIdx.curr
           next
         }
 
-      ## else # Continues with the Metropolis-Hastings
-      ##   { ## Propose a draw from multivariate t-distribution based on the proposed
-      ## An idea (out of loud) : Generate a matrix of param. Select the one
-      ## that give max acceptance probability (but need correct the acceptance
-      ## probability.)
+      ## else Continues with the Metropolis-Hastings Propose a draw from multivariate
+      ## t-distribution based on the proposed An idea (out of loud) : Generate a matrix of
+      ## param. Select the one that give max acceptance probability (but need correct the
+      ## acceptance probability.)
 
       ## The information for proposed density via K-step Newton's method
       beta.prop.mean <- matrix(beta.NTProp[["param"]], 1) # 1-by-p
       beta.prop.sigma <- -beta.NTProp[["HessObsInv"]]
-      ## beta.prop.sigma <- diag1(length(beta.prop.mean))*0.1
-      ## if(all(beta.prop.sigma<0.01)) cat("beta.prop.sigma too small")
+
 
       staticCache.prop <- beta.NTProp[["staticCache"]]
-
       if(tolower(beta.propArgs[["type"]]) == "mvt")
         {
           ## require("mvtnorm")
@@ -222,17 +220,18 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       else if(tolower(algmArgs[["type"]])  == "randomwalk")
         {
           stop("Not implement yet!")
+
+          ## beta.NTPropRev <- list(errorFlag = FALSE,
+          ##                        param = ??,
+          ##                        HessObsInv = ??)
         }
       else
         {
           stop("Not implement yet!")
         }
 
-      if(beta.NTPropRev$errorFlag ## ||
-         ## any(is.na(beta.prop.sigma)) ||
-         ## is(try(chol(beta.prop.sigma), silent=TRUE), "try-error")
-         )
-        {## Something is wrong.
+      if(beta.NTPropRev$errorFlag)
+        { ## Something is wrong.
           errorFlags[iMH] <- TRUE
           betaIdx.prop <- betaIdx.curr
           next
@@ -241,8 +240,8 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       ## The information for proposed density via K-step Newton's method
       beta.propRev.mean <- matrix(beta.NTPropRev[["param"]], 1) # 1-by-p
       beta.propRev.sigma <- -beta.NTPropRev[["HessObsInv"]] # p-by-p
-      ## browser()
 
+      ## browser()
 ###----------------------------------------------------------------------------
 ### COMPUTING THE METROPOLIS-HASTINGS RATIO
 ###----------------------------------------------------------------------------
@@ -295,7 +294,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
               staticCache = staticCache,
               MCMCUpdateStrategy = MCMCUpdateStrategy)[["Mdl.logPost"]]
 
-      ## Compute the MH ratio.
+      ## Compute the (log) MH ratio.
       logMHRatio <- logPost.prop - logPost.curr +
                      logJump.currATpropRev - logJump.propATprop +
                      logJump.Idx.currATprop - logJump.Idx.propATcurr
@@ -326,14 +325,12 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       accept.probs[iMH] <- accept.prob.curr
     }
 
-
 ###----------------------------------------------------------------------------
 ### THE FINAL OUTPUT
 ###----------------------------------------------------------------------------
   ## The acceptance prob are from the last MH update or keep current draw.
   if(errorFlags[nMH] == TRUE)
-    {
-      ## epic failure
+    { ## epic failure
       out <- list(errorFlag = TRUE)
     }
   else

@@ -8,8 +8,7 @@
 ##' @return A summary object
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Initial: Fri Feb 01 14:49:15 CET 2013;
-##'       Current: Fri Feb 01 14:49:33 CET 2013.
+##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 ##' TODO: write this function as a summary
 CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
 {
@@ -101,10 +100,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                                betaIdx.mean[[i]][[j]],
                                beta.ineff[[i]][[j]])
                   rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean", "beta.ineff")
-                  colnames(obj) <- paste(paste(j, rep(
-                          1:ncol(obj.par),
-                          each = ncol(obj)/ncol(obj.par)), colnames(obj),
-                                               sep = "."))
+                  colnames(obj) <- paste(j, rep(1:ncol(obj.par),
+                                                each = ncol(obj)/ncol(obj.par)), colnames(obj),
+                                         sep = ".")
 
                   cat("\n", rep("-", dev.width-1), "\n", sep = "")
                   cat(i, j, "(", donePercent, "% )\n")
@@ -114,7 +112,6 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, ...)
                 }
             }
         }
-
 
       if(iIter == nIter)
         {
