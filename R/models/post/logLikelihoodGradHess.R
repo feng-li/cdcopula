@@ -38,7 +38,7 @@
 logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                                   Mdl.beta, Mdl.betaIdx, parUpdate, varSelArgs,
                                   staticCache,
-                                  gradMethods = c("analytic", "numeric")[1],
+                                  gradMethods = c("analytic", "numeric")[1:2],
                                   MCMCUpdateStrategy)
 {
   ## The updating chain
@@ -157,12 +157,14 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                 }
             }
           MargiGradObs <- MargiGradObs.num
+
+          ## Evaluate if the numeric and analytic gradients are consistent
+          plot(sort(MargiGradObs.ana),
+               MargiGradObs.num[order(MargiGradObs.ana)],
+               type = "l", pch = 20, main = chainCaller)
+
         }
 
-      ## Evaluate if the numeric and analytic gradients are consistent
-      plot(sort(MargiGradObs.ana),
-           MargiGradObs.num[order(MargiGradObs.ana)],
-           type = "l", pch = 20, main = chainCaller)
 
       staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
               y = yCurr,
@@ -279,6 +281,11 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 
           ## The Gradient For The Link Function n-by-1
           logCplGradObs <- logCplGradObs.num
+
+          try(plot(sort(logCplGradObs.ana),
+                   logCplGradObs.num[order(logCplGradObs.ana)],
+                   type = "l", pch = 20, main = chainCaller), silent = TRUE)
+
         }
     }
   else
