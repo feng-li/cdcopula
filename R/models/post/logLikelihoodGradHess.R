@@ -38,7 +38,7 @@
 logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                                   Mdl.beta, Mdl.betaIdx, parUpdate, varSelArgs,
                                   staticCache,
-                                  gradMethods = c("analytic", "numeric")[1:2],
+                                  gradMethods = c("analytic", "numeric")[1],
                                   MCMCUpdateStrategy)
 {
   ## The updating chain
@@ -204,7 +204,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
         {
           ## The gradient for the copula function. scaler input and output NOTE: The
           ## numerical gradient may not work well if the tabular version of Kendall's tau
-          ## is used due to the precision.
+          ## is used (due to the precision).
 
           require(numDeriv)
           logCplGradNumFun <- function(x, u, iRun, CompCaller, parCaller, cplCaller,
@@ -223,11 +223,11 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
               iRunInRow = iRun%%nObs
               iRunInRow[iRunInRow == 0] <- nObs
 
-              ## if(iRun == 30) browser()
-              out <- logCplLik(CplNM = CplNM,
-                               u = u[iRunInRow, , drop = FALSE],
-                               parCplRep = lapply(parCplRep, function(x) x[iRunInRow, , drop = FALSE]),
-                               sum = FALSE)
+              out <- logCplLik(
+                      CplNM = CplNM,
+                      u = u[iRunInRow, , drop = FALSE],
+                      parCplRep = lapply(parCplRep, function(x) x[iRunInRow, , drop = FALSE]),
+                      sum = FALSE)
               return(out)
             }
 
@@ -292,7 +292,6 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
       return(list(errorFlag = TRUE))
     }
 
-  browser()
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE LINK FUNCTION
 ###----------------------------------------------------------------------------
@@ -315,8 +314,6 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 
   ## The gradient for the likelihood,  n-by-1
   logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
-
-  ## par(mfrow = c(1, 2))
 
   ## The output
   out <- list(logLikGradObs = logLikGradObs,

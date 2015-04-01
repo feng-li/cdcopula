@@ -212,17 +212,11 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
       u.quantile <- qt(u, df)
       if(tolower(cplCaller) == "lambdal")
-        {
-          ## CopulaDensity-MVT.nb
-
+        { ## CopulaDensity-MVT.nb
           gradFun <- function(i, rho, df, u.quantile)
             {
               Sigma <- vech2m(rho[i, ], diag = FALSE)
 
-              if(!is.positivedefinite(Sigma))
-                {
-                  out <- NA
-                }
 
               v <- df[i]
               x <- matrix(u.quantile[i, ]) # col-vector
@@ -232,7 +226,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
               C2 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
 
               out <- {
-                (C2-q -(C2+v)*log((C2+v)/2)
+                (C2-q -(C2+v)*log((C2+v)/v)
                  +(C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
                 (2*(C2+v))
               }
@@ -242,14 +236,17 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
                                  gradFun,
                                  rho = rho,
                                  df = df,
-                                 u.quantile = u.quantile) # n-by-q
+                                 u.quantile = u.quantile) # n-by-1
 
 
-          C1 <- sqrt(1-rho)/sqrt(1+rho) # n-by-lq
+          ## C1 <- sqrt(1-rho)/sqrt(1+rho) # n-by-lq
           gradCpl.lambda.df <- {
-            (1/(1 + C1^2))^((1 + df)/2)*
-            (-1 + df*log(1/(1 + C1^2)) - df*digamma(df/2)
-             + df*digamma((1 + df)/2))/(2*df^(3/2)*beta(df/2, 1/2)) #n-by-lq
+            1/((1+df)^(3/2)*beta((1+df)/2, 1/2))*
+            2^(-1-df/2)*(1+rho)^(1+df/2)*
+            (-1-(1+df)*harmonic((df-1)/2) +
+             (1+df)*harmonic(df/2)-
+             (1+df)*log(2)+(1+df)*log(1+rho)
+             ) #n-by-lq
           }
           ## The chain gradient
           out <- logGradCpl.df*(1/gradCpl.lambda.df) # n-by-lq
@@ -261,19 +258,14 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
           gradFun <- function(i, rho, df, u.quantile)
             {
               Sigma <- vech2m(rho[i, ], diag = FALSE)
-              ## if(!is.positivedefinite(Sigma))
-              ##   {
-              ##     out <- NA
-              ##     return(out)
-              ##   }
               v <- df[i]
               x <- matrix(u.quantile[i, ]) # col-vector
               mu <- 0
               p <- dim(Sigma)[1]
 
-              C0 <- {
-                as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
-                logGradCpl.Sigma <- -1/2*solve(Sigma) -
+              C0 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
+              logGradCpl.Sigma <- {
+                -1/2*solve(Sigma) -
                 (v+p)/2*(1+C0/v)^(-1)*
                 (-solve(Sigma)%*%(x-mu)%*%t(x-mu)%*%solve(Sigma))/v
               }
