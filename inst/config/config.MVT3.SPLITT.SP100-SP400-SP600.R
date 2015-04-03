@@ -100,7 +100,7 @@ Mdl.X[[3]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
 Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
@@ -204,7 +204,7 @@ MCMCUpdate[[3]][[3]] <- F
 MCMCUpdate[[3]][[4]] <- F
 
 
-MCMCUpdate[[4]][[1]] <- F
+MCMCUpdate[[4]][[1]] <- T
 MCMCUpdate[[4]][[2]] <- T
 
 MCMCUpdateOrder <- MdlDataStruc

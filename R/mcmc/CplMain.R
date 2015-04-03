@@ -219,12 +219,26 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
           nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
           namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
 
+          if(i %in% CplNM)
+            {
+              nDim <- length(MargisNM)
+              namesParFull.ij <- matrix(paste(
+                      matrix(1:nDim, nDim, nDim),
+                      matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
+              namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
+            }
+          else
+            {
+              namesPar.ij <- "1.1"
+            }
+
           ## The MCMC storage
           MCMC.betaIdx[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
                                            dimnames = list(NULL, namesX.ij))
           MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
                                         dimnames = list(NULL, namesX.ij))
-          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij))
+          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij),
+                                      dimnames = list(NULL, NULL, namesPar.ij))
 
           ## The Metropolis-Hasting acceptance rate
           MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
@@ -299,38 +313,35 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
               MCMCUpdateStrategy = MCMCUpdateStrategy)
 
       if(MHOut$errorFlag == FALSE)
-        {
-          ## Update the MH results to the current parameter structure
+        { ## Update the MH results to the current parameter structure
           staticCache <- MHOut[["staticCache"]]
           Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
           Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-          ## Export the parameters in each cross-validation fold
-          MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["beta"]]
-          MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- MHOut[["betaIdx"]]
-          MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- MHOut[["accept.prob"]]
-          MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <-
-            staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
-
-          ## Save the marginal densities.
-          ## FIXME: This is not updated for every iteration.
-          MCMC.density[["u"]][, , iIter] <-
-            MHOut[["staticCache"]][["Mdl.u"]]
-          MCMC.density[["d"]][, , iIter] <-
-            MHOut[["staticCache"]][["Mdl.d"]]
+          AccProbCurr <- MHOut[["accept.prob"]]
         }
       else
-        {
-          ## Set acceptance probability to zero if this
+        { ## Keep everything unchanged. Only set acceptance probability to zero if this
           ## iteration fails.
-          MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- 0
+          AccProbCurr <- 0
         }
+
+      ## Export the parameters in each cross-validation fold
+      MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- Mdl.beta[[CompCaller]][[parCaller]]
+      MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- Mdl.betaIdx[[CompCaller]][[parCaller]]
+      MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <- staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
+
+      MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- AccProbCurr
+
+      ## Save the marginal densities.  FIXME: This is not updated for every iteration.
+      MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
+      MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
 
       ## MCMC trajectory
       if(track.MCMC == TRUE && iInner == nInner)
         {
           CplMCMC.summary(iIter = iIter, nIter = nIter,
-                          interval = 0.1, burnin = burnin,
+                          interval = 0.01, burnin = burnin,
                           MCMC.beta = MCMC.beta,
                           MCMC.betaIdx = MCMC.betaIdx,
                           MCMC.par = MCMC.par,
@@ -340,7 +351,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
         }
 
     }
-
 
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)

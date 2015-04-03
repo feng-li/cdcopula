@@ -62,12 +62,6 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       dmvNormVecFun <- function(i, x, rho)
         {
           Sigma = vech2m(rho[i, ], diag = FALSE)
-
-          ## if(!is.positivedefinite(Sigma))
-          ##   {
-          ##     out <- NA
-          ##   }
-
           out <- dmvnorm(x = x[i, , drop = FALSE],
                          sigma = Sigma,
                          log = TRUE)
@@ -102,12 +96,6 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       dmvtVecFun <- function(i, x, rho, df)
         {
           Sigma = vech2m(rho[i, ], diag = FALSE)
-
-          ## if(!is.positivedefinite(Sigma))
-          ##   {
-          ##     out <- NA
-          ##   }
-
           out <- dmvt(x = x[i, , drop = FALSE],
                       sigma = Sigma,
                       df = df[i], log = TRUE)

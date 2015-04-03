@@ -159,9 +159,9 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
           MargiGradObs <- MargiGradObs.num
 
           ## Evaluate if the numeric and analytic gradients are consistent
-          plot(sort(MargiGradObs.ana),
+          try(plot(sort(MargiGradObs.ana),
                MargiGradObs.num[order(MargiGradObs.ana)],
-               type = "l", pch = 20, main = chainCaller)
+               type = "l", pch = 20, main = chainCaller), silent = TRUE)
 
         }
 
@@ -282,9 +282,10 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
           ## The Gradient For The Link Function n-by-1
           logCplGradObs <- logCplGradObs.num
 
-          try(plot(sort(logCplGradObs.ana),
-                   logCplGradObs.num[order(logCplGradObs.ana)],
-                   type = "l", pch = 20, main = chainCaller), silent = TRUE)
+          ## Debugging plot for the numerical and analytical gradients
+          if(cplCaller == "u1") try(plot(sort(logCplGradObs.ana),
+                 logCplGradObs.num[order(logCplGradObs.ana)],
+                 type = "l", pch = 20, main = chainCaller), silent = TRUE)
 
         }
     }

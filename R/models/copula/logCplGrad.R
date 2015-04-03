@@ -263,12 +263,10 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
               mu <- 0
               p <- dim(Sigma)[1]
 
-              C0 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
-              logGradCpl.Sigma <- {
-                -1/2*solve(Sigma) -
-                (v+p)/2*(1+C0/v)^(-1)*
-                (-solve(Sigma)%*%(x-mu)%*%t(x-mu)%*%solve(Sigma))/v
-              }
+              ## C0 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
+              C1 <- solve(Sigma, (x-mu))
+              C0 <- as.vector(t(x-mu)%*%C1)
+              logGradCpl.Sigma <- -1/2*solve(Sigma)-(v+p)/2*(1+C0/v)^(-1)*(-C1%*%t(C1))/v
               out <- logGradCpl.Sigma[lower.tri(
                       logGradCpl.Sigma, diag = FALSE)]
 

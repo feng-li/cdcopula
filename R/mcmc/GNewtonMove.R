@@ -115,8 +115,6 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           try(plot(g.num, g.math, main = as.character(chainCaller),
                    pch = 20, col = "blue"), silent = TRUE)
 
-          ## print(g.num)
-
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
           g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
@@ -178,7 +176,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       gradObs.pp <- t(X.prop)%*%matrix(logLikGrad.prop) + logPriGrad.pp # pp-by-1
       HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
       HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
-      HessObs.pp.Inv <- try(ginv(HessObs.pp), silent = TRUE) # pp-by-pp
+      HessObs.pp.Inv <- ginv(HessObs.pp) # pp-by-pp
 
       ## TODO: Testing if a subset of gradients works, seems not
       ## nObs <- dim(X)[1]
@@ -193,17 +191,18 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       ##      type = "b")
 
 
-      if(is(HessObs.pp.Inv, "try-error"))
-        {
-          errorFlag <- TRUE
-          break
-        }
+      ## if(is(HessObs.pp.Inv, "try-error"))
+      ##   {
+      ##     errorFlag <- TRUE
+      ##     break
+      ##   }
 
       ## The general Newton's Update
       if((iStep <= kSteps))
         {
           ## update the proposed parameters via the general Newton formula
-          param <- HessObs.pp.Inv%*%(HessObs.pc%*%param - gradObs.pp)
+          ## param <- HessObs.pp.Inv%*%(HessObs.pc%*%param - gradObs.pp)
+          param <- solve(HessObs.pp, (HessObs.pc%*%param - gradObs.pp)) ## robust solution
 
           ## Update the parameter with current updated results. If variable selection did
           ## not chose pth covariate, then the pth coefficient is zero naturally. After
