@@ -63,10 +63,10 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
         {
           Sigma = vech2m(rho[i, ], diag = FALSE)
 
-          if(!is.positivedefinite(Sigma))
-            {
-              out <- NA
-            }
+          ## if(!is.positivedefinite(Sigma))
+          ##   {
+          ##     out <- NA
+          ##   }
 
           out <- dmvnorm(x = x[i, , drop = FALSE],
                          sigma = Sigma,
@@ -81,7 +81,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       logDens <- logDensUpper-logDensLower
 
       ## The output
-      out <- matrix(density)
+      out.log <- matrix(logDens)
     }
   else if(tolower(CplNM) == "mvt") # The multivariate t-copula
     {## Demarta & McNeil (2005),  The t copula and related copulas
@@ -103,10 +103,10 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
         {
           Sigma = vech2m(rho[i, ], diag = FALSE)
 
-          if(!is.positivedefinite(Sigma))
-            {
-              out <- NA
-            }
+          ## if(!is.positivedefinite(Sigma))
+          ##   {
+          ##     out <- NA
+          ##   }
 
           out <- dmvt(x = x[i, , drop = FALSE],
                       sigma = Sigma,
