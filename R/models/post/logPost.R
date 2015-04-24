@@ -43,7 +43,7 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Mon Jan 05 22:58:03 CST 2015
-logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
+logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
 {
@@ -59,16 +59,20 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 
     if(missing(staticCache))
         {
-            ## Initialize "staticCache" structure
-            u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
-                        dimnames = list(NULL, names(Mdl.Y)))
-            MdlDataStruc <- rapply(object = Mdl.beta,
-                                   f = function(x)NA,
-                                   how = "replace")
-            staticCache <- list(Mdl.logPri =  MdlDataStruc,
-                                Mdl.par = MdlDataStruc,
-                                Mdl.d = u,
-                                Mdl.u = u)
+          ## Initialize "staticCache" structure
+          Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                          dimnames = list(NULL, names(Mdl.Y)))
+
+          Mdl.d <- cbind(Mdl.u, NA)
+          colnames(Mdl.d) <- names(Mdl.beta)
+
+          MdlDataStruc <- rapply(object = Mdl.beta,
+                                 f = function(x)NA,
+                                 how = "replace")
+          staticCache <- list(Mdl.logPri =  MdlDataStruc,
+                              Mdl.par = MdlDataStruc,
+                              Mdl.d = Mdl.d,
+                              Mdl.u = Mdl.u)
         }
 
     Mdl.par <- staticCache[["Mdl.par"]]
@@ -79,8 +83,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
-    # print(Mdl.beta)
-
     Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
                             Mdl.parLink = Mdl.parLink,
                             Mdl.beta = Mdl.beta,
@@ -90,6 +92,8 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                             parUpdate = parUpdate,
                             Mdl.logPri = Mdl.logPri)
 
+    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
+                                                               # solution.
 ###----------------------------------------------------------------------------
 ### UPDATING THE MODEL PARAMETERS
 ###----------------------------------------------------------------------------
@@ -100,131 +104,18 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
                              parUpdate = parUpdate,
                              Mdl.par = Mdl.par)
 
-###----------------------------------------------------------------------------
-### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
-### PARAMETERS ARE UPDATED.
-###----------------------------------------------------------------------------
-    CompNM <- names(Mdl.beta)
+    Mdl.ud <- logLikelihood(CplNM = CplNM,
+                            Mdl.Y = Mdl.Y,
+                            Mdl.par = Mdl.par,
+                            Mdl.u = Mdl.u,
+                            Mdl.d = Mdl.d,
+                            parUpdate = parUpdate,
+                            MCMCUpdateStrategy = MCMCUpdateStrategy)
+    Mdl.d <- Mdl.ud[["Mdl.d"]]
+    Mdl.u <- Mdl.ud[["Mdl.u"]]
+    Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
-    ## Allocate the output structure: Margins + Copula (NA)
-    Mdl.logLik <- cbind(Mdl.d, NA)
-    colnames(Mdl.logLik) <- CompNM
-
-    CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
-    MargisNM <- CompNM[CompNM  != CplNM]
-    MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
-
-
-
-
-    ## THE COPULA LOG LIKELIHOOD
-    if(tolower(MCMCUpdateStrategy) == "joint")
-        {
-            evalCpl <- TRUE
-            PostComp <- lapply(parUpdate, function(x) TRUE)
-        }
-    else if(tolower(MCMCUpdateStrategy) == "twostage" |
-            tolower(MCMCUpdateStrategy) == "margin")
-        {
-            if(length(MargisUpNM) == 0)
-                {
-                    ## Stage two of the two stage approach
-                    evalCpl <- TRUE
-                    PostComp <- lapply(parUpdate, function(x) FALSE)
-                    PostComp[[CplNM]] <- TRUE
-                }
-            else
-                {
-                    evalCpl <- FALSE
-                    PostComp <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
-                }
-        }
-    else
-        {
-            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
-                       "not implemented!"))
-        }
-
-
-
-    ## THE MARGINAL LIKELIHOODS
-    densCaller <- list()
-    for(CompCaller in MargisNM)
-        {
-            if(CompCaller %in% MargisUpNM)
-                {
-                    if(tolower(MCMCUpdateStrategy) == "joint")
-                        {
-                            densCaller[[CompCaller]] <- c("u", "d")
-                        }
-                    else if(tolower(MCMCUpdateStrategy) == "twostage")
-                        {
-                            ## Stage two of the two stage approach
-                            densCaller[[CompCaller]] <- c("u", "d")
-                        }
-                    else if(tolower(MCMCUpdateStrategy) == "margin")
-                        {
-                            densCaller[[CompCaller]] <- c(NA, "d")
-                        }
-                    else
-                        {
-                            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
-                                       "not implemented!"))
-                        }
-                }
-            else
-                {
-                    if(evalCpl == TRUE && any(is.na(Mdl.u)))
-                        {
-                            ## if(tolower(MCMCUpdateStrategy) == "joint")
-                            ##     {
-                            densCaller[[CompCaller]] <- c("u", "d")
-                            ##     }
-                            ## else
-                            ##     {
-                            ##         browser()
-                            ##         stop("Two-stage updating without providing \"u\" is not possible!")
-                            ##     }
-                        }
-                }
-        }
-
-###----------------------------------------------------------------------------
-### UPDATING THE LIKELIHOOD
-###----------------------------------------------------------------------------
-
-    ## Updating the marginal models
-    for(CompCaller in names(densCaller))
-        {
-            Mdl.ud <- MargiModel(
-                y = Mdl.Y[[CompCaller]],
-                type = MargisTypes[which(MargisNM == CompCaller)],
-                par = Mdl.par[[CompCaller]],
-                densCaller = densCaller[[CompCaller]])
-
-            if("u" %in% densCaller[[CompCaller]])
-                {
-                    Mdl.u[,  CompCaller] <- Mdl.ud[["u"]]
-                }
-            if("d" %in% densCaller[[CompCaller]])
-                {
-                    Mdl.d[,  CompCaller] <- Mdl.ud[["d"]]
-                    Mdl.logLik[,  CompCaller] <- Mdl.ud[["d"]]
-                }
-        }
-
-
-    ## Updating the copula model if required
-    if(evalCpl == TRUE)
-        {
-            Mdl.logLikCpl <- logCplLik(
-                u = Mdl.u,
-                CplNM = CplNM,
-                parCplRep = Mdl.par[[CplNM]],
-                sum = FALSE) # n-by-1
-
-            Mdl.logLik[, CplNM] <- Mdl.logLikCpl
-        }
+    Mdl.logLik.SubSum <- sum(Mdl.d[, unlist(Mdl.PostComp)])
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
@@ -236,9 +127,6 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X,Mdl.beta,Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### THE LOG POSTERIOR
 ###----------------------------------------------------------------------------
-    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
-                                        # solution.
-    Mdl.logLik.SubSum <- sum(Mdl.logLik[, unlist(PostComp)])
     Mdl.logPost <-  Mdl.logLik.SubSum+Mdl.logPri.SubSum
 
     out <- list(Mdl.logPost = Mdl.logPost,
