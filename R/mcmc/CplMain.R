@@ -17,6 +17,18 @@
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012; Current: Fri Mar 27 12:08:32 CST 2015.
 CplMain <- function(Mdl.Idx.training, CplConfigFile)
 {
+
+###----------------------------------------------------------------------------
+### DEBUGGING
+###----------------------------------------------------------------------------
+
+  DEBUGGING <- FALSE
+  if(DEBUGGING)
+    {
+      ## Turn warnings into error
+      options(warn = 100)
+    }
+
 ###----------------------------------------------------------------------------
 ### LOAD USER SETUP FILE
 ###----------------------------------------------------------------------------
@@ -144,8 +156,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                       par = betaVecInitComp,
                       fn = logPostOptim,
                       control = list(maximize = TRUE,
-                        ## all.methods = TRUE,
-                        maxit = 100),
+                          ## all.methods = TRUE,
+                          maxit = 100),
                       method = "BFGS",
                       hessian = FALSE,
                       CplNM = CplNM,
@@ -173,7 +185,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                   InitGoodCompCurr <- TRUE
                   Mdl.beta <- parCplSwap(
                           betaInput = as.numeric(betaVecOptimComp[1,
-                            1:length(betaVecOptimComp)]),
+                              1:length(betaVecOptimComp)]),
                           Mdl.beta = Mdl.beta,
                           Mdl.betaIdx = Mdl.betaIdx,
                           parUpdate = parUpdate)
@@ -205,9 +217,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   if(!exists("MCMC.density"))
     {
-      MCMC.density <- list()
-      MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
-      MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+      ## MCMC.density <- list()
+      ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  nIter))
+      ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
       ## FIXME: This is really big ~ 1G
     }
 
@@ -252,8 +264,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
 
 
-## Dry run to obtain staticcache for the initial values. Again this time all the
-## parameters should be updated.
+  ## Dry run to obtain staticcache for the initial values. Again this time all the
+  ## parameters should be updated.
 
   staticCache <- logPost(
           CplNM = CplNM,
@@ -334,8 +346,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- AccProbCurr
 
       ## Save the marginal densities.  FIXME: This is not updated for every iteration.
-      MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
-      MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
+      ## MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
+      ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
 
       ## MCMC trajectory
       if(track.MCMC == TRUE && iInner == nInner)
@@ -354,6 +366,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)
+  gc()
+
   out <- as.list(environment())
   return(out)
 }

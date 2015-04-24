@@ -1,4 +1,4 @@
-
+test <- function() NULL
 ## for(i in 1:10)
 ##   {
 

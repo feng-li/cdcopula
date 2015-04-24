@@ -136,20 +136,20 @@ for(iLPDS in LPDS)
         if(!interactive())
             {
                 logPredLst <- clusterMap(
-                    cl = cl,
-                    fun = logPredDens,
-                    CplOut = OUT.CplCross,
-                    pred = iLPDS,
-                    Mdl.Idx.testing = crossValidIdx[["testing"]])
-            }
+                        cl = cl,
+                        fun = logPredDens,
+                        CplOut = OUT.CplCross,
+                        pred = iLPDS,
+                        Mdl.Idx.testing = crossValidIdx[["testing"]])
+              }
         else
             {
                 logPredLst <- mapply(
-                    FUN = logPredDens,
-                    CplOut = OUT.CplCross,
-                    pred = iLPDS,
-                    Mdl.Idx.testing = crossValidIdx[["testing"]],
-                    SIMPLIFY = FALSE)
+                        FUN = logPredDens,
+                        CplOut = OUT.CplCross,
+                        pred = iLPDS,
+                        Mdl.Idx.testing = crossValidIdx[["testing"]],
+                        SIMPLIFY = FALSE)
             }
 
         LPDS.OUT[[iLPDS]] <- logPredDensScore(logPredLst = logPredLst)

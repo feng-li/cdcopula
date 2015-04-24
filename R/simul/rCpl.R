@@ -25,7 +25,7 @@ rCpl <- function(n, parCpl, CplNM, exArgs = NA)
 
       ## The upper tail dependence given lower tail dependence and Kendall's tau
       ## FIXME: Consider to speed it up if it is really slow
-      lambdaU <- kendalltauInv(CplNM = CplNM, parRepCpl = parCpl)
+      lambdaU <- kendalltauInv(CplNM = CplNM, parCpl = parCpl)
 
       ## The standard copula parameters (recycled if necessary).
       delta <- as.vector(matrix(-log(2)/log(lambdaL), n, 1))

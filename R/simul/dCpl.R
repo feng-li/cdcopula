@@ -122,7 +122,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
   else if(tolower(CplNM) == "gumbel")
     {
       theta <- parCpl[["theta"]]
-      pctl <- CCpl(u = u, theta, CplNM = "gumbel")
+      pctl <- pCpl(u = u, theta, CplNM = "gumbel")
       u.tilde <- -log(u)
 
       u.tildeProd <- u.tilde[, 1]*u.tilde[, 2]

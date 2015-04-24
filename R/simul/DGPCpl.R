@@ -17,14 +17,16 @@
 ##'       Current: Wed Mar 07 17:33:20 CET 2012.
 DGPCpl <- function(DGPconfigfile, export = "list")
   {
+    ## TODO: check no visible bindings for DGPCpl,  DGP.par, MdlDGP.*
+
     ## source the configure file
     source(file = DGPconfigfile, local = TRUE)
 
     ## THE RANDOM CDF VARIABLE IN THE COPULA
-    uOut <- ruCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM)
+    uOut <- rCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM)
 
     ## Generate the response variables
-    Mdl.Y <- u2qtl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],
+    Mdl.Y <- qCpl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],
                    MargisTypes = MargisTypes)
 
     ## The base covariates
@@ -45,17 +47,17 @@ DGPCpl <- function(DGPconfigfile, export = "list")
                 tau <- MdlDGP.par[[CplNM]][["tau"]]
                 a <- 0 ## The lower bound of generalized logit link
                 b <- 2^(1/2-1/(2*tau)) ## the upper bound
-                extArgs <- list(a = a, b = b)
+                linkArgs <- list(a = a, b = b, type = linkCurr)
               }
             else
               {
-                extArgs <- NA
+                linkArgs <- list(type = )
               }
 
             ## FIXME: Conditional link function
             ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
                                   link = linkCurr,
-                                  extArgs = extArgs)
+                                  linkArgs = linkArgs)
 
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
             nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed

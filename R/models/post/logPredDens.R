@@ -13,7 +13,7 @@
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013;
 ##'       Current: Mon Feb 25 19:21:03 CET 2013.
 logPredDens <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing,
-                        Mdl.Y.testing, pred)
+                        Mdl.Y.testing, MCMC.beta, MCMC.betaIdx, pred)
     {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list

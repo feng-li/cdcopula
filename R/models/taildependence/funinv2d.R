@@ -6,18 +6,19 @@ funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
             {
                 ## If the FUNNAME does not exist, create it
                 set.seed(object.size(FUN))
-                FUNNAME <- runif(1, 1000, 9999)
-                FUN.tabular <- paste(".tabular.", FUNNAME, sep = "")
+                FUNNAME.prefix <- runif(1, 1000, 9999)
+                tabular.FUNNAME <- paste(".tabular.", FUNNAME.prefix, sep = "")
 
-                if(!exists(FUN.tabular, envir = .GlobalEnv))
-                    {
-                        assign(FUN.tabular, twowaytabular(
+                if(!exists(tabular.FUNNAME, envir = .GlobalEnv))
+                  {
+                    tabular <- twowaytabular(
                             FUN = FUN, x1lim = x1lim,
-                            x2lim = x2lim,tol = tol, ...),
-                               envir = .GlobalEnv)
-                    }
+                            x2lim = x2lim,tol = tol, ...)
+                    assign(tabular.FUNNAME, tabular,
+                           envir = .GlobalEnv)
+                  }
                 out <- funinv2d.tab(x1 = x1, y = y,
-                                    tabular = get(FUN.tabular, envir = .GlobalEnv))
+                                    tabular = get(tabular.FUNNAME, envir = .GlobalEnv))
             }
         else if(tolower(method) == "iterative")
             {
@@ -124,13 +125,16 @@ twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-4, ...)
 }
 funinv2d.iter <- function(FUN, x1, y, x2lim)
     {
-        ## TODO: The max interval could not handle Inf in the uniroot function.
+      ## TODO: The max interval could not handle Inf in the uniroot function.
 
-        ## TODO: Consider the error handle. i.e., In theory (see the Appendix in the
-        ## paper) you can't have small tau with big delta (lower tail dependent) which
-        ## yields non accurate root.
+      ## TODO: Consider the error handle. i.e., In theory (see the Appendix in the
+      ## paper) you can't have small tau with big delta (lower tail dependent) which
+      ## yields non accurate root.
 
-        ## TODO: parallel this code
+      ## TODO: parallel this code
+
+      ## TODO: "..." argument may be not correctly used.
+
 
         out.x2 <- x1
         parLen <- length(y)
@@ -142,7 +146,7 @@ funinv2d.iter <- function(FUN, x1, y, x2lim)
                 x1Curr <- x1[i]
                 x2Curr <- try(uniroot(function(x,...)
                     {
-                        FUN(x1 = x1, x2 = x, y = y, ...)-y
+                      FUN(x1 = x1, x2 = x, y = y, ...)-y
                     }, interval = x2lim, x1 = x1, y = y, ...), silent = TRUE)
 
                 if(is(x2Curr, "try-error"))

@@ -24,18 +24,6 @@
 
 
 ###----------------------------------------------------------------------------
-### DEBUGGING
-###----------------------------------------------------------------------------
-
-DEBUGGING <- TRUE
-if(DEBUGGING)
-{
-  ## Turn warnings into error
-  options(warn = 100)
-}
-
-
-###----------------------------------------------------------------------------
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 
@@ -85,7 +73,7 @@ nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 Mdl.X <- MdlDataStruc
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
@@ -134,7 +122,7 @@ Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.78,
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MdlDataStruc
-varSelArgs[[1]][["mu"]] <- list(cand = NULL,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
                                 init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -172,7 +160,7 @@ varSelArgs[[4]][["lambdaL"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -188,20 +176,20 @@ track.MCMC <- TRUE
 
 ## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
 MCMCUpdate <- MdlDataStruc
-MCMCUpdate[[1]][[1]] <- F
-MCMCUpdate[[1]][[2]] <- F
-MCMCUpdate[[1]][[3]] <- F
-MCMCUpdate[[1]][[4]] <- F
+MCMCUpdate[[1]][[1]] <- T
+MCMCUpdate[[1]][[2]] <- T
+MCMCUpdate[[1]][[3]] <- T
+MCMCUpdate[[1]][[4]] <- T
 
-MCMCUpdate[[2]][[1]] <- F
-MCMCUpdate[[2]][[2]] <- F
-MCMCUpdate[[2]][[3]] <- F
-MCMCUpdate[[2]][[4]] <- F
+MCMCUpdate[[2]][[1]] <- T
+MCMCUpdate[[2]][[2]] <- T
+MCMCUpdate[[2]][[3]] <- T
+MCMCUpdate[[2]][[4]] <- T
 
-MCMCUpdate[[3]][[1]] <- F
-MCMCUpdate[[3]][[2]] <- F
-MCMCUpdate[[3]][[3]] <- F
-MCMCUpdate[[3]][[4]] <- F
+MCMCUpdate[[3]][[1]] <- T
+MCMCUpdate[[3]][[2]] <- T
+MCMCUpdate[[3]][[3]] <- T
+MCMCUpdate[[3]][[4]] <- T
 
 
 MCMCUpdate[[4]][[1]] <- T

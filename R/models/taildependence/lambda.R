@@ -10,12 +10,15 @@ lambda <- function(CplNM, parCpl)
     }
   else if (tolower(CplNM) == "bb7")
     {
-      if(exists("delta"))
+      delta <- parCpl[["delta"]]
+      theta <- parCpl[["theta"]]
+
+      if(length(delta)>0)
         {
           out[["lambdaL"]] <- 2^{-1/delta}
         }
 
-      if(exists("theta"))
+      if(length(theta)>0)
         {
           out[["lambdaU"]] <- 2-2^{1/theta}
         }

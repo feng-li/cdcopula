@@ -29,7 +29,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                         Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
 {
-  require(MASS)
+  require("MASS")
 
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
@@ -76,53 +76,92 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
     {
       ## The gradient and Hessian in the likelihood
       logLikGradHess.prop <- logLikelihoodGradHess(
-          CplNM = CplNM,
-          Mdl.Y = Mdl.Y,
-          Mdl.X = Mdl.X,
-          Mdl.parLink = Mdl.parLink,
-          Mdl.beta = Mdl.beta,
-          MargisTypes = MargisTypes,
-          Mdl.betaIdx = Mdl.betaIdx,
-          parUpdate = parUpdate,
-          varSelArgs = varSelArgs,
-          staticCache = staticCache.curr,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)
-
-
-      ## DEBUGING
-      ## FIXME: DEBUGING code
-      ## browser()
-
-      DEBUGGING <- FALSE
-      if(DEBUGGING == TRUE)
-        {
-          logLikGradHess.prop.num <- logLikelihoodGradHess(
               CplNM = CplNM,
               Mdl.Y = Mdl.Y,
-              Mdl.X = Mdl.X,
               Mdl.parLink = Mdl.parLink,
-              Mdl.beta = Mdl.beta,
               MargisTypes = MargisTypes,
-              Mdl.betaIdx = Mdl.betaIdx,
               parUpdate = parUpdate,
-              varSelArgs = varSelArgs,
               staticCache = staticCache.curr,
-              gradMethods = "numeric",
               MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-          g.math <- logLikGradHess.prop[["logLikGradObs"]]
-          g.num <- logLikGradHess.prop.num[["logLikGradObs"]]
-          try(plot(g.num, g.math, main = as.character(chainCaller),
-                   pch = 20, col = "blue"), silent = TRUE)
+
+      ## DEBUGING FIXME: DEBUGING code
+
+      DEBUGGING <- TRUE
+      if(DEBUGGING == TRUE)
+        {
+          ## APPROACH ONE: This version calculates the numerical gradient with respect to
+          ## the model parameters (not the covariate dependent beta parameters) via the
+          ## chain rule.
+          logLikGradHess.prop.num.split <- logLikelihoodGradHess(
+                  CplNM = CplNM,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.parLink = Mdl.parLink,
+                  MargisTypes = MargisTypes,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache.curr,
+                  gradMethods = "numeric",
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
 
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
+          g.math <- logLikGradHess.prop[["logLikGradObs"]]
+          g.num <- logLikGradHess.prop.num.split[["logLikGradObs"]]
+          try(plot(g.num, g.math, main = as.character(chainCaller),
+                   pch = 20, col = "blue"), silent = TRUE)
           g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
           if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
             {
               ## Sys.sleep(1)
               ## browser(text = "Something Wrong!")
             }
+
+          ## APPROACH TWO: This version calculates the numerical gradient (for log
+          ## posterior) via the full log likelihood function
+          browser()
+
+          logLikelihoodGradNumFun <- function(ipar, i, data.parent.env, data.global.env)
+            {
+              ## List and import all necessary variables. This order is very
+              ## important. The data in local environment should always be nested inside
+              ## global environment.
+              subtask <- NULL
+              i <- NULL
+              logLikGradHess.prop <- NULL
+
+              list2env(data.global.env, envir = environment())
+              list2env(data.parent.env, envir = environment())
+
+              require("numDeriv")
+
+              gradTry <-  try(grad(func = logLikelihoodOptim,
+                                   iPar = iPar,
+                                   i = i,
+                                   CplNM = CplNM,
+                                   Mdl.Y = Mdl.Y,
+                                   Mdl.u = Mdl.u,
+                                   Mdl.d = Mdl.d,
+                                   parUpdate = parUpdate,
+                                   MCMCUpdateStrategy = MCMCUpdateStrategy)
+                             ,silent = TRUE)
+
+              if(is(gradTry, "try-error"))
+                {
+                  out <- NA
+                }
+              else
+                {
+                  out <- gradTry
+                }
+              return(out)
+            }
+
+          logLikelihoodGrad.numLst <- apply(X = par, Margin = 1,
+                                            FUN = logLikelihoodGradNumFun,
+                                            data.parent.env = as.list(environment()),
+                                            data.global.env  =  as.list(.GlobalEnv))
+          logLikGradHess.prop.num.joint <- do.call(rbind, logLikelihoodGrad.numLst) # n-by-pp
+
         }
 
       ## Break the loop if something went wrong in the gradient
@@ -205,7 +244,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           param <- solve(HessObs.pp, (HessObs.pc%*%param - gradObs.pp)) ## robust solution
 
           ## Update the parameter with current updated results. If variable selection did
-          ## not chose pth covariate, then the pth coefficient is zero naturally. After
+          ## not choose pth covariate, then the pth coefficient is zero naturally. After
           ## the first variable-dimensional move, the algorithm switches to usual Newton's
           ## move.
           betaIdxCurr <- betaIdxProp

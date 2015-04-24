@@ -10,7 +10,7 @@
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri May 11 12:42:20 CEST 2012; Current: Fri Mar 27 17:47:58 CST 2015.
-logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
+logCplGrad <- function(CplNM, u, parCplRep, cplCaller)
 {
 ###----------------------------------------------------------------------------
 ### Gradients for the copula
@@ -28,7 +28,7 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller, Mdl.X, Mdl.beta)
 
       lambdaU <- as.vector(kendalltauInv(
               CplNM = CplNM,
-              parRepCpl = parCpl))
+              parCplRep = parCplRep))
 
       ## The standard copula parameters (recycled if necessary, should be a
       ## vector).

@@ -16,23 +16,26 @@
 ##'       Current: Mon Apr 16 14:40:16 CEST 2012.
 ##' TODO: Split the output by using a caller. The inverse look will fail when lambdaL>8.5
 ##' due to the reason of non-monotonic.
-kendalltauInv <- function(CplNM, parRepCpl, method = c("tabular", "iterative")[1])
+kendalltauInv <- function(CplNM, parCplRep, method = c("tabular", "iterative")[1])
     {
         if(tolower(method) == "tabular")
             {
                 ## If the tauTabular not exist, create it
                 if(!exists("tauTabular", envir = .GlobalEnv))
-                    {
-                        tauTabular <<- kendalltauTabular(CplNM = CplNM, tol = 1e-3)
-                    }
+                  {
+                    assign(tauTabular,
+                           kendalltauTabular(CplNM = CplNM, tol = 1e-3),
+                           envir = .GlobalEnv)
+                  }
+                tauTabular <- get("tauTabular", envir = .GlobalEnv)
                 out <- kendalltauInv.tab(CplNM = CplNM,
-                                         parRepCpl = parRepCpl,
+                                         parCplRep = parCplRep,
                                          tauTabular = tauTabular)
             }
         else if(tolower(method) == "iterative")
             {
                 out <- kendalltauInv.iter(CplNM = CplNM,
-                                          parRepCpl = parRepCpl,
+                                          parCplRep = parCplRep,
                                           parCaller = "theta")
             }
         return(out)
@@ -41,13 +44,13 @@ kendalltauInv <- function(CplNM, parRepCpl, method = c("tabular", "iterative")[1
 ###----------------------------------------------------------------------------
 ### The tabular looking up method (faster)
 ###----------------------------------------------------------------------------
-kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
+kendalltauInv.tab <- function(CplNM, parCplRep, tauTabular)
     {
         if(tolower(CplNM) == "bb7")
             {
-                ## out <- vector("list", length(parRepCpl))
-                lambdaL <- parRepCpl[["lambdaL"]]
-                tau <- parRepCpl[["tau"]]
+                ## out <- vector("list", length(parCplRep))
+                lambdaL <- parCplRep[["lambdaL"]]
+                tau <- parCplRep[["tau"]]
 
 
                 if(length(lambdaL) !=length(tau))
@@ -103,7 +106,7 @@ kendalltauInv.tab <- function(CplNM, parRepCpl, tauTabular)
 ###----------------------------------------------------------------------------
 ### The iterative method
 ###----------------------------------------------------------------------------
-kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
+kendalltauInv.iter <- function(CplNM, parCplRep, parCaller = "theta")
     {
         ## TODO: The max interval could not handle Inf in the uniroot function.  TODO:
         ## Consider the error handle. i.e., In theory (see the Appendix in the paper) you
@@ -113,8 +116,8 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
             {
                 if(tolower(parCaller) == "theta")
                     {
-                        lambdaL <- parRepCpl[["lambdaL"]]
-                        tau <- parRepCpl[["tau"]]
+                        lambdaL <- parCplRep[["lambdaL"]]
+                        tau <- parCplRep[["tau"]]
                         delta <- -log(2)/log(lambdaL)
 
                         theta.interval <- c(1, 1000)
@@ -152,18 +155,19 @@ kendalltauInv.iter <- function(CplNM, parRepCpl, parCaller = "theta")
                     }
                 else if(tolower(parCaller) == "delta")
                     {
-                        lambdaU <- parRepCpl[["lambdaU"]]
-                        tau <- parRepCpl[["tau"]]
+                        lambdaU <- parCplRep[["lambdaU"]]
+                        tau <- parCplRep[["tau"]]
                         theta <- log(2)/(log(2)-lambdaU)
 
                         out.delta <- theta
                         parLen <- length(theta)
                         out.delta[1:parLen] <- NA
 
-                        for(i in 1:thetaLen)
+                        for(i in 1:parLen)
                             {
                                 tauCurr <- tau[i]
                                 deltaCurr <- delta[i]
+                                thetaCurr <- theta[i]
                                 outRootCurr <-
                                     try(uniroot(
                                         function(x, thetaCurr, deltaCurr, tauCurr)

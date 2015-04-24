@@ -21,9 +21,9 @@
 logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,varSelArgs, MargisTypes,
                          priArgs,parUpdate, staticCache, MCMCUpdateStrategy)
-    {
-        ## a wrapper of the log posterior function that can be used for directly optimization
-        ## via Newton's method
+  {
+        ## a wrapper of the log posterior function that can be used for directly
+        ## optimization via Newton's method
 
         Mdl.beta <- parCplSwap(betaInput = betaVec,
                                Mdl.beta = Mdl.beta,
@@ -34,20 +34,19 @@ logPostOptim <- function(betaVec, CplNM, Mdl.Y, Mdl.X, Mdl.beta,
         ## if(any(abs(betaVec)>1000)) browser()
         ## Update logPost
 
-
         logPostOut <- logPost(
-            CplNM = CplNM,
-            Mdl.Y = Mdl.Y,
-            Mdl.X = Mdl.X,
-            Mdl.beta = Mdl.beta,
-            Mdl.betaIdx = Mdl.betaIdx,
-            Mdl.parLink = Mdl.parLink,
-            varSelArgs = varSelArgs,
-            MargisTypes = MargisTypes,
-            priArgs = priArgs,
-            staticCache = staticCache,
-            parUpdate = parUpdate,
-            MCMCUpdateStrategy = MCMCUpdateStrategy)
+                CplNM = CplNM,
+                Mdl.Y = Mdl.Y,
+                Mdl.X = Mdl.X,
+                Mdl.beta = Mdl.beta,
+                Mdl.betaIdx = Mdl.betaIdx,
+                Mdl.parLink = Mdl.parLink,
+                varSelArgs = varSelArgs,
+                MargisTypes = MargisTypes,
+                priArgs = priArgs,
+                staticCache = staticCache,
+                parUpdate = parUpdate,
+                MCMCUpdateStrategy = MCMCUpdateStrategy)
 
         out <- logPostOut[["Mdl.logPost"]]
 

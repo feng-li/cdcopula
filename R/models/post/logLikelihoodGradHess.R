@@ -9,13 +9,9 @@
 ##'
 ##' @param Mdl.Y "list".
 ##'
-##' @param Mdl.X "list".
 ##'
 ##' @param Mdl.parLink "list".
 ##'
-##' @param Mdl.beta "list".
-##'
-##' @param Mdl.betaIdx "list".
 ##'
 ##' @param parUpdate "list".
 ##'
@@ -35,11 +31,9 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
-logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
-                                  Mdl.beta, Mdl.betaIdx, parUpdate, varSelArgs,
-                                  staticCache,
-                                  gradMethods = c("analytic", "numeric")[1:2],
-                                  MCMCUpdateStrategy)
+logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
+                                  gradMethods = c("analytic","numeric")[1],
+                                  staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
   chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
@@ -49,7 +43,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
 
   Mdl.par <- staticCache[["Mdl.par"]]
 
-  CompNM <- names(Mdl.beta)
+  CompNM <- names(parUpdate)
   MargisNM <- CompNM[(CompNM  != CplNM)]
   names(MargisTypes) <- MargisNM
 
@@ -122,49 +116,79 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
         {
           ## A simple wrapper that calculates the numerical gradient for given
           ## parameters NOTE: The numeric gradient depends on numDeriv package
-
-          require(numDeriv)
-          MargiModelGradNumFun <- function(x, parCaller, parCurr, yCurr, typeCurr)
+          MargiModelGradNumFun.subtask <- function(subtask, data.parent.env, data.global.env)
             {
-              parCurr[[parCaller]] <- x
-              MargiLogLikObs <- MargiModel(
-                      par = parCurr,
-                      y = yCurr,
-                      type = typeCurr)$u
-              out <- MargiLogLikObs
+              ## This order is very important. The data in local environment should always
+              ## be nested inside global environment.
+              list2env(data.global.env, envir = environment())
+              list2env(data.parent.env, envir = environment())
+
+              nSubTask <- length(subtask)
+              out <- matrix(NA, nSubTask, 1)
+              require("numDeriv")
+              MargiModelGradNumFun <- function(x, parCaller, parCurr, yCurr, typeCurr)
+                {
+                  parCurr[[parCaller]] <- x
+                  MargiLogLikObs <- MargiModel(
+                          par = parCurr,
+                          y = yCurr,
+                          type = typeCurr)$u
+                  out <- MargiLogLikObs
+                  return(out)
+                }
+
+              for(i in 1:nSubTask)
+                {
+                  gradTry <-  try(
+                          grad(
+                          func = MargiModelGradNumFun,
+                          x = parCurr[[parCaller]][i],
+                          parCaller = parCaller,
+                          parCurr = lapply(parCurr, function(x, i)x[i], i = i),
+                          yCurr = yCurr[i],
+                          typeCurr = typeCurr), silent = TRUE)
+
+                  if(is(gradTry, "try-error"))
+                    {
+                      out[i] <- NA
+                    }
+                  else
+                    {
+                      out[i] <- gradTry
+                    }
+                }
               return(out)
             }
 
           nObs <- length(Mdl.Y[[1]])
-          MargiGradObs.num <- matrix(NA, nObs, 1)
-          for(i in 1:nObs)
-            {
-              gradTry <- try(grad(
-                      func = MargiModelGradNumFun,
-                      x = parCurr[[parCaller]][i],
-                      parCaller = parCaller,
-                      parCurr = lapply(parCurr, function(x, i)x[i], i = i),
-                      yCurr = yCurr[i],
-                      typeCurr = typeCurr), silent = TRUE)
+          nCores <- detectCores()
+          tasks <- data.partition(nObs, list(N.subsets = nCores, partiMethod = "ordered"))
+          data.current.env <- as.list(environment())
 
-              if(is(gradTry, "try-error"))
-                {
-                  MargiGradObs.num[i] <- NA
-                }
-              else
-                {
-                  MargiGradObs.num[i] <- gradTry
-                }
-            }
+          MargiGradObs.numLst <- lapply(X = tasks, FUN = MargiModelGradNumFun.subtask,
+                                        data.parent.env = data.current.env,
+                                        data.global.env  =  as.list(.GlobalEnv))
+          ## The parallel version
+          ## cl <- makeCluster(nCores)
+          ## MargiGradObs.numLstClust <- parLapply(
+          ##         cl = cl, X = tasks,
+          ##         fun = MargiModelGradNumFun.subtask,
+          ##         data.paraent.env = data.current.env,
+          ##         data.global.env  =  as.list(.GlobalEnv)
+          ##         )
+          ## stopCluster(cl)
+
+          MargiGradObs.num <- unlist(MargiGradObs.numLst)
           MargiGradObs <- MargiGradObs.num
 
-          ## Evaluate if the numeric and analytic gradients are consistent
+          ## DEBUG: Check if any gradient component is not correctly computed.  To check
+          ## the overall gradient chain, look at the "GNewtonMove()" function. Below
+          ## evaluates if the numeric and analytic gradients are consistent
           try(plot(sort(MargiGradObs.ana),
                MargiGradObs.num[order(MargiGradObs.ana)],
                type = "l", pch = 20, main = chainCaller), silent = TRUE)
 
         }
-
 
       staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
               y = yCurr,
@@ -197,9 +221,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
                   CplNM = CplNM,
                   u = staticCache$Mdl.u,
                   parCplRep = Mdl.par[[CplNM]],
-                  cplCaller = cplCaller,
-                  Mdl.X = Mdl.X,
-                  Mdl.beta = Mdl.beta)
+                  cplCaller = cplCaller)
           logCplGradObs <- logCplGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))
@@ -207,8 +229,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
           ## The gradient for the copula function. scaler input and output NOTE: The
           ## numerical gradient may not work well if the tabular version of Kendall's tau
           ## is used (due to the precision).
-
-          require(numDeriv)
+          require("numDeriv")
           logCplGradNumFun <- function(x, u, iRun, CompCaller, parCaller, cplCaller,
                                        CplNM, parCplRep, staticCache)
             {
@@ -324,7 +345,7 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.X, Mdl.parLink,
   logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
 
   ## The output
-  out <- list(logLikGradObs = logLikGradObs,
+  out <- list(logLikGradObs = logLikGradObs, # n-by-1
               logLikHessObs = NA,
               errorFlag = FALSE)
 
