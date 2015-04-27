@@ -1,17 +1,15 @@
 ##' The gradient for the log posterior in the copula model
 ##'
-##' This function usually does not need to modify. Note that this function does
-##' not give the complete posteriors but its components,  i.e. gradient for the
-##' likelihood function, gradient for the prior,  gradient for the linkage.
+##' This function usually does not need to modify. Note that this function does not give
+##' the complete posteriors but its components, i.e. gradient for the likelihood function,
+##' gradient for the prior, gradient for the linkage.
 ##' @param CplNM "character".
 ##'
 ##' @param MargisTypes "list".
 ##'
 ##' @param Mdl.Y "list".
 ##'
-##'
 ##' @param Mdl.parLink "list".
-##'
 ##'
 ##' @param parUpdate "list".
 ##'
@@ -31,9 +29,9 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
-logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
-                                  gradMethods = c("analytic","numeric")[1],
-                                  staticCache, MCMCUpdateStrategy)
+logDensGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
+                                 gradMethods = c("analytic","numeric")[1],
+                                 staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
   chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
@@ -342,13 +340,12 @@ logLikelihoodGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpd
 ###----------------------------------------------------------------------------
 
   ## The gradient for the likelihood,  n-by-1
-  logLikGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
+  logDensGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
 
   ## The output
-  out <- list(logLikGradObs = logLikGradObs, # n-by-1
-              logLikHessObs = NA,
+  out <- list(logGradObs = logDensGradObs, # n-by-1
+              logHessObs = NA,
               errorFlag = FALSE)
-
 
   return(out)
 }

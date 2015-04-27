@@ -95,7 +95,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
     Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
                                                                # solution.
 ###----------------------------------------------------------------------------
-### UPDATING THE MODEL PARAMETERS
+### UPDATING THE MODEL LIKELIHOOD PARAMETERS
 ###----------------------------------------------------------------------------
     Mdl.par <- parCplMeanFun(CplNM = CplNM,
                              Mdl.X = Mdl.X,
@@ -104,13 +104,13 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                              parUpdate = parUpdate,
                              Mdl.par = Mdl.par)
 
-    Mdl.ud <- logLikelihood(CplNM = CplNM,
-                            Mdl.Y = Mdl.Y,
-                            Mdl.par = Mdl.par,
-                            Mdl.u = Mdl.u,
-                            Mdl.d = Mdl.d,
-                            parUpdate = parUpdate,
-                            MCMCUpdateStrategy = MCMCUpdateStrategy)
+    Mdl.ud <- logDens(CplNM = CplNM,
+                      Mdl.Y = Mdl.Y,
+                      Mdl.par = Mdl.par,
+                      Mdl.u = Mdl.u,
+                      Mdl.d = Mdl.d,
+                      parUpdate = parUpdate,
+                      MCMCUpdateStrategy = MCMCUpdateStrategy)
     Mdl.d <- Mdl.ud[["Mdl.d"]]
     Mdl.u <- Mdl.ud[["Mdl.u"]]
     Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]

@@ -1,4 +1,4 @@
-logLikelihood <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate, MCMCUpdateStrategy)
+logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate, MCMCUpdateStrategy)
 {
 
 ###----------------------------------------------------------------------------
@@ -6,7 +6,6 @@ logLikelihood <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate, MCMCUp
 ### PARAMETERS ARE UPDATED.
 ###----------------------------------------------------------------------------
   CompNM <- names(Mdl.par)
-  browser()
   ## Allocate the output structure: Margins + Copula (NA)
   ## Mdl.logLik <- cbind(Mdl.d, NA)
   ## colnames(Mdl.logLik) <- CompNM
@@ -126,28 +125,4 @@ logLikelihood <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate, MCMCUp
 
   out <- list(Mdl.d = Mdl.d, Mdl.u = Mdl.u, Mdl.PostComp = Mdl.PostComp)
   return(out)
-}
-
-## This is the optimization version
-logLikelihoodOptim <- function(ipar, i, chainCaller, CplNM, Mdl.Y,
-                               Mdl.par, Mdl.u, Mdl.d, parUpdate,
-                               MCMCUpdateStrategy)
-{
-
-  CompCaller <- chainCaller[1]
-  parCaller <- chainCaller[2]
-
-  Mdl.par[[CompCaller]][[parCaller]][i] <- parVec
-
-  Mdl.ud <- logLikelihood(CplNM = CplNM,
-                          Mdl.Y = Mdl.Y,
-                          Mdl.par = Mdl.par,
-                          Mdl.u = Mdl.u,
-                          Mdl.d = Mdl.d,
-                          parUpdate = parUpdate,
-                          MCMCUpdateStrategy = MCMCUpdateStrategy)
-  Mdl.d <- Mdl.ud[["Mdl.d"]]
-  Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
-
-  out <- sum(Mdl.d[, unlist(Mdl.PostComp)])
 }

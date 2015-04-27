@@ -55,18 +55,18 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
   ## Initial update staticCache for current Newton move
   staticCache.curr <- logPost(
-      CplNM = CplNM,
-      Mdl.Y = Mdl.Y,
-      Mdl.X = Mdl.X,
-      Mdl.beta = Mdl.beta,
-      Mdl.betaIdx = Mdl.betaIdx,
-      Mdl.parLink = Mdl.parLink,
-      varSelArgs = varSelArgs,
-      MargisTypes = MargisTypes,
-      priArgs = priArgs,
-      parUpdate = parUpdate,
-      staticCache = staticCache,
-      MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+          CplNM = CplNM,
+          Mdl.Y = Mdl.Y,
+          Mdl.X = Mdl.X,
+          Mdl.beta = Mdl.beta,
+          Mdl.betaIdx = Mdl.betaIdx,
+          Mdl.parLink = Mdl.parLink,
+          varSelArgs = varSelArgs,
+          MargisTypes = MargisTypes,
+          priArgs = priArgs,
+          parUpdate = parUpdate,
+          staticCache = staticCache,
+          MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
 ###----------------------------------------------------------------------------
 ### The K-step Generalized Newton Move
@@ -75,7 +75,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
   for(iStep in 1:(kSteps+1))
     {
       ## The gradient and Hessian in the likelihood
-      logLikGradHess.prop <- logLikelihoodGradHess(
+      logDensGradHess.prop <- logDensGradHess(
               CplNM = CplNM,
               Mdl.Y = Mdl.Y,
               Mdl.parLink = Mdl.parLink,
@@ -93,7 +93,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           ## APPROACH ONE: This version calculates the numerical gradient with respect to
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
-          logLikGradHess.prop.num.split <- logLikelihoodGradHess(
+          logDensGradHess.prop.num.split <- logDensGradHess(
                   CplNM = CplNM,
                   Mdl.Y = Mdl.Y,
                   Mdl.parLink = Mdl.parLink,
@@ -105,8 +105,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
-          g.math <- logLikGradHess.prop[["logLikGradObs"]]
-          g.num <- logLikGradHess.prop.num.split[["logLikGradObs"]]
+          g.math <- logDensGradHess.prop[["logGradObs"]]
+          g.num <- logDensGradHess.prop.num.split[["logGradObs"]]
           try(plot(g.num, g.math, main = as.character(chainCaller),
                    pch = 20, col = "blue"), silent = TRUE)
           g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
@@ -116,56 +116,23 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
               ## browser(text = "Something Wrong!")
             }
 
-          ## APPROACH TWO: This version calculates the numerical gradient (for log
-          ## posterior) via the full log likelihood function
-          browser()
-
-          logLikelihoodGradNumFun <- function(ipar, i, data.parent.env, data.global.env)
-            {
-              ## List and import all necessary variables. This order is very
-              ## important. The data in local environment should always be nested inside
-              ## global environment.
-              subtask <- NULL
-              i <- NULL
-              logLikGradHess.prop <- NULL
-
-              list2env(data.global.env, envir = environment())
-              list2env(data.parent.env, envir = environment())
-
-              require("numDeriv")
-
-              gradTry <-  try(grad(func = logLikelihoodOptim,
-                                   iPar = iPar,
-                                   i = i,
-                                   CplNM = CplNM,
-                                   Mdl.Y = Mdl.Y,
-                                   Mdl.u = Mdl.u,
-                                   Mdl.d = Mdl.d,
+          Mdl.par <- parCplMeanFun(CplNM = CplNM,
+                                   Mdl.X = Mdl.X,
+                                   Mdl.parLink = Mdl.parLink,
+                                   Mdl.beta = Mdl.beta,
                                    parUpdate = parUpdate,
-                                   MCMCUpdateStrategy = MCMCUpdateStrategy)
-                             ,silent = TRUE)
+                                   Mdl.par = staticCache[["Mdl.par"]])
 
-              if(is(gradTry, "try-error"))
-                {
-                  out <- NA
-                }
-              else
-                {
-                  out <- gradTry
-                }
-              return(out)
-            }
 
-          logLikelihoodGrad.numLst <- apply(X = par, Margin = 1,
-                                            FUN = logLikelihoodGradNumFun,
-                                            data.parent.env = as.list(environment()),
-                                            data.global.env  =  as.list(.GlobalEnv))
-          logLikGradHess.prop.num.joint <- do.call(rbind, logLikelihoodGrad.numLst) # n-by-pp
+          logDensGradHess.prop.num.joint <- logDensGradHessNum(
+
+
+                  ) # n-by-pp
 
         }
 
       ## Break the loop if something went wrong in the gradient
-      if(logLikGradHess.prop$errorFlag)
+      if(logDensGradHess.prop$errorFlag)
         {
           errorFlag <- TRUE
           break
@@ -184,8 +151,8 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
           chainCaller = chainCaller)
 
       ## Gradient and Hessian for the likelihood
-      logLikGrad.prop <- logLikGradHess.prop[["logLikGradObs"]] # n-by-pp
-      logLikHess.prop <- hessApprox(logLikGrad.prop, hessMethod) # diag elements only
+      logDensGrad.prop <- logDensGradHess.prop[["logDensGradObs"]] # n-by-pp
+      logDensHess.prop <- hessApprox(logDensGrad.prop, hessMethod) # diag elements only
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1
       logPriHess.prop <- diag(as.vector(hessApprox(logPriGrad.prop, hessMethod)),
@@ -212,9 +179,9 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
 
 
       ## The gradient and Hessian in the general Newton's update
-      gradObs.pp <- t(X.prop)%*%matrix(logLikGrad.prop) + logPriGrad.pp # pp-by-1
-      HessObs.pp <- tMdN(X.prop, logLikHess.prop, X.prop) + logPriHess.pp # pp-by-pp
-      HessObs.pc <- tMdN(X.prop, logLikHess.prop, X.curr) + logPriHess.pc # pp-by-pc
+      gradObs.pp <- t(X.prop)%*%matrix(logDensGrad.prop) + logPriGrad.pp # pp-by-1
+      HessObs.pp <- tMdN(X.prop, logDensHess.prop, X.prop) + logPriHess.pp # pp-by-pp
+      HessObs.pc <- tMdN(X.prop, logDensHess.prop, X.curr) + logPriHess.pc # pp-by-pc
       HessObs.pp.Inv <- ginv(HessObs.pp) # pp-by-pp
 
       ## TODO: Testing if a subset of gradients works, seems not
@@ -223,7 +190,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
       ## idx <- sample(1:nObs, round(ratio*nObs))
 
       ## gradObs.pp.sample <- matrix(1/ratio*rowSums(Md(t(X.prop[idx,, drop = FALSE ]),
-      ##                                        logLikGrad.prop[idx]))
+      ##                                        logDensGrad.prop[idx]))
       ##                             + logPriGrad.pp) #
 
       ## plot(sort(gradObs.pp.sample), gradObs.pp[order(gradObs.pp.sample)], pch = 20,
