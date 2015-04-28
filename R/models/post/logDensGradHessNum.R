@@ -72,7 +72,6 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
       return(out)
     }
 
-  browser()
   require("parallel")
   nSubTasks <- detectCores()
   dataSubIdxLst <- data.partition(

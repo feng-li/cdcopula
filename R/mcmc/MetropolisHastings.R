@@ -127,7 +127,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         { ## Newton method to approach the posterior based on the current draw
-          beta.NTProp <- GNewtonMove(
+          beta.NTProp <- PropGNewtonMove(
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
                   priArgs = priArgs,
@@ -201,7 +201,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         {
-          beta.NTPropRev <- GNewtonMove(
+          beta.NTPropRev <- PropGNewtonMove(
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
                   priArgs = priArgs,

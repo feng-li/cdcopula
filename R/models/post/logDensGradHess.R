@@ -180,7 +180,7 @@ logDensGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
           MargiGradObs <- MargiGradObs.num
 
           ## DEBUG: Check if any gradient component is not correctly computed.  To check
-          ## the overall gradient chain, look at the "GNewtonMove()" function. Below
+          ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
           ## evaluates if the numeric and analytic gradients are consistent
           try(plot(sort(MargiGradObs.ana),
                MargiGradObs.num[order(MargiGradObs.ana)],
