@@ -84,9 +84,7 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
               staticCache = staticCache.curr,
               MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-
       ## DEBUGING FIXME: DEBUGING code
-
       DEBUGGING <- TRUE
       if(DEBUGGING == TRUE)
         {
@@ -116,17 +114,14 @@ GNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
               ## browser(text = "Something Wrong!")
             }
 
-          Mdl.par <- parCplMeanFun(CplNM = CplNM,
-                                   Mdl.X = Mdl.X,
-                                   Mdl.parLink = Mdl.parLink,
-                                   Mdl.beta = Mdl.beta,
-                                   parUpdate = parUpdate,
-                                   Mdl.par = staticCache[["Mdl.par"]])
-
-
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
-
-
+                  CplNM = CplNM,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.parLink = Mdl.parLink,
+                  MargisTypes = MargisTypes,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache.curr,
+                  MCMCUpdateStrategy = MCMCUpdateStrategy
                   ) # n-by-pp
 
         }

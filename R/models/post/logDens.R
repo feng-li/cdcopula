@@ -1,6 +1,6 @@
-logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate, MCMCUpdateStrategy)
+logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
+                    MargisTypes, MCMCUpdateStrategy)
 {
-
 ###----------------------------------------------------------------------------
 ### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
 ### PARAMETERS ARE UPDATED.

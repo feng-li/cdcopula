@@ -110,6 +110,7 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                       Mdl.u = Mdl.u,
                       Mdl.d = Mdl.d,
                       parUpdate = parUpdate,
+                      MargisTypes = MargisTypes,
                       MCMCUpdateStrategy = MCMCUpdateStrategy)
     Mdl.d <- Mdl.ud[["Mdl.d"]]
     Mdl.u <- Mdl.ud[["Mdl.u"]]
