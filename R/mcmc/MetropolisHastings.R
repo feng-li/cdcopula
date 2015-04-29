@@ -11,7 +11,7 @@
 ##' @param priArgs
 ##' @param varSelArgs
 ##' @param propArgs
-##' @param MargisTypes
+##' @param MargisType
 ##' @param staticCache
 ##' @return "list"
 ##' @references Li 2012
@@ -19,10 +19,10 @@
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
 MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                               Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                              propArgs, MargisTypes, staticCache, MCMCUpdateStrategy)
+                              propArgs, MargisType, staticCache, MCMCUpdateStrategy)
 {
   ## The updating component parameter chain
-  chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
+  chainCaller <- parCplRepCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
@@ -128,18 +128,17 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         { ## Newton method to approach the posterior based on the current draw
           beta.NTProp <- PropGNewtonMove(
+                  MargisType = MargisType,
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
                   priArgs = priArgs,
                   betaIdxProp = betaIdx.prop,
                   parUpdate = parUpdate,
-                  CplNM = CplNM,
                   Mdl.Y = Mdl.Y,
                   Mdl.X = Mdl.X,
                   Mdl.parLink = Mdl.parLink,
                   Mdl.beta = Mdl.beta.curr,
                   Mdl.betaIdx = Mdl.betaIdx.curr,
-                  MargisTypes = MargisTypes,
                   staticCache = staticCache.curr,
                   MCMCUpdateStrategy = MCMCUpdateStrategy)
         }
@@ -202,18 +201,17 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         {
           beta.NTPropRev <- PropGNewtonMove(
+                  MargisType = MargisType,
                   propArgs = propArgs,
                   varSelArgs = varSelArgs,
                   priArgs = priArgs,
                   betaIdxProp = betaIdx.curr,
                   parUpdate = parUpdate,
-                  CplNM = CplNM,
                   Mdl.Y = Mdl.Y,
                   Mdl.X = Mdl.X,
                   Mdl.parLink = Mdl.parLink,
                   Mdl.beta = Mdl.beta.prop,
                   Mdl.betaIdx = Mdl.betaIdx.prop,
-                  MargisTypes = MargisTypes,
                   staticCache = staticCache,
                   MCMCUpdateStrategy = MCMCUpdateStrategy)
         }
@@ -263,14 +261,13 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       ## The log posterior for the proposed draw
       logPost.propOut <- logPost(
-              CplNM = CplNM,
+              MargisType = MargisType,
               Mdl.Y = Mdl.Y,
               Mdl.X = Mdl.X,
               Mdl.beta = Mdl.beta.prop,
               Mdl.betaIdx = Mdl.betaIdx.prop,
               Mdl.parLink = Mdl.parLink,
               varSelArgs = varSelArgs,
-              MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticCache = staticCache,
@@ -281,14 +278,13 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       ## The log posterior for the current draw
       logPost.curr <- logPost(
-              CplNM = CplNM,
+              MargisType = MargisType,
               Mdl.Y = Mdl.Y,
               Mdl.X = Mdl.X,
               Mdl.beta = Mdl.beta.curr,
               Mdl.betaIdx = Mdl.betaIdx.curr,
               Mdl.parLink = Mdl.parLink,
               varSelArgs = varSelArgs,
-              MargisTypes = MargisTypes,
               priArgs = priArgs,
               parUpdate = parUpdate,
               staticCache = staticCache,

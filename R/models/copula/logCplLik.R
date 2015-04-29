@@ -19,7 +19,6 @@ logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
     logCplDensObs <- dCpl(CplNM = CplNM, u = u,
                           parCpl = parCpl, log = TRUE)
 
-
     ## The output
     if(sum)
         {

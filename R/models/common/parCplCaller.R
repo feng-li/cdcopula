@@ -12,7 +12,7 @@
 ##' @return
 ##' @references Li 2014
 ##' @author Feng Li, Central University of Finance and Economics.
-parCplRepCaller <- function(CplNM, parUpdate, parUpdateOrder)
+parCplRepCaller <- function(parUpdate, parUpdateOrder)
 {
   CompNM <- names(parUpdate)
 

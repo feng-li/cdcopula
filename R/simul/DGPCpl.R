@@ -27,7 +27,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
 
     ## Generate the response variables
     Mdl.Y <- qCpl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],
-                   MargisTypes = MargisTypes)
+                   MargisType = MargisType)
 
     ## The base covariates
     MdlDGP.beta <- MdlDataStruc

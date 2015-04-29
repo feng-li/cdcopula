@@ -21,7 +21,7 @@
 ##'
 ##' @param varSelArgs "list"
 ##'
-##' @param MargisTypes "list".  The model type in each marginal distribution.
+##' @param MargisType "list".  The model type in each marginal distribution.
 ##'
 ##' @param priArgs "list".  The prior settings for each parameter components.
 ##'
@@ -43,8 +43,8 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Mon Jan 05 22:58:03 CST 2015
-logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                    varSelArgs,MargisTypes,priArgs,parUpdate,staticCache,
+logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                    varSelArgs,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
 {
     ## Assume no error a priori
@@ -97,20 +97,18 @@ logPost <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### UPDATING THE MODEL LIKELIHOOD PARAMETERS
 ###----------------------------------------------------------------------------
-    Mdl.par <- parCplMeanFun(CplNM = CplNM,
-                             Mdl.X = Mdl.X,
+    Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X,
                              Mdl.parLink = Mdl.parLink,
                              Mdl.beta = Mdl.beta,
                              parUpdate = parUpdate,
                              Mdl.par = Mdl.par)
 
-    Mdl.ud <- logDens(CplNM = CplNM,
+    Mdl.ud <- logDens(MargisType = MargisType,
                       Mdl.Y = Mdl.Y,
                       Mdl.par = Mdl.par,
                       Mdl.u = Mdl.u,
                       Mdl.d = Mdl.d,
                       parUpdate = parUpdate,
-                      MargisTypes = MargisTypes,
                       MCMCUpdateStrategy = MCMCUpdateStrategy)
     Mdl.d <- Mdl.ud[["Mdl.d"]]
     Mdl.u <- Mdl.ud[["Mdl.u"]]

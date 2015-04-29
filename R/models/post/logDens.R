@@ -1,5 +1,5 @@
-logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
-                    MargisTypes, MCMCUpdateStrategy)
+logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
+                    MCMCUpdateStrategy)
 {
 ###----------------------------------------------------------------------------
 ### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
@@ -10,6 +10,7 @@ logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
   ## Mdl.logLik <- cbind(Mdl.d, NA)
   ## colnames(Mdl.logLik) <- CompNM
 
+  CplNM <- MargisType[length(MargisType)]
   CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
   MargisNM <- CompNM[CompNM  != CplNM]
   MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
@@ -96,7 +97,7 @@ logDens <- function(CplNM, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     {
       Mdl.ud <- MargiModel(
               y = Mdl.Y[[CompCaller]],
-              type = MargisTypes[which(MargisNM == CompCaller)],
+              type = MargisType[which(MargisNM == CompCaller)],
               par = Mdl.par[[CompCaller]],
               densCaller = densCaller[[CompCaller]])
 

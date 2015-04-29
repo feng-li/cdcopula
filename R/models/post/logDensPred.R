@@ -142,7 +142,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing,
                             Mdl.betaIdx = Mdl.betaIdx.curr,
                             Mdl.parLink = Mdl.parLink,
                             varSelArgs = varSelArgs,
-                            MargisTypes = MargisTypes,
+                            MargisType = MargisType,
                             priArgs = priArgs,
                             parUpdate = parUpdate,
                             MCMCUpdateStrategy = MCMCUpdateStrategy

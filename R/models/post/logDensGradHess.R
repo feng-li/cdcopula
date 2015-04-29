@@ -5,7 +5,7 @@
 ##' gradient for the prior, gradient for the linkage.
 ##' @param CplNM "character".
 ##'
-##' @param MargisTypes "list".
+##' @param MargisType "list".
 ##'
 ##' @param Mdl.Y "list".
 ##'
@@ -29,12 +29,13 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
-logDensGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
+logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                             gradMethods = c("analytic","numeric")[1],
                             staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
-  chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
+  CplNM <- MargisType[length(MargisType)]
+  chainCaller <- parCplRepCaller(parUpdate)
 
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
@@ -43,7 +44,7 @@ logDensGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
 
   CompNM <- names(parUpdate)
   MargisNM <- CompNM[(CompNM  != CplNM)]
-  names(MargisTypes) <- MargisNM
+  names(MargisType) <- MargisNM
 
 ###----------------------------------------------------------------------------
 ### SPLIT THE GRADIENT INTO COPULA AND MARGINAL ACCORDING TO MCMC STRATEGY
@@ -97,7 +98,7 @@ logDensGradHess <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
     {
       yCurr <- Mdl.Y[[CompCaller]]
       parCurr <- Mdl.par[[CompCaller]]
-      typeCurr <- MargisTypes[CompCaller]
+      typeCurr <- MargisType[CompCaller]
 
       ## Gradient Fraction in the marginal component. n-by-1
       if("analytic" %in% tolower(gradMethods))

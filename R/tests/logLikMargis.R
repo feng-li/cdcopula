@@ -1,42 +1,42 @@
-##' This function is used to compute the log likelihood on each marginal. 
+##' This function is used to compute the log likelihood on each marginal.
 ##'
 ##' This should be exactly the same as the usual way we do.
 ##' @title Log likelihood for marginal densities
-##' @param Mdl.Y 
-##' @param MargisTypes 
-##' @param parMargis 
-##' @return 
-##' @references 
+##' @param Mdl.Y
+##' @param MargisType
+##' @param parMargis
+##' @return
+##' @references
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Fri Oct 21 18:17:01 CEST 2011;
 ##'       Current: Fri Dec 23 11:16:53 CET 2011.
-logLikMargis <- function(Mdl.Y, MargisTypes, parMargis)
+logLikMargis <- function(Mdl.Y, MargisType, parMargis)
 {
-    p <- length(MargisTypes) # no. of marginals
+    p <- length(MargisType) # no. of marginals
     out <- numeric(p) # The output of each log likelihood marginal
                                         # density
-    
+
     for(i in 1:p)
     {
-        if(tolower(MargisTypes[i]) == "gaussian")
+        if(tolower(MargisType[i]) == "gaussian")
         {
-            ## Mean and standard deviation 
+            ## Mean and standard deviation
             mu <- parMargis[[i]][["mu"]]
             sigma <- parMargis[[i]][["sigma"]]
-            
+
             ## The log-marginal-likelihood density
             y <- Mdl.Y[[i]]
             margisLogOut <- sum(dnorm(y, mean = mu, sd = sigma, log = TRUE))
             out[i] <- sum(margisLogOut)
         }
-        else if(tolower(MargisTypes[i]) == "student-t")
+        else if(tolower(MargisType[i]) == "student-t")
         {
             ## The marginal likelihood
         }
         else
         {
             stop("This marginal density is not implemented!")
-        }        
+        }
     }
     ## The output
     return(out)

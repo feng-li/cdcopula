@@ -108,10 +108,17 @@ source(CplConfigFile, local = TRUE)
 Starting.time <- Sys.time()
 
 ## Set Parallel Computing environment
-## cl <- makeCluster(crossValidArgs$N.subsets, outfile = "")
+cl <- makeCluster(detectCores())
+cE <- clusterEvalQ(cl, {
+  sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+            byte.compile = 0,
+            recursive = TRUE,
+            ignore.error = TRUE)
+})
 
 if(!interactive())
 {
+
     OUT.CplCross <- parLapply(
         cl = cl,
         X = crossValidIdx[["training"]],
@@ -137,7 +144,7 @@ for(iLPDS in LPDS)
             {
                 logPredLst <- clusterMap(
                         cl = cl,
-                        fun = logPredDens,
+                        fun = logDensPred,
                         CplOut = OUT.CplCross,
                         pred = iLPDS,
                         Mdl.Idx.testing = crossValidIdx[["testing"]])
@@ -160,7 +167,7 @@ for(iLPDS in LPDS)
 ###----------------------------------------------------------------------------
 
 ## Stop the parallel environment
-## stopCluster(cl)
+stopCluster(cl)
 
 save.all(save.output = save.output,
          ModelDescription = ModelDescription,

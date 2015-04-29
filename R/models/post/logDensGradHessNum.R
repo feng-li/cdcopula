@@ -1,10 +1,10 @@
 ## APPROACH TWO: This version calculates the numerical gradient (for log
 ## posterior) via the full log likelihood function
-logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate,
+logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
-  chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
+  chainCaller <- parCplRepCaller(parUpdate)
 
 
   Mdl.par <- staticCache[["Mdl.par"]]
@@ -12,12 +12,12 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
   Mdl.d <- staticCache[["Mdl.d"]]
 
   logDensGradNum <- function(dataSubIdx, CplNM, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
-                             MCMCUpdateStrategy, chainCaller)
+                             MCMCUpdateStrategy)
     {
       require("numDeriv")
 
       ## The updating chain
-      ## chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
+      chainCaller <- parCplRepCaller(parUpdate)
 
       CompCaller <- chainCaller[1]
       parCaller <- chainCaller[2]
@@ -45,7 +45,7 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
                       func = logDensOptim,
                       x = Par[dataSubIdx[iSubObs], jPar],
                       jPar = jPar,
-                      CplNM = CplNM,
+                      MargisType = MargisType,
                       Mdl.Y = lapply(Mdl.Y, subfun, iSubObs = iSubObs,
                           dataSubIdx = dataSubIdx),
                       Mdl.par = rapply(Mdl.par, subfun, iSubObs = iSubObs,
@@ -53,7 +53,6 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
                       Mdl.u = Mdl.u[dataSubIdx[iSubObs], , drop = FALSE],
                       Mdl.d = Mdl.d[dataSubIdx[iSubObs], , drop = FALSE],
                       parUpdate = parUpdate,
-                      MargisTypes = MargisTypes,
                       chainCaller = chainCaller,
                       MCMCUpdateStrategy = MCMCUpdateStrategy)
                           ##    ,silent = TRUE)
@@ -77,10 +76,12 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
   dataSubIdxLst <- data.partition(
           nObs = nrow(Mdl.u), args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
+
+  browser()
+
   ## Uncomment this can use in-node parallelism
-  ## cl <- makeCluster(detectCores())
-  logDensGradObs.Lst <- lapply(
-          ## cl = cl,
+  logDensGradObs.Lst <- parLapply(
+           cl = cl,
           X = dataSubIdxLst,
           fun = logDensGradNum,
           CplNM = CplNM,
@@ -89,10 +90,9 @@ logDensGradHessNum <- function(CplNM, MargisTypes, Mdl.Y, Mdl.parLink, parUpdate
           Mdl.d = Mdl.d,
           Mdl.par = Mdl.par,
           parUpdate = parUpdate,
-          MCMCUpdateStrategy = MCMCUpdateStrategy,
-          chainCaller = chainCaller)
+          MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-  ## stopCluster(cl)
+  stopCluster(cl)
 
   logGradObs <- do.call(rbind, logDensGradObs.Lst)
 

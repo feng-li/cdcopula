@@ -9,13 +9,14 @@
 ##' @note Created: Fri May 11 09:34:09 CEST 2012;
 ##'       Current: Tue Jan 27 21:56:12 CST 2015
 ##' TODO: Write it in a more elegant way
-parCplMeanFun <- function(CplNM, Mdl.X,  Mdl.parLink, Mdl.beta,
+parCplMeanFun <- function(Mdl.X,  Mdl.parLink, Mdl.beta,
                           parUpdate, Mdl.par)
   {
     ## BB7 copula (tau, lambdaL) representation requires that
     ## 0 < lambdaL < 2^(1/2-1/(2*tau)) See Li 2012 for the proof.
     ## The condition should be calculated in the end for safety.
     CompNM <- names(Mdl.beta)
+    CplNM <- CompNM[length(CompNM)]
 
     ## Which parameter are conditionally considered
     ## Hard coded, maybe should treat it as an input

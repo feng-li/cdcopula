@@ -129,14 +129,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
               ## very first run, the "parUpdate" should be all on for this time.
 
               staticCache.sample <- logPost(
-                      CplNM = CplNM,
+                      MargisType = MargisType,
                       Mdl.Y = Mdl.Y.training.sample,
                       Mdl.X = Mdl.X.training.sample,
                       Mdl.beta = Mdl.beta,
                       Mdl.betaIdx = Mdl.betaIdx,
                       Mdl.parLink = Mdl.parLink,
                       varSelArgs = varSelArgs,
-                      MargisTypes = MargisTypes,
                       priArgs = priArgs,
                       parUpdate = MCMCUpdate,
                       MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
@@ -160,14 +159,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                           maxit = 100),
                       method = "BFGS",
                       hessian = FALSE,
-                      CplNM = CplNM,
+                      MargisType = MargisType,
                       Mdl.Y = Mdl.Y.training.sample,
                       Mdl.X = Mdl.X.training.sample,
                       Mdl.beta = Mdl.beta,
                       Mdl.betaIdx = Mdl.betaIdx,
                       Mdl.parLink = Mdl.parLink,
                       varSelArgs = varSelArgs,
-                      MargisTypes = MargisTypes,
                       priArgs = priArgs,
                       staticCache = staticCache.sample,
                       parUpdate = parUpdate,
@@ -268,14 +266,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## parameters should be updated.
 
   staticCache <- logPost(
-          CplNM = CplNM,
+          MargisType = MargisType,
           Mdl.Y = Mdl.Y.training,
           Mdl.X = Mdl.X.training,
           Mdl.beta = Mdl.beta,
           Mdl.betaIdx = Mdl.betaIdx,
           Mdl.parLink = Mdl.parLink,
           varSelArgs = varSelArgs,
-          MargisTypes = MargisTypes,
           priArgs = priArgs,
           parUpdate = MCMCUpdate,
           MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
@@ -284,9 +281,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## warningsClear(envir = environment())
 
   ## The updating matrix
-  UpdateMat <- parCplRepCaller(CplNM = CplNM,
-                               parUpdate = MCMCUpdate,
-                               parUpdateOrder = MCMCUpdateOrder)
+  UpdateMat <- parCplRepCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMCUpdateOrder)
   nInner <- nrow(UpdateMat)
 
   Starting.time <- Sys.time()
@@ -310,7 +305,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
       ## Call the Metropolis-Hastings algorithm
       MHOut <- MetropolisHastings(
-              CplNM = CplNM,
+              MargisType = MargisType,
               propArgs = propArgs,
               varSelArgs = varSelArgs,
               priArgs = priArgs,
@@ -319,7 +314,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
               Mdl.X = Mdl.X.training,
               Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx,
-              MargisTypes = MargisTypes,
               Mdl.parLink = Mdl.parLink,
               staticCache = staticCache,
               MCMCUpdateStrategy = MCMCUpdateStrategy)

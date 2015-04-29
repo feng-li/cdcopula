@@ -48,7 +48,7 @@ CplParNM <- list(c("tau", "lambdaL"))
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisNM <- c("^SML", "^OEX")
-MargisTypes <- c("SPLITT", "SPLITT")
+MargisType <- c("SPLITT", "SPLITT")
 MargisParNM <- list(c("mu", "phi", "df", "lmd"),
                     c("mu", "phi", "df", "lmd"))
 
@@ -58,7 +58,7 @@ LPDS <- c("joint", CplNM, MargisNM)
 
 ## The object structure for the model components
 MdlDataStruc <- initDataStruc(CplNM, CplParNM, MargisNM, MargisParNM)
-names(MargisTypes) <- MargisNM
+names(MargisType) <- MargisNM
 
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL

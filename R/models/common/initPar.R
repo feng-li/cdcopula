@@ -32,8 +32,8 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
   ## The output structure.
   Mdl.betaIdx <- betaInit
   Mdl.beta <- betaInit
-  Mdl.X <- Mdl.X
-  Mdl.Y <- Mdl.Y
+  ## Mdl.X <- Mdl.X
+  ## Mdl.Y <- Mdl.Y
 
 
   ## Loop to assign the initial values

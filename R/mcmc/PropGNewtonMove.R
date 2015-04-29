@@ -11,7 +11,7 @@
 ##' @param Mdl.beta "list".
 ##' @param Mdl.betaIdx "list".
 ##' @param Mdl.parLink "list".
-##' @param MargisTypes "list".
+##' @param MargisType "list".
 ##' @param staticCache "list".
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
@@ -27,12 +27,12 @@
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
 PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                         CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                        Mdl.parLink, MargisTypes, staticCache, MCMCUpdateStrategy)
+                        Mdl.parLink, MargisType, staticCache, MCMCUpdateStrategy)
 {
   require("MASS")
 
   ## The updating component parameter chain
-  chainCaller <- parCplRepCaller(CplNM = CplNM, parUpdate)
+  chainCaller <- parCplRepCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 
@@ -55,14 +55,13 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
   ## Initial update staticCache for current Newton move
   staticCache.curr <- logPost(
-          CplNM = CplNM,
+          MargisType = MargisType,
           Mdl.Y = Mdl.Y,
           Mdl.X = Mdl.X,
           Mdl.beta = Mdl.beta,
           Mdl.betaIdx = Mdl.betaIdx,
           Mdl.parLink = Mdl.parLink,
           varSelArgs = varSelArgs,
-          MargisTypes = MargisTypes,
           priArgs = priArgs,
           parUpdate = parUpdate,
           staticCache = staticCache,
@@ -76,10 +75,9 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
     {
       ## The gradient and Hessian in the likelihood
       logDensGradHess.prop <- logDensGradHess(
-              CplNM = CplNM,
+              MargisType = MargisType,
               Mdl.Y = Mdl.Y,
               Mdl.parLink = Mdl.parLink,
-              MargisTypes = MargisTypes,
               parUpdate = parUpdate,
               staticCache = staticCache.curr,
               MCMCUpdateStrategy = MCMCUpdateStrategy)
@@ -92,10 +90,9 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
           logDensGradHess.prop.num.split <- logDensGradHess(
-                  CplNM = CplNM,
+                  MargisType = MargisType,
                   Mdl.Y = Mdl.Y,
                   Mdl.parLink = Mdl.parLink,
-                  MargisTypes = MargisTypes,
                   parUpdate = parUpdate,
                   staticCache = staticCache.curr,
                   gradMethods = "numeric",
@@ -115,10 +112,9 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
             }
 
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
-                  CplNM = CplNM,
+                  MargisType = MargisType,
                   Mdl.Y = Mdl.Y,
                   Mdl.parLink = Mdl.parLink,
-                  MargisTypes = MargisTypes,
                   parUpdate = parUpdate,
                   staticCache = staticCache.curr,
                   MCMCUpdateStrategy = MCMCUpdateStrategy
@@ -220,18 +216,17 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## Initial update staticCache for current Newton move
 
           staticCache.curr <- logPost(
-              CplNM = CplNM,
-              Mdl.Y = Mdl.Y,
-              Mdl.X = Mdl.X,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              Mdl.parLink = Mdl.parLink,
-              varSelArgs = varSelArgs,
-              MargisTypes = MargisTypes,
-              priArgs = priArgs,
-              parUpdate = parUpdate,
-              staticCache = staticCache.curr,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+                  MargisType = MargisType,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.X = Mdl.X,
+                  Mdl.beta = Mdl.beta,
+                  Mdl.betaIdx = Mdl.betaIdx,
+                  Mdl.parLink = Mdl.parLink,
+                  varSelArgs = varSelArgs,
+                  priArgs = priArgs,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache.curr,
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
           ## Mdl.par0 <- unlist(staticCache.curr[["Mdl.par"]])
           ## if(any(is.na(Mdl.par0))) browser()

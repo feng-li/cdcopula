@@ -1,11 +1,11 @@
-qCpl <- function(u, parMargis, MargisTypes)
+qCpl <- function(u, parMargis, MargisType)
   {
-    p <- length(MargisTypes)
+    p <- length(MargisType)
     xOut <- vector("list", p) # The output matrix for latent variable
     names(xOut) <- names(parMargis)
     for(i in 1:p)
       {
-        margiType <- MargisTypes[i]
+        margiType <- MargisType[i]
         if(tolower(margiType) == "gaussian") # continues of course
           {
             mu <- parMargis[[i]][["mu"]] # scaler

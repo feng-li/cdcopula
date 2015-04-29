@@ -1,31 +1,42 @@
 funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
                      method = c("tabular", "iterative")[1], tol = 1e-03)
-    {
-        ## y = f(x1, x2) -> x2
-        if(tolower(method) == "tabular")
-            {
-                ## If the FUNNAME does not exist, create it
-                set.seed(object.size(FUN))
-                FUNNAME.prefix <- runif(1, 1000, 9999)
-                tabular.FUNNAME <- paste(".tabular.", FUNNAME.prefix, sep = "")
+  {
+    ## y = f(x1, x2) -> x2
+    if(tolower(method) == "tabular")
+      {
+        ## If the FUNNAME does not exist, create it
+        set.seed(object.size(FUN))
+        FUNNAME.prefix <- runif(1)
+        tabular.FUNNAME <- paste(".tabular.", FUNNAME.prefix, sep = "")
 
-                if(!exists(tabular.FUNNAME, envir = .GlobalEnv))
-                  {
-                    tabular <- twowaytabular(
-                            FUN = FUN, x1lim = x1lim,
-                            x2lim = x2lim,tol = tol, ...)
-                    assign(tabular.FUNNAME, tabular,
-                           envir = .GlobalEnv)
-                  }
-                out <- funinv2d.tab(x1 = x1, y = y,
-                                    tabular = get(tabular.FUNNAME, envir = .GlobalEnv))
-            }
-        else if(tolower(method) == "iterative")
-            {
-                out <- funinv2d.iter(FUN = FUN, x1 = x1, y = y, x2lim = x2lim)
-            }
-        return(out)
-    }
+        if(!exists(tabular.FUNNAME, envir = .GlobalEnv))
+          {
+            ## SAVING TO DISK IS REALLY SLOW
+            ## Firs try to load it on disk temp R directory.
+            ## tabular.PATH <- paste(tempdir(),"/" , tabular.FUNNAME, ".Rdata", sep = "")
+            ## loadTry <- try(load(tabular.PATH, envir = .GlobalEnv))
+
+            ## If does not exist or any error on load, create and save it on disk
+            ## and then load it.
+            ## if(is(loadTry, "try-error"))
+            ##   {
+            tabular <- twowaytabular(
+                    FUN = FUN, x1lim = x1lim,
+                    x2lim = x2lim,tol = tol, ...)
+            assign(tabular.FUNNAME, tabular, envir = .GlobalEnv)
+            ## save(as.name(tabular.FUNNAME), file = tabular.PATH,
+            ##      envir = .GlobalEnv, precheck = FALSE)
+          }
+
+        out <- funinv2d.tab(x1 = x1, y = y,
+                            tabular = get(tabular.FUNNAME, envir = .GlobalEnv))
+      }
+    else if(tolower(method) == "iterative")
+      {
+        out <- funinv2d.iter(FUN = FUN, x1 = x1, y = y, x2lim = x2lim)
+      }
+    return(out)
+  }
 
 funinv2d.tab <- function(x1, y, tabular)
     {
@@ -53,7 +64,6 @@ funinv2d.tab <- function(x1, y, tabular)
         x1IdxFloor1 <- (x1IdxFloor < 1)
         x1IdxFloor2 <- (x1IdxFloor > nGrid1)
 
-
         if(any(x1IdxFloor1))
             {
                 ## Below the lowest index
@@ -64,7 +74,6 @@ funinv2d.tab <- function(x1, y, tabular)
                 ## Above the highest index
                 x1IdxFloor[x1IdxFloor2] <- nGrid1
             }
-
 
         yMatTabFloor <- Mat[x1IdxFloor, ,drop = FALSE]
 
