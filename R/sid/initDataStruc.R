@@ -15,15 +15,15 @@ initDataStruc <- function(CplNM, CplParNM, MargisNM, MargisParNM)
   {
     CompNM <- c(MargisNM, CplNM)
     CompParNM <- c(MargisParNM, CplParNM)
-    MdlDataStruc <- list()
+    MCMCUpdate <- list()
 
     for(i in 1:length(CompNM))
         {
-            MdlDataStruc[[i]] <- as.list(rep(NA, length(CompParNM[[i]])))
-            names(MdlDataStruc[[i]]) <- CompParNM[[i]]
+            MCMCUpdate[[i]] <- as.list(rep(NA, length(CompParNM[[i]])))
+            names(MCMCUpdate[[i]]) <- CompParNM[[i]]
         }
-    names(MdlDataStruc) <- CompNM
+    names(MCMCUpdate) <- CompNM
 
-    out <- MdlDataStruc
+    out <- MCMCUpdate
     return(out)
   }

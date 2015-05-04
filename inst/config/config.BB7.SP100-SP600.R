@@ -57,7 +57,7 @@ MargisParNM <- list(c("mu", "phi", "df", "lmd"),
 LPDS <- c("joint", CplNM, MargisNM)
 
 ## The object structure for the model components
-MdlDataStruc <- initDataStruc(CplNM, CplParNM, MargisNM, MargisParNM)
+MCMCUpdate <- initDataStruc(CplNM, CplParNM, MargisNM, MargisParNM)
 names(MargisType) <- MargisNM
 
 ###----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ nObsIdx <- (1 + nObsRaw-200):nObsRaw
 nObs <- length(nObsIdx)
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
-Mdl.X <- MdlDataStruc
+Mdl.X <- MCMCUpdate
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
@@ -102,7 +102,7 @@ Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
 names(Mdl.Y) <- MargisNM
 
 ## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MdlDataStruc
+Mdl.parLink <- MCMCUpdate
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2)
@@ -120,7 +120,7 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MdlDataStruc
+varSelArgs <- MCMCUpdate
 varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
                                 init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
@@ -164,7 +164,7 @@ save.output <- FALSE
 track.MCMC <- TRUE
 
 ## WHAT PARAMETER FEATURES SHOULD BE UPDATED?
-MCMCUpdate <- MdlDataStruc
+MCMCUpdate <- MCMCUpdate
 MCMCUpdate[[1]][[1]] <- T
 MCMCUpdate[[1]][[2]] <- T
 MCMCUpdate[[1]][[3]] <- T
@@ -178,7 +178,7 @@ MCMCUpdate[[2]][[4]] <- T
 MCMCUpdate[[3]][[1]] <- T
 MCMCUpdate[[3]][[2]] <- T
 
-MCMCUpdateOrder <- MdlDataStruc
+MCMCUpdateOrder <- MCMCUpdate
 MCMCUpdateOrder[[1]][[1]] <- 1
 MCMCUpdateOrder[[1]][[2]] <- 2
 MCMCUpdateOrder[[1]][[3]] <- 3
@@ -205,7 +205,7 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 MCMCUpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MdlDataStruc
+propArgs <- MCMCUpdate
 propArgs[[1]][[1]] <-
     list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
          "beta" = list(type = "mvt", df = 6),
@@ -286,7 +286,7 @@ burnin <- 0.1 # zero indicates no burn-in
 ## is will not affect the prior settings on the coefficients as long as we use
 ## a dynamic link function.
 
-priArgs <- MdlDataStruc
+priArgs <- MCMCUpdate
 priArgs[[1]][["mu"]] <-
     list("beta" = list(
              "intercept" = list(type = "custom",
@@ -380,7 +380,7 @@ priArgs[[3]][["lambdaL"]] <-
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
-betaInit <- MdlDataStruc
+betaInit <- MCMCUpdate
 betaInit[[1]][[1]] <- "random"
 betaInit[[1]][[2]] <- "random"
 betaInit[[1]][[3]] <- "random"

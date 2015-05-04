@@ -18,13 +18,13 @@ names(MargisType) <- MargisNM
 names(MargisParNM) <- MargisNM
 
 ## The object structure for the model components
-MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
+MCMCUpdate <- initDataStruc(CplParNM, MargisParNM)
 
 ## NO. OF OBSERVATIONS
 nObs <- 15
 
 ## THE LINK FUNCTION USED IN THE MODEL
-MdlDGP.parLink <- MdlDataStruc
+MdlDGP.parLink <- MCMCUpdate
 MdlDGP.parLink[[1]][[1]] <- "identity"
 MdlDGP.parLink[[1]][[2]] <- "log"
 MdlDGP.parLink[[2]][[1]] <- "identity"
@@ -40,7 +40,7 @@ MdlDGP.parLink[[3]][[2]] <- "glogit"
 ## features.) This is the desired feature, the TRUE DGP might be not exactly
 ## the same as it. See "Mdl.par" for the comparison.
 ## -----------------------------------------------------------------------------
-MdlDGP.par <- MdlDataStruc
+MdlDGP.par <- MCMCUpdate
 
 ## The first margin
 MdlDGP.par[[1]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
@@ -65,7 +65,7 @@ MdlDGP.par[[3]][[2]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.1))
 ## INTERCEPT INDICATOR
 ## If "TRUE",  the intercept should be in the covariate-dependent parameter
 ## structure.
-MdlDGP.intercept <- MdlDataStruc
+MdlDGP.intercept <- MCMCUpdate
 
 MdlDGP.intercept[[1]][[1]] <- TRUE
 MdlDGP.intercept[[1]][[2]] <- TRUE
@@ -78,7 +78,7 @@ MdlDGP.intercept[[3]][[2]] <- TRUE
 ## When the coefficient are not NA, the parameter are fixed. Otherwise it was
 ## determined by the spline covariates. If the intercept is included, the first
 ## entry should always be "NA".
-## MdlDGP.beta <- MdlDataStruc
+## MdlDGP.beta <- MCMCUpdate
 
 ## ## The first margin
 ## MdlDGP.beta[[1]][[1]] <- matrix(c(NA, 1,  -1,  NA, NA, NA))
@@ -93,7 +93,7 @@ MdlDGP.intercept[[3]][[2]] <- TRUE
 ## MdlDGP.beta[[3]][[2]] <- matrix(c(NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
 
 ## NUMBER OF COVARIATES (EXCLUDING INTERCEPT)
-MdlDGP.nCovs <- MdlDataStruc
+MdlDGP.nCovs <- MCMCUpdate
 
 ## The first margin
 MdlDGP.nCovs[[1]][[1]] <- list(total = 4, fixed = 2)

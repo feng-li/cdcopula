@@ -209,10 +209,10 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
 
   ## The final parameters in current fold
-  MCMC.beta <- MdlDataStruc
-  MCMC.betaIdx <- MdlDataStruc
-  MCMC.par <- MdlDataStruc
-  MCMC.AccProb <- MdlDataStruc
+  MCMC.beta <- MCMCUpdate
+  MCMC.betaIdx <- MCMCUpdate
+  MCMC.par <- MCMCUpdate
+  MCMC.AccProb <- MCMCUpdate
 
   if(!exists("MCMC.density"))
     {
@@ -222,9 +222,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       ## FIXME: This is really big ~ 1G
     }
 
-  for(i in names(MdlDataStruc))
+  for(i in names(MCMCUpdate))
     {
-      for(j in names(MdlDataStruc[[i]]))
+      for(j in names(MCMCUpdate[[i]]))
         {
           ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
           nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]

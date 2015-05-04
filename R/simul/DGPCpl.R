@@ -30,13 +30,13 @@ DGPCpl <- function(DGPconfigfile, export = "list")
                    MargisType = MargisType)
 
     ## The base covariates
-    MdlDGP.beta <- MdlDataStruc
-    Mdl.X <- MdlDataStruc
-    Mdl.XFixed <- MdlDataStruc
+    MdlDGP.beta <- MCMCUpdate
+    Mdl.X <- MCMCUpdate
+    Mdl.XFixed <- MCMCUpdate
 
-    for(i in names(MdlDataStruc))
+    for(i in names(MCMCUpdate))
       {
-        for(j in names(MdlDataStruc[[i]]))
+        for(j in names(MCMCUpdate[[i]]))
           {
             Intercept <- ifelse(MdlDGP.intercept[[i]][[j]], TRUE, FALSE)
 
@@ -75,9 +75,9 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     ## The extended covariates that are from the combination of the base
     ## covariates FIXME: it is better to select the non-fixed covariates from
     ## the known fixed covariates.
-    for(i in names(MdlDataStruc))
+    for(i in names(MCMCUpdate))
       {
-        for(j in names(MdlDataStruc[[i]]))
+        for(j in names(MCMCUpdate[[i]]))
           {
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
             nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed

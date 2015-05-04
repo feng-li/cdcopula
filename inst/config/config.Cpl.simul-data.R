@@ -65,7 +65,7 @@ names(MargisType) <- MargisNM
 names(MargisParNM) <- MargisNM
 
 ## The object structure for the model components
-MdlDataStruc <- initDataStruc(CplParNM, MargisParNM)
+MCMCUpdate <- initDataStruc(CplParNM, MargisParNM)
 
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL
@@ -81,7 +81,7 @@ DGPCpl(DGPconfigfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
        export = "parent.env")
 
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
-## Mdl.X <- MdlDataStruc
+## Mdl.X <- MCMCUpdate
 ## Mdl.X[[1]][[1]] <- cbind(1, X[[1]])
 ## Mdl.X[[1]][[2]] <- cbind(1, X[[1]])
 ## Mdl.X[[2]][[1]] <- cbind(1, X[[2]])
@@ -90,7 +90,7 @@ DGPCpl(DGPconfigfile = file.path(pathLibRoot, "config/config.DGPCpl.R"),
 ## Mdl.X[[3]][[2]] <- cbind(1, X[[1]], X[[2]])
 
 ## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MdlDataStruc
+Mdl.parLink <- MCMCUpdate
 Mdl.parLink[[1]][[1]] <- "identity"
 Mdl.parLink[[1]][[2]] <- "log"
 Mdl.parLink[[2]][[1]] <- "identity"
@@ -102,7 +102,7 @@ Mdl.parLink[[3]][[2]] <- "glogit"
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MdlDataStruc
+varSelArgs <- MCMCUpdate
 varSelArgs[[1]][[1]] <- list(cand = c(2, 3),
                              init = "all-in")
 varSelArgs[[1]][[2]] <- list(cand = c(2, 3),
@@ -139,7 +139,7 @@ save.output <- FALSE
 track.MCMC = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
-MCMCUpdate <- MdlDataStruc
+MCMCUpdate <- MCMCUpdate
 MCMCUpdate[[1]][[1]] <- TRUE
 MCMCUpdate[[1]][[2]] <- TRUE
 MCMCUpdate[[2]][[1]] <- TRUE
@@ -148,7 +148,7 @@ MCMCUpdate[[3]][[1]] <- TRUE
 MCMCUpdate[[3]][[2]] <- TRUE
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MdlDataStruc
+propArgs <- MCMCUpdate
 propArgs[[1]][[1]] <-
   list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
        "beta" = list(type = "mvt", df = 6),
@@ -199,7 +199,7 @@ LPDS.sampleProp = 0.05
 ## is will not affect the prior settings on the coefficients as long as we use
 ## a dynamic link function.
 
-priArgs <- MdlDataStruc
+priArgs <- MCMCUpdate
 priArgs[[1]][[1]] <-
   list("beta" = list(
          "intercept" = list(type = "custom",
@@ -258,7 +258,7 @@ priArgs[[3]][[2]] <-
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", or user-input).
 
-betaInit <- MdlDataStruc
+betaInit <- MCMCUpdate
 betaInit[[1]][[1]] <- "random"
 betaInit[[1]][[2]] <- "random"
 betaInit[[2]][[1]] <- "random"
