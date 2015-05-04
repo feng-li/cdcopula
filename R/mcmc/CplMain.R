@@ -21,6 +21,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
 ### DEBUGGING
 ###----------------------------------------------------------------------------
+  browser()
 
   DEBUGGING <- FALSE
   if(DEBUGGING)

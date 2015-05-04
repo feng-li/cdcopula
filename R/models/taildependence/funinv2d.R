@@ -27,7 +27,7 @@ funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
             ## save(as.name(tabular.FUNNAME), file = tabular.PATH,
             ##      envir = .GlobalEnv, precheck = FALSE)
           }
-
+        browser()
         out <- funinv2d.tab(x1 = x1, y = y,
                             tabular = get(tabular.FUNNAME, envir = .GlobalEnv))
       }

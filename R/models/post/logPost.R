@@ -46,7 +46,8 @@
 logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
-{
+  {
+    browser()
     ## Assume no error a priori
     errorFlag <- FALSE
     ## Debugging symbol: if the warning should be printed out immediately.
@@ -66,11 +67,8 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
           Mdl.d <- cbind(Mdl.u, NA)
           colnames(Mdl.d) <- names(Mdl.beta)
 
-          MdlDataStruc <- rapply(object = Mdl.beta,
-                                 f = function(x)NA,
-                                 how = "replace")
-          staticCache <- list(Mdl.logPri =  MdlDataStruc,
-                              Mdl.par = MdlDataStruc,
+          staticCache <- list(Mdl.logPri =  parUpdate,
+                              Mdl.par = parUpdate,
                               Mdl.d = Mdl.d,
                               Mdl.u = Mdl.u)
         }
@@ -83,14 +81,13 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
 ###----------------------------------------------------------------------------
-    Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
-                            Mdl.parLink = Mdl.parLink,
-                            Mdl.beta = Mdl.beta,
-                            Mdl.betaIdx = Mdl.betaIdx,
-                            varSelArgs = varSelArgs,
-                            priArgs = priArgs,
-                            parUpdate = parUpdate,
-                            Mdl.logPri = Mdl.logPri)
+  Mdl.logPri <- logPriors(Mdl.X = Mdl.X,
+                          Mdl.parLink = Mdl.parLink,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          varSelArgs = varSelArgs,
+                          priArgs = priArgs,
+                          parUpdate = parUpdate)
 
     Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
                                                                # solution.

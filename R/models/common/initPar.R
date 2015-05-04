@@ -24,9 +24,9 @@
 ##' returned.
 ##'
 ##' @references Li 2012
-##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
+##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011;
-##'       Current: Fri Jan 11 18:09:22 CET 2013.
+##'       Current: Wed Apr 29 20:59:46 CST 2015.
 initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 {
   ## The output structure.
@@ -37,7 +37,13 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 
 
   ## Loop to assign the initial values
-  CompNM <- names(Mdl.parLink)
+  CompNM <- names(betaInit)
+  if(length(CompNM) == 0)
+    {
+      stop("Model component name must be specified first!")
+    }
+
+
   for(i in CompNM)
     {
       CompParNM <- names(Mdl.parLink[[i]])
@@ -122,6 +128,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
         }
     }
 
+  browser()
   out <- list(Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx)
   return(out)

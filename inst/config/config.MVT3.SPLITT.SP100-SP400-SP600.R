@@ -26,17 +26,19 @@
 ###----------------------------------------------------------------------------
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
-browser()
 ## SHORT MODEL DESCRIPTION
 ModelDescription <- "MVT3_copula_with_vs"
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
+
 MCMCUpdate <- list(list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
                    list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
                    list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
                    list("tau" = TRUE, "lambdaL" = TRUE))
+
+names(MCMCUpdate) <- MargisNM
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
@@ -146,7 +148,6 @@ varSelArgs[[3]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[3]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
-
 
 varSelArgs[[4]][["tau"]] <- list(cand = NULL,
                                  init = "all-in")

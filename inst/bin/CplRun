@@ -108,13 +108,13 @@ source(CplConfigFile, local = TRUE)
 Starting.time <- Sys.time()
 
 ## Set Parallel Computing environment
-cl <- makeCluster(detectCores())
-cE <- clusterEvalQ(cl, {
-  sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-            byte.compile = 0,
-            recursive = TRUE,
-            ignore.error = TRUE)
-})
+## cl <- makeCluster(detectCores())
+## cE <- clusterEvalQ(cl, {
+##   sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+##             byte.compile = 0,
+##             recursive = TRUE,
+##             ignore.error = TRUE)
+## })
 
 if(!interactive())
 {
