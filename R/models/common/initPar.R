@@ -128,7 +128,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
         }
     }
 
-  browser()
+  ## browser()
   out <- list(Mdl.beta = Mdl.beta,
               Mdl.betaIdx = Mdl.betaIdx)
   return(out)

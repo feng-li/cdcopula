@@ -90,7 +90,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 
           betaCurr <- try(Mdl.beta[[CompCaller]][[parCaller]][1,,drop = FALSE])#intercepts
 
-          if(is(betaCurr, "try-error")) browser()
+          ## if(is(betaCurr, "try-error")) browser()
 
           linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 

@@ -21,7 +21,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
 ### DEBUGGING
 ###----------------------------------------------------------------------------
-  browser()
 
   DEBUGGING <- FALSE
   if(DEBUGGING)
@@ -230,9 +229,10 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
           nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
           namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
 
-          if(i %in% CplNM)
+          if(i %in% MargisNM[length(MargisNM)])
             {
-              nDim <- length(MargisNM)
+              ## browser()
+              nDim <- length(MargisNM)-1
               namesParFull.ij <- matrix(paste(
                       matrix(1:nDim, nDim, nDim),
                       matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
@@ -248,6 +248,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                            dimnames = list(NULL, namesX.ij))
           MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
                                         dimnames = list(NULL, namesX.ij))
+
           MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij),
                                       dimnames = list(NULL, NULL, namesPar.ij))
 

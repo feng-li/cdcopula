@@ -47,7 +47,7 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                     varSelArgs,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
   {
-    browser()
+    ## browser()
     ## Assume no error a priori
     errorFlag <- FALSE
     ## Debugging symbol: if the warning should be printed out immediately.

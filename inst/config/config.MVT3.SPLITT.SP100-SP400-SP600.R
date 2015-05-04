@@ -113,9 +113,9 @@ Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
 Mdl.parLink[[3]][["lmd"]] <- list(type = "log",  nPar = 1)
 
 Mdl.parLink[[4]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
-                                  nPar = length(MargisNM)*(length(MargisNM)-1)/2)
+                                  nPar = (length(MargisType)-1)*(length(MargisType)-2)/2)
 Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.78,
-                                      nPar = length(MargisNM)*(length(MargisNM)-1)/2)
+                                      nPar = (length(MargisType)-1)*(length(MargisType)-2)/2)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
