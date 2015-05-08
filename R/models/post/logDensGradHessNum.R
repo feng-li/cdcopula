@@ -75,11 +75,26 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   dataSubIdxLst <- data.partition(
           nObs = nrow(Mdl.u), args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 36c5451ee6386d91ebb25471876f1a5f16f7d8c4
   ## Uncomment this can use in-node parallelism
-  logDensGradObs.Lst <- parLapply(
-          cl = cl,
+  ## logDensGradObs.Lst <- parLapply(
+  ##         cl = cl,
+  ##         X = dataSubIdxLst,
+  ##         fun = logDensGradNum,
+  ##         Mdl.Y = Mdl.Y,
+  ##         Mdl.u = Mdl.u,
+  ##         Mdl.d = Mdl.d,
+  ##         Mdl.par = Mdl.par,
+  ##         parUpdate = parUpdate,
+  ##         MargisType = MargisType,
+  ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
+
+  logDensGradObs.Lst <- lapply(
           X = dataSubIdxLst,
-          fun = logDensGradNum,
+          FUN = logDensGradNum,
           Mdl.Y = Mdl.Y,
           Mdl.u = Mdl.u,
           Mdl.d = Mdl.d,
@@ -87,6 +102,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           parUpdate = parUpdate,
           MargisType = MargisType,
           MCMCUpdateStrategy = MCMCUpdateStrategy)
+
 
   ## stopCluster(cl)
 
