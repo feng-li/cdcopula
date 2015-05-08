@@ -27,7 +27,6 @@ funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
             ## save(as.name(tabular.FUNNAME), file = tabular.PATH,
             ##      envir = .GlobalEnv, precheck = FALSE)
           }
-        browser()
         out <- funinv2d.tab(x1 = x1, y = y,
                             tabular = get(tabular.FUNNAME, envir = .GlobalEnv))
       }
@@ -92,13 +91,12 @@ funinv2d.tab <- function(x1, y, tabular)
         return(out)
     }
 
-twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-4, ...)
+twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-3, ...)
 {
-    ## The dictionary lookup method The input argument. We choose to use the
-    ## lower and upper tail dependence because they are fixed in [0, 1] for
-    ## BB7 The code is only used once during the initialization.  If need
-    ## more precisions is needed , we consider using iterative way to handle
-    ## the memory problem.
+    ## The dictionary lookup method The input argument. We choose to use the lower and
+    ## upper tail dependence because they are fixed in [0, 1] for BB7 The code is only
+    ## used once during the initialization.  If need more precisions is needed , we
+    ## consider using iterative way to handle the memory problem.
 
     x1Grid <- seq(x1lim[1]+tol, x1lim[2]-tol, tol)
     x2Grid <- seq(x2lim[1]+tol, x2lim[2]-tol, tol)

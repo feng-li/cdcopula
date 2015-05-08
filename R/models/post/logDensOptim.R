@@ -1,8 +1,11 @@
 ## This is the optimization version. Note that this should only work with one observation.
-logDensOptim <- function(x, jPar, chainCaller, MargisType, Mdl.Y,
+logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
                          Mdl.par, Mdl.u, Mdl.d, parUpdate,
                          MCMCUpdateStrategy)
 {
+  ## There should be only one chain in parUpdate
+
+  chainCaller <- parCplRepCaller(parUpdate)
   CompCaller <- chainCaller[1]
   parCaller <- chainCaller[2]
 

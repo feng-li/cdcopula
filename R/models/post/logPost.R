@@ -59,19 +59,19 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
     ## TODO: Change staticCache.
 
     if(missing(staticCache))
-        {
-          ## Initialize "staticCache" structure
-          Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
-                          dimnames = list(NULL, names(Mdl.Y)))
+      {
+        ## Initialize "staticCache" structure
+        Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                        dimnames = list(NULL, names(Mdl.Y)))
 
-          Mdl.d <- cbind(Mdl.u, NA)
-          colnames(Mdl.d) <- names(Mdl.beta)
+        Mdl.d <- cbind(Mdl.u, NA)
+        colnames(Mdl.d) <- names(Mdl.beta)
 
-          staticCache <- list(Mdl.logPri =  parUpdate,
-                              Mdl.par = parUpdate,
-                              Mdl.d = Mdl.d,
-                              Mdl.u = Mdl.u)
-        }
+        staticCache <- list(Mdl.logPri =  parUpdate,
+                            Mdl.par = parUpdate,
+                            Mdl.d = Mdl.d,
+                            Mdl.u = Mdl.u)
+      }
 
     Mdl.par <- staticCache[["Mdl.par"]]
     Mdl.u <- staticCache[["Mdl.u"]]

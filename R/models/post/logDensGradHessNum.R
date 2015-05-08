@@ -11,7 +11,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   Mdl.u <- staticCache[["Mdl.u"]]
   Mdl.d <- staticCache[["Mdl.d"]]
 
-  logDensGradNum <- function(dataSubIdx, CplNM, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
+  logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
                              MCMCUpdateStrategy)
     {
       require("numDeriv")
@@ -53,7 +53,6 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                       Mdl.u = Mdl.u[dataSubIdx[iSubObs], , drop = FALSE],
                       Mdl.d = Mdl.d[dataSubIdx[iSubObs], , drop = FALSE],
                       parUpdate = parUpdate,
-                      chainCaller = chainCaller,
                       MCMCUpdateStrategy = MCMCUpdateStrategy)
                           ##    ,silent = TRUE)
 
@@ -81,18 +80,18 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 
   ## Uncomment this can use in-node parallelism
   logDensGradObs.Lst <- parLapply(
-           cl = cl,
+          cl = cl,
           X = dataSubIdxLst,
           fun = logDensGradNum,
-          CplNM = CplNM,
           Mdl.Y = Mdl.Y,
           Mdl.u = Mdl.u,
           Mdl.d = Mdl.d,
           Mdl.par = Mdl.par,
           parUpdate = parUpdate,
+          MargisType = MargisType,
           MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-  stopCluster(cl)
+  ## stopCluster(cl)
 
   logGradObs <- do.call(rbind, logDensGradObs.Lst)
 

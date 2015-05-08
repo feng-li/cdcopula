@@ -28,7 +28,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       ## Turn warnings into error
       options(warn = 100)
     }
-
 ###----------------------------------------------------------------------------
 ### LOAD USER SETUP FILE
 ###----------------------------------------------------------------------------
