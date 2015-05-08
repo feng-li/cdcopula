@@ -20,10 +20,12 @@ funinv2d <- function(FUN, x1, y, x1lim, x2lim,...,
             ## and then load it.
             ## if(is(loadTry, "try-error"))
             ##   {
+            cat("Creating tabular for function inverse......")
             tabular <- twowaytabular(
                     FUN = FUN, x1lim = x1lim,
                     x2lim = x2lim,tol = tol, ...)
             assign(tabular.FUNNAME, tabular, envir = .GlobalEnv)
+            cat("done.\n")
             ## save(as.name(tabular.FUNNAME), file = tabular.PATH,
             ##      envir = .GlobalEnv, precheck = FALSE)
           }
