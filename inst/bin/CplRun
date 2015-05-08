@@ -87,7 +87,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
 require("mvtnorm", quietly = TRUE)
 require("parallel", quietly = TRUE)
 require("optimx", quietly = TRUE)
-
+require("snow", quietly = TRUE)
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
@@ -108,7 +108,8 @@ source(CplConfigFile, local = TRUE)
 Starting.time <- Sys.time()
 
 ## Set Parallel Computing environment
-cl <- makeCluster(detectCores())
+cl <- makeCluster(detectCores(), type = "MPI")
+setDefaultCluster(cl)
 cE <- clusterEvalQ(cl,
                    {
                      sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),

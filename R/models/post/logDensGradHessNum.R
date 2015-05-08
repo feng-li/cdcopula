@@ -76,8 +76,6 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           nObs = nrow(Mdl.u), args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
 
-  browser()
-
   ## Uncomment this can use in-node parallelism
   logDensGradObs.Lst <- parLapply(
           cl = cl,

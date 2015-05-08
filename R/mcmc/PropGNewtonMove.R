@@ -120,6 +120,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                   MCMCUpdateStrategy = MCMCUpdateStrategy
                   ) # n-by-pp
 
+          browser()
         }
 
       ## Break the loop if something went wrong in the gradient
