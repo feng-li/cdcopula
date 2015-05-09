@@ -18,6 +18,7 @@ logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
                     Mdl.d = Mdl.d,
                     parUpdate = parUpdate,
                     MCMCUpdateStrategy = MCMCUpdateStrategy)
+
   Mdl.d <- Mdl.ud[["Mdl.d"]]
   Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 

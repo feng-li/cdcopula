@@ -30,7 +30,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
 logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                            gradMethods = c("analytic","numeric")[1:2],
+                            gradMethods = c("analytic","numeric")[1],
                             staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
@@ -57,7 +57,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           cplCaller <- paste("u", which(MargisNM%in%CompCaller), sep = "")
 
           evalMargi <- TRUE
-          densCaller <- c("u")
+          densCaller <- c("u", "d")
         }
       else if(tolower(MCMCUpdateStrategy) == "twostage")
         {
@@ -109,7 +109,9 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                   type = typeCurr,
                   parCaller = parCaller,
                   densCaller = densCaller)
-          MargiGradObs <- MargiGradObs.ana
+          MargiGradObs.u <- MargiGradObs.ana[["u"]]
+          MargiGradObs.d <- MargiGradObs.ana[["d"]]
+
         }
       if("numeric" %in% tolower(gradMethods))
         {
@@ -167,24 +169,20 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                         FUN = MargiModelGradNumFun.subtask,
                                         data.parent.env = data.current.env)
           ## The parallel version
-          ## cl <- makeCluster(nCores)
           ## MargiGradObs.numLstClust <- parLapply(
           ##         cl = cl, X = tasks,
           ##         fun = MargiModelGradNumFun.subtask,
           ##         data.paraent.env = data.current.env,
           ##         data.global.env  =  as.list(.GlobalEnv)
           ##         )
-          ## stopCluster(cl)
 
           MargiGradObs.num <- unlist(MargiGradObs.numLst)
-          MargiGradObs <- MargiGradObs.num
+          MargiGradObs.u <- MargiGradObs.num
+          MargiGradObs.d <- NA
 
+          ## out.test <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+          ##                                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
-          out.test <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                                         staticCache, MCMCUpdateStrategy = "margin")$logGradObs
-
-
-          browser()
           ## DEBUG: Check if any gradient component is not correctly computed.  To check
           ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
           ## evaluates if the numeric and analytic gradients are consistent
@@ -202,11 +200,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   else
     { ## Only update the gradient for copula parameters
       ## Gradient Fraction in the copula component.
-      MargiGradObs <- 1
+      MargiGradObs.u <- 1
+      MargiGradObs.d <- 0
     }
 
   ## Error checking
-  if(any(is.na(MargiGradObs)) || any(is.infinite(MargiGradObs)))
+  if(any(is.na(MargiGradObs.u)) || any(is.infinite(MargiGradObs.u)))
     {
       return(list(errorFlag = TRUE))
     }
@@ -308,9 +307,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           logCplGradObs <- logCplGradObs.num
 
           ## Debugging plot for the numerical and analytical gradients
-          if(cplCaller == "u1") try(plot(sort(logCplGradObs.ana),
-                 logCplGradObs.num[order(logCplGradObs.ana)],
-                 type = "l", pch = 20, main = chainCaller), silent = TRUE)
+          if(cplCaller == "u1")
+            {
+              try(plot(sort(logCplGradObs.ana),
+                       logCplGradObs.num[order(logCplGradObs.ana)],
+                       type = "p", pch = 20, main = chainCaller), silent = TRUE)
+            }
 
         }
     }
@@ -325,28 +327,13 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
       return(list(errorFlag = TRUE))
     }
 
-###----------------------------------------------------------------------------
-### GRADIENT FRACTION IN THE LINK FUNCTION
-###----------------------------------------------------------------------------
-  ## The gradient for the link function n-by-1
-  LinkGradObs <- parCplMeanFunGrad(
-          CplNM = CplNM,
-          Mdl.par = Mdl.par,
-          Mdl.parLink = Mdl.parLink,
-          chainCaller = chainCaller)
-
-  ## Error checking
-  if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
-    {
-      return(list(errorFlag = TRUE))
-    }
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
 
-  ## The gradient for the likelihood,  n-by-1
-  logDensGradObs <- (logCplGradObs*MargiGradObs)*LinkGradObs
+  ## The gradient for the full likelihood,  n-by-1
+  logDensGradObs <- (logCplGradObs*MargiGradObs.u) + MargiGradObs.d #*LinkGradObs
 
   ## The output
   out <- list(logGradObs = logDensGradObs, # n-by-1

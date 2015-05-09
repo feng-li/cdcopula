@@ -27,7 +27,7 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     {
       if(length(MargisUpNM) == 0)
         {
-          ## Stage two of the two stage approach
+          ## Stage two of the two stage approach, only updating copula density
           evalCpl <- TRUE
           Mdl.PostComp <- lapply(parUpdate, function(x) FALSE)
           Mdl.PostComp[[CplNM]] <- TRUE
@@ -75,15 +75,7 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
         {
           if(evalCpl == TRUE && any(is.na(Mdl.u)))
             {
-              ## if(tolower(MCMCUpdateStrategy) == "joint")
-              ##     {
               densCaller[[CompCaller]] <- c("u", "d")
-              ##     }
-              ## else
-              ##     {
-              ##         browser()
-              ##         stop("Two-stage updating without providing \"u\" is not possible!")
-              ##     }
             }
         }
     }
