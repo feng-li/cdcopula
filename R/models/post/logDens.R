@@ -116,6 +116,7 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
       Mdl.d[, CplNM] <- Mdl.logLikCpl
     }
 
-  out <- list(Mdl.d = Mdl.d, Mdl.u = Mdl.u, Mdl.PostComp = Mdl.PostComp)
+  out <- list(Mdl.d = Mdl.d, Mdl.u = Mdl.u,
+              Mdl.PostComp = Mdl.PostComp)
   return(out)
 }

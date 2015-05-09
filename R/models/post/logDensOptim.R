@@ -21,7 +21,7 @@ logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
 
   Mdl.d <- Mdl.ud[["Mdl.d"]]
   Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
-
   out <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+
   return(out)
 }

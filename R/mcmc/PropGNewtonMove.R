@@ -91,15 +91,18 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
 
       ## The gradient and Hessian in the likelihood
-      ## a <- proc.time()
+      a <- proc.time()
       logDensGradHess.prop <- logDensGradHess(
               MargisType = MargisType,
               Mdl.Y = Mdl.Y,
               Mdl.parLink = Mdl.parLink,
               parUpdate = parUpdate,
               staticCache = staticCache.curr,
+              gradMethods = "analytic",
               MCMCUpdateStrategy = MCMCUpdateStrategy)
-      ## print(proc.time()-a)
+
+      cat("Analytical gradient:\n")
+      print(proc.time()-a)
 
       ## DEBUGING FIXME: DEBUGING code
       DEBUGGING <- TRUE
@@ -108,19 +111,20 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## APPROACH ONE: This version calculates the numerical gradient with respect to
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
-          ## a <- proc.time()
-          ## logDensGradHess.prop.num.split <- logDensGradHess(
-          ##         MargisType = MargisType,
-          ##         Mdl.Y = Mdl.Y,
-          ##         Mdl.parLink = Mdl.parLink,
-          ##         parUpdate = parUpdate,
-          ##         staticCache = staticCache.curr,
-          ##         gradMethods = "numeric",
-          ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
-          ## print(proc.time()-a)
+          a <- proc.time()
+          logDensGradHess.prop.num.split <- logDensGradHess(
+                  MargisType = MargisType,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.parLink = Mdl.parLink,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache.curr,
+                  gradMethods = "numeric",
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
 
+          cat("Numerical gradient (split):\n")
+          print(proc.time()-a)
 
-          ## a <- proc.time()
+          a <- proc.time()
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
                   MargisType = MargisType,
                   Mdl.Y = Mdl.Y,
@@ -129,24 +133,24 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                   staticCache = staticCache.curr,
                   MCMCUpdateStrategy = MCMCUpdateStrategy
                   ) # n-by-pp
-          ## print(proc.time()-a)
+
+          cat("Numerical gradient (joint):\n")
+          print(proc.time()-a)
 
 
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
-          g.math <- logDensGradHess.prop[["logGradObs"]]
-          ## g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
+          g.ana <- logDensGradHess.prop[["logGradObs"]]
+          g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
           g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
 
+          browser()
+          ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+          ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
-          ## out.test <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-          ##                                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
-
-
-
-          try(plot(g.num, g.math, main = as.character(chainCaller),
-                   pch = 20, col = "blue"), silent = TRUE)
+          ## try(plot(g.num, g.ana, main = as.character(chainCaller),
+          ##          pch = 20, col = "blue"), silent = TRUE)
           ## g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
           ## if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
           ##   {
@@ -175,7 +179,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           chainCaller = chainCaller)
 
       ## Gradient and Hessian for the likelihood
-      logDensGrad.prop <- logDensGradHess.prop[["logGradObs"]] # n-by-pp
+      logDensGrad.prop <- logDensGradHess.prop[["logGradObs"]]*LinkGradObs # n-by-pp
       logDensHess.prop <- hessApprox(logDensGrad.prop, hessMethod) # diag elements only
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1

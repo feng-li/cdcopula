@@ -30,7 +30,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
 logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                            gradMethods = c("analytic","numeric")[1],
+                            gradMethods = c("analytic","numeric")[1:2],
                             staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
@@ -141,12 +141,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                 {
                   gradTry <-  try(
                           grad(
-                          func = MargiModelGradNumFun,
-                          x = parCurr[[parCaller]][i],
-                          parCaller = parCaller,
-                          parCurr = lapply(parCurr, function(x, i)x[i], i = i),
-                          yCurr = yCurr[subtask][i],
-                          typeCurr = typeCurr), silent = TRUE)
+                                  func = MargiModelGradNumFun,
+                                  x = parCurr[[parCaller]][i],
+                                  parCaller = parCaller,
+                                  parCurr = lapply(parCurr, function(x, i)x[i], i = i),
+                                  yCurr = yCurr[subtask][i],
+                                  typeCurr = typeCurr), silent = TRUE)
 
                   if(is(gradTry, "try-error"))
                     {
@@ -165,30 +165,19 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           tasks <- data.partition(nObs, list(N.subsets = nCores, partiMethod = "ordered"))
           data.current.env <- as.list(environment())
 
-          MargiGradObs.numLst <- lapply(X = tasks,
-                                        FUN = MargiModelGradNumFun.subtask,
-                                        data.parent.env = data.current.env)
-          ## The parallel version
-          ## MargiGradObs.numLstClust <- parLapply(
-          ##         cl = cl, X = tasks,
-          ##         fun = MargiModelGradNumFun.subtask,
-          ##         data.paraent.env = data.current.env,
-          ##         data.global.env  =  as.list(.GlobalEnv)
-          ##         )
-
-          MargiGradObs.num <- unlist(MargiGradObs.numLst)
-          MargiGradObs.u <- MargiGradObs.num
-          MargiGradObs.d <- NA
-
-          ## out.test <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-          ##                                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
+          MargiGradObs.num.uLst <- lapply(X = tasks,
+                                      FUN = MargiModelGradNumFun.subtask,
+                                      data.parent.env = data.current.env)
+          MargiGradObs.u <- unlist(MargiGradObs.num.uLst)
+          MargiGradObs.d <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+                                               staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
           ## DEBUG: Check if any gradient component is not correctly computed.  To check
           ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
           ## evaluates if the numeric and analytic gradients are consistent
-          try(plot(sort(MargiGradObs.ana),
-               MargiGradObs.num[order(MargiGradObs.ana)],
-               type = "l", pch = 20, main = chainCaller), silent = TRUE)
+          ## try(plot(sort(MargiGradObs.ana),
+          ##          MargiGradObs.num[order(MargiGradObs.ana)],
+          ##          type = "l", pch = 20, main = chainCaller), silent = TRUE)
 
         }
 
@@ -309,11 +298,11 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ## Debugging plot for the numerical and analytical gradients
           if(cplCaller == "u1")
             {
-              try(plot(sort(logCplGradObs.ana),
-                       logCplGradObs.num[order(logCplGradObs.ana)],
-                       type = "p", pch = 20, main = chainCaller), silent = TRUE)
+              ## try(plot(sort(logCplGradObs.ana),
+              ##          logCplGradObs.num[order(logCplGradObs.ana)],
+              ##          type = "p", pch = 20, main = chainCaller), silent = TRUE)
             }
-
+          ## browser()
         }
     }
   else

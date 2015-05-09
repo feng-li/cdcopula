@@ -77,21 +77,20 @@ logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,p
         for(jPar in 1:nCol)
           {
             ## cat(iSubObs, dataSubIdx[iSubObs], "\n")
-            gradTry <-  ## try(
-              grad(
-                      func = logDensOptim,
-                      x = Par[dataSubIdx[iSubObs], jPar],
-                      jPar = jPar,
-                      MargisType = MargisType,
-                      Mdl.Y = lapply(Mdl.Y, subfun, iSubObs = iSubObs,
-                          dataSubIdx = dataSubIdx),
-                      Mdl.par = rapply(Mdl.par, subfun, iSubObs = iSubObs,
-                          dataSubIdx = dataSubIdx, how  = "replace"),
-                      Mdl.u = Mdl.u[dataSubIdx[iSubObs], , drop = FALSE],
-                      Mdl.d = Mdl.d[dataSubIdx[iSubObs], , drop = FALSE],
-                      parUpdate = parUpdate,
-                      MCMCUpdateStrategy = MCMCUpdateStrategy)
-            ##    ,silent = TRUE)
+            gradTry <- try(
+                    grad(func = logDensOptim,
+                         x = Par[dataSubIdx[iSubObs], jPar],
+                         jPar = jPar,
+                         MargisType = MargisType,
+                         Mdl.Y = lapply(Mdl.Y, subfun, iSubObs = iSubObs,
+                             dataSubIdx = dataSubIdx),
+                         Mdl.par = rapply(Mdl.par, subfun, iSubObs = iSubObs,
+                             dataSubIdx = dataSubIdx, how  = "replace"),
+                         Mdl.u = Mdl.u[dataSubIdx[iSubObs], , drop = FALSE],
+                         Mdl.d = Mdl.d[dataSubIdx[iSubObs], , drop = FALSE],
+                         parUpdate = parUpdate,
+                         MCMCUpdateStrategy = MCMCUpdateStrategy)
+                   ,silent = TRUE)
 
             if(is(gradTry, "try-error"))
               {
