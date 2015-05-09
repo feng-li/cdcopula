@@ -70,10 +70,10 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 ###----------------------------------------------------------------------------
 ### The K-step Generalized Newton Move
 ###----------------------------------------------------------------------------
-
   for(iStep in 1:(kSteps+1))
     {
       ## The gradient and Hessian in the likelihood
+      a <- proc.time()
       logDensGradHess.prop <- logDensGradHess(
               MargisType = MargisType,
               Mdl.Y = Mdl.Y,
@@ -81,6 +81,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
               parUpdate = parUpdate,
               staticCache = staticCache.curr,
               MCMCUpdateStrategy = MCMCUpdateStrategy)
+      print(proc.time()-a)
 
       ## DEBUGING FIXME: DEBUGING code
       DEBUGGING <- TRUE
@@ -89,6 +90,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## APPROACH ONE: This version calculates the numerical gradient with respect to
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
+          a <- proc.time()
           logDensGradHess.prop.num.split <- logDensGradHess(
                   MargisType = MargisType,
                   Mdl.Y = Mdl.Y,
@@ -97,20 +99,10 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                   staticCache = staticCache.curr,
                   gradMethods = "numeric",
                   MCMCUpdateStrategy = MCMCUpdateStrategy)
+          print(proc.time()-a)
 
-          ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
-          ## analytical and numerical methods are of the same.
-          g.math <- logDensGradHess.prop[["logGradObs"]]
-          g.num <- logDensGradHess.prop.num.split[["logGradObs"]]
-          try(plot(g.num, g.math, main = as.character(chainCaller),
-                   pch = 20, col = "blue"), silent = TRUE)
-          g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
-          if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
-            {
-              ## Sys.sleep(1)
-              ## browser(text = "Something Wrong!")
-            }
 
+          a <- proc.time()
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
                   MargisType = MargisType,
                   Mdl.Y = Mdl.Y,
@@ -119,8 +111,23 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                   staticCache = staticCache.curr,
                   MCMCUpdateStrategy = MCMCUpdateStrategy
                   ) # n-by-pp
+          print(proc.time()-a)
 
-          browser()
+
+          ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
+          ## analytical and numerical methods are of the same.
+          g.math <- logDensGradHess.prop[["logGradObs"]]
+          g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
+          g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
+
+          try(plot(g.num, g.math, main = as.character(chainCaller),
+                   pch = 20, col = "blue"), silent = TRUE)
+          ## g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
+          ## if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
+          ##   {
+          ##     ## Sys.sleep(1)
+          ##     ## browser(text = "Something Wrong!")
+          ##   }
         }
 
       ## Break the loop if something went wrong in the gradient
@@ -143,7 +150,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           chainCaller = chainCaller)
 
       ## Gradient and Hessian for the likelihood
-      logDensGrad.prop <- logDensGradHess.prop[["logDensGradObs"]] # n-by-pp
+      logDensGrad.prop <- logDensGradHess.prop[["logGradObs"]] # n-by-pp
       logDensHess.prop <- hessApprox(logDensGrad.prop, hessMethod) # diag elements only
 
       logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1

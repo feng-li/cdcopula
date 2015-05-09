@@ -30,7 +30,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
 logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                            gradMethods = c("analytic","numeric")[1],
+                            gradMethods = c("analytic","numeric")[1:2],
                             staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain
@@ -113,13 +113,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
         }
       if("numeric" %in% tolower(gradMethods))
         {
-          ## A simple wrapper that calculates the numerical gradient for given
-          ## parameters NOTE: The numeric gradient depends on numDeriv package
+          ## A simple wrapper that calculates the numerical gradient for given parameters
+          ## NOTE: The numeric gradient depends on numDeriv package
           MargiModelGradNumFun.subtask <- function(subtask, data.parent.env, data.global.env)
             {
               ## This order is very important. The data in local environment should always
               ## be nested inside global environment.
-              list2env(data.global.env, envir = environment())
               list2env(data.parent.env, envir = environment())
 
               nSubTask <- length(subtask)
@@ -144,7 +143,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                           x = parCurr[[parCaller]][i],
                           parCaller = parCaller,
                           parCurr = lapply(parCurr, function(x, i)x[i], i = i),
-                          yCurr = yCurr[i],
+                          yCurr = yCurr[subtask][i],
                           typeCurr = typeCurr), silent = TRUE)
 
                   if(is(gradTry, "try-error"))
@@ -164,9 +163,9 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           tasks <- data.partition(nObs, list(N.subsets = nCores, partiMethod = "ordered"))
           data.current.env <- as.list(environment())
 
-          MargiGradObs.numLst <- lapply(X = tasks, FUN = MargiModelGradNumFun.subtask,
-                                        data.parent.env = data.current.env,
-                                        data.global.env  =  as.list(.GlobalEnv))
+          MargiGradObs.numLst <- lapply(X = tasks,
+                                        FUN = MargiModelGradNumFun.subtask,
+                                        data.parent.env = data.current.env)
           ## The parallel version
           ## cl <- makeCluster(nCores)
           ## MargiGradObs.numLstClust <- parLapply(
@@ -180,6 +179,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           MargiGradObs.num <- unlist(MargiGradObs.numLst)
           MargiGradObs <- MargiGradObs.num
 
+
+          out.test <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+                                         staticCache, MCMCUpdateStrategy = "margin")$logGradObs
+
+
+          browser()
           ## DEBUG: Check if any gradient component is not correctly computed.  To check
           ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
           ## evaluates if the numeric and analytic gradients are consistent
