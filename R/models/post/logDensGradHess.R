@@ -45,7 +45,6 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   CompNM <- names(parUpdate)
   MargisNM <- CompNM[(CompNM  != CplNM)]
   names(MargisType) <- MargisNM
-
 ###----------------------------------------------------------------------------
 ### SPLIT THE GRADIENT INTO COPULA AND MARGINAL ACCORDING TO MCMC STRATEGY
 ###----------------------------------------------------------------------------

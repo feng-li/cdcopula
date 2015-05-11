@@ -84,7 +84,32 @@ funinv2d.tab <- function(x1, y, tabular)
 
         ## The indices of x2
         ## FIXME: This is the bottom neck of speed.
+        ## a <- proc.time()
         x2FloorIdx0 <- max.col(yFloorDev0)
+        ## cat("max.col:\n")
+        ## print(proc.time()-a)
+
+
+        ## The parallel version is not as fast as the serial version.
+        ## a <- proc.time()
+        ## nSubTasks <- detectCores()
+        ## dataSubIdxLst <- data.partition(
+        ##         nObs = nObs,
+        ##         args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
+
+        ## x2FloorIdx0.Lst <- parLapply(
+        ##         cl, dataSubIdxLst,
+        ##         function(x, data) max.col(data[x, , drop = FALSE]),
+        ##         data = yFloorDev0)
+
+        ## x2FloorIdx0 <- unlist(x2FloorIdx0.Lst )
+
+        ## cat("max.col (parallel):\n")
+        ## print(proc.time()-a)
+
+        ## browser()
+
+
         x2Floor0 <- x2Grid[x2FloorIdx0]
 
         ## Make sure the output format is same as the input
@@ -93,44 +118,66 @@ funinv2d.tab <- function(x1, y, tabular)
         return(out)
     }
 
-twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-3, ...)
+twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-3,
+                          gridmethod = list(x1 = "linear", x2 = "cubic"), ...)
 {
     ## The dictionary lookup method The input argument. We choose to use the lower and
     ## upper tail dependence because they are fixed in [0, 1] for BB7 The code is only
     ## used once during the initialization.  If need more precisions is needed , we
     ## consider using iterative way to handle the memory problem.
 
-    x1Grid <- seq(x1lim[1]+tol, x1lim[2]-tol, tol)
-    x2Grid <- seq(x2lim[1]+tol, x2lim[2]-tol, tol)
-
-    nGrid1 <- length(x1Grid)
-    nGrid2 <- length(x2Grid)
-
-    Mat <- matrix(NA, nGrid1, nGrid2)
-
-    ## Big table takes huge amount of memory. We split the calculation if we
-    ## require a very precise table.
-    ## Split the calculations
-    MaxLenCurr <- round(min(nGrid1*nGrid2, 1e6)/nGrid1)
-    LoopIdx <- c(seq(1, nGrid2, MaxLenCurr), nGrid2)
-    LoopIdx[1] <- 0
-
-    yIdxCurr0 <- 0
-
-    nLoops <- length(LoopIdx)-1
-    for(j in 1:nLoops)
+  gridgens <- function(xlim, gridmethod, tol)
+    {
+      if(tolower(gridmethod) == "linear")
         {
-            IdxCurr0 <- LoopIdx[j]+1
-            IdxCurr1 <- LoopIdx[j+1]
-
-            x1 <- rep(x1Grid, times = IdxCurr1-IdxCurr0+1)
-            x2 <- rep(x2Grid[IdxCurr0:IdxCurr1], each = nGrid1)
-
-            Mat[, IdxCurr0:IdxCurr1] <- FUN(x1 = x1, x2 = x2, ...)
+          out <- seq(xlim[1]+tol, xlim[2]-tol, tol)
         }
+      else if (tolower(gridmethod) == "exp")
+        {
+          out <- exp(seq(log(xlim[1])+tol, log(xlim[2])-tol, tol))
+        }
+      else if (tolower(gridmethod) == "cubic")
+        {
+          out <- (seq((xlim[1])^(1/3)+tol, (xlim[2])^(1/3)-tol, tol))^3
+        }
+      else
+        {
+          stop("No such grid grid generating method.")
+        }
+      return(out)
+    }
 
-    out <- list(Mat = Mat, nGrid1 = nGrid1, nGrid2 = nGrid2, x2Grid = x2Grid, tol = tol)
-    return(out)
+  x1Grid <- gridgens(xlim = x1lim, gridmethod = gridmethod$x1, tol = tol)
+  x2Grid <- gridgens(xlim = x2lim, gridmethod = gridmethod$x2, tol = tol)
+
+  nGrid1 <- length(x1Grid)
+  nGrid2 <- length(x2Grid)
+
+  Mat <- matrix(NA, nGrid1, nGrid2)
+
+  ## Big table takes huge amount of memory. We split the calculation if we
+  ## require a very precise table.
+  ## Split the calculations
+  MaxLenCurr <- round(min(nGrid1*nGrid2, 1e6)/nGrid1)
+  LoopIdx <- c(seq(1, nGrid2, MaxLenCurr), nGrid2)
+  LoopIdx[1] <- 0
+
+  yIdxCurr0 <- 0
+
+  nLoops <- length(LoopIdx)-1
+  for(j in 1:nLoops)
+    {
+      IdxCurr0 <- LoopIdx[j]+1
+      IdxCurr1 <- LoopIdx[j+1]
+
+      x1 <- rep(x1Grid, times = IdxCurr1-IdxCurr0+1)
+      x2 <- rep(x2Grid[IdxCurr0:IdxCurr1], each = nGrid1)
+
+      Mat[, IdxCurr0:IdxCurr1] <- FUN(x1 = x1, x2 = x2, ...)
+    }
+
+  out <- list(Mat = Mat, nGrid1 = nGrid1, nGrid2 = nGrid2, x2Grid = x2Grid, tol = tol)
+  return(out)
 }
 funinv2d.iter <- function(FUN, x1, y, x2lim)
     {

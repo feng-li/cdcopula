@@ -107,32 +107,31 @@ source(CplConfigFile, local = TRUE)
 Starting.time <- Sys.time()
 
 ## Set Parallel Computing environment
-## require("snow", quietly = TRUE)
-## cl <- makeCluster(detectCores(), type = "MPI")
-## setDefaultCluster(cl)
-## cE <- clusterEvalQ(cl,
-##                    {
-##                      sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-##                                byte.compile = 0,
-##                                recursive = TRUE,
-##                                ignore.error = TRUE)
-##                    })
+require("snow", quietly = TRUE)
+cl <- makeCluster(detectCores(), type = "MPI")
+setDefaultCluster(cl)
+cE <- clusterEvalQ(cl,
+                   {
+                     sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+                               byte.compile = 0,
+                               recursive = TRUE,
+                               ignore.error = TRUE)
+                   })
 
-if(!interactive())
-{
+## if(!interactive())
+## {
 
-    OUT.CplCross <- parLapply(
-        cl = cl,
-        X = crossValidIdx[["training"]],
-        fun = CplMain,
-        CplConfigFile = CplConfigFile)
-} else
-{
+##     OUT.CplCross <- parLapply(
+##         crossValidIdx[["training"]],
+##         CplMain,
+##         CplConfigFile = CplConfigFile)
+## } else
+## {
     OUT.CplCross <- lapply(
         X = crossValidIdx[["training"]],
         FUN = CplMain,
         CplConfigFile = CplConfigFile)
-}
+## }
 
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC

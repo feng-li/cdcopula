@@ -59,7 +59,7 @@ parCplRep2Std <- function(CplNM, parCplRep)
                         x1 = rho,
                         y = lambdaL,
                         x1lim = c(0, 1),
-                        x2lim = c(1, 100),
+                        x2lim = c(1, 30),
                         tol = 1e-3) # n-by-lq
 
         ## In multivariate case, lambda_ij = f(rho_ij, df) where df is independent of i

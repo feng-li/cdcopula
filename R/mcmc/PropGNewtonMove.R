@@ -112,14 +112,15 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
           a <- proc.time()
-          logDensGradHess.prop.num.split <- logDensGradHess(
-                  MargisType = MargisType,
-                  Mdl.Y = Mdl.Y,
-                  Mdl.parLink = Mdl.parLink,
-                  parUpdate = parUpdate,
-                  staticCache = staticCache.curr,
-                  gradMethods = "numeric",
-                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+          ## browser()
+          ## logDensGradHess.prop.num.split <- logDensGradHess(
+          ##         MargisType = MargisType,
+          ##         Mdl.Y = Mdl.Y,
+          ##         Mdl.parLink = Mdl.parLink,
+          ##         parUpdate = parUpdate,
+          ##         staticCache = staticCache.curr,
+          ##         gradMethods = "numeric",
+          ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
 
           cat("Numerical gradient (split):\n")
           print(proc.time()-a)
@@ -140,12 +141,12 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
-          g.ana <- logDensGradHess.prop[["logGradObs"]]
-          g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
-          g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
+          ## g.ana <- logDensGradHess.prop[["logGradObs"]]
+          ## g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
+          ## g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
 
-          browser()
+          ## browser()
           ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
