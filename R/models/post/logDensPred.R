@@ -135,18 +135,18 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing,
                         ## The log predictive likelihood.  Note that the corresponding
                         ## updating flags should be switched on
                         logPred <- logPost(
-                            CplNM = CplNM,
-                            Mdl.Y = Mdl.Y.testing.curr,
-                            Mdl.X = Mdl.X.testing.curr,
-                            Mdl.beta = Mdl.beta.curr,
-                            Mdl.betaIdx = Mdl.betaIdx.curr,
-                            Mdl.parLink = Mdl.parLink,
-                            varSelArgs = varSelArgs,
-                            MargisType = MargisType,
-                            priArgs = priArgs,
-                            parUpdate = parUpdate,
-                            MCMCUpdateStrategy = MCMCUpdateStrategy
-                            )[["Mdl.logLik"]]
+                                MargisType = MargisType,
+                                Mdl.Y = Mdl.Y.testing.curr,
+                                Mdl.X = Mdl.X.testing.curr,
+                                Mdl.beta = Mdl.beta.curr,
+                                Mdl.betaIdx = Mdl.betaIdx.curr,
+                                Mdl.parLink = Mdl.parLink,
+                                varSelArgs = varSelArgs,
+                                MargisType = MargisType,
+                                priArgs = priArgs,
+                                parUpdate = parUpdate,
+                                MCMCUpdateStrategy = MCMCUpdateStrategy
+                                )[["Mdl.logLik"]]
 
                         which.j <- which.j + 1
 

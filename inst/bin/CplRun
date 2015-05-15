@@ -66,7 +66,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
 }
 
 {if(interactive())
-   {   ## PASS INTERNALLY
+   { ## PASS INTERNALLY
      ## PATH TO THE MODEL CONFIGURATION FILE
      CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
                                 "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R")
@@ -75,21 +75,21 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
  else
    {## Pass via command argument
 
-         if((length(args) == 1L))
-           {
-             CplConfigFile <- args
-             nCores <- 1
-           }
-         else if ((length(args) == 2L))
-           {
-             CplConfigFile <- args[2]
-             nCores <- as.integer(args[1])
-           }
-         else
-           {
-             stop("Model configuration file required. Try --help.")
-           }
+     if((length(args) == 1L))
+       {
+         CplConfigFile <- args
+         nCores <- 1
        }
+     else if ((length(args) == 2L))
+       {
+         CplConfigFile <- args[2]
+         nCores <- as.integer(args[1])
+       }
+     else
+       {
+         stop("Model configuration file required. Try --help.")
+       }
+   }
 }
 
 ###----------------------------------------------------------------------------

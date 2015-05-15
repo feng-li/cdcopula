@@ -51,12 +51,11 @@ DGPCpl <- function(DGPconfigfile, export = "list")
               }
             else
               {
-                linkArgs <- list(type = )
+                linkArgs <- list(type = linkCurr)
               }
 
             ## FIXME: Conditional link function
             ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
-                                  link = linkCurr,
                                   linkArgs = linkArgs)
 
             nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total

@@ -33,6 +33,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
 ###----------------------------------------------------------------------------
   ## Load dependences
   require("mvtnorm", quietly = TRUE)
+  require("numDeriv", quietly = TRUE)
 
   ## Load the sourceDir tool
   R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
@@ -101,7 +102,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
     {
-      require(optimx)
+      require("optimx")
 
       Mdl.Idx.training.sample <- Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
       Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
