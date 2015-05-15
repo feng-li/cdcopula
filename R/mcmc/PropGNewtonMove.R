@@ -111,7 +111,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## APPROACH ONE: This version calculates the numerical gradient with respect to
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
-          a <- proc.time()
+          ## a <- proc.time()
           ## browser()
           ## logDensGradHess.prop.num.split <- logDensGradHess(
           ##         MargisType = MargisType,
@@ -122,8 +122,8 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ##         gradMethods = "numeric",
           ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-          cat("Numerical gradient (split):\n")
-          print(proc.time()-a)
+          ## cat("Numerical gradient (split):\n")
+          ## print(proc.time()-a)
 
           a <- proc.time()
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
@@ -132,8 +132,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                   Mdl.parLink = Mdl.parLink,
                   parUpdate = parUpdate,
                   staticCache = staticCache.curr,
-                  MCMCUpdateStrategy = MCMCUpdateStrategy
-                  ) # n-by-pp
+                  MCMCUpdateStrategy = MCMCUpdateStrategy) # n-by-pp
 
           cat("Numerical gradient (joint):\n")
           print(proc.time()-a)
@@ -179,7 +178,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           priArgs = priArgs,
           chainCaller = chainCaller)
 
-      ## Gradient and Hessian for the likelihood
+      ## Gradient and Hessian for the likelihood with linkage
       logDensGrad.prop <- logDensGradHess.prop[["logGradObs"]]*LinkGradObs # n-by-pp
       logDensHess.prop <- hessApprox(logDensGrad.prop, hessMethod) # diag elements only
 

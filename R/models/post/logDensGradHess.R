@@ -160,8 +160,8 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
             }
 
           nObs <- length(Mdl.Y[[1]])
-          nCores <- detectCores()
-          tasks <- data.partition(nObs, list(N.subsets = nCores, partiMethod = "ordered"))
+          cl <- parallel:::defaultCluster()
+          tasks <- data.partition(nObs, list(N.subsets = length(cl), partiMethod = "ordered"))
           data.current.env <- as.list(environment())
 
           MargiGradObs.num.uLst <- lapply(X = tasks,

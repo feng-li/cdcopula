@@ -12,14 +12,15 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   Mdl.d <- staticCache[["Mdl.d"]]
 
   require("parallel")
-  nSubTasks <- detectCores()
+  cl <- parallel:::defaultCluster()
+  nSubTasks <- length(cl)
+
   dataSubIdxLst <- data.partition(
           nObs = nrow(Mdl.u), args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
   ## Uncomment this can use in-node parallelism
   logDensGradObs.Lst <- parLapply(
-          cl, dataSubIdxLst,
-          logDensGradNum,
+          cl, dataSubIdxLst, logDensGradNum,
           Mdl.Y = Mdl.Y,
           Mdl.u = Mdl.u,
           Mdl.d = Mdl.d,

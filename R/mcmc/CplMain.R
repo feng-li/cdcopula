@@ -15,7 +15,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012; Current: Fri Mar 27 12:08:32 CST 2015.
-CplMain <- function(Mdl.Idx.training, CplConfigFile)
+CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
 {
 
 ###----------------------------------------------------------------------------
@@ -53,6 +53,20 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Source the configuration file for the model
   source(CplConfigFile, local = TRUE)
 
+  ## Parallel Setting up
+  if(nParallel>1)
+    {
+      require("parallel", quietly = TRUE)
+      require("snow", quietly = TRUE)
+      cl4MCMC <- makeCluster(nParallel, type = "MPI")
+      setDefaultCluster(cl4MCMC)
+      ce4MCMC <- clusterEvalQ(cl4MCMC,
+                              {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+                                         byte.compile = 0,
+                                         recursive = TRUE,
+                                         ignore.error = TRUE)
+                             })
+    }
 
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
@@ -359,6 +373,11 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
     }
 
+
+    if(nParallel>1)
+      {
+        stopCluster(cl4MCMC)
+      }
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)
   gc()
