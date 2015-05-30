@@ -111,19 +111,18 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## APPROACH ONE: This version calculates the numerical gradient with respect to
           ## the model parameters (not the covariate dependent beta parameters) via the
           ## chain rule.
-          ## a <- proc.time()
-          ## browser()
-          ## logDensGradHess.prop.num.split <- logDensGradHess(
-          ##         MargisType = MargisType,
-          ##         Mdl.Y = Mdl.Y,
-          ##         Mdl.parLink = Mdl.parLink,
-          ##         parUpdate = parUpdate,
-          ##         staticCache = staticCache.curr,
-          ##         gradMethods = "numeric",
-          ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
+          a <- proc.time()
+          logDensGradHess.prop.num.split <- logDensGradHess(
+                  MargisType = MargisType,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.parLink = Mdl.parLink,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache.curr,
+                  gradMethods = "numeric",
+                  MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-          ## cat("Numerical gradient (split):\n")
-          ## print(proc.time()-a)
+          cat("Numerical gradient (split):\n")
+          print(proc.time()-a)
 
           a <- proc.time()
           logDensGradHess.prop.num.joint <- logDensGradHessNum(
@@ -141,17 +140,17 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
           g.ana <- logDensGradHess.prop[["logGradObs"]]
-          ## g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
+          g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
           g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
 
-          ## browser()
+          browser()
           ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
           try(plot(g.num, g.ana, main = as.character(chainCaller),
                    pch = 20, col = "blue"), silent = TRUE)
-          g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
+          g.lm <- try(lm(g.ana~0+g.num), silent = TRUE)
           if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
             {
               ## Sys.sleep(1)

@@ -6,7 +6,6 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   ## The updating chain
   chainCaller <- parCplRepCaller(parUpdate)
 
-
   Mdl.par <- staticCache[["Mdl.par"]]
   Mdl.u <- staticCache[["Mdl.u"]]
   Mdl.d <- staticCache[["Mdl.d"]]
@@ -30,7 +29,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           MargisType = MargisType,
           MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-  ## logDensGradObs.Lst <- lapply(
+  ## logDensGradObs.Lst2 <- lapply(
   ##         dataSubIdxLst,
   ##         logDensGradNum,
   ##         Mdl.Y = Mdl.Y,
@@ -40,7 +39,6 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   ##         parUpdate = parUpdate,
   ##         MargisType = MargisType,
   ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
-
 
   ## stopCluster(cl)
 

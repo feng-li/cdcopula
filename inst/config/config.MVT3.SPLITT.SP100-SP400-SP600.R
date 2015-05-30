@@ -33,10 +33,10 @@ ModelDescription <- "MVT3_copula_with_vs"
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 
-MCMCUpdate <- list(list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
-                   list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
-                   list("mu" = TRUE, "phi"= TRUE, "df"= TRUE, "lmd"= TRUE),
-                   list("tau" = TRUE, "lambdaL" = TRUE))
+MCMCUpdate <- list(list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("tau" = F, "lambdaL" = TRUE))
 
 names(MCMCUpdate) <- MargisNM
 

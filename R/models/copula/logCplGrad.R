@@ -249,7 +249,6 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller)
           ##    )
                                         #n-by-lq
 
-          browser()
           gradCpl.lambda.df <- lambdaGrad(CplNM = CplNM, parCpl = parCpl, caller = "df")
 
           ## The chain gradient
