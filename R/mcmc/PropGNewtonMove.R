@@ -140,23 +140,23 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
           ## Define gradient accuracy coefficient. The TRUE coefficient should be one if
           ## analytical and numerical methods are of the same.
-          ## g.ana <- logDensGradHess.prop[["logGradObs"]]
+          g.ana <- logDensGradHess.prop[["logGradObs"]]
           ## g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
-          ## g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
+          g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
 
           ## browser()
           ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
-          ## try(plot(g.num, g.ana, main = as.character(chainCaller),
-          ##          pch = 20, col = "blue"), silent = TRUE)
-          ## g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
-          ## if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
-          ##   {
-          ##     ## Sys.sleep(1)
-          ##     ## browser(text = "Something Wrong!")
-          ##   }
+          try(plot(g.num, g.ana, main = as.character(chainCaller),
+                   pch = 20, col = "blue"), silent = TRUE)
+          g.lm <- try(lm(g.math~0+g.num), silent = TRUE)
+          if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
+            {
+              ## Sys.sleep(1)
+              ## browser(text = "Something Wrong!")
+            }
         }
 
       ## Break the loop if something went wrong in the gradient

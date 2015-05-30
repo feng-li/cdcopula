@@ -16,7 +16,8 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   nSubTasks <- length(cl)
 
   dataSubIdxLst <- data.partition(
-          nObs = nrow(Mdl.u), args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
+          nObs = nrow(Mdl.u),
+          args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
   ## Uncomment this can use in-node parallelism
   logDensGradObs.Lst <- parLapply(

@@ -108,8 +108,8 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                   type = typeCurr,
                   parCaller = parCaller,
                   densCaller = densCaller)
-          MargiGradObs.u <- MargiGradObs.ana[["u"]]
-          MargiGradObs.d <- MargiGradObs.ana[["d"]]
+          MargiGradObs.u <- MargiGradObs.ana[, "u"]
+          MargiGradObs.d <- MargiGradObs.ana[, "d"]
 
         }
       if("numeric" %in% tolower(gradMethods))
@@ -168,8 +168,13 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                       FUN = MargiModelGradNumFun.subtask,
                                       data.parent.env = data.current.env)
           MargiGradObs.u <- unlist(MargiGradObs.num.uLst)
-          MargiGradObs.d <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                                               staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
+          MargiGradObs.d <- logDensGradHessNum(
+                  MargisType = MargisType,
+                  Mdl.Y = Mdl.Y,
+                  Mdl.parLink = Mdl.parLink,
+                  parUpdate = parUpdate,
+                  staticCache = staticCache,
+                  MCMCUpdateStrategy = "twostage")[["logGradObs"]]
 
           ## DEBUG: Check if any gradient component is not correctly computed.  To check
           ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
