@@ -374,3 +374,28 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller)
     }
   return(out)
 }
+logCplGradParallel <- function(CplNM, u, parCplRep, cplCaller)
+  {
+    cl <- parallel:::defaultCluster()
+    nObs <- nrow(u)
+
+    dataSubIdxLst <- data.partition(nObs = nObs,
+                                    list(N.subsets = length(cl), partiMethod = "ordered"))
+
+    subfun <- function(index, data)data[index, , drop = FALSE]
+
+    u.Lst <- lapply(dataSubIdxLst, subfun, data = u)
+
+    splitlist <- function(data, index) lapply(data, subfun, index = index)
+    parCplRep.Lst <- rapply(dataSubIdxLst, splitlist, data = parCplRep, how = "replace")
+
+    out.Lst <- clusterMap(
+            cl, logCplGrad,
+            u = u.Lst,
+            parCplRep = parCplRep.Lst,
+            MoreArgs = list(CplNM = CplNM,
+                cplCaller = cplCaller))
+    out <- do.call(rbind, out.Lst)
+
+    return(out)
+  }
