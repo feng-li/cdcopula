@@ -225,11 +225,9 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller)
 
               C2 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
 
-              out <- {
-                (C2-q -(C2+v)*log((C2+v)/v)
-                 +(C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
-                (2*(C2+v))
-              }
+              out <- ((C2-q -(C2+v)*log((C2+v)/v)+
+                       (C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
+                      (2*(C2+v)))
               return(out)
             }
           logGradCpl.df <- apply(matrix(1:nObs), 1,
@@ -237,17 +235,6 @@ logCplGrad <- function(CplNM, u, parCplRep, cplCaller)
                                  rho = rho,
                                  df = df,
                                  u.quantile = u.quantile) # n-by-1
-
-
-          ## C1 <- sqrt(1-rho)/sqrt(1+rho) # n-by-lq
-          ## gradCpl.lambda.df <- {
-          ##   1/((1+df)^(3/2)*beta((1+df)/2, 1/2))*
-          ##   2^(-1-df/2)*(1+rho)^(1+df/2)*
-          ##   (-1-(1+df)*harmonic((df-1)/2) +
-          ##    (1+df)*harmonic(df/2)-
-          ##    (1+df)*log(2)+(1+df)*log(1+rho)
-          ##    )
-                                        #n-by-lq
 
           gradCpl.lambda.df <- lambdaGrad(CplNM = CplNM, parCpl = parCpl, caller = "df")
 
