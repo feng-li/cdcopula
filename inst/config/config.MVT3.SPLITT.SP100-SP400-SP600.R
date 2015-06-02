@@ -36,7 +36,7 @@ MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 MCMCUpdate <- list(list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
                    list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
                    list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("tau" = F, "lambdaL" = TRUE))
+                   list("tau" = TRUE, "lambdaL" = FALSE))
 
 names(MCMCUpdate) <- MargisNM
 
