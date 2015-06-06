@@ -213,11 +213,11 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
         {
 
           ## The gradient for the copula function. n-by-1
-          logCplGradObs.ana <- logCplGrad(
+          logCplGradObs.ana <- logCplRepGrad(
                   CplNM = CplNM,
                   u = staticCache$Mdl.u,
                   parCplRep = Mdl.par[[CplNM]],
-                  cplCaller = cplCaller)
+                  parCaller = cplCaller)
           logCplGradObs <- logCplGradObs.ana
         }
       if("numeric" %in% tolower(gradMethods))

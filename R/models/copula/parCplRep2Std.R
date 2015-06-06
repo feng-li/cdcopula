@@ -66,9 +66,7 @@ parCplRep2Std <- function(CplNM, parCplRep)
         ## and j. To make the calculate stable. let df_ij = df and make the mean of
         ## them. See Demarta & McNeil (2005) and Hult & Lindskog (2002)
 
-        ## browser()
-
-        df <- rowMeans(df0) # n-by-1
+        df <- as.matrix(rowMeans(df0)) # n-by-1
 
         out[["rho"]] <- rho
         out[["df"]] <- df

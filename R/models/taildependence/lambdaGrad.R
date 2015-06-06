@@ -38,7 +38,7 @@ lambdaGrad <- function(CplNM, parCpl, caller)
             grad4rho.bvt <- function(df1, rho1)
               {
                 out <- 2^(-df1/2)*(1+rho1)^((-1+df1)/2)/
-                (sqrt(1 = rho1)*beta((1+df1)/2), 1/2)
+                (sqrt(1 - rho1)*beta((1+df1)/2, 1/2))
                 return(out)
               }
             out[["rho"]] <- apply(rho, 2, grad4rho.bvt, df1 = df)

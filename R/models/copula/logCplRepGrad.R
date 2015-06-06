@@ -26,7 +26,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
                                        parCpl = parCpl, parCaller = c("delta")) # n-by-1
 
           kendalltauGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                               caller = "delta")
+                                               parCaller = "delta")
 
           out <- logCplGrad.par[["delta"]]*(1/lambdaGrad.par[["delta"]])
         }
@@ -37,7 +37,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 
           ## Gradient w.r.t. tau
           kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                               caller = "theta")
+                                               parCaller = "theta")
 
           ## The chain gradient
           out <- logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]])
@@ -58,7 +58,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
       nObs <- dim(u)[1]
 
       parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
-      ## df <- parCpl[["df"]] # n-by-1
+      df <- parCpl[["df"]] # n-by-1
       ## rho <- parCpl[["rho"]] # n-by-lq
 
       u.quantile <- qt(u, df)
@@ -69,7 +69,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
                                       parCpl = parCpl, parCaller = c("df", "rho")) # n-by-1
 
           lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                       caller = c("df", "rho"))
+                                       parCaller = c("df", "rho"))
 
           ## The chain gradient
           out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]]) +
@@ -81,9 +81,11 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
           logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
                                        parCpl = parCpl, parCaller = c("rho")) # n-by-lq
 
-          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl, caller = "rho")
+          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                               parCaller = "rho")
 
-          out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.rho) # n-by-lq
+          browser()
+          out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.par[["rho"]]) # n-by-lq
 
           ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
           ## result. need further verification.

@@ -211,12 +211,13 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                       (2*(C2+v)))
               return(out)
             }
-          logGradCpl.df <- apply(matrix(1:nObs), 1,
+          logCplGrad.df <- apply(matrix(1:nObs), 1,
                                  gradFun,
                                  rho = rho,
                                  df = df,
                                  u.quantile = u.quantile) # n-by-1
 
+          out[["df"]] <- logCplGrad.df
         }
 
       if("rho" %in% tolower(parCaller))
@@ -238,14 +239,14 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
               return(out)
             }
-          logGradCpl.rho <- t(apply(matrix(1:nObs), 1,
+          logCplGrad.rho <- t(apply(matrix(1:nObs), 1,
                                     gradFun,
                                     rho = rho,
                                     df = df,
                                     u.quantile = u.quantile)) # n-by-lq
 
 
-          out <- 2*logGradCpl.rho # n-by-lq
+          out[["rho"]] <- 2*logCplGrad.rho # n-by-lq
           ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
           ## result. need further verification.
 
