@@ -71,6 +71,13 @@ parCplRep2Std <- function(CplNM, parCplRep)
         out[["rho"]] <- rho
         out[["df"]] <- df
       }
+    else if(tolower(CplNM) == "gumbel")
+      {
+        tau <- parCplRep[["tau"]]
+
+        delta <- 1/(1-tau)
+        out[["delta"]] <- delta
+      }
     else
       {
         stop("This copula is not implemented!")

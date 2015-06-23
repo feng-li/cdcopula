@@ -120,16 +120,16 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       out <- density
     }
   else if(tolower(CplNM) == "gumbel")
-    {
-      theta <- parCpl[["theta"]]
-      pctl <- pCpl(u = u, theta, CplNM = "gumbel")
+    {# Joe 1997. p.142 Family B6
+      delta <- parCpl[["delta"]]
+      pctl <- pCpl(u = u, parCpl = parCpl, CplNM = "gumbel")
       u.tilde <- -log(u)
 
       u.tildeProd <- u.tilde[, 1]*u.tilde[, 2]
-      u.tildeSumtheta <- rowSums(u.tilde^theta)
+      u.tildeSumdelta <- rowSums(u.tilde^delta)
 
-      density <- pctl/(u[, 1]*u[, 2])*u.tildeProd^(theta-1)/
-      u.tildeSumtheta^(2-1/theta)*(u.tildeSumtheta^(1/theta)+theta-1)
+      density <- (pctl/(u[, 1]*u[, 2])*u.tildeProd^(delta-1)/
+                  u.tildeSumdelta^(2-1/delta)*(u.tildeSumdelta^(1/delta)+delta-1))
       out <- density
     }
   else if(tolower(CplNM)  == "frank")

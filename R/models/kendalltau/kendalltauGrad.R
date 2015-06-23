@@ -257,6 +257,19 @@ kendalltauGrad <- function(CplNM, parCpl, parCaller)
             out[["rho"]] <- 2/(pi*sqrt(1-rho^2)) # n-by-lq
           }
       }
+    else if(tolower(CplNM) == "mvt")
+      {
+        if("delta" %in% tolower(parCaller))
+          {
+            out[["delta"]]
+
+          }
+
+      }
+    else
+      {
+        stop("No such copula!")
+      }
 
     return(out)
   }

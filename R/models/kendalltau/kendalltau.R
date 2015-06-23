@@ -62,6 +62,15 @@ kendalltau <- function(CplNM, parCpl)
         rho <- parCpl[["rho"]]
         out <- 2/pi*asin(rho)
       }
+    else if (tolower(CplNM) == "gumbel")
+      {
+        delta <- parCpl[["delta"]]
+        out <- 1/delta^2
+      }
+    else
+      {
+        stop("No such copula!")
+      }
 
 
     return(out)

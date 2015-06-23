@@ -101,6 +101,28 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
           out <- logCplGrad.par[["u"]]
         }
     }
+  else if(tolower(CplNM) == "gumbel")
+    {
+      if(tolower(parCaller) == "tau")
+        {
+          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                       parCpl = parCpl, parCaller = c("delta")) # n-by-lq
+
+          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                               parCaller = "delta")
+          out <- logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]])
+        }
+      else
+        {
+          ## The gradient with respect to u_i
+          ## Reorder the parameters.
+          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                       parCpl = parCpl, parCaller = parCaller) # n-by-lq
+
+          out <- logCplGrad.par[["u"]]
+        }
+    }
+
   return(out)
 }
 

@@ -336,5 +336,63 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
           out[["u"]] <-  gradCpl.u
         }
     }
+  else if(tolower(CplNM) == "gumbel")
+    {
+      delta <- parCpl[["delta"]] # n-by-1
+      uvt <- -log(u)
+
+      u1t <- uvt[, 1]
+      u2t <- uvt[, 2]
+
+      uDelta <- u1t^delta + u2t^delta
+
+
+      if("delta" %in% tolower(parCaller))
+        {
+          u1 <- u[, 1]
+          u2 <- u[, 2]
+          logCplGrad.delta <- (1/(u1*u2*delta^2)*exp(-uDelta^(1/delta))*
+                               uDelta^(-3+1/delta)*(u1t*u2t)^(-1+delta)*
+                               (uDelta*(1+uDelta^(2/delta)+uDelta^(1/delta)*(-3+delta)-delta)*log(uDelta)-
+                                u1t^delta*delta*(1+uDelta^(2/delta)+3*uDelta^(1/delta)*(-1+delta)-
+                                                 3*delta+2*delta^2)*log(u1t)+
+                                                 delta*(u2t^delta(-1-uDelta^(2/delta)-3*uDelta^(1/delta)*
+                                                                  (-1+delta)+3*delta-2*delta^2)*log(u2t) +
+                                                                  uDelta*delta*(1+(-1+uDelta^(1/delta)+delta)*
+                                                                                log(log(u1)*log(u2))))))
+
+          out[["delta"]] <- logCplGrad.delta
+
+        }
+
+      if(any(c("u1", "u2") %in% tolower(parCaller)))
+        {
+          if(tolower(parCaller) == "u1")
+            {
+              u <-  u[, 1:2, drop = FALSE]
+            }
+          else if(tolower(parCaller) == "u2")
+            {
+              u <-  u[, 2:1, drop = FALSE]
+            }
+          else
+            {
+              stop("No such copula parameter!")
+            }
+
+          gradCpl.u <- (1/(u1^2*u2)*exp(-uDelta^(1/delta))*uDelta^(-3+1/delta)*
+                        (u2t^delta*(-1+uDelta^(1/delta)+delta)*(-1+u1t+delta)-
+                         u1t^delta*(uDelta^(2/delta)+(-1 + delta)*(delta-u1t)+
+                                    uDelta^(1/delta)*(-2 + 2*delta -u1t)))*
+                        (-u2t)*(u1t*u2t)^-2+delta)
+
+          out[["u"]] <-  gradCpl.u
+        }
+
+
+
+    }
+
+
   return(out)
 }
