@@ -1,4 +1,4 @@
-lambdaGrad <- function(CplNM, parCpl, caller)
+lambdaGrad <- function(CplNM, parCpl, parCaller)
   {
     out <- list()
 
@@ -6,7 +6,7 @@ lambdaGrad <- function(CplNM, parCpl, caller)
       {
         delta <- parCpl[["delta"]] # n-by-lq
 
-        if( "delta" %in% tolower(caller))
+        if( "delta" %in% tolower(parCaller))
           {
             out[["delta"]] <- 2^(-1/delta)*log(2)/delta^2
           }
@@ -16,7 +16,7 @@ lambdaGrad <- function(CplNM, parCpl, caller)
         df = parCpl[["df"]] # n-by-1
         rho <- parCpl[["rho"]] # n-by-lq
 
-        if( "df" %in% tolower(caller))
+        if( "df" %in% tolower(parCaller))
           {
             grad4df.bvt <- function(df1, rho1)
               {
@@ -33,7 +33,7 @@ lambdaGrad <- function(CplNM, parCpl, caller)
             out[["df"]] <- apply(rho, 2, grad4df.bvt, df1 = df)
           }
 
-        if( "rho" %in% tolower(caller))
+        if( "rho" %in% tolower(parCaller))
           {
             grad4rho.bvt <- function(df1, rho1)
               {

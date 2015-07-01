@@ -144,13 +144,12 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
 
-          browser()
           ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 
-          try(plot(g.num, g.ana, main = as.character(chainCaller),
+          try(plot(g.num.joint, g.ana, main = as.character(chainCaller),
                    pch = 20, col = "blue"), silent = TRUE)
-          g.lm <- try(lm(g.ana~0+g.num), silent = TRUE)
+          g.lm <- try(lm(g.ana~0+g.num.joint), silent = TRUE)
           if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
             {
               ## Sys.sleep(1)

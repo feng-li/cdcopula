@@ -52,8 +52,6 @@ parCplRep2Std <- function(CplNM, parCplRep)
             lambda(CplNM = "mvt", parCpl = parCpl)[["lambdaL"]]
           }
 
-        ## browser()
-
         df0 <- funinv2d(FUN = FUN,
                         method = "tabular",
                         x1 = rho,

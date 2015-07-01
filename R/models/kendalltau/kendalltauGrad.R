@@ -257,12 +257,13 @@ kendalltauGrad <- function(CplNM, parCpl, parCaller)
             out[["rho"]] <- 2/(pi*sqrt(1-rho^2)) # n-by-lq
           }
       }
-    else if(tolower(CplNM) == "mvt")
+    else if(tolower(CplNM) == "gumbel")
       {
+        delta <- parCpl[["delta"]]
+
         if("delta" %in% tolower(parCaller))
           {
-            out[["delta"]]
-
+            out[["delta"]] <- 1/delta^2
           }
 
       }

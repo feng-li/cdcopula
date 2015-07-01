@@ -15,7 +15,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012; Current: Fri Mar 27 12:08:32 CST 2015.
-CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
+CplMain <- function(Mdl.Idx.training, CplConfigFile)
 {
 
 ###----------------------------------------------------------------------------
@@ -42,6 +42,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
       stop("R_CPL_LIB_ROOT_DIR is not set properly!")
     }
 
+  R_CPL_NPARALLEL <- Sys.getenv("R_CPL_NPARALLEL")
+  if(length(R_CPL_NPARALLEL) == 0L)
+    {
+      stop("R_CPL_NPARALLEL is not set properly!")
+    }
+
+
   sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
              envir = .GlobalEnv)
 
@@ -54,12 +61,14 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile, nParallel = 1)
   ## Source the configuration file for the model
   source(CplConfigFile, local = TRUE)
 
+
+
   ## Parallel Setting up
-  if(nParallel>1)
+  if(as.numeric(R_CPL_NPARALLEL)>1)
     {
       require("parallel", quietly = TRUE)
       require("snow", quietly = TRUE)
-      cl4MCMC <- makeCluster(nParallel, type = "MPI")
+      cl4MCMC <- makeCluster(as.numeric(R_CPL_NPARALLEL), type = "MPI")
       setDefaultCluster(cl4MCMC)
       ce4MCMC <- clusterEvalQ(cl4MCMC,
                               {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),

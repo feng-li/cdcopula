@@ -65,31 +65,31 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
   stop("R_CPL_LIB_ROOT_DIR is not set properly!")
 }
 
-{if(interactive())
-   { ## PASS INTERNALLY
-     ## PATH TO THE MODEL CONFIGURATION FILE
-     CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R")
-     nCores <- 1
-   }
- else
-   {## Pass via command argument
-
-     if((length(args) == 1L))
-       {
-         CplConfigFile <- args
-         nCores <- 1
-       }
-     else if ((length(args) == 2L))
-       {
-         CplConfigFile <- args[2]
-         nCores <- as.integer(args[1])
-       }
-     else
-       {
-         stop("Model configuration file required. Try --help.")
-       }
-   }
+{
+  if(interactive())
+    { ## PASS INTERNALLY
+      ## PATH TO THE MODEL CONFIGURATION FILE
+      CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
+                                 "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R")
+      nCores <- 1
+    }
+  else
+    {## Pass via command argument
+      if((length(args) == 1L))
+        {
+          CplConfigFile <- args
+          nCores <- 1
+        }
+      else if ((length(args) == 2L))
+        {
+          CplConfigFile <- args[2]
+          nCores <- as.integer(args[1])
+        }
+      else
+        {
+          stop("Model configuration file required. Try --help.")
+        }
+    }
 }
 
 ###----------------------------------------------------------------------------
@@ -115,9 +115,11 @@ source(CplConfigFile, local = TRUE)
 
 
 ## Set Parallel Computing environment
-nParallel <- floor(nCores/nCross)
-if(nCross>1)
+R_CPL_NPARALLEL <- floor(nCores/nCross)
+
+if(nCross>1 & nCores>1)
 {
+  ## We have enough cores to do parallelized cross-validation
   require("parallel", quietly = TRUE)
   require("snow", quietly = TRUE)
   cl4CV <- makeCluster(nCross, type = "MPI")
@@ -127,7 +129,7 @@ if(nCross>1)
                       byte.compile = 0,
                       recursive = TRUE,
                       ignore.error = TRUE)
-            nParallel <- floor(nCores/nCross)
+            Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
           })
 }
 ###----------------------------------------------------------------------------
@@ -136,21 +138,19 @@ if(nCross>1)
 ## Recording starting time
 Starting.time <- Sys.time()
 
-if(nCross>1)
+if(nCross>1 & nCores>1)
 {
   OUT.CplCross <- parLapply(
           cl4CV,
           crossValidIdx[["training"]],
           CplMain,
-          CplConfigFile = CplConfigFile,
-          nParallel = nParallel)
+          CplConfigFile = CplConfigFile)
 } else
 {
   OUT.CplCross <- lapply(
           X = crossValidIdx[["training"]],
           FUN = CplMain,
-          CplConfigFile = CplConfigFile,
-          nParallel = nParallel)
+          CplConfigFile = CplConfigFile)
 }
 
 ###----------------------------------------------------------------------------
@@ -161,7 +161,7 @@ if(nCross>1)
 LPDS.OUT <- list()
 for(iLPDS in LPDS)
   {
-    if(nCross>1)
+    if(nCross>1 & nCores)
       {
         logPredLst <- clusterMap(
                 cl = cl4CV,
@@ -188,7 +188,7 @@ for(iLPDS in LPDS)
 ###----------------------------------------------------------------------------
 
 ## Stop the parallel environment
-if(nCross>1)
+if(nCross>1 & nCores)
   {
     stopCluster(cl4CV)
   }

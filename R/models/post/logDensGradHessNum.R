@@ -10,37 +10,44 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   Mdl.u <- staticCache[["Mdl.u"]]
   Mdl.d <- staticCache[["Mdl.d"]]
 
-  require("parallel")
-  cl <- parallel:::defaultCluster()
-  nSubTasks <- length(cl)
+  if(!interactive())
+    {
+      ## Assume the cluster is already registered. If not,  threw out an error.
+      require("parallel")
+      cl <- parallel:::defaultCluster()
+      nSubTasks <- length(cl)
+      dataSubIdxLst <- data.partition(
+              nObs = nrow(Mdl.u),
+              args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
-  dataSubIdxLst <- data.partition(
-          nObs = nrow(Mdl.u),
-          args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
+      logDensGradObs.Lst <- parLapply(
+              cl, dataSubIdxLst, logDensGradNum,
+              Mdl.Y = Mdl.Y,
+              Mdl.u = Mdl.u,
+              Mdl.d = Mdl.d,
+              Mdl.par = Mdl.par,
+              parUpdate = parUpdate,
+              MargisType = MargisType,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
+    }
+  else
+    {
+      nSubTasks = 2 # This is arbitrary.
+      dataSubIdxLst <- data.partition(
+              nObs = nrow(Mdl.u),
+              args = list(N.subsets = nSubTasks, partiMethod = "ordered"))
 
-  ## Uncomment this can use in-node parallelism
-  logDensGradObs.Lst <- parLapply(
-          cl, dataSubIdxLst, logDensGradNum,
-          Mdl.Y = Mdl.Y,
-          Mdl.u = Mdl.u,
-          Mdl.d = Mdl.d,
-          Mdl.par = Mdl.par,
-          parUpdate = parUpdate,
-          MargisType = MargisType,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)
-
-  ## logDensGradObs.Lst2 <- lapply(
-  ##         dataSubIdxLst,
-  ##         logDensGradNum,
-  ##         Mdl.Y = Mdl.Y,
-  ##         Mdl.u = Mdl.u,
-  ##         Mdl.d = Mdl.d,
-  ##         Mdl.par = Mdl.par,
-  ##         parUpdate = parUpdate,
-  ##         MargisType = MargisType,
-  ##         MCMCUpdateStrategy = MCMCUpdateStrategy)
-
-  ## stopCluster(cl)
+      logDensGradObs.Lst <- lapply(
+              dataSubIdxLst,
+              logDensGradNum,
+              Mdl.Y = Mdl.Y,
+              Mdl.u = Mdl.u,
+              Mdl.d = Mdl.d,
+              Mdl.par = Mdl.par,
+              parUpdate = parUpdate,
+              MargisType = MargisType,
+              MCMCUpdateStrategy = MCMCUpdateStrategy)
+    }
 
   logGradObs <- do.call(rbind, logDensGradObs.Lst)
 

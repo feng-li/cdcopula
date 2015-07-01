@@ -33,14 +33,15 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
       else if(tolower(parCaller) == "tau")
         {
           logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = c("theta")) # n-by-1
+                                       parCpl = parCpl, parCaller = c("theta", "delta")) # n-by-1
 
           ## Gradient w.r.t. tau
           kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                               parCaller = "theta")
+                                               parCaller = c("theta", "delta"))
 
           ## The chain gradient
-          out <- logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]])
+          out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]) +
+                  logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]]))
 
         }
       else
@@ -84,7 +85,6 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
           kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
                                                parCaller = "rho")
 
-          browser()
           out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.par[["rho"]]) # n-by-lq
 
           ## FIXME: for some reason, the analytical result is always 1/2 of the numerical

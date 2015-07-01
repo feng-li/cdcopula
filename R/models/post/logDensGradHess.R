@@ -165,8 +165,8 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           data.current.env <- as.list(environment())
 
           MargiGradObs.num.uLst <- lapply(X = tasks,
-                                      FUN = MargiModelGradNumFun.subtask,
-                                      data.parent.env = data.current.env)
+                                          FUN = MargiModelGradNumFun.subtask,
+                                          data.parent.env = data.current.env)
           MargiGradObs.u <- unlist(MargiGradObs.num.uLst)
           MargiGradObs.d <- logDensGradHessNum(
                   MargisType = MargisType,

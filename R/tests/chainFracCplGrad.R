@@ -1,23 +1,23 @@
-chainFracCplGrad <- function(CplNM, parCpl, chainCaller)
+chainFracCplGrad <- function(CplNM, parCpl, parCaller)
   {
     if(tolower(CplNM) == "bb7")
       {
         delta <- parCpl[["delta"]]
         theta <- parCpl[["theta"]]
 
-        if(all.equal(tolower(chainCaller), c("delta", "lambdal")))
+        if(all.equal(tolower(parCaller), c("delta", "lambdal")))
           {
             out <-  1/(2^(-1/delta)*log(2)/delta^2)
           }
-        else if(all.equal(tolower(chainCaller), c("delta", "tau")))
+        else if(all.equal(tolower(parCaller), c("delta", "tau")))
           {
             out <- 1/(kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                          caller = "delta"))
+                                          parCaller = "delta"))
           }
-        else if(all.equal(tolower(chainCaller), c("theta", "tau")))
+        else if(all.equal(tolower(parCaller), c("theta", "tau")))
           {
             out <- 1/(kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                     caller = "theta"))
+                                     parCaller = "theta"))
           }
         else
           {
