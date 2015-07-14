@@ -106,7 +106,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
     parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
 
     if(tolower(parCaller) == "tau")
-    {
+    {## browser()
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
                                    parCpl = parCpl, parCaller = c("delta")) # n-by-lq
 

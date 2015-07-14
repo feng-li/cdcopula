@@ -45,286 +45,158 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   CompNM <- names(parUpdate)
   MargisNM <- CompNM[(CompNM  != CplNM)]
   names(MargisType) <- MargisNM
+
+  R_CPL_NPARALLEL <- as.numeric(Sys.getenv("R_CPL_NPARALLEL"))
 ###----------------------------------------------------------------------------
 ### SPLIT THE GRADIENT INTO COPULA AND MARGINAL ACCORDING TO MCMC STRATEGY
 ###----------------------------------------------------------------------------
   if(CompCaller != CplNM)
-    {
-      if(tolower(MCMCUpdateStrategy) == "joint")
-        {
-          evalCpl <- TRUE
-          cplCaller <- paste("u", which(MargisNM%in%CompCaller), sep = "")
-
-          evalMargi <- TRUE
-          densCaller <- c("u", "d")
-        }
-      else if(tolower(MCMCUpdateStrategy) == "twostage")
-        {
-          ## Stage one of the two stage approach
-          evalCpl <- FALSE
-          cplCaller <- NA
-
-          evalMargi <- TRUE
-          densCaller <- c("d")
-        }
-      else if(tolower(MCMCUpdateStrategy) == "margin")
-        {
-          evalCpl <- FALSE
-          cplCaller <- NA
-
-          evalMargi <- TRUE
-          densCaller <- c("d")
-        }
-      else
-        {
-          stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
-                     "not implemented!"))
-        }
-    }
-  else
+  {
+    if(tolower(MCMCUpdateStrategy) == "joint")
     {
       evalCpl <- TRUE
-      cplCaller <- parCaller
+      cplCaller <- paste("u", which(MargisNM%in%CompCaller), sep = "")
 
-      evalMargi <- FALSE
-      densCaller <- NA
+      evalMargi <- TRUE
+      densCaller <- c("u", "d")
     }
+    else if(tolower(MCMCUpdateStrategy) == "twostage")
+    {
+      ## Stage one of the two stage approach
+      evalCpl <- FALSE
+      cplCaller <- NA
+
+      evalMargi <- TRUE
+      densCaller <- c("d")
+    }
+    else if(tolower(MCMCUpdateStrategy) == "margin")
+    {
+      evalCpl <- FALSE
+      cplCaller <- NA
+
+      evalMargi <- TRUE
+      densCaller <- c("d")
+    }
+    else
+    {
+      stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                 "not implemented!"))
+    }
+  }
+  else
+  {
+    evalCpl <- TRUE
+    cplCaller <- parCaller
+
+    evalMargi <- FALSE
+    densCaller <- NA
+  }
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE MARGINAL LIKELIHOOD
 ###----------------------------------------------------------------------------
-
   if(evalMargi == TRUE)
+  {
+    yCurr <- Mdl.Y[[CompCaller]]
+    parCurr <- Mdl.par[[CompCaller]]
+    typeCurr <- MargisType[CompCaller]
+
+    ## Gradient Fraction in the marginal component. n-by-1
+    if("analytic" %in% tolower(gradMethods))
     {
-      yCurr <- Mdl.Y[[CompCaller]]
-      parCurr <- Mdl.par[[CompCaller]]
-      typeCurr <- MargisType[CompCaller]
-
-      ## Gradient Fraction in the marginal component. n-by-1
-      if("analytic" %in% tolower(gradMethods))
-        {
-          MargiGradObs.ana <- MargiModelGrad(
-                  par = parCurr,
-                  y = yCurr,
-                  type = typeCurr,
-                  parCaller = parCaller,
-                  densCaller = densCaller)
-          MargiGradObs.u <- MargiGradObs.ana[, "u"]
-          MargiGradObs.d <- MargiGradObs.ana[, "d"]
-
-        }
-      if("numeric" %in% tolower(gradMethods))
-        {
-          ## A simple wrapper that calculates the numerical gradient for given parameters
-          ## NOTE: The numeric gradient depends on numDeriv package
-          MargiModelGradNumFun.subtask <- function(subtask, data.parent.env, data.global.env)
-            {
-              ## This order is very important. The data in local environment should always
-              ## be nested inside global environment.
-              list2env(data.parent.env, envir = environment())
-
-              nSubTask <- length(subtask)
-              out <- matrix(NA, nSubTask, 1)
-              require("numDeriv")
-              MargiModelGradNumFun <- function(x, parCaller, parCurr, yCurr, typeCurr)
-                {
-                  parCurr[[parCaller]] <- x
-                  MargiLogLikObs <- MargiModel(
-                          par = parCurr,
-                          y = yCurr,
-                          type = typeCurr)$u
-                  out <- MargiLogLikObs
-                  return(out)
-                }
-
-              for(i in 1:nSubTask)
-                {
-                  gradTry <-  try(
-                          grad(
-                                  func = MargiModelGradNumFun,
-                                  x = parCurr[[parCaller]][i],
-                                  parCaller = parCaller,
-                                  parCurr = lapply(parCurr, function(x, i)x[i], i = i),
-                                  yCurr = yCurr[subtask][i],
-                                  typeCurr = typeCurr), silent = TRUE)
-
-                  if(is(gradTry, "try-error"))
-                    {
-                      out[i] <- NA
-                    }
-                  else
-                    {
-                      out[i] <- gradTry
-                    }
-                }
-              return(out)
-            }
-          browser()
-          nObs <- length(Mdl.Y[[1]])
-          cl <- parallel:::defaultCluster()
-          tasks <- data.partition(nObs, list(N.subsets = length(cl), partiMethod = "ordered"))
-          data.current.env <- as.list(environment())
-
-          MargiGradObs.num.uLst <- lapply(X = tasks,
-                                          FUN = MargiModelGradNumFun.subtask,
-                                          data.parent.env = data.current.env)
-          MargiGradObs.u <- unlist(MargiGradObs.num.uLst)
-          MargiGradObs.d <- logDensGradHessNum(
-                  MargisType = MargisType,
-                  Mdl.Y = Mdl.Y,
-                  Mdl.parLink = Mdl.parLink,
-                  parUpdate = parUpdate,
-                  staticCache = staticCache,
-                  MCMCUpdateStrategy = "twostage")[["logGradObs"]]
-
-          ## DEBUG: Check if any gradient component is not correctly computed.  To check
-          ## the overall gradient chain, look at the "PropGNewtonMove()" function. Below
-          ## evaluates if the numeric and analytic gradients are consistent
-          ## try(plot(sort(MargiGradObs.ana),
-          ##          MargiGradObs.num[order(MargiGradObs.ana)],
-          ##          type = "l", pch = 20, main = chainCaller), silent = TRUE)
-
-        }
-
-      staticCache[["Mdl.u"]][, CompCaller] <- MargiModel(
-              y = yCurr,
-              type = typeCurr,
-              par = parCurr)[["u"]]
+      if(R_CPL_NPARALLEL>1)
+      {
+        MargiGradFUN.NM <- "MargiModelGradParallel"
+      }
+      else
+      {
+        MargiGradFUN.NM <- "MargiModelGrad"
+      }
+      MargiGradObs.ana.caller <- call(MargiGradFUN.NM, par = parCurr, y = yCurr,
+                                      type = typeCurr, parCaller = parCaller,
+                                      densCaller = densCaller)
+      MargiGradObs.ana <- eval(MargiGradObs.ana.caller)
+      MargiGradObs.u <- MargiGradObs.ana[, "u"]
+      MargiGradObs.d <- MargiGradObs.ana[, "d"]
     }
+
+    ## Numerical Gradients, check with analytical gradients.
+    if("numeric" %in% tolower(gradMethods))
+    {
+      MargiGradObs.num <- MargiModelGradNum(y = yCurr, par = parCurr, type = typeCurr,
+                                            parCaller = parCaller,
+                                            densCaller = densCaller)
+      MargiGradObs.u <- MargiGradObs.num[, "u"]
+      MargiGradObs.d <- MargiGradObs.num[, "d"]
+
+      ## DEBUG: Check if any gradient component is not correctly computed.  To check the
+      ## overall gradient chain, look at the "PropGNewtonMove()" function. Below evaluates
+      ## if the numeric and analytic gradients are consistent
+      ## try(plot(sort(MargiGradObs.ana), MargiGradObs.num[order(MargiGradObs.ana)], type
+      ## = "l", pch = 20, main = chainCaller), silent = TRUE)
+    }
+  }
   else
-    { ## Only update the gradient for copula parameters
-      ## Gradient Fraction in the copula component.
-      MargiGradObs.u <- 1
-      MargiGradObs.d <- 0
-    }
+  { ## Only update the gradient for copula parameters
+    ## Gradient Fraction in the copula component.
+    MargiGradObs.u <- 1
+    MargiGradObs.d <- 0
+  }
 
   ## Error checking
   if(any(is.na(MargiGradObs.u)) || any(is.infinite(MargiGradObs.u)))
-    {
-      return(list(errorFlag = TRUE))
-    }
+  {
+    return(list(errorFlag = TRUE))
+  }
 
 ###----------------------------------------------------------------------------
 ### GRADIENT FRACTION IN THE COPULA LIKELIHOOD
 ###----------------------------------------------------------------------------
 
   if(evalCpl == TRUE)
+  {
+    if("analytic" %in% tolower(gradMethods))
     {
-      if("analytic" %in% tolower(gradMethods))
-        {
+      if(R_CPL_NPARALLEL>1)
+      {
+        CplGradFUN.NM <- "logCplRepGradParallel"
+      }
+      else
+      {
+        CplGradFUN.NM <- "logCplRepGrad"
+      }
 
-          ## The gradient for the copula function. n-by-1
-          logCplGradObs.ana <- logCplRepGrad(
-                  CplNM = CplNM,
-                  u = staticCache$Mdl.u,
-                  parCplRep = Mdl.par[[CplNM]],
-                  parCaller = cplCaller)
-          logCplGradObs <- logCplGradObs.ana
-        }
-      if("numeric" %in% tolower(gradMethods))
-        {
-          ## The gradient for the copula function. scaler input and output NOTE: The
-          ## numerical gradient may not work well if the tabular version of Kendall's tau
-          ## is used (due to the precision).
-          require("numDeriv")
-          logCplGradNumFun <- function(x, u, iRun, CompCaller, parCaller, cplCaller,
-                                       CplNM, parCplRep, staticCache)
-            {
-              if(tolower(cplCaller) %in% paste("u", 1:ncol(u), sep = ""))
-                {
-                  u[iRun] <- x
-                }
-              else
-                { ## Calling copula parameters
-                  parCplRep[[parCaller]][iRun] <- x
-                }
+      logCplGrad.caller <- call(CplGradFUN.NM, CplNM = CplNM,
+                                u = staticCache$Mdl.u,
+                                parCplRep = Mdl.par[[CplNM]],
+                                parCaller = cplCaller)
 
-              nObs <- nrow(u)
-              iRunInRow = iRun%%nObs
-              iRunInRow[iRunInRow == 0] <- nObs
-
-              out <- logCplLik(
-                      CplNM = CplNM,
-                      u = u[iRunInRow, , drop = FALSE],
-                      parCplRep = lapply(parCplRep, function(x) x[iRunInRow, , drop = FALSE]),
-                      sum = FALSE)
-              return(out)
-            }
-
-          nDim <- length(Mdl.Y)
-          if(tolower(cplCaller) %in% paste("u", 1:nDim, sep = ""))
-            { ## Calling the marginal CDF u1, u2
-              nDimGrad <- 1
-            }
-          else
-            { ## Calling copula parameters
-              nDimGrad <- nDim
-            }
-
-          nObs <- length(Mdl.Y[[1]])
-          logCplGradObs.num <- matrix(NA, nObs, nDimGrad)
-
-          for(iRun in 1:(nObs*nDimGrad))
-            {
-              if(tolower(cplCaller) %in% paste("u", 1:nDim, sep = ""))
-                { ## Calling the marginal CDF u_i
-                  xCurr <- staticCache$Mdl.u[iRun, CompCaller]
-                }
-              else
-                { ## Calling copula parameters
-                  xCurr <- Mdl.par[[CompCaller]][[parCaller]][iRun]
-                }
-
-              gradTry <- try(grad(
-                      func = logCplGradNumFun,
-                      x = xCurr,
-                      u = staticCache$Mdl.u,
-                      iRun = iRun,
-                      CompCaller = CompCaller,
-                      parCaller = parCaller,
-                      cplCaller = cplCaller,
-                      CplNM =  CplNM,
-                      parCplRep = Mdl.par[[CplNM]],
-                      staticCache = staticCache), silent = TRUE)
-
-              if(is(gradTry, "try-error"))
-                {
-                  logCplGradObs.num[iRun] <- NA
-                }
-              else
-                {
-                  logCplGradObs.num[iRun] <- gradTry
-                }
-            }
-
-          ## The Gradient For The Link Function n-by-1
-          logCplGradObs <- logCplGradObs.num
-
-          ## Debugging plot for the numerical and analytical gradients
-          if(cplCaller == "u1")
-            {
-              ## try(plot(sort(logCplGradObs.ana),
-              ##          logCplGradObs.num[order(logCplGradObs.ana)],
-              ##          type = "p", pch = 20, main = chainCaller), silent = TRUE)
-            }
-          ## browser()
-        }
+      ## The gradient for the copula function. n-by-1
+      logCplGradObs.ana <- eval(logCplGrad.caller)
+      logCplGradObs <- logCplGradObs.ana
     }
+    if("numeric" %in% tolower(gradMethods))
+    {
+      logCplGradObs.num <- logCplRepGradNum(CplNM = CplNM, u = staticCache$Mdl.u,
+                                            parCplRep = Mdl.par[[CplNM]],
+                                            parCaller = parCaller)
+      logCplGradObs <- logCplGradObs.num
+    }
+  }
   else
-    {
-      logCplGradObs <- 1
-    }
+  {
+    logCplGradObs <- 1
+  }
 
   ## Error checking
   if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))
-    {
-      return(list(errorFlag = TRUE))
-    }
+  {
+    return(list(errorFlag = TRUE))
+  }
 
 
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
-
   ## The gradient for the full likelihood,  n-by-1
   logDensGradObs <- (logCplGradObs*MargiGradObs.u) + MargiGradObs.d #*LinkGradObs
 
