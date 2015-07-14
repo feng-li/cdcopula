@@ -81,13 +81,13 @@ Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[3]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[3]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["mu"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["phi"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["df"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[3]][["lmd"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
-Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9], X[[3]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
+Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9], X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 ## THE RESPONSE VARIABLES
 Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)

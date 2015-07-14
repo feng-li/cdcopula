@@ -70,7 +70,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
     { ## PASS INTERNALLY
       ## PATH TO THE MODEL CONFIGURATION FILE
       CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                 "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R")
+                                 "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R")
       nCores <- 1
     }
   else
@@ -131,6 +131,9 @@ if(nCross>1 & nCores>1)
                       ignore.error = TRUE)
             Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
           })
+}else
+{
+  Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
 }
 ###----------------------------------------------------------------------------
 ### MCMC
@@ -161,7 +164,7 @@ if(nCross>1 & nCores>1)
 LPDS.OUT <- list()
 for(iLPDS in LPDS)
   {
-    if(nCross>1 & nCores)
+    if(nCross>1 & nCores >1)
       {
         logPredLst <- clusterMap(
                 cl = cl4CV,
@@ -188,7 +191,7 @@ for(iLPDS in LPDS)
 ###----------------------------------------------------------------------------
 
 ## Stop the parallel environment
-if(nCross>1 & nCores)
+if(nCross>1 & nCores >1)
   {
     stopCluster(cl4CV)
   }

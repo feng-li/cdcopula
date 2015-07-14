@@ -9,17 +9,17 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Sun Feb 08 17:22:15 CST 2015; Current: Sun Feb 08 17:22:21 CST 2015.
 parCplRep2Std <- function(CplNM, parCplRep)
+{
+  ## Initialize output Storage and name it
+  out <- list()
+
+  if(tolower(CplNM) == "bb7")
   {
-    ## Initialize output Storage and name it
-    out <- list()
+    ## The reparameterized parameters input
+    lambdaL <- parCplRep[["lambdaL"]]
+    tau <- parCplRep[["tau"]]
 
-    if(tolower(CplNM) == "bb7")
-      {
-        ## The reparameterized parameters input
-        lambdaL <- parCplRep[["lambdaL"]]
-        tau <- parCplRep[["tau"]]
-
-        lambdaU <- as.vector(kendalltauInv(
+    lambdaU <- as.vector(kendalltauInv(
           CplNM = CplNM, parCplRep = parCplRep))
 
         ## The standard parametrization
@@ -44,6 +44,8 @@ parCplRep2Std <- function(CplNM, parCplRep)
         tau <- parCplRep[["tau"]]
 
         rho <- sin(tau*pi/2) # n-by-lq correlation
+        ## TODO: Think about a better way to make covariance matrix always positive
+        ## definite. Ping Ma: Simga  =  Sigma_0 + l*I
 
         FUN <- function(x1, x2)
           {
@@ -81,4 +83,4 @@ parCplRep2Std <- function(CplNM, parCplRep)
         stop("This copula is not implemented!")
       }
     return(out)
-  }
+}

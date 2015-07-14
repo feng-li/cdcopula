@@ -14,23 +14,23 @@
 ##'       Current: Mon May 21 14:37:01 CEST 2012.
 logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
 {
-    parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
+  parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
 
-    logCplDensObs <- dCpl(CplNM = CplNM, u = u,
-                          parCpl = parCpl, log = TRUE)
+  logCplDensObs <- dCpl(CplNM = CplNM, u = u,
+                        parCpl = parCpl, log = TRUE)
 
-    ## The output
-    if(sum)
-        {
-            ## The sum of log copula density,  scaler
-            out <- sum(logCplDensObs)
-        }
-    else
-        {
-            ## The log copula density,  vector
-            out <- logCplDensObs
-        }
-    return(out)
+  ## The output
+  if(sum)
+  {
+    ## The sum of log copula density,  scaler
+    out <- sum(logCplDensObs)
+  }
+  else
+  {
+    ## The log copula density,  vector
+    out <- logCplDensObs
+  }
+  return(out)
 
 
 }

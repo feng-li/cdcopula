@@ -13,115 +13,117 @@
 logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 {
   if(tolower(CplNM) == "bb7")
+  {
+    ## The name of marginal model
+    MargisNM <- dimnames(u)[[2]]
+    nObs <- dim(u)[1]
+
+    parCpl <- parCplRep2Std(CplNM, parCplRep)
+
+    if(tolower(parCaller) == "lambdal")
     {
-      ## The name of marginal model
-      MargisNM <- dimnames(u)[[2]]
-      nObs <- dim(u)[1]
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("delta")) # n-by-1
 
-      parCpl <- parCplRep2Std(CplNM, parCplRep)
+      kendalltauGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
+                                       parCaller = "delta")
 
-      if(tolower(parCaller) == "lambdal")
-        {
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = c("delta")) # n-by-1
-
-          kendalltauGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                               parCaller = "delta")
-
-          out <- logCplGrad.par[["delta"]]*(1/lambdaGrad.par[["delta"]])
-        }
-      else if(tolower(parCaller) == "tau")
-        {
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = c("theta", "delta")) # n-by-1
-
-          ## Gradient w.r.t. tau
-          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                               parCaller = c("theta", "delta"))
-
-          ## The chain gradient
-          out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]) +
-                  logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]]))
-
-        }
-      else
-        {
-          ## Gradient w.r.t u_i
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = parCaller) # n-by-1
-          out <- logCplGrad.par[["u"]]
-        }
+      out <- logCplGrad.par[["delta"]]*(1/lambdaGrad.par[["delta"]])
     }
+    else if(tolower(parCaller) == "tau")
+    {
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("theta", "delta")) # n-by-1
+
+      ## Gradient w.r.t. tau
+      kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                           parCaller = c("theta", "delta"))
+
+      ## The chain gradient
+      out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]) +
+              logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]]))
+
+    }
+    else
+    {
+      ## Gradient w.r.t u_i
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = parCaller) # n-by-1
+      out <- logCplGrad.par[["u"]]
+    }
+  }
   else if(tolower(CplNM) == "mvt")
-    {
-      ## The name of marginal model
-      MargisNM <- dimnames(u)[[2]]
-      nObs <- dim(u)[1]
+  {
+    ## The name of marginal model
+    MargisNM <- dimnames(u)[[2]]
+    nObs <- dim(u)[1]
 
-      parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
-      df <- parCpl[["df"]] # n-by-1
-      ## rho <- parCpl[["rho"]] # n-by-lq
+    parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
+    df <- parCpl[["df"]] # n-by-1
+    ## rho <- parCpl[["rho"]] # n-by-lq
 
-      u.quantile <- qt(u, df)
-      if(tolower(parCaller) == "lambdal")
-        { ## CopulaDensity-MVT.nb
+    u.quantile <- qt(u, df)
+    if(tolower(parCaller) == "lambdal")
+    { ## CopulaDensity-MVT.nb
 
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                      parCpl = parCpl, parCaller = c("df", "rho")) # n-by-1
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("df", "rho")) # n-by-1
 
-          lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                       parCaller = c("df", "rho"))
+      lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
+                                   parCaller = c("df", "rho"))
 
-          ## The chain gradient
-          out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]]) +
-                  logCplGrad[["rho"]]*(1/lambdaGrad.par[["rho"]])) # n-by-lq
+      ## The chain gradient
+      out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]]) +
+              logCplGrad[["rho"]]*(1/lambdaGrad.par[["rho"]])) # n-by-lq
 
-        }
-      else if(tolower(parCaller) == "tau")
-        {
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = c("rho")) # n-by-lq
-
-          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                               parCaller = "rho")
-
-          out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.par[["rho"]]) # n-by-lq
-
-          ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
-          ## result. need further verification.
-
-        }
-      else
-        {
-          ## The gradient with respect to u_i
-          ## Reorder the parameters.
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = parCaller) # n-by-lq
-
-          out <- logCplGrad.par[["u"]]
-        }
     }
+    else if(tolower(parCaller) == "tau")
+    {
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("rho")) # n-by-lq
+
+      kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                           parCaller = "rho")
+
+      out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.par[["rho"]]) # n-by-lq
+
+      ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
+      ## result. need further verification.
+
+    }
+    else
+    {
+      ## The gradient with respect to u_i
+      ## Reorder the parameters.
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = parCaller) # n-by-lq
+
+      out <- logCplGrad.par[["u"]]
+    }
+  }
   else if(tolower(CplNM) == "gumbel")
+  {
+    parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
+
+    if(tolower(parCaller) == "tau")
     {
-      if(tolower(parCaller) == "tau")
-        {
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = c("delta")) # n-by-lq
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("delta")) # n-by-lq
 
-          kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                               parCaller = "delta")
-          out <- logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]])
-        }
-      else
-        {
-          ## The gradient with respect to u_i
-          ## Reorder the parameters.
-          logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                       parCpl = parCpl, parCaller = parCaller) # n-by-lq
-
-          out <- logCplGrad.par[["u"]]
-        }
+      kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                           parCaller = "delta")
+      out <- logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]])
     }
+    else
+    {
+      ## The gradient with respect to u_i
+      ## Reorder the parameters.
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = parCaller) # n-by-lq
+
+      out <- logCplGrad.par[["u"]]
+    }
+  }
 
   return(out)
 }
@@ -130,27 +132,26 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 
 ## Parallel version to gradients
 logCplRepGradParallel <- function(CplNM, u, parCplRep, parCaller)
-  {
-    cl <- parallel:::defaultCluster()
-    nObs <- nrow(u)
+{
+  cl <- parallel:::defaultCluster()
+  nObs <- nrow(u)
 
-    dataSubIdxLst <- data.partition(nObs = nObs,
-                                    list(N.subsets = length(cl), partiMethod = "ordered"))
+  dataSubIdxLst <- data.partition(nObs = nObs,
+                                  list(N.subsets = length(cl), partiMethod = "ordered"))
 
-    subfun <- function(index, data)data[index, , drop = FALSE]
+  subfun <- function(index, data)data[index, , drop = FALSE]
 
-    u.Lst <- lapply(dataSubIdxLst, subfun, data = u)
+  u.Lst <- lapply(dataSubIdxLst, subfun, data = u)
 
-    splitlist <- function(data, index) lapply(data, subfun, index = index)
-    parCplRep.Lst <- rapply(dataSubIdxLst, splitlist, data = parCplRep, how = "replace")
+  splitlist <- function(data, index) lapply(data, subfun, index = index)
+  parCplRep.Lst <- rapply(dataSubIdxLst, splitlist, data = parCplRep, how = "replace")
 
-    out.Lst <- clusterMap(
-            cl, logCplRepGrad,
-            u = u.Lst,
-            parCplRep = parCplRep.Lst,
-            MoreArgs = list(CplNM = CplNM,
-                parCaller = parCaller))
-    out <- do.call(rbind, out.Lst)
+  out.Lst <- clusterMap(cl, logCplRepGrad,
+                        u = u.Lst,
+                        parCplRep = parCplRep.Lst,
+                        MoreArgs = list(CplNM = CplNM,
+                                        parCaller = parCaller))
+  out <- do.call(rbind, out.Lst)
 
-    return(out)
-  }
+  return(out)
+}

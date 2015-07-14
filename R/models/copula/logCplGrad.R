@@ -16,7 +16,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
   q <- dim(u)[2]
 
   if(tolower(CplNM) == "bb7")
-    {
+  {
       ## The name of marginal model
       MargisNM <- dimnames(u)[[2]]
       nObs <- dim(u)[1]
@@ -337,7 +337,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         }
     }
   else if(tolower(CplNM) == "gumbel")
-    {
+  {
+    browser()
+
       delta <- parCpl[["delta"]] # n-by-1
       uvt <- -log(u)
 
@@ -380,6 +382,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
               stop("No such copula parameter!")
             }
 
+          u1 <- u[, 1]
+          u2 <- u[, 2]
+
           gradCpl.u <- (1/(u1^2*u2)*exp(-uDelta^(1/delta))*uDelta^(-3+1/delta)*
                         (u2t^delta*(-1+uDelta^(1/delta)+delta)*(-1+u1t+delta)-
                          u1t^delta*(uDelta^(2/delta)+(-1 + delta)*(delta-u1t)+
@@ -388,9 +393,6 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
           out[["u"]] <-  gradCpl.u
         }
-
-
-
     }
 
 

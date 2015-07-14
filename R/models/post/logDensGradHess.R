@@ -158,7 +158,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                 }
               return(out)
             }
-
+          browser()
           nObs <- length(Mdl.Y[[1]])
           cl <- parallel:::defaultCluster()
           tasks <- data.partition(nObs, list(N.subsets = length(cl), partiMethod = "ordered"))

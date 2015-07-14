@@ -37,13 +37,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   ## Load the sourceDir tool
   R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
-  if(length(R_CPL_LIB_ROOT_DIR) == 0L)
+  if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
     {
       stop("R_CPL_LIB_ROOT_DIR is not set properly!")
     }
 
   R_CPL_NPARALLEL <- Sys.getenv("R_CPL_NPARALLEL")
-  if(length(R_CPL_NPARALLEL) == 0L)
+  if(nchar(R_CPL_NPARALLEL) == 0L)
     {
       stop("R_CPL_NPARALLEL is not set properly!")
     }

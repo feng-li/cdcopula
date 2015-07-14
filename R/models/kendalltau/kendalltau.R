@@ -11,70 +11,70 @@
 ##' @note Created: Tue Apr 17 18:45:16 CEST 2012;
 ##'       Current: Thu Apr 19 18:12:59 CEST 2012.
 kendalltau <- function(CplNM, parCpl)
+{
+  if(tolower(CplNM) == "bb7")
   {
-    if(tolower(CplNM) == "bb7")
-      {
-        theta <- parCpl[["theta"]]
-        delta <- parCpl[["delta"]]
+    theta <- parCpl[["theta"]]
+    delta <- parCpl[["delta"]]
 
-        ## The storage
-        nObs <- length(theta)
-        out <- theta
-        out[0:nObs] <- NA
+    ## The storage
+    nObs <- length(theta)
+    out <- theta
+    out[0:nObs] <- NA
 
-        ## Healthy condition for the stepwise Kendall's tau
-        tol = 0.001
-        deltaHcond <- (delta > 0)
-        Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
-        IdxLarge <- which(theta > 2+tol & deltaHcond)
-        Idx2 <- which(abs(theta-2)<tol & deltaHcond) ## You will never reach this
+    ## Healthy condition for the stepwise Kendall's tau
+    tol = 0.001
+    deltaHcond <- (delta > 0)
+    Idx12 <- which(theta >= 1 & theta < 2-tol & deltaHcond)
+    IdxLarge <- which(theta > 2+tol & deltaHcond)
+    Idx2 <- which(abs(theta-2)<tol & deltaHcond) ## You will never reach this
 
-        ## The Kendall's tau
-        if(length(Idx12)>0)
-          {
-            thetaCurr <- theta[Idx12]
-            deltaCurr <- delta[Idx12]
-            out[Idx12] <- 1-2/(deltaCurr*(2-thetaCurr)) +
-              4*beta(deltaCurr+2, 2/thetaCurr-1)/(thetaCurr^2*deltaCurr)
-          }
-        if(length(IdxLarge)>0)
-          {
-            thetaCurr <- theta[IdxLarge]
-            deltaCurr <- delta[IdxLarge]
-            out[IdxLarge] <- 1-2/(deltaCurr*(2-thetaCurr)) -
-              4*pi/(thetaCurr^2*deltaCurr*(2+deltaCurr)*sin(2*pi/thetaCurr)*
-                    beta(1+deltaCurr+2/thetaCurr, 2-2/thetaCurr))
-          }
-        if(length(Idx2)>0)
-          {
-            thetaCurr <- theta[Idx2]
-            deltaCurr <- delta[Idx2]
-            out[Idx2] <- 1- (digamma(2+deltaCurr)-digamma(1)-1)/deltaCurr
-          }
-      }
-    else if(tolower(CplNM) == "fgm")
-      {
-        theta <- parCpl[["theta"]]
-        out <- 2/9*theta
-      }
-    else if (tolower(CplNM) %in% c("gaussian", "mvt"))
-      {
-        rho <- parCpl[["rho"]]
-        out <- 2/pi*asin(rho)
-      }
-    else if (tolower(CplNM) == "gumbel")
-      {
-        delta <- parCpl[["delta"]]
-        out <- 1/delta^2
-      }
-    else
-      {
-        stop("No such copula!")
-      }
-
-
-    return(out)
+    ## The Kendall's tau
+    if(length(Idx12)>0)
+    {
+      thetaCurr <- theta[Idx12]
+      deltaCurr <- delta[Idx12]
+      out[Idx12] <- 1-2/(deltaCurr*(2-thetaCurr)) +
+               4*beta(deltaCurr+2, 2/thetaCurr-1)/(thetaCurr^2*deltaCurr)
+    }
+    if(length(IdxLarge)>0)
+    {
+      thetaCurr <- theta[IdxLarge]
+      deltaCurr <- delta[IdxLarge]
+      out[IdxLarge] <- 1-2/(deltaCurr*(2-thetaCurr)) -
+                  4*pi/(thetaCurr^2*deltaCurr*(2+deltaCurr)*sin(2*pi/thetaCurr)*
+                                  beta(1+deltaCurr+2/thetaCurr, 2-2/thetaCurr))
+    }
+    if(length(Idx2)>0)
+    {
+      thetaCurr <- theta[Idx2]
+      deltaCurr <- delta[Idx2]
+      out[Idx2] <- 1- (digamma(2+deltaCurr)-digamma(1)-1)/deltaCurr
+    }
   }
+  else if(tolower(CplNM) == "fgm")
+  {
+    theta <- parCpl[["theta"]]
+    out <- 2/9*theta
+  }
+  else if (tolower(CplNM) %in% c("gaussian", "mvt"))
+  {
+    rho <- parCpl[["rho"]]
+    out <- 2/pi*asin(rho)
+  }
+  else if (tolower(CplNM) == "gumbel")
+  {
+    delta <- parCpl[["delta"]]
+    out <- 1/delta^2
+  }
+  else
+  {
+    stop("No such copula!")
+  }
+
+
+  return(out)
+}
 
 
 ## kendalltau0 <- function(CplNM, parCpl)
