@@ -40,7 +40,6 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
       d <- dnorm(y, mean = mu, sd = phi, log = TRUE)
       out[["d"]] <- d
     }
-    browser()
   }
   else if (tolower(type)  == "splitt")
   {

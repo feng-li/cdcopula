@@ -24,10 +24,10 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   DEBUGGING <- FALSE
   if(DEBUGGING)
-    {
-      ## Turn warnings into error
-      options(warn = 100)
-    }
+  {
+    ## Turn warnings into error
+    options(warn = 100)
+  }
 ###----------------------------------------------------------------------------
 ### LOAD USER SETUP FILE
 ###----------------------------------------------------------------------------
@@ -38,15 +38,15 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Load the sourceDir tool
   R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
   if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
-    {
-      stop("R_CPL_LIB_ROOT_DIR is not set properly!")
-    }
+  {
+    stop("R_CPL_LIB_ROOT_DIR is not set properly!")
+  }
 
   R_CPL_NPARALLEL <- Sys.getenv("R_CPL_NPARALLEL")
   if(nchar(R_CPL_NPARALLEL) == 0L)
-    {
-      stop("R_CPL_NPARALLEL is not set properly!")
-    }
+  {
+    stop("R_CPL_NPARALLEL is not set properly!")
+  }
 
 
   sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
@@ -65,18 +65,18 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   ## Parallel Setting up
   if(as.numeric(R_CPL_NPARALLEL)>1)
-    {
-      require("parallel", quietly = TRUE)
-      require("snow", quietly = TRUE)
-      cl4MCMC <- makeCluster(as.numeric(R_CPL_NPARALLEL), type = "MPI")
-      setDefaultCluster(cl4MCMC)
-      ce4MCMC <- clusterEvalQ(cl4MCMC,
-                              {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-                                         byte.compile = 0,
-                                         recursive = TRUE,
-                                         ignore.error = TRUE)
-                             })
-    }
+  {
+    require("parallel", quietly = TRUE)
+    require("snow", quietly = TRUE)
+    cl4MCMC <- makeCluster(as.numeric(R_CPL_NPARALLEL), type = "MPI")
+    setDefaultCluster(cl4MCMC)
+    ce4MCMC <- clusterEvalQ(cl4MCMC,
+    {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+               byte.compile = 0,
+               recursive = TRUE,
+               ignore.error = TRUE)
+    })
+  }
 
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
@@ -93,21 +93,23 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   { ## Foreign marginal models are included.
     cat("Evaluating foreign marginal models...\n")
 
-    Mdl.X.Margis.training <- MargiModelForeignEval(MargisNM = MargisNM,
-                                                   MargisType = MargisType,
-                                                   MargiModelForeignConfig = Mdl.X,
-                                                   Mdl.Y = Mdl.Y.training)
-    Mdl.X.training <- c(Mdl.X.Margis.training,
+    Mdl.X.Margis.out <- MargiModelForeignEval(MargisNM = MargisNM,
+                                              MargisType = MargisType,
+                                              MargisForeignConfig = Mdl.X,
+                                              Mdl.Y = Mdl.Y.training)
+
+    Mdl.X.training <- c(Mdl.X.Margis.out[["Mdl.X"]],
                         rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
                                f = subsetFun,
                                idx = Mdl.Idx.training,
                                how = "replace"))
+    Mdl.ForeignFit <- Mdl.X.Margis.out[["Mdl.ForeignFit"]]
   }
   else
-    {## Native model structure
-      Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
-                               idx = Mdl.Idx.training, how = "replace")
-    }
+  {## Native model structure
+    Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
+                             idx = Mdl.Idx.training, how = "replace")
+  }
   ## Assign the initial values
   initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
                         Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
@@ -126,36 +128,36 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
+  {
+    require("optimx")
+
+    Mdl.Idx.training.sample <- Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
+    Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
+                                    idx = Mdl.Idx.training.sample, how = "replace")
+    Mdl.Y.training.sample <- rapply(object=Mdl.Y, f = subsetFun,
+                                    idx = Mdl.Idx.training.sample, how = "replace")
+
+    cat("Optimizing initial values, may take a few minutes...\n\n")
+
+    for(CompCaller in names(Mdl.beta))
     {
-      require("optimx")
+      ## If nothing to update, optimization inside this components skipped.
+      if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
 
-      Mdl.Idx.training.sample <- Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
-      Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
-                                      idx = Mdl.Idx.training.sample, how = "replace")
-      Mdl.Y.training.sample <- rapply(object=Mdl.Y, f = subsetFun,
-                                      idx = Mdl.Idx.training.sample, how = "replace")
+      cat("\nInitializing model component:", CompCaller, "...\n")
+      InitGoodCompCurr <- FALSE
+      nLoopInit <- 0
+      maxLoopInit <- 3
 
-      cat("Optimizing initial values, may take a few minutes...\n\n")
+      ## Only current component is updated.
+      parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
+                          how = "replace")
+      parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
 
-      for(CompCaller in names(Mdl.beta))
-        {
-          ## If nothing to update, optimization inside this components skipped.
-          if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
-
-          cat("\nInitializing model component:", CompCaller, "...\n")
-          InitGoodCompCurr <- FALSE
-          nLoopInit <- 0
-          maxLoopInit <- 3
-
-          ## Only current component is updated.
-          parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
-                              how = "replace")
-          parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
-
-          while(InitGoodCompCurr == FALSE)
-            {
-              ## Reassign the initial values
-              initParOut.CompCurr <- initPar(
+      while(InitGoodCompCurr == FALSE)
+      {
+        ## Reassign the initial values
+        initParOut.CompCurr <- initPar(
                       varSelArgs = varSelArgs,
                       betaInit = betaInit,
                       Mdl.X = Mdl.X.training.sample,
