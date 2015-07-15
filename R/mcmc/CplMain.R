@@ -85,13 +85,29 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
 
-  ## Mdl.Idx.training <- crossValidIdx[["training"]][[iCross]] # obtained from inputs
   nTraining <- length(Mdl.Idx.training)
-  Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
-                           idx = Mdl.Idx.training, how = "replace")
   Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
                            idx = Mdl.Idx.training, how = "replace")
 
+  if(any(rapply(Mdl.X, class) != "matrix"))
+  { ## Foreign marginal models are included.
+    cat("Evaluating foreign marginal models...\n")
+
+    Mdl.X.Margis.training <- MargiModelForeignEval(MargisNM = MargisNM,
+                                                   MargisType = MargisType,
+                                                   MargiModelForeignConfig = Mdl.X,
+                                                   Mdl.Y = Mdl.Y.training)
+    Mdl.X.training <- c(Mdl.X.Margis.training,
+                        rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
+                               f = subsetFun,
+                               idx = Mdl.Idx.training,
+                               how = "replace"))
+  }
+  else
+    {## Native model structure
+      Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
+                               idx = Mdl.Idx.training, how = "replace")
+    }
   ## Assign the initial values
   initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
                         Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,

@@ -46,37 +46,37 @@
 logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
+{
+  ## browser()
+  ## Assume no error a priori
+  errorFlag <- FALSE
+  ## Debugging symbol: if the warning should be printed out immediately.
+  ## use options(warn = 1)
+  ## immediate. <- FALSE
+
+  ## The cached (pre-saved) information. The idea is to make even staticCache
+  ## is not available, the log posterior is still working.
+  ## TODO: Change staticCache.
+
+  if(missing(staticCache))
   {
-    ## browser()
-    ## Assume no error a priori
-    errorFlag <- FALSE
-    ## Debugging symbol: if the warning should be printed out immediately.
-    ## use options(warn = 1)
-    ## immediate. <- FALSE
+    ## Initialize "staticCache" structure
+    Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                    dimnames = list(NULL, names(Mdl.Y)))
 
-    ## The cached (pre-saved) information. The idea is to make even staticCache
-    ## is not available, the log posterior is still working.
-    ## TODO: Change staticCache.
+    Mdl.d <- cbind(Mdl.u, NA)
+    colnames(Mdl.d) <- names(Mdl.beta)
 
-    if(missing(staticCache))
-      {
-        ## Initialize "staticCache" structure
-        Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
-                        dimnames = list(NULL, names(Mdl.Y)))
+    staticCache <- list(Mdl.logPri =  parUpdate,
+                        Mdl.par = parUpdate,
+                        Mdl.d = Mdl.d,
+                        Mdl.u = Mdl.u)
+  }
 
-        Mdl.d <- cbind(Mdl.u, NA)
-        colnames(Mdl.d) <- names(Mdl.beta)
-
-        staticCache <- list(Mdl.logPri =  parUpdate,
-                            Mdl.par = parUpdate,
-                            Mdl.d = Mdl.d,
-                            Mdl.u = Mdl.u)
-      }
-
-    Mdl.par <- staticCache[["Mdl.par"]]
-    Mdl.u <- staticCache[["Mdl.u"]]
-    Mdl.d <- staticCache[["Mdl.d"]]
-    Mdl.logPri <- staticCache[["Mdl.logPri"]]
+  Mdl.par <- staticCache[["Mdl.par"]]
+  Mdl.u <- staticCache[["Mdl.u"]]
+  Mdl.d <- staticCache[["Mdl.d"]]
+  Mdl.logPri <- staticCache[["Mdl.logPri"]]
 
 ###----------------------------------------------------------------------------
 ### UPDATE THE LOG PRIORS
@@ -89,48 +89,48 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                           priArgs = priArgs,
                           parUpdate = parUpdate)
 
-    Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
-                                                               # solution.
+  Mdl.logPri.SubSum <- sum(unlist(Mdl.logPri), na.rm = TRUE) # NOTE: not the safest
+                                        # solution.
 ###----------------------------------------------------------------------------
 ### UPDATING THE MODEL LIKELIHOOD PARAMETERS
 ###----------------------------------------------------------------------------
-    Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X,
-                             Mdl.parLink = Mdl.parLink,
-                             Mdl.beta = Mdl.beta,
-                             parUpdate = parUpdate,
-                             Mdl.par = Mdl.par)
+  Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X,
+                           Mdl.parLink = Mdl.parLink,
+                           Mdl.beta = Mdl.beta,
+                           parUpdate = parUpdate,
+                           Mdl.par = Mdl.par)
 
-    Mdl.ud <- logDens(MargisType = MargisType,
-                      Mdl.Y = Mdl.Y,
-                      Mdl.par = Mdl.par,
-                      Mdl.u = Mdl.u,
-                      Mdl.d = Mdl.d,
-                      parUpdate = parUpdate,
-                      MCMCUpdateStrategy = MCMCUpdateStrategy)
-    Mdl.d <- Mdl.ud[["Mdl.d"]]
-    Mdl.u <- Mdl.ud[["Mdl.u"]]
-    Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
+  Mdl.ud <- logDens(MargisType = MargisType,
+                    Mdl.Y = Mdl.Y,
+                    Mdl.par = Mdl.par,
+                    Mdl.u = Mdl.u,
+                    Mdl.d = Mdl.d,
+                    parUpdate = parUpdate,
+                    MCMCUpdateStrategy = MCMCUpdateStrategy)
+  Mdl.d <- Mdl.ud[["Mdl.d"]]
+  Mdl.u <- Mdl.ud[["Mdl.u"]]
+  Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
-    Mdl.logLik.SubSum <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+  Mdl.logLik.SubSum <- sum(Mdl.d[, unlist(Mdl.PostComp)])
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE
 ###----------------------------------------------------------------------------
-    staticCache[["Mdl.logPri"]] <- Mdl.logPri
-    staticCache[["Mdl.par"]] <- Mdl.par
-    staticCache[["Mdl.u"]] <- Mdl.u
-    staticCache[["Mdl.d"]] <- Mdl.d
+  staticCache[["Mdl.logPri"]] <- Mdl.logPri
+  staticCache[["Mdl.par"]] <- Mdl.par
+  staticCache[["Mdl.u"]] <- Mdl.u
+  staticCache[["Mdl.d"]] <- Mdl.d
 
 ###----------------------------------------------------------------------------
 ### THE LOG POSTERIOR
 ###----------------------------------------------------------------------------
-    Mdl.logPost <-  Mdl.logLik.SubSum+Mdl.logPri.SubSum
+  Mdl.logPost <-  Mdl.logLik.SubSum+Mdl.logPri.SubSum
 
-    out <- list(Mdl.logPost = Mdl.logPost,
-                Mdl.logLik = Mdl.logLik.SubSum,
-                Mdl.logPri = Mdl.logPri.SubSum,
-                staticCache = staticCache,
-                errorFlag = errorFlag)
+  out <- list(Mdl.logPost = Mdl.logPost,
+              Mdl.logLik = Mdl.logLik.SubSum,
+              Mdl.logPri = Mdl.logPri.SubSum,
+              staticCache = staticCache,
+              errorFlag = errorFlag)
 
 
-    return(out)
+  return(out)
 }
