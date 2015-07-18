@@ -2,7 +2,7 @@ MargiModelForeignEval <- function(MargisNM, MargisType, MargisForeignConfig, Mdl
 {
   Mdl.X <- list()
   Mdl.ForeignFit <- list()
-  for(iComp in 1:(length(MargisNM)-1))
+  for(iComp in 1:(length(MargisNM)-1)) ## TODO: Parallelize marginal models.
   {
     if(tolower(MargisType[iComp]) %in% c("garch-normal", "garch-t"))
     {

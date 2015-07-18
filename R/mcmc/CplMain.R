@@ -90,7 +90,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                            idx = Mdl.Idx.training, how = "replace")
 
   if(any(rapply(Mdl.X, class) != "matrix"))
-  { ## Foreign marginal models are included.
+  { ## Evaluating Foreign marginal models.
     cat("Evaluating foreign marginal models...\n")
 
     Mdl.X.Margis.out <- MargiModelForeignEval(MargisNM = MargisNM,

@@ -27,7 +27,7 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## SHORT MODEL DESCRIPTION
-ModelDescription <- "GUMBEL_copula_with_vs"
+ModelDescription <- "GUMBEL_GARCH_with_vs"
 
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisType <- c("GARCH-NORMAL", "GARCH-NORMAL", "GUMBEL")
@@ -77,11 +77,11 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
 ## ------------------------------------------------------------------------------
 
-##A trick to include foreign marginal models in the estimation which are hard to directly
-##put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
-##in all marginal densities.  (2) Estimate the density features in foreign models and set
-##the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
-##betaInit be one in all marginal features.
+## A trick to include foreign marginal models in the estimation which are hard to directly
+## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
+## in all marginal densities.  (2) Estimate the density features in foreign models and set
+## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
+## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 
 Mdl.X[[1]] <- list(include.mean = FALSE,
@@ -111,6 +111,7 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 varSelArgs <- MCMCUpdate
 varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
+
 varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 

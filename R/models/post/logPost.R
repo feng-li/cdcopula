@@ -9,15 +9,15 @@
 ##' @param Mdl.Y "list" The responses of each marginal model.
 ##'
 ##' @param Mdl.X "list".  The covariate used in each parameter components. The structure
-##' is designed by "MCMCUpdate" variable in the main file. The intercept is included if
-##' called in the data construction procedure.
+##'   is designed by "MCMCUpdate" variable in the main file. The intercept is included if
+##'   called in the data construction procedure.
 ##'
 ##' @param Mdl.beta "list".
 ##'
 ##' @param Mdl.betaIdx "list".
 ##'
 ##' @param Mdl.parLink "list".  The link function used in the MCMC procedure. See the main
-##' setting file for details.
+##'   setting file for details.
 ##'
 ##' @param varSelArgs "list"
 ##'
@@ -26,8 +26,8 @@
 ##' @param priArgs "list".  The prior settings for each parameter components.
 ##'
 ##' @param parUpdate "list".  The parameters list to be updated. In the MCMC draw. Most
-##' time we are doing conditional posterior which means some components are kept
-##' uncaged. This can reduce computing time.
+##'   time we are doing conditional posterior which means some components are kept
+##'   uncaged. This can reduce computing time.
 ##'
 ##' @param staticCache "list" Arguments that are cached in the model.
 ##'
@@ -42,12 +42,11 @@
 ##'
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
-##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Mon Jan 05 22:58:03 CST 2015
+##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Sat Jul 18 10:47:12 CST 2015
 logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                     varSelArgs,priArgs,parUpdate,staticCache,
                     MCMCUpdateStrategy)
 {
-  ## browser()
   ## Assume no error a priori
   errorFlag <- FALSE
   ## Debugging symbol: if the warning should be printed out immediately.
