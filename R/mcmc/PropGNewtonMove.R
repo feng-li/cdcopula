@@ -26,8 +26,8 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
 PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
-                        CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                        Mdl.parLink, MargisType, staticCache, MCMCUpdateStrategy)
+                            Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                            MargisType, staticCache, MCMCUpdateStrategy)
 {
   require("MASS")
 
@@ -143,7 +143,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
           g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
           g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
-
+          browser()
           ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
           ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
 

@@ -127,20 +127,19 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         { ## Newton method to approach the posterior based on the current draw
-          beta.NTProp <- PropGNewtonMove(
-                  MargisType = MargisType,
-                  propArgs = propArgs,
-                  varSelArgs = varSelArgs,
-                  priArgs = priArgs,
-                  betaIdxProp = betaIdx.prop,
-                  parUpdate = parUpdate,
-                  Mdl.Y = Mdl.Y,
-                  Mdl.X = Mdl.X,
-                  Mdl.parLink = Mdl.parLink,
-                  Mdl.beta = Mdl.beta.curr,
-                  Mdl.betaIdx = Mdl.betaIdx.curr,
-                  staticCache = staticCache.curr,
-                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+          beta.NTProp <- PropGNewtonMove(MargisType = MargisType,
+                                         propArgs = propArgs,
+                                         varSelArgs = varSelArgs,
+                                         priArgs = priArgs,
+                                         betaIdxProp = betaIdx.prop,
+                                         parUpdate = parUpdate,
+                                         Mdl.Y = Mdl.Y,
+                                         Mdl.X = Mdl.X,
+                                         Mdl.parLink = Mdl.parLink,
+                                         Mdl.beta = Mdl.beta.curr,
+                                         Mdl.betaIdx = Mdl.betaIdx.curr,
+                                         staticCache = staticCache.curr,
+                                         MCMCUpdateStrategy = MCMCUpdateStrategy)
         }
       else if(tolower(algmArgs[["type"]])  == "randomwalk")
         { ## Random walk metropolis (with/without variable selection)
@@ -200,20 +199,19 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
       if(tolower(algmArgs[["type"]]) == "gnewtonmove")
         {
-          beta.NTPropRev <- PropGNewtonMove(
-                  MargisType = MargisType,
-                  propArgs = propArgs,
-                  varSelArgs = varSelArgs,
-                  priArgs = priArgs,
-                  betaIdxProp = betaIdx.curr,
-                  parUpdate = parUpdate,
-                  Mdl.Y = Mdl.Y,
-                  Mdl.X = Mdl.X,
-                  Mdl.parLink = Mdl.parLink,
-                  Mdl.beta = Mdl.beta.prop,
-                  Mdl.betaIdx = Mdl.betaIdx.prop,
-                  staticCache = staticCache,
-                  MCMCUpdateStrategy = MCMCUpdateStrategy)
+          beta.NTPropRev <- PropGNewtonMove(MargisType = MargisType,
+                                            propArgs = propArgs,
+                                            varSelArgs = varSelArgs,
+                                            priArgs = priArgs,
+                                            betaIdxProp = betaIdx.curr,
+                                            parUpdate = parUpdate,
+                                            Mdl.Y = Mdl.Y,
+                                            Mdl.X = Mdl.X,
+                                            Mdl.parLink = Mdl.parLink,
+                                            Mdl.beta = Mdl.beta.prop,
+                                            Mdl.betaIdx = Mdl.betaIdx.prop,
+                                            staticCache = staticCache,
+                                            MCMCUpdateStrategy = MCMCUpdateStrategy)
         }
       else if(tolower(algmArgs[["type"]])  == "randomwalk")
         {

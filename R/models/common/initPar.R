@@ -39,94 +39,94 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
   ## Loop to assign the initial values
   CompNM <- names(betaInit)
   if(length(CompNM) == 0)
-    {
-      stop("Model component name must be specified first!")
-    }
+  {
+    stop("Model component name must be specified first!")
+  }
 
 
   for(i in CompNM)
+  {
+    CompParNM <- names(Mdl.parLink[[i]])
+    for(j in CompParNM)
     {
-      CompParNM <- names(Mdl.parLink[[i]])
-      for(j in CompParNM)
-        {
-          ## No. of col for covariates, including intercept if applicable.
-          ncolX.ij <- ncol(Mdl.X[[i]][[j]])
-          nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
+      ## No. of col for covariates, including intercept if applicable.
+      ncolX.ij <- ncol(Mdl.X[[i]][[j]])
+      nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
 ###----------------------------------------------------------------------------
 ### Initialize the variable section indicator
 ###----------------------------------------------------------------------------
-          ## Initial value for variable selection indicators which can be
-          ## character or vector
-          varSelInitCurr <- varSelArgs[[i]][[j]][["init"]]
+      ## Initial value for variable selection indicators which can be
+      ## character or vector
+      varSelInitCurr <- varSelArgs[[i]][[j]][["init"]]
 
-          if(class(varSelInitCurr) == "character" &&
-             tolower(varSelInitCurr) == "all-in")
-            {
-              Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-            }
-          else if(class(varSelInitCurr) == "character" &&
-                  tolower(varSelInitCurr) == "all-out")
-            {
-              Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
+      if(class(varSelInitCurr) == "character" &&
+                              tolower(varSelInitCurr) == "all-in")
+      {
+        Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
+      }
+      else if(class(varSelInitCurr) == "character" &&
+                                   tolower(varSelInitCurr) == "all-out")
+      {
+        Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
 
-              varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
+        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
 
-              Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
-            }
-          else if(class(varSelInitCurr) == "character" &&
-                  tolower(varSelInitCurr) == "random")
-            {
-              Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-              varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
+        Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
+      }
+      else if(class(varSelInitCurr) == "character" &&
+                                   tolower(varSelInitCurr) == "random")
+      {
+        Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
+        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
 
-              ## Randomly pick up half in
-              betaIdxCurrSubOut <- sample(varSelCandCurr,
-                                          round(length(varSelCandCurr)/2))
-              Mdl.betaIdx[[i]][[j]][betaIdxCurrSubOut, ] <- FALSE
-            }
-          else # Do nothing, use user input
-            {
-              Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-              varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
-              Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
-              Mdl.betaIdx[[i]][[j]][varSelInitCurr, ] <- TRUE
-            }
+        ## Randomly pick up half in
+        betaIdxCurrSubOut <- sample(varSelCandCurr,
+                                    round(length(varSelCandCurr)/2))
+        Mdl.betaIdx[[i]][[j]][betaIdxCurrSubOut, ] <- FALSE
+      }
+      else # Do nothing, use user input
+      {
+        Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
+        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
+        Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
+        Mdl.betaIdx[[i]][[j]][varSelInitCurr, ] <- TRUE
+      }
 
 ###----------------------------------------------------------------------------
 ### Initial value for coefficients
 ###----------------------------------------------------------------------------
-          betaInitCurr <- betaInit[[i]][[j]]
-          if(class(betaInitCurr) == "character" &&
-             tolower(betaInitCurr) == "random")
-            {
-              ## betaInitCurr = runif(ncolX.ij, -1, 1)
-              ## Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij,
-              ## 1)) Mdl.beta[[i]][[j]][!Mdl.betaIdx[[i]][[j]]] <- 0 let
-              ## beta = 0 for non-selected variables NOTE: is this
-              ## needed? -- YES.
+      betaInitCurr <- betaInit[[i]][[j]]
+      if(class(betaInitCurr) == "character" &&
+                            tolower(betaInitCurr) == "random")
+      {
+        ## betaInitCurr = runif(ncolX.ij, -1, 1)
+        ## Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij,
+        ## 1)) Mdl.beta[[i]][[j]][!Mdl.betaIdx[[i]][[j]]] <- 0 let
+        ## beta = 0 for non-selected variables NOTE: is this
+        ## needed? -- YES.
 
-              ## A simple version of random initial value. random for
-              ## intercept and zero for the remaining values.
-              Mdl.beta[[i]][[j]] <- array(0 , c(ncolX.ij, nPar.ij))
-              Mdl.beta[[i]][[j]][1, ] <- runif(1, -1, 1)
+        ## A simple version of random initial value. random for
+        ## intercept and zero for the remaining values.
+        Mdl.beta[[i]][[j]] <- array(0 , c(ncolX.ij, nPar.ij))
+        Mdl.beta[[i]][[j]][1, ] <- runif(1, -1, 1)
 
-            }
-          else if (class(betaInitCurr) == "character" &&
-                   tolower(betaInitCurr) == "ols")
-            {
-              Y <- Mdl.Y[[i]]
-              X <- Mdl.X[[i]][[j]]
+      }
+      else if (class(betaInitCurr) == "character" &&
+                                  tolower(betaInitCurr) == "ols")
+      {
+        Y <- Mdl.Y[[i]]
+        X <- Mdl.X[[i]][[j]]
 
-              lmcoef <- lm(Y~0+X)$coef
-              Mdl.beta[[i]][[j]] <- array(lmcoef, c(ncolX.ij, nPar.ij))
-            }
-          else # Do nothing and use user input
-            {
-              Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, nPar.ij))
-            }
+        lmcoef <- lm(Y~0+X)$coef
+        Mdl.beta[[i]][[j]] <- array(lmcoef, c(ncolX.ij, nPar.ij))
+      }
+      else # Do nothing and use user input
+      {
+        Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, nPar.ij))
+      }
 
-        }
     }
+  }
 
   ## browser()
   out <- list(Mdl.beta = Mdl.beta,

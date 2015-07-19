@@ -10,8 +10,7 @@
 ##' @return "matrix" "mcmc sample by Lik.len"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Mon Feb 25 19:20:57 CET 2013;
-##'       Current: Sat Jul 18 09:30:58 CST 2015.
+##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
 logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                         MCMC.beta, MCMC.betaIdx, pred)
 {

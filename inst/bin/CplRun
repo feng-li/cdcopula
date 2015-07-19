@@ -123,14 +123,13 @@ if(nCross>1 & nCores>1)
   require("parallel", quietly = TRUE)
   require("snow", quietly = TRUE)
   cl4CV <- makeCluster(nCross, type = "MPI")
-  ce4CV <- clusterEvalQ(
-          cl4CV,{
-            sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-                      byte.compile = 0,
-                      recursive = TRUE,
-                      ignore.error = TRUE)
-            Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
-          })
+  ce4CV <- clusterEvalQ(cl4CV,{
+    sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
+              byte.compile = 0,
+              recursive = TRUE,
+              ignore.error = TRUE)
+    Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
+  })
 }else
 {
   Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
@@ -143,17 +142,15 @@ Starting.time <- Sys.time()
 
 if(nCross>1 & nCores>1)
 {
-  OUT.CplCross <- parLapply(
-          cl4CV,
-          crossValidIdx[["training"]],
-          CplMain,
-          CplConfigFile = CplConfigFile)
+  OUT.CplCross <- parLapply(cl4CV,
+                            crossValidIdx[["training"]],
+                            CplMain,
+                            CplConfigFile = CplConfigFile)
 } else
 {
-  OUT.CplCross <- lapply(
-          X = crossValidIdx[["training"]],
-          FUN = CplMain,
-          CplConfigFile = CplConfigFile)
+  OUT.CplCross <- lapply(X = crossValidIdx[["training"]],
+                         FUN = CplMain,
+                         CplConfigFile = CplConfigFile)
 }
 
 ###----------------------------------------------------------------------------
@@ -166,21 +163,19 @@ for(iLPDS in LPDS)
   {
     if(nCross>1 & nCores >1)
       {
-        logPredLst <- clusterMap(
-                cl = cl4CV,
-                fun = logDensPred,
-                CplOut = OUT.CplCross,
-                pred = iLPDS,
-                Mdl.Idx.testing = crossValidIdx[["testing"]])
+        logPredLst <- clusterMap(cl = cl4CV,
+                                 fun = logDensPred,
+                                 CplOut = OUT.CplCross,
+                                 pred = iLPDS,
+                                 Mdl.Idx.testing = crossValidIdx[["testing"]])
       }
     else
       {
-        logPredLst <- mapply(
-                FUN = logPredDens,
-                CplOut = OUT.CplCross,
-                pred = iLPDS,
-                Mdl.Idx.testing = crossValidIdx[["testing"]],
-                SIMPLIFY = FALSE)
+        logPredLst <- mapply(FUN = logPredDens,
+                             CplOut = OUT.CplCross,
+                             pred = iLPDS,
+                             Mdl.Idx.testing = crossValidIdx[["testing"]],
+                             SIMPLIFY = FALSE)
       }
 
     LPDS.OUT[[iLPDS]] <- logPredDensScore(logPredLst = logPredLst)

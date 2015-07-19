@@ -157,92 +157,86 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       while(InitGoodCompCurr == FALSE)
       {
         ## Reassign the initial values
-        initParOut.CompCurr <- initPar(
-                      varSelArgs = varSelArgs,
-                      betaInit = betaInit,
-                      Mdl.X = Mdl.X.training.sample,
-                      Mdl.Y = Mdl.Y.training.sample,
-                      Mdl.parLink = Mdl.parLink)
-              Mdl.betaIdx[[CompCaller]] <- initParOut.CompCurr[["Mdl.betaIdx"]][[CompCaller]]
-              Mdl.beta[[CompCaller]] <- initParOut.CompCurr[["Mdl.beta"]][[CompCaller]]
+        initParOut.CompCurr <- initPar(varSelArgs = varSelArgs,
+                                       betaInit = betaInit,
+                                       Mdl.X = Mdl.X.training.sample,
+                                       Mdl.Y = Mdl.Y.training.sample,
+                                       Mdl.parLink = Mdl.parLink)
+        Mdl.betaIdx[[CompCaller]] <- initParOut.CompCurr[["Mdl.betaIdx"]][[CompCaller]]
+        Mdl.beta[[CompCaller]] <- initParOut.CompCurr[["Mdl.beta"]][[CompCaller]]
 
-              ## Dry run to obtain the initial "staticCache" NOTE: As this is the
-              ## very first run, the "parUpdate" should be all on for this time.
+        ## Dry run to obtain the initial "staticCache" NOTE: As this is the
+        ## very first run, the "parUpdate" should be all on for this time.
 
-              staticCache.sample <- logPost(
-                      MargisType = MargisType,
-                      Mdl.Y = Mdl.Y.training.sample,
-                      Mdl.X = Mdl.X.training.sample,
-                      Mdl.beta = Mdl.beta,
-                      Mdl.betaIdx = Mdl.betaIdx,
-                      Mdl.parLink = Mdl.parLink,
-                      varSelArgs = varSelArgs,
-                      priArgs = priArgs,
-                      parUpdate = MCMCUpdate,
-                      MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+        staticCache.sample <- logPost(MargisType = MargisType,
+                                      Mdl.Y = Mdl.Y.training.sample,
+                                      Mdl.X = Mdl.X.training.sample,
+                                      Mdl.beta = Mdl.beta,
+                                      Mdl.betaIdx = Mdl.betaIdx,
+                                      Mdl.parLink = Mdl.parLink,
+                                      varSelArgs = varSelArgs,
+                                      priArgs = priArgs,
+                                      parUpdate = MCMCUpdate,
+                                      MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
-              ## Optimize the initial values via BFGS. NOTE: The variable selection
-              ## indicators are fixed (not optimized) loop over all the marginal
-              ## models and copula via TWO STAGE OPTIMIZATION
+        ## Optimize the initial values via BFGS. NOTE: The variable selection
+        ## indicators are fixed (not optimized) loop over all the marginal
+        ## models and copula via TWO STAGE OPTIMIZATION
 
-              betaVecInitComp <- parCplSwap(
-                      betaInput = Mdl.beta,
-                      Mdl.beta = Mdl.beta,
-                      Mdl.betaIdx = Mdl.betaIdx,
-                      parUpdate = parUpdate)
+        betaVecInitComp <- parCplSwap(betaInput = Mdl.beta,
+                                      Mdl.beta = Mdl.beta,
+                                      Mdl.betaIdx = Mdl.betaIdx,
+                                      parUpdate = parUpdate)
 
-              ## Optimize the initial values
-              betaVecOptimComp <- try(optimx(
-                      par = betaVecInitComp,
-                      fn = logPostOptim,
-                      control = list(maximize = TRUE,
-                          ## all.methods = TRUE,
-                          maxit = 100),
-                      method = "BFGS",
-                      hessian = FALSE,
-                      MargisType = MargisType,
-                      Mdl.Y = Mdl.Y.training.sample,
-                      Mdl.X = Mdl.X.training.sample,
-                      Mdl.beta = Mdl.beta,
-                      Mdl.betaIdx = Mdl.betaIdx,
-                      Mdl.parLink = Mdl.parLink,
-                      varSelArgs = varSelArgs,
-                      priArgs = priArgs,
-                      staticCache = staticCache.sample,
-                      parUpdate = parUpdate,
-                      MCMCUpdateStrategy = "twostage"
-                      ), silent = FALSE)
+        ## Optimize the initial values
+        betaVecOptimComp <- try(optimx(par = betaVecInitComp,
+                                       fn = logPostOptim,
+                                       control = list(maximize = TRUE,
+                                                      ## all.methods = TRUE,
+                                                      maxit = 100),
+                                       method = "BFGS",
+                                       hessian = FALSE,
+                                       MargisType = MargisType,
+                                       Mdl.Y = Mdl.Y.training.sample,
+                                       Mdl.X = Mdl.X.training.sample,
+                                       Mdl.beta = Mdl.beta,
+                                       Mdl.betaIdx = Mdl.betaIdx,
+                                       Mdl.parLink = Mdl.parLink,
+                                       varSelArgs = varSelArgs,
+                                       priArgs = priArgs,
+                                       staticCache = staticCache.sample,
+                                       parUpdate = parUpdate,
+                                       MCMCUpdateStrategy = "twostage"
+                                       ), silent = FALSE)
 
-              if(is(betaVecOptimComp, "try-error") == TRUE)
-                {# It does not have to be converged.
-                  cat("Initializing algorithm failed,  retry...\n")
-                  InitGoodCompCurr <- FALSE
-                  ## break
-                }
-              else
-                {
-                  InitGoodCompCurr <- TRUE
-                  Mdl.beta <- parCplSwap(
-                          betaInput = as.numeric(betaVecOptimComp[1,
-                              1:length(betaVecOptimComp)]),
-                          Mdl.beta = Mdl.beta,
-                          Mdl.betaIdx = Mdl.betaIdx,
-                          parUpdate = parUpdate)
-                }
-              nLoopInit <- nLoopInit +1
-              if((nLoopInit >= maxLoopInit) & InitGoodCompCurr  == FALSE)
-                {
-                  ## InitGood <- TRUE
-                  ## Too many failures,  abort!
-                  cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
-                  cat("Trying to continue without initial value optimization in this component.\n\n")
-                  break
-                }
-            }
-          cat("The initial values for beta coefficients are:\n(conditional on variable selection indicators)\n")
-          print(Mdl.beta[[CompCaller]])
+        if(is(betaVecOptimComp, "try-error") == TRUE)
+        {# It does not have to be converged.
+          cat("Initializing algorithm failed,  retry...\n")
+          InitGoodCompCurr <- FALSE
+          ## break
         }
+        else
+        {
+          InitGoodCompCurr <- TRUE
+          Mdl.beta <- parCplSwap(betaInput = as.numeric(betaVecOptimComp[1, 1:length(betaVecOptimComp)]),
+                                 Mdl.beta = Mdl.beta,
+                                 Mdl.betaIdx = Mdl.betaIdx,
+                                 parUpdate = parUpdate)
+        }
+        nLoopInit <- nLoopInit +1
+        if((nLoopInit >= maxLoopInit) & InitGoodCompCurr  == FALSE)
+        {
+          ## InitGood <- TRUE
+          ## Too many failures,  abort!
+          cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
+          cat("Trying to continue without initial value optimization in this component.\n\n")
+          break
+        }
+      }
+      cat("The initial values for beta coefficients are:\n(conditional on variable selection indicators)\n")
+      print(Mdl.beta[[CompCaller]])
     }
+  }
 
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
@@ -253,50 +247,49 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   MCMC.betaIdx <- MCMCUpdate
   MCMC.par <- MCMCUpdate
   MCMC.AccProb <- MCMCUpdate
-
+  browser()
   if(!exists("MCMC.density"))
-    {
-      ## MCMC.density <- list()
-      ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  nIter))
-      ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
-      ## FIXME: This is really big ~ 1G
-    }
+  {
+    ## MCMC.density <- list()
+    ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  nIter))
+    ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+    ## FIXME: This is really big ~ 1G
+  }
 
   for(i in names(MCMCUpdate))
+  {
+    for(j in names(MCMCUpdate[[i]]))
     {
-      for(j in names(MCMCUpdate[[i]]))
-        {
-          ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
-          nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
-          namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
+      ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
+      nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
+      namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
 
-          if(i %in% MargisNM[length(MargisNM)])
-            {
-              ## browser()
-              nDim <- length(MargisNM)-1
-              namesParFull.ij <- matrix(paste(
-                      matrix(1:nDim, nDim, nDim),
-                      matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
-              namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
-            }
-          else
-            {
-              namesPar.ij <- "1.1"
-            }
+      if(i %in% MargisNM[length(MargisNM)])
+      {
+        ## browser()
+        nDim <- length(MargisNM)-1
+        namesParFull.ij <- matrix(paste(matrix(1:nDim, nDim, nDim),
+                                        matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
+        namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
+      }
+      else
+      {
+        namesPar.ij <- "1.1"
+      }
 
-          ## The MCMC storage
-          MCMC.betaIdx[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
-                                           dimnames = list(NULL, namesX.ij))
-          MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
-                                        dimnames = list(NULL, namesX.ij))
+      ## The MCMC storage
+      MCMC.betaIdx[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
+                                       dimnames = list(NULL, namesX.ij))
+      MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
+                                    dimnames = list(NULL, namesX.ij))
 
-          MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij),
-                                      dimnames = list(NULL, NULL, namesPar.ij))
+      MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij),
+                                  dimnames = list(NULL, NULL, namesPar.ij))
 
-          ## The Metropolis-Hasting acceptance rate
-          MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
-        }
+      ## The Metropolis-Hasting acceptance rate
+      MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
     }
+  }
 
 ###----------------------------------------------------------------------------
 ### THE GIBBS SAMPLER (WITH METROPOLIS-HASTINGS)
@@ -308,17 +301,16 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Dry run to obtain staticcache for the initial values. Again this time all the
   ## parameters should be updated.
 
-  staticCache <- logPost(
-          MargisType = MargisType,
-          Mdl.Y = Mdl.Y.training,
-          Mdl.X = Mdl.X.training,
-          Mdl.beta = Mdl.beta,
-          Mdl.betaIdx = Mdl.betaIdx,
-          Mdl.parLink = Mdl.parLink,
-          varSelArgs = varSelArgs,
-          priArgs = priArgs,
-          parUpdate = MCMCUpdate,
-          MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+  staticCache <- logPost(MargisType = MargisType,
+                         Mdl.Y = Mdl.Y.training,
+                         Mdl.X = Mdl.X.training,
+                         Mdl.beta = Mdl.beta,
+                         Mdl.betaIdx = Mdl.betaIdx,
+                         Mdl.parLink = Mdl.parLink,
+                         varSelArgs = varSelArgs,
+                         priArgs = priArgs,
+                         parUpdate = MCMCUpdate,
+                         MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
 
   ## Clear all warnings during initial value optimization. NOTE: not working
   ## warningsClear(envir = environment())
@@ -330,82 +322,81 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   Starting.time <- Sys.time()
 
   for(iUpdate in 1:(nInner*nIter))
-    {
-      iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
-      iIter <- floor((iUpdate-1)/nInner)+1
+  {
+    iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
+    iIter <- floor((iUpdate-1)/nInner)+1
 
 
-      ##print(c(iUpdate, iInner, iIter))
+    ##print(c(iUpdate, iInner, iIter))
 
-      chainCaller <- UpdateMat[iInner, ]
-      CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
-      parCaller <- UpdateMat[iInner, 2] ## mean,  df...
+    chainCaller <- UpdateMat[iInner, ]
+    CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
+    parCaller <- UpdateMat[iInner, 2] ## mean,  df...
 
-      ## Switch all the updating indicators OFF and switch current updating parameter
-      ## indicator ON.
-      parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
-      parUpdate[[CompCaller]][[parCaller]] <- TRUE
+    ## Switch all the updating indicators OFF and switch current updating parameter
+    ## indicator ON.
+    parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
+    parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
-      ## Call the Metropolis-Hastings algorithm
-      MHOut <- MetropolisHastings(
-              MargisType = MargisType,
-              propArgs = propArgs,
-              varSelArgs = varSelArgs,
-              priArgs = priArgs,
-              parUpdate = parUpdate,
-              Mdl.Y = Mdl.Y.training,
-              Mdl.X = Mdl.X.training,
-              Mdl.beta = Mdl.beta,
-              Mdl.betaIdx = Mdl.betaIdx,
-              Mdl.parLink = Mdl.parLink,
-              staticCache = staticCache,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+    ## Call the Metropolis-Hastings algorithm
+    MHOut <- MetropolisHastings(MargisType = MargisType,
+                                propArgs = propArgs,
+                                varSelArgs = varSelArgs,
+                                priArgs = priArgs,
+                                parUpdate = parUpdate,
+                                Mdl.Y = Mdl.Y.training,
+                                Mdl.X = Mdl.X.training,
+                                Mdl.beta = Mdl.beta,
+                                Mdl.betaIdx = Mdl.betaIdx,
+                                Mdl.parLink = Mdl.parLink,
+                                staticCache = staticCache,
+                                MCMCUpdateStrategy = MCMCUpdateStrategy)
 
-      if(MHOut$errorFlag == FALSE)
-        { ## Update the MH results to the current parameter structure
-          staticCache <- MHOut[["staticCache"]]
-          Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
-          Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
+    if(MHOut$errorFlag == FALSE)
+    { ## Update the MH results to the current parameter structure
+      staticCache <- MHOut[["staticCache"]]
+      Mdl.beta[[CompCaller]][[parCaller]] <- MHOut[["beta"]]
+      Mdl.betaIdx[[CompCaller]][[parCaller]] <- MHOut[["betaIdx"]]
 
-          AccProbCurr <- MHOut[["accept.prob"]]
-        }
-      else
-        { ## Keep everything unchanged. Only set acceptance probability to zero if this
-          ## iteration fails.
-          AccProbCurr <- 0
-        }
-
-      ## Export the parameters in each cross-validation fold
-      MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- Mdl.beta[[CompCaller]][[parCaller]]
-      MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- Mdl.betaIdx[[CompCaller]][[parCaller]]
-      MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <- staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
-
-      MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- AccProbCurr
-
-      ## Save the marginal densities.  FIXME: This is not updated for every iteration.
-      ## MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
-      ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
-
-      ## MCMC trajectory
-      if(track.MCMC == TRUE && iInner == nInner)
-        {
-          CplMCMC.summary(iIter = iIter, nIter = nIter,
-                          interval = 0.01, burnin = burnin,
-                          MCMC.beta = MCMC.beta,
-                          MCMC.betaIdx = MCMC.betaIdx,
-                          MCMC.par = MCMC.par,
-                          MCMC.AccProb = MCMC.AccProb,
-                          Starting.time = Starting.time,
-                          MCMCUpdate = MCMCUpdate)
-        }
-
+      AccProbCurr <- MHOut[["accept.prob"]]
+    }
+    else
+    { ## Keep everything unchanged. Only set acceptance probability to zero if this
+      ## iteration fails.
+      AccProbCurr <- 0
     }
 
+    ## Export the parameters in each cross-validation fold
+    MCMC.beta[[CompCaller]][[parCaller]][iIter, ] <- Mdl.beta[[CompCaller]][[parCaller]]
+    MCMC.betaIdx[[CompCaller]][[parCaller]][iIter, ] <- Mdl.betaIdx[[CompCaller]][[parCaller]]
+    MCMC.par[[CompCaller]][[parCaller]][iIter, ,] <- staticCache[["Mdl.par"]][[CompCaller]][[parCaller]]
 
-    if(nParallel>1)
-      {
-        stopCluster(cl4MCMC)
-      }
+    MCMC.AccProb[[CompCaller]][[parCaller]][iIter,] <- AccProbCurr
+
+    ## Save the marginal densities.  FIXME: This is not updated for every iteration.
+    ## MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
+    ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
+
+    ## MCMC trajectory
+    if(track.MCMC == TRUE && iInner == nInner)
+    {
+      CplMCMC.summary(iIter = iIter, nIter = nIter,
+                      interval = 0.01, burnin = burnin,
+                      MCMC.beta = MCMC.beta,
+                      MCMC.betaIdx = MCMC.betaIdx,
+                      MCMC.par = MCMC.par,
+                      MCMC.AccProb = MCMC.AccProb,
+                      Starting.time = Starting.time,
+                      MCMCUpdate = MCMCUpdate)
+    }
+
+  }
+
+
+  if(nParallel>1)
+  {
+    stopCluster(cl4MCMC)
+  }
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)
   gc()
