@@ -171,7 +171,7 @@ for(iLPDS in LPDS)
       }
     else
       {
-        logPredLst <- mapply(FUN = logPredDens,
+        logPredLst <- mapply(FUN = logDensPred,
                              CplOut = OUT.CplCross,
                              pred = iLPDS,
                              Mdl.Idx.testing = crossValidIdx[["testing"]],

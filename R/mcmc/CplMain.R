@@ -247,7 +247,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   MCMC.betaIdx <- MCMCUpdate
   MCMC.par <- MCMCUpdate
   MCMC.AccProb <- MCMCUpdate
-  browser()
+
   if(!exists("MCMC.density"))
   {
     ## MCMC.density <- list()
@@ -393,7 +393,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   }
 
 
-  if(nParallel>1)
+  if(R_CPL_NPARALLEL>1)
   {
     stopCluster(cl4MCMC)
   }

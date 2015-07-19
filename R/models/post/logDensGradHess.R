@@ -204,6 +204,5 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   out <- list(logGradObs = logDensGradObs, # n-by-1
               logHessObs = NA,
               errorFlag = FALSE)
-
   return(out)
 }

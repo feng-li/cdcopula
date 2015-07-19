@@ -35,7 +35,7 @@ logCplRepGradNum <- function(CplNM, u, parCplRep, parCaller)
   }
   else
   { ## Calling copula parameters
-    nDimGrad <- nDim
+    nDimGrad <- ncol(parCplRep[[parCaller]])
   }
 
   logCplGradObs.num <- matrix(NA, nObs, nDimGrad)
