@@ -154,57 +154,53 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
             ## The covariance matrix for the whole beta vector
             X <- Mdl.X[[CompCaller]][[parCaller]][, -1, drop = FALSE]
             coVar0 <- qr.solve(crossprod(X))
-            coVar0Lst <- lapply(
-                          as.vector(rep(NA, nPar),"list"),
-                          function(x) coVar0)
+            coVar0Lst <- lapply(as.vector(rep(NA, nPar),"list"),
+                                function(x) coVar0)
 
-                      coVar <- block.diag(coVar0Lst)
+            coVar <- block.diag(coVar0Lst)
 
-                    }
-                  else if(tolower(covariance) == "identity")
-                    {
-                      coVar <- diag1(betaLen)
-                    }
+          }
+          else if(tolower(covariance) == "identity")
+          {
+            coVar <- diag1(betaLen)
+          }
 
-                  ## Calculate the log density
-                  if(Idx0Len == 0L)
-                    {   ## 1. all are selected or
-                      ## Switch to unconditional prior.
-                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
-                          matrix(betaCurr, 1, betaLen,byrow = TRUE),
-                          meanVec, coVar*shrinkage, log = TRUE)
-                    }
-                  else if( Idx0Len == betaLen)
-                    {   ## 2. non are selected:
-                      ## Switch to unconditional prior.
-                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
-                          matrix(betaCurr, 1, betaLen, byrow = TRUE),
-                          meanVec, coVar*shrinkage, log = TRUE)
-                    }
-                  else if(Idx0Len > 0 & Idx0Len < betaLen)
-                    {
-                      ## 3. some are selected
-                      ## Using the conditional prior
-                      A <- coVar[Idx1, Idx0]%*%solve(coVar[Idx0, Idx0])
-                      condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
-                      condCovar <- coVar[Idx1, Idx1] - A%*%coVar[Idx0, Idx1]
+          ## Calculate the log density
+          if(Idx0Len == 0L)
+          {   ## 1. all are selected or
+            ## Switch to unconditional prior.
+            outCurr[["beta"]][["slopes"]] <- dmvnorm(matrix(betaCurr, 1, betaLen,byrow = TRUE),
+                                                     meanVec, coVar*shrinkage, log = TRUE)
+          }
+          else if( Idx0Len == betaLen)
+          {   ## 2. non are selected:
+            ## Switch to unconditional prior.
+            outCurr[["beta"]][["slopes"]] <- dmvnorm(matrix(betaCurr, 1, betaLen, byrow = TRUE),
+                                                     meanVec, coVar*shrinkage, log = TRUE)
+          }
+          else if(Idx0Len > 0 & Idx0Len < betaLen)
+          {
+            ## 3. some are selected
+            ## Using the conditional prior
+            A <- coVar[Idx1, Idx0]%*%solve(coVar[Idx0, Idx0])
+            condMean <- meanVec[Idx1] - A%*%meanVec[Idx0]
+            condCovar <- coVar[Idx1, Idx1] - A%*%coVar[Idx0, Idx1]
 
-                      outCurr[["beta"]][["slopes"]] <- dmvnorm(
-                          matrix(betaCurr[Idx1], 1),
-                          condMean, condCovar*shrinkage, log = TRUE)
-                    }
-                  else
-                    {
-                      stop("Debug me: Unknown situation for conditional priors.")
-                    }
-                }
-            }
+            outCurr[["beta"]][["slopes"]] <- dmvnorm(matrix(betaCurr[Idx1], 1),
+                                                     condMean, condCovar*shrinkage, log = TRUE)
+          }
+          else
+          {
+            stop("Debug me: Unknown situation for conditional priors.")
+          }
+        }
+      }
 
 ###----------------------------------------------------------------------------
 ### Update the output for prior
 ###----------------------------------------------------------------------------
-          Mdl.logPri[[CompCaller]][[parCaller]] <- outCurr
-        }
+      Mdl.logPri[[CompCaller]][[parCaller]] <- outCurr
     }
+  }
   return(Mdl.logPri)
 }

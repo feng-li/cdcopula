@@ -35,10 +35,9 @@ parCplMeanFun <- function(Mdl.X,  Mdl.parLink, Mdl.beta,
             if(!(tolower(parCaller) %in% tolower(condPar)))
               {
                 ## Update the parameters for the updated part
-                Mdl.par[[CompCaller]][[parCaller]] <- parMeanFun(
-                        X = Mdl.X[[CompCaller]][[parCaller]],
-                        beta = Mdl.beta[[CompCaller]][[parCaller]],
-                        linkArgs = Mdl.parLink[[CompCaller]][[parCaller]])
+                Mdl.par[[CompCaller]][[parCaller]] <- parMeanFun(X = Mdl.X[[CompCaller]][[parCaller]],
+                                                                 beta = Mdl.beta[[CompCaller]][[parCaller]],
+                                                                 linkArgs = Mdl.parLink[[CompCaller]][[parCaller]])
               }
           }
       }

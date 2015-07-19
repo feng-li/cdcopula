@@ -93,17 +93,17 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   { ## Evaluating Foreign marginal models.
     cat("Evaluating foreign marginal models...\n")
 
-    Mdl.X.Margis.out <- MargiModelForeignEval(MargisNM = MargisNM,
-                                              MargisType = MargisType,
-                                              MargisForeignConfig = Mdl.X,
-                                              Mdl.Y = Mdl.Y.training)
+    Mdl.X.Fit <- MargiModelForeignEval(MargisNM = MargisNM,
+                                       MargisType = MargisType,
+                                       MargisForeignConfig = Mdl.X,
+                                       Mdl.Y = Mdl.Y.training)
 
-    Mdl.X.training <- c(Mdl.X.Margis.out[["Mdl.X"]],
+    Mdl.X.training <- c(Mdl.X.Fit[["Mdl.X"]],
                         rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
                                f = subsetFun,
                                idx = Mdl.Idx.training,
                                how = "replace"))
-    Mdl.ForeignFit <- Mdl.X.Margis.out[["Mdl.ForeignFit"]]
+    Mdl.ForeignFit <- Mdl.X.Fit[["Mdl.ForeignFit"]]
   }
   else
   {## Native model structure
@@ -256,15 +256,15 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## FIXME: This is really big ~ 1G
   }
 
-  for(i in names(MCMCUpdate))
+  for(CompCaller in names(MCMCUpdate))
   {
-    for(j in names(MCMCUpdate[[i]]))
+    for(parCaller in names(MCMCUpdate[[CompCaller]]))
     {
-      ncolX.ij <- ncol(Mdl.X.training[[i]][[j]])
-      nPar.ij <- Mdl.parLink[[i]][[j]][["nPar"]]
-      namesX.ij <- rep(colnames(Mdl.X.training[[i]][[j]]), nPar.ij)
+      ncolX.ij <- ncol(Mdl.X.training[[CompCaller]][[parCaller]])
+      nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
+      namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
 
-      if(i %in% MargisNM[length(MargisNM)])
+      if(CompCaller %in% MargisNM[length(MargisNM)])
       {
         ## browser()
         nDim <- length(MargisNM)-1
@@ -278,16 +278,20 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       }
 
       ## The MCMC storage
-      MCMC.betaIdx[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
-                                       dimnames = list(NULL, namesX.ij))
-      MCMC.beta[[i]][[j]] <- matrix(NA, nIter, ncolX.ij*nPar.ij,
-                                    dimnames = list(NULL, namesX.ij))
+      MCMC.betaIdx[[CompCaller]][[parCaller]] <- matrix(Mdl.betaIdx[[CompCaller]][[parCaller]],
+                                                        nIter, ncolX.ij*nPar.ij,
+                                                        dimnames = list(NULL, namesX.ij),
+                                                        byrow = TRUE)
+      MCMC.beta[[CompCaller]][[parCaller]] <- matrix(Mdl.beta[[CompCaller]][[parCaller]],
+                                                     nIter, ncolX.ij*nPar.ij,
+                                                     dimnames = list(NULL, namesX.ij),
+                                                     byrow = TRUE)
 
-      MCMC.par[[i]][[j]] <- array(NA, c(nIter, nTraining, nPar.ij),
-                                  dimnames = list(NULL, NULL, namesPar.ij))
+      MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nIter, nTraining, nPar.ij),
+                                                   dimnames = list(NULL, NULL, namesPar.ij))
 
       ## The Metropolis-Hasting acceptance rate
-      MCMC.AccProb[[i]][[j]] <- matrix(NA, nIter, 1)
+      MCMC.AccProb[[CompCaller]][[parCaller]] <- matrix(NA, nIter, 1)
     }
   }
 

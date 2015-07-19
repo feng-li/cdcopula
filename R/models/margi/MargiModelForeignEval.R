@@ -13,6 +13,7 @@ MargiModelForeignEval <- function(MargisNM, MargisType, MargisForeignConfig, Mdl
       MargiModel.Fit.caller <- as.call(c(garchFit, parArgs))
       MargiModel.Fit <- eval(MargiModel.Fit.caller)
 
+      Mdl.X[[MargisNM[iComp]]] <- list()
       Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Fit@fitted)
       Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Fit@sigma.t)
 

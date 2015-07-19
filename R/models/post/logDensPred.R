@@ -29,14 +29,32 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     subsetFun <- function(x, idx)x[idx, , drop = FALSE]
     ## Mdl.Idx.testing <- crossValidIdx[["testing"]][[iCross]]
 
-    Mdl.X.testing <- rapply(object=Mdl.X,
-                            f = subsetFun,
-                            idx = Mdl.Idx.testing,
-                            how = "replace")
     Mdl.Y.testing <- rapply(object=Mdl.Y,
                             f = subsetFun,
                             idx = Mdl.Idx.testing,
                             how = "replace")
+
+    if(any(rapply(Mdl.X, class) != "matrix"))
+    {## Foreign marginal models are used.
+      Mdl.X.Pred <- MargiModelForeignPred(MargisNM = MargisNM,
+                                          MargisType = MargisType,
+                                          Mdl.ForeignFit =Mdl.ForeignFit,
+                                          Mdl.Y = Mdl.Y.testing)
+
+      Mdl.X.testing <- c(Mdl.X.Pred[["Mdl.X"]],
+                          rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
+                                 f = subsetFun,
+                                 idx = Mdl.Idx.testing,
+                                 how = "replace"))
+    }
+    else
+    {## The native model structure
+      Mdl.X.testing <- rapply(object=Mdl.X,
+                              f = subsetFun,
+                              idx = Mdl.Idx.testing,
+                              how = "replace")
+    }
+
   }
 
 ###----------------------------------------------------------------------------
@@ -80,12 +98,11 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
 ### Calculate the predictive densities in all likelihood segments
 ###----------------------------------------------------------------------------
-
   ## The predictive likelihood
   if(tolower(pred) == "joint")
   {
     MCMCUpdateStrategy <- "joint"
-    ## The whole copula likelihood
+    ## Use the whole copula likelihood
     parUpdate <- rapply(parUpdate,  function(x) TRUE,
                         how  = "replace")
 
@@ -125,29 +142,45 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                               idx = j,
                               how = "replace")
 
-      Mdl.betaIdx.curr <- rapply(object=MCMC.betaIdx,
-                                 f = subsetFun,
-                                 idx = j,
-                                 how = "replace")
-
+      ## Mdl.betaIdx.curr <- rapply(object=MCMC.betaIdx,
+      ##                            f = subsetFun,
+      ##                            idx = j,
+      ##                            how = "replace")
 
       ## The log predictive likelihood.  Note that the corresponding
       ## updating flags should be switched on
-      logPred <- logPost(MargisType = MargisType,
-                         Mdl.Y = Mdl.Y.testing.curr,
-                         Mdl.X = Mdl.X.testing.curr,
-                         Mdl.beta = Mdl.beta.curr,
-                         Mdl.betaIdx = Mdl.betaIdx.curr,
-                         Mdl.parLink = Mdl.parLink,
-                         varSelArgs = varSelArgs,
-                         priArgs = priArgs,
-                         parUpdate = parUpdate,
-                         MCMCUpdateStrategy = MCMCUpdateStrategy
-                         )[["Mdl.logLik"]]
+      Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X.testing.curr,
+                               Mdl.parLink = Mdl.parLink,
+                               Mdl.beta = Mdl.beta.curr,
+                               parUpdate = parUpdate,
+                               Mdl.par = parUpdate)
+
+      Mdl.ud <- logDens(MargisType = MargisType,
+                        Mdl.Y = Mdl.Y.testing.curr,
+                        Mdl.par = Mdl.par,
+                        Mdl.u = staticCache$Mdl.u,
+                        Mdl.d = staticCache$Mdl.d,
+                        parUpdate = parUpdate,
+                        MCMCUpdateStrategy = MCMCUpdateStrategy)
+      Mdl.d <- Mdl.ud[["Mdl.d"]]
+      ## Mdl.u <- Mdl.ud[["Mdl.u"]]
+      ## Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
+
+      ## logPred <- logPost(MargisType = MargisType,
+      ##                    Mdl.Y = Mdl.Y.testing.curr,
+      ##                    Mdl.X = Mdl.X.testing.curr,
+      ##                    Mdl.beta = Mdl.beta.curr,
+      ##                    Mdl.betaIdx = Mdl.betaIdx.curr,
+      ##                    Mdl.parLink = Mdl.parLink,
+      ##                    varSelArgs = varSelArgs,
+      ##                    priArgs = priArgs,
+      ##                    parUpdate = parUpdate,
+      ##                    MCMCUpdateStrategy = MCMCUpdateStrategy
+      ##                    )[["Mdl.logLik"]]
 
       which.j <- which.j + 1
 
-      out.pred[which.j, i] <- logPred
+      out.pred[which.j, i] <- sum(Mdl.d)
     }
 
 
@@ -157,7 +190,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
   if(partiMethod == "time-series")
   {
-    ## Sum to get the loglikelihood when the likelihood are calumniated
+    ## Sum to get the loglikelihood when the likelihood are calculated
     ## conditionally.
     out <- matrix(apply(out.pred, 1, sum))
   }
