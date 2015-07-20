@@ -18,7 +18,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ### Extract the MMCMC output list
 ###----------------------------------------------------------------------------
   list2env(CplOut, envir = environment())
-
+  ## browser()
 ###----------------------------------------------------------------------------
 ### The testing covariates
 ###----------------------------------------------------------------------------
@@ -69,11 +69,11 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   ## The sample indices for LPDS after burn-in Make a decreasing sequence and
   ## sort it by increasing order. Just to make sure last draw is allays used
   ## The exact size may not same as the result from sample proportion.
-  MCMC.sampleIdxInv <- seq(from = nIter,
+  MCMC.sampleIdxRev <- seq(from = nIter,
                            to = (nIter-nUsed+1),
                            by = -round(1/sampleProp))
-  MCMC.sample.len <- length(MCMC.sampleIdxInv)
-  MCMC.sampleIdx <- MCMC.sampleIdxInv[MCMC.sample.len:1]
+  MCMC.sample.len <- length(MCMC.sampleIdxRev)
+  MCMC.sampleIdx <- MCMC.sampleIdxRev[MCMC.sample.len:1]
 
   nPred <- length(Mdl.Y.testing[[1]])
   if(partiMethod == "time-series")
@@ -101,7 +101,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   ## The predictive likelihood
   if(tolower(pred) == "joint")
   {
-    MCMCUpdateStrategy <- "joint"
+    MCMCUpdateStrategy4LPDS <- "joint"
     ## Use the whole copula likelihood
     parUpdate <- rapply(parUpdate,  function(x) TRUE,
                         how  = "replace")
@@ -109,7 +109,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   }
   else
   {
-    MCMCUpdateStrategy <- "margin"
+    MCMCUpdateStrategy4LPDS <- "margin"
 
     ## The marginal likelihood
     parUpdate <- rapply(parUpdate,
@@ -123,14 +123,13 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
   for(i in 1:LikLst.len)
   {
-    idx.curr <- LikLst.Idx[[i]]
     Mdl.X.testing.curr <- rapply(object=Mdl.X.testing,
                                  f = subsetFun,
-                                 idx = idx.curr,
+                                 idx = LikLst.Idx[[i]],
                                  how = "replace")
     Mdl.Y.testing.curr <- rapply(object=Mdl.Y.testing,
                                  f = subsetFun,
-                                 idx = idx.curr,
+                                 idx = LikLst.Idx[[i]],
                                  how = "replace")
 
     which.j <- 0
@@ -142,45 +141,27 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                               idx = j,
                               how = "replace")
 
-      ## Mdl.betaIdx.curr <- rapply(object=MCMC.betaIdx,
-      ##                            f = subsetFun,
-      ##                            idx = j,
-      ##                            how = "replace")
-
       ## The log predictive likelihood.  Note that the corresponding
       ## updating flags should be switched on
-      Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X.testing.curr,
-                               Mdl.parLink = Mdl.parLink,
-                               Mdl.beta = Mdl.beta.curr,
-                               parUpdate = parUpdate,
-                               Mdl.par = parUpdate)
+      Mdl.par.curr <- parCplMeanFun(Mdl.X = Mdl.X.testing.curr,
+                                    Mdl.parLink = Mdl.parLink,
+                                    Mdl.beta = Mdl.beta.curr,
+                                    parUpdate = parUpdate,
+                                    Mdl.par = parUpdate)
 
       Mdl.ud <- logDens(MargisType = MargisType,
                         Mdl.Y = Mdl.Y.testing.curr,
-                        Mdl.par = Mdl.par,
-                        Mdl.u = staticCache$Mdl.u,
-                        Mdl.d = staticCache$Mdl.d,
+                        Mdl.par = Mdl.par.curr,
+                        ##Mdl.u = staticCache$Mdl.u,
+                        ##Mdl.d = staticCache$Mdl.d,
                         parUpdate = parUpdate,
-                        MCMCUpdateStrategy = MCMCUpdateStrategy)
+                        MCMCUpdateStrategy = MCMCUpdateStrategy4LPDS)
       Mdl.d <- Mdl.ud[["Mdl.d"]]
-      ## Mdl.u <- Mdl.ud[["Mdl.u"]]
-      ## Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
-
-      ## logPred <- logPost(MargisType = MargisType,
-      ##                    Mdl.Y = Mdl.Y.testing.curr,
-      ##                    Mdl.X = Mdl.X.testing.curr,
-      ##                    Mdl.beta = Mdl.beta.curr,
-      ##                    Mdl.betaIdx = Mdl.betaIdx.curr,
-      ##                    Mdl.parLink = Mdl.parLink,
-      ##                    varSelArgs = varSelArgs,
-      ##                    priArgs = priArgs,
-      ##                    parUpdate = parUpdate,
-      ##                    MCMCUpdateStrategy = MCMCUpdateStrategy
-      ##                    )[["Mdl.logLik"]]
+      Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
       which.j <- which.j + 1
 
-      out.pred[which.j, i] <- sum(Mdl.d)
+      out.pred[which.j, i] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
     }
 
 

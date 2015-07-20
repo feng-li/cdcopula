@@ -5,6 +5,18 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
 ### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
 ### PARAMETERS ARE UPDATED.
 ###----------------------------------------------------------------------------
+  if(missing(Mdl.u))
+  {
+    Mdl.u <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.Y),
+                    dimnames = list(NULL, names(Mdl.Y)))
+  }
+
+  if(missing(Mdl.d))
+  {
+    Mdl.d <- matrix(NA, dim(Mdl.Y[[1]])[1], length(Mdl.par),
+                    dimnames = list(NULL, names(Mdl.par)))
+  }
+
   CompNM <- names(Mdl.par)
   ## Allocate the output structure: Margins + Copula (NA)
   ## Mdl.logLik <- cbind(Mdl.d, NA)
