@@ -125,10 +125,9 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
     pctl.log <- pCpl(u = u, parCpl = parCpl, CplNM = "gumbel", log = TRUE)
     u.tilde <- -log(u)
 
-    u.tildeProd <- u.tilde[, 1]*u.tilde[, 2]
     u.tildeSumdelta <- rowSums(u.tilde^delta)
 
-    out.log <- (pctl.log-log(u[, 1])-log(u[, 2])+
+    out.log <- (pctl.log+u.tilde[, 1]+u.tilde[, 2]+
                 (delta-1)*(log(u.tilde[, 1])+log(u.tilde[, 2]))-
                 (2-1/delta)*log(u.tildeSumdelta)+
                 log(u.tildeSumdelta^(1/delta)+delta-1))

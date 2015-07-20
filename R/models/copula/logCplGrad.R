@@ -332,8 +332,8 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                                    df = df, x = x, mu = mu,
                                    rho = rho, uIdx = uIdx))[, 1] # n-by-1
 
-          gradCpl.u <- gradLogCpl.x1*(1/F1x1)- 1/fx1*f1x1/F1x1
-          out[["u"]] <-  gradCpl.u
+          logCplGrad.u <- gradLogCpl.x1*(1/F1x1)- 1/fx1*f1x1/F1x1
+          out[["u"]] <-  logCplGrad.u
         }
   }
   else if(tolower(CplNM) == "gumbel")
@@ -350,18 +350,18 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
     {
       u1 <- u[, 1]
       u2 <- u[, 2]
-      logCplGrad.delta <- (1/(u1*u2*delta^2)*exp(-uDelta^(1/delta))*
-                           uDelta^(-3+1/delta)*(u1t*u2t)^(-1+delta)*
-                               (uDelta*(1+uDelta^(2/delta)+uDelta^(1/delta)*(-3+delta)-delta)*log(uDelta)-
-                                u1t^delta*delta*(1+uDelta^(2/delta)+3*uDelta^(1/delta)*(-1+delta)-
-                                                 3*delta+2*delta^2)*log(u1t)+
-                                                 delta*(u2t^delta*(-1-uDelta^(2/delta)-3*uDelta^(1/delta)*
-                                                                  (-1+delta)+3*delta-2*delta^2)*log(u2t) +
-                                                                  uDelta*delta*(1+(-1+uDelta^(1/delta)+delta)*
-                                                                                log(log(u1)*log(u2))))))
+
+      A1 <- (-1+uDelta^(1/delta)+delta)
+      A2 <- uDelta*log(uDelta)
+      A3 <- u1t^delta*log(u1t)
+      A4 <- u2t^delta*log(u2t)
+      A6 <- uDelta^(-1+1/delta)*(A2 - (A3 + A4)*delta)/delta^2
+
+      logCplGrad.delta <-(-log(uDelta)/delta^2+log(u1t) + log(u2t)
+        + (1-2*delta)*(A3+A4)/(uDelta*delta) + A6 + (1 -A6)/A1)
 
       out[["delta"]] <- logCplGrad.delta
-
+      browser()
     }
 
     if(any(c("u1", "u2") %in% tolower(parCaller)))
@@ -380,14 +380,12 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
       }
 
       u1 <- u[, 1]
-      u2 <- u[, 2]
-      gradCpl.u <- (1/(u1^2*u2)*exp(-uDelta^(1/delta))*uDelta^(-3+1/delta)*
-                        (u2t^delta*(-1+uDelta^(1/delta)+delta)*(-1+u1t+delta)-
-                         u1t^delta*(uDelta^(2/delta)+(-1 + delta)*(delta-u1t)+
-                                    uDelta^(1/delta)*(-2 + 2*delta -u1t)))*
-                        (-u2t)*(u1t*u2t)^-2+delta)
+      logCplGrad.u <- (-1/u1 + ((-1+delta - (1+uDelta^(2/delta)
+        + 3*uDelta^(1/delta)*(-1+delta)
+        -3*delta+2*delta^2)*(u1t)^delta/(
+          uDelta*(-1+uDelta^(1/delta)+delta)))/(-u1t*u1)))
 
-      out[["u"]] <-  gradCpl.u
+      out[["u"]] <- logCplGrad.u
     }
   }
 
