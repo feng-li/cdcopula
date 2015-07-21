@@ -159,6 +159,7 @@ if(nCross>1 & nCores>1)
 
 ## Calculate the LPDS
 LPDS.OUT <- list()
+cat("Calculating predictions......")
 for(iLPDS in LPDS)
   {
     if(nCross>1 & nCores >1)
@@ -180,7 +181,7 @@ for(iLPDS in LPDS)
 
     LPDS.OUT[[iLPDS]] <- logPredDensScore(logPredLst = logPredLst)
   }
-
+cat("done\n")
 ###----------------------------------------------------------------------------
 ### FINISH THE WORK AND SAVE THE OUTPUT
 ###----------------------------------------------------------------------------
