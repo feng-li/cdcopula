@@ -131,7 +131,15 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   {
     require("optimx")
 
-    nOptim.Sample <- max(floor(nTraining*.10), 500)
+    if(nTraining<50)
+    {
+      nOptim.Sample <- nTraining
+    }
+    else
+    {
+      nOptim.Sample <- max(min(floor(nTraining*.10), 500), 50)
+    }
+
     Mdl.Idx.training.sample <- seq(1, nTraining, length.out = nOptim.Sample)
     Mdl.X.training.sample <- rapply(object=Mdl.X.training, f = subsetFun,
                                     idx = Mdl.Idx.training.sample, how = "replace")
