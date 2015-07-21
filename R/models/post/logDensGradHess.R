@@ -30,7 +30,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
 logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                            gradMethods = c("analytic","numeric")[1:2],
+                            gradMethods = c("analytic","numeric")[1],
                             staticCache, MCMCUpdateStrategy)
 {
   ## The updating chain

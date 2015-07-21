@@ -115,7 +115,7 @@ varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[3]][["tau"]] <- list(cand = 2:3, init = "all-in")
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
@@ -162,7 +162,7 @@ propArgs[[1]][[2]] <- NA
 propArgs[[2]][[1]] <- NA
 propArgs[[2]][[2]] <- NA
 
-propArgs[[3]][[1]] <-  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[3]][[1]] <-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                             "beta" = list(type = "mvt", df = 6),
                             "indicators" = list(type = "binom", prob = 0.5))
 

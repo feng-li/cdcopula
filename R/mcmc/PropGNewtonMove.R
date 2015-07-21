@@ -89,7 +89,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
 
     ## The gradient and Hessian in the likelihood
-    a <- proc.time()
+    ## a <- proc.time()
     logDensGradHess.prop <- logDensGradHess(MargisType = MargisType,
                                             Mdl.Y = Mdl.Y,
                                             Mdl.parLink = Mdl.parLink,
@@ -102,7 +102,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
     ## print(proc.time()-a)
 
     ## DEBUGING FIXME: DEBUGING code
-    DEBUGGING <- TRUE
+    DEBUGGING <- FALSE
     if(DEBUGGING == TRUE)
     {
       ## APPROACH ONE: This version calculates the numerical gradient with respect to

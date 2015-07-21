@@ -361,7 +361,6 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         + (1-2*delta)*(A3+A4)/(uDelta*delta) + A6 + (1 -A6)/A1)
 
       out[["delta"]] <- logCplGrad.delta
-      browser()
     }
 
     if(any(c("u1", "u2") %in% tolower(parCaller)))

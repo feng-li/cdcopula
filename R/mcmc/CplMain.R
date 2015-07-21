@@ -124,17 +124,17 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
-
+  optimInit <- TRUE
+  browser()
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
   {
     require("optimx")
 
-    Mdl.Idx.training.sample <- Mdl.Idx.training[seq(1, nTraining, length.out = 30)]
-    Mdl.X.training.sample <- rapply(object=Mdl.X, f = subsetFun,
+    Mdl.Idx.training.sample <- seq(1, nTraining, length.out = 29)
+    Mdl.X.training.sample <- rapply(object=Mdl.X.training, f = subsetFun,
                                     idx = Mdl.Idx.training.sample, how = "replace")
-    Mdl.Y.training.sample <- rapply(object=Mdl.Y, f = subsetFun,
+    Mdl.Y.training.sample <- rapply(object=Mdl.Y.training, f = subsetFun,
                                     idx = Mdl.Idx.training.sample, how = "replace")
 
     cat("Optimizing initial values, may take a few minutes...\n\n")

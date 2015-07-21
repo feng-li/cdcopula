@@ -71,7 +71,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
       ## PATH TO THE MODEL CONFIGURATION FILE
       CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
                                  "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R")
-      nCores <- 1
+      nCores <- 4
     }
   else
     {## Pass via command argument
