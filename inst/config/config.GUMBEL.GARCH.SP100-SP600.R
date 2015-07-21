@@ -63,7 +63,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-30):nObsRaw
+nObsIdx <- (1 + nObsRaw-3000):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -91,7 +91,7 @@ Mdl.X[[2]] <- list(include.mean = FALSE,
                    cond.dist = "norm",
                    trace = TRUE)
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][, 1:9], X[[MargisNM[2]]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][, 1:3], X[[MargisNM[2]]][, 1:3])[nObsIdx, 1:7, drop = FALSE]
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -115,13 +115,13 @@ varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:3, init = "all-in")
+varSelArgs[[3]][["tau"]] <- list(cand = 2:7, init = "all-in")
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------

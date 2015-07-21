@@ -290,7 +290,7 @@
     ## The acceptance probability
     accept.prob.curr <- exp(min(0, logMHRatio))
     ## browser()
-    cat(diag(beta.prop.sigma), accept.prob.curr)
+    ## cat(diag(beta.prop.sigma), accept.prob.curr)
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------

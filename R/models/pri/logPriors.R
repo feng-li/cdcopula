@@ -66,6 +66,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
         {
           probMat <- matrix(prob, length(candIdx), nPar)
           ## TRUE or FALSE of variable selection candidates
+
           varSelCandTF <- betaIdxCurr[candIdx, , drop = FALSE]
 
           logDens <- sum(dbinom(x = varSelCandTF, size = 1,
