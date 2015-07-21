@@ -26,9 +26,6 @@
 ###----------------------------------------------------------------------------
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
-## SHORT MODEL DESCRIPTION
-ModelDescription <- "MVT3_copula_with_vs"
-
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
@@ -69,17 +66,25 @@ nObsIdx <- (1 + nObsRaw-30):nObsRaw
 ## No. of used Observations
 nObs <- length(nObsIdx)
 
+## THE RESPONSE VARIABLES
+Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
+
+## The name of respond variables
+names(Mdl.Y) <- MargisNM[-length(MargisNM)]
+
 ## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
+## ------------------------------------------------------------------------------
+
+## A trick to include foreign marginal models in the estimation which are hard to directly
+## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
+## in all marginal densities.  (2) Estimate the density features in foreign models and set
+## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
+## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 Mdl.X[[3]][["mu"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 Mdl.X[[3]][["phi"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
@@ -88,12 +93,6 @@ Mdl.X[[3]][["lmd"]] <- cbind(1, X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
 Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9], X[[3]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
 Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][, 1:9], X[[2]][, 1:9], X[[3]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-
-## THE RESPONSE VARIABLES
-Mdl.Y <- lapply(Y, function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
-
-## The name of respond variables
-names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -166,7 +165,7 @@ nIter <- 10000
 ## "save.output = FALSE" it will not save anything.
 ## "save.output = "path-to-directory"" it will save the working directory in
 ## the given directory.
-save.output <- FALSE
+save.output <- "~/running"
 
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------
