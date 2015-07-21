@@ -26,9 +26,6 @@
 ###----------------------------------------------------------------------------
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
-## SHORT MODEL DESCRIPTION
-ModelDescription <- "GUMBEL_GARCH_with_vs"
-
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisType <- c("GARCH-NORMAL", "GARCH-NORMAL", "GUMBEL")
 MargisNM <- c("^SML", "^OEX", "GUMBEL")
@@ -121,14 +118,14 @@ varSelArgs[[3]][["tau"]] <- list(cand = 2:7, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 10000
+nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
 ## "save.output = FALSE" it will not save anything.
 ## "save.output = "path-to-directory"" it will save the working directory in
 ## the given directory.
-save.output <- FALSE
+save.output <- "~/running"
 
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------

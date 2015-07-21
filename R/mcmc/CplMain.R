@@ -81,7 +81,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
 ###----------------------------------------------------------------------------
-
   ## Extract the training and testing data according to cross-validation
   subsetFun <- function(x, idx)x[idx, , drop = FALSE]
 
@@ -412,6 +411,12 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   }
   ## Fetch everything at current environment to a list
   ## list2env(out, envir = .GlobalEnv)
+  ## GENERATING SHORT MODEL DESCRIPTION
+  ModelDescription <- paste(c(MargisNM[-length(MargisNM)],"+",  MargisType, "+" ,
+                              "nObs", nObs, "nCross", nCross, "nIter", nIter, "+",
+                              format(Starting.time, "%Y%m%d@%H.%M")),
+                            collapse = "")
+
   gc()
 
   out <- as.list(environment())
