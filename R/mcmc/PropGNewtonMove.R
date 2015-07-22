@@ -102,7 +102,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
     ## print(proc.time()-a)
 
     ## DEBUGING FIXME: DEBUGING code
-    DEBUGGING <- FALSE
+    DEBUGGING <- TRUE
     if(DEBUGGING == TRUE)
     {
       ## APPROACH ONE: This version calculates the numerical gradient with respect to

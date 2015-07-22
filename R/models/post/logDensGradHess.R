@@ -178,7 +178,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
     {
       logCplGradObs.num <- logCplRepGradNum(CplNM = CplNM, u = staticCache$Mdl.u,
                                             parCplRep = Mdl.par[[CplNM]],
-                                            parCaller = parCaller)
+                                            parCaller = cplCaller)
       logCplGradObs <- logCplGradObs.num
     }
   }

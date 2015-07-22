@@ -44,7 +44,8 @@ logCplRepGradNum <- function(CplNM, u, parCplRep, parCaller)
   {
     if(tolower(parCaller) %in% paste("u", 1:nDim, sep = ""))
     { ## Calling the marginal CDF u_i
-      xCurr <- u[iRun, parCaller]
+      which.u <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
+      xCurr <- u[iRun, which.u]
     }
     else
     { ## Calling copula parameters
