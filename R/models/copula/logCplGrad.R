@@ -23,8 +23,8 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
     ## The standard copula parameters (recycled if necessary, should be a vector).
 
-    delta <- parCpl[["delta"]]
-    theta <- parCpl[["theta"]] # ff(delta)
+    delta <- as.numeric(parCpl[["delta"]])
+    theta <- as.numeric(parCpl[["theta"]]) # ff(delta)
 
     if("delta" %in% tolower(parCaller))
     {

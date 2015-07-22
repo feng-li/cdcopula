@@ -25,7 +25,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
                                    parCpl = parCpl, parCaller = c("delta")) # n-by-1
 
-      kendalltauGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
+      lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
                                        parCaller = "delta")
 
       out <- logCplGrad.par[["delta"]]*(1/lambdaGrad.par[["delta"]])

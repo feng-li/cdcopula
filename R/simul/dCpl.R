@@ -32,8 +32,8 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
   if(tolower(CplNM) == "bb7")
   {
     ## theta,  delta
-    theta <- parCpl[["theta"]]
-    delta <- parCpl[["delta"]]
+    theta <- as.numeric(parCpl[["theta"]])
+    delta <- as.numeric(parCpl[["delta"]])
 
     TC1 <- 1-(1-u)^theta
     TC2 <- (1-u)^(-1+theta)
@@ -41,11 +41,11 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
     L5 <- rowSums(TC1^(-delta)) - 1
     L6 <- 1-L5^(-1/delta) # FIXME: log(L6)->Inf when u->1,  v->1.
 
-    logCplDensObs <- (-1-delta)*rowSums(log(TC1))+
-                     rowSums(log(TC2))-
-                     2*(1+delta)/delta*log(L5)+
-                     (-2+1/theta)*log(L6)+
-                     log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta)
+    logCplDensObs <- ((-1-delta)*rowSums(log(TC1))+
+                      rowSums(log(TC2))-
+                      2*(1+delta)/delta*log(L5)+
+                      (-2+1/theta)*log(L6)+
+                      log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta))
 
     out.log <- matrix(logCplDensObs)
   }
