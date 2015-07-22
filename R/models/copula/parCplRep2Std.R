@@ -19,18 +19,31 @@ parCplRep2Std <- function(CplNM, parCplRep)
     lambdaL <- parCplRep[["lambdaL"]]
     tau <- parCplRep[["tau"]]
 
-    lambdaU <- as.vector(kendalltauInv(
-          CplNM = CplNM, parCplRep = parCplRep))
+    delta <- -log(2)/log(lambdaL)
 
-        ## The standard parametrization
-        delta <- -log(2)/log(lambdaL)
-        theta <- log(2)/log(2-lambdaU)
+    ## The old approach.
+    ## lambdaU <- as.vector(kendalltauInv(CplNM = CplNM, parCplRep = parCplRep))
+    ## theta <- log(2)/log(2-lambdaU)
 
-        ## The first parameter
-        out[["delta"]] <- delta
+    ## The new approach with funinv2d()
+    FUN <- function(x1, x2)
+    {
+      parCpl <- list(delta = x1, theta = x2)
+      kendalltau(CplNM = "bb7", parCpl = parCpl)
+    }
+    theta <- funinv2d(FUN = FUN,
+                        x1 = delta,
+                        y = tau,
+                        x1lim = c(0, 30),
+                        x2lim = c(1, 30),
+                        method = "tabular",
+                        tol = 1e-3) # n-by-lq
 
-        ## The second parameter
-        out[["theta"]] <- theta
+    ## The first parameter
+    out[["delta"]] <- delta
+
+    ## The second parameter
+    out[["theta"]] <- theta
       }
     else if(tolower(CplNM) == "mvt")
       {

@@ -70,7 +70,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
     { ## PASS INTERNALLY
       ## PATH TO THE MODEL CONFIGURATION FILE
       CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                 "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R")
+                                 "/inst/config/config.BB7.SPLITT.SP100-SP600.R")
       nCores <- 1
     }
   else
