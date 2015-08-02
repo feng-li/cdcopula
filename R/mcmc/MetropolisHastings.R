@@ -17,9 +17,9 @@
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
-    MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                                   Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                                   propArgs, MargisType, staticCache, MCMCUpdateStrategy)
+MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
+                               Mdl.parLink, parUpdate, priArgs, varSelArgs,
+                               propArgs, MargisType, staticCache, MCMCUpdateStrategy)
 {
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(parUpdate)

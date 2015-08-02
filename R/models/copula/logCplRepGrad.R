@@ -32,16 +32,28 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
     }
     else if(tolower(parCaller) == "tau")
     {
+      ## logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+      ##                              parCpl = parCpl, parCaller = c("theta", "delta")) # n-by-1
+
+      ## ## Gradient w.r.t. tau
+      ## kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+      ##                                      parCaller = c("theta", "delta"))
+
+      ## ## The chain gradient for complex functions
+      ## out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]) +
+      ##         logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]]))
+
+
+
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                   parCpl = parCpl, parCaller = c("theta", "delta")) # n-by-1
+                                   parCpl = parCpl, parCaller = c("theta")) # n-by-1
 
       ## Gradient w.r.t. tau
       kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                           parCaller = c("theta", "delta"))
+                                           parCaller = c("theta"))
 
-      ## The chain gradient
-      out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]) +
-              logCplGrad.par[["delta"]]*(1/kendalltauGrad.par[["delta"]]))
+      ## The chain gradient for complex functions
+      out <- (logCplGrad.par[["theta"]]*(1/kendalltauGrad.par[["theta"]]))
 
     }
     else
@@ -67,14 +79,13 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
     { ## CopulaDensity-MVT.nb
 
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                   parCpl = parCpl, parCaller = c("df", "rho")) # n-by-1
+                                   parCpl = parCpl, parCaller = c("df")) # n-by-1
 
       lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                   parCaller = c("df", "rho"))
+                                   parCaller = c("df"))
 
       ## The chain gradient
-      out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]]) +
-              logCplGrad[["rho"]]*(1/lambdaGrad.par[["rho"]])) # n-by-lq
+      out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]])) # n-by-lq
 
     }
     else if(tolower(parCaller) == "tau")

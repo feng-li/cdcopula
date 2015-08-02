@@ -8,7 +8,7 @@ lambdaGrad <- function(CplNM, parCpl, parCaller)
 
         if( "delta" %in% tolower(parCaller))
           {
-            out[["delta"]] <- 2^(-1/delta)*log(2)/delta^2
+            out[["delta"]] <- (2^(-1/delta)*log(2)/delta^2)
           }
       }
     else if(tolower(CplNM) == "mvt")

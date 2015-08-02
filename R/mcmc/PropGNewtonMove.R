@@ -138,16 +138,13 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
       g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
       g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
-      ## g.num.margi <- logDensGradHessNum(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-      ##                staticCache, MCMCUpdateStrategy = "twostage")$logGradObs
-      ## browser()
       try(plot(g.num.joint, g.ana, main = as.character(chainCaller),
                pch = 20, col = "blue"), silent = TRUE)
       g.lm <- try(lm(g.ana~0+g.num.joint), silent = TRUE)
-      if(is(g.lm, "try-error") || abs(g.lm$coef-1)>0.1)
+      if(is(g.lm, "try-error") || is.na(g.lm$coef) ||abs(g.lm$coef-1)>0.1)
       {
         ## Sys.sleep(1)
-        ## browser(text = "Something Wrong!")
+        warning("Something Wrong in the Gradient!")
       }
     }
 
