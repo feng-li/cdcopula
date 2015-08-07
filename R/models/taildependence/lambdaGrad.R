@@ -5,10 +5,16 @@ lambdaGrad <- function(CplNM, parCpl, parCaller)
     if((tolower(CplNM) == "bb7"))
       {
         delta <- parCpl[["delta"]] # n-by-lq
+        theta <- parCpl[["theta"]] # n-by-lq
 
         if( "delta" %in% tolower(parCaller))
           {
             out[["delta"]] <- (2^(-1/delta)*log(2)/delta^2)
+          }
+
+        if( "theta" %in% tolower(parCaller))
+          {
+            out[["theta"]] <- (2^(1/theta)*log(2)/theta^2)
           }
       }
     else if(tolower(CplNM) == "mvt")

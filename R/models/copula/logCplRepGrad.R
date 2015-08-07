@@ -30,6 +30,17 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 
       out <- logCplGrad.par[["delta"]]*(1/lambdaGrad.par[["delta"]])
     }
+    else if(tolower(parCaller) == "lambdau")
+    {
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
+                                   parCpl = parCpl, parCaller = c("theta")) # n-by-1
+
+      lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
+                                   parCaller = "theta")
+
+      out <- logCplGrad.par[["theta"]]*(1/lambdaGrad.par[["theta"]])
+    }
+
     else if(tolower(parCaller) == "tau")
     {
       ## logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
