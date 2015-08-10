@@ -124,7 +124,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
   optimInit <- FALSE
-  ## browser()
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
   {
@@ -394,12 +393,12 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     {
       CplMCMC.summary(iIter = iIter, nIter = nIter,
                       interval = 0.01, burnin = burnin,
-                      MCMC.beta = MCMC.beta,
-                      MCMC.betaIdx = MCMC.betaIdx,
-                      MCMC.par = MCMC.par,
-                      MCMC.AccProb = MCMC.AccProb,
-                      Starting.time = Starting.time,
-                      MCMCUpdate = MCMCUpdate)
+                      OUT.MCMC = list(MCMC.beta = MCMC.beta,
+                                      MCMC.betaIdx = MCMC.betaIdx,
+                                      MCMC.par = MCMC.par,
+                                      MCMC.AccProb = MCMC.AccProb,
+                                      MCMCUpdate = MCMCUpdate,
+                                      Starting.time = Starting.time))
     }
 
   }
