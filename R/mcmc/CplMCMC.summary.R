@@ -22,6 +22,8 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
   }
 
   dev.width <- getOption("width")
+  graphics.off()
+
 
   ## The burning
   n.burn.default <- round(nIter*burnin)
@@ -29,11 +31,29 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
 
 
   subFun <- function(x, iIter, fun){
-    apply(x[(n.burn+1):iIter, ,drop = FALSE], 2, fun)
+    obj <- x[(n.burn+1):iIter, ,drop = FALSE]
+    if(any(is.na(obj)))
+    {
+      out <- NA
+    }
+    else
+    {
+      out <- apply(obj, 2, fun)
+    }
+    return(out)
   }
 
-  subFun3 <- function(x, iIter, fun){
-    apply(x[(n.burn+1):iIter, , ,drop = FALSE], 3, fun)
+  subFun3 <- function(x, iIter, fun, dim, ...){
+    obj <- x[(n.burn+1):iIter, , ,drop = FALSE]
+    if(any(is.na(obj)))
+    {
+      out <- NA
+    }
+    else
+    {
+      out <- apply(obj, dim, fun, ...)
+    }
+    return(out)
   }
 
 
@@ -68,38 +88,85 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
     accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace",
                                iIter = iIter,  fun = mean)
 
-    par.mean <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,  fun = mean)
-    par.sd <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,  fun = sd)
+    par.mean <- rapply(MCMC.par, subFun3, how = "replace",
+                       iIter = iIter,  fun = mean, dim = 3)
+    par.median <- rapply(MCMC.par, subFun3, how = "replace",
+                       iIter = iIter,  fun = median, dim = 3)
+    par.sd <- rapply(MCMC.par, subFun3, how = "replace",
+                     iIter = iIter,  fun = sd, dim = 3)
 
-    betaIdx.mean <- rapply(MCMC.betaIdx, subFun, how = "replace", iIter = iIter,
-                           fun = mean)
-    beta.mean <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,  fun = mean)
-    beta.sd <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,  fun = sd)
+    betaIdx.mean <- rapply(MCMC.betaIdx, subFun, how = "replace",
+                           iIter = iIter, fun = mean)
+    betaIdx.median <- rapply(MCMC.betaIdx, subFun, how = "replace",
+                             iIter = iIter, fun = median)
+    beta.mean <- rapply(MCMC.beta, subFun, how = "replace",
+                        iIter = iIter,  fun = mean)
+    beta.median <- rapply(MCMC.beta, subFun, how = "replace",
+                          iIter = iIter,  fun = median)
+    beta.sd <- rapply(MCMC.beta, subFun, how = "replace",
+                      iIter = iIter,  fun = sd)
 
+    par.ts.mean <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
+                          fun = mean, dim = c(2, 3))
+    par.ts.median <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
+                            fun = median, dim = c(2, 3))
+    par.ts.sd <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
+                        fun = sd, dim = c(2, 3))
+    par.ts.hpd95 <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
+                           fun = quantile, dim = c(2, 3), probs = c(0.025, 0.975))
 
     ## Efficiency factor of MCMC
     beta.ineff <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,
                          fun = ineff)
 
+
+
+
     for(i in names(MCMC.beta))
     {
+      npar <- sum(unlist(MCMCUpdate[[i]]))
+      if(nchar(Sys.getenv("DISPLAY")) & npar>0)
+      {
+        dev.new(height = getOption("height"))
+        par(mfrow = c(npar, 1))
+      }
       for(j in names(MCMC.beta[[i]]))
       {
         if(MCMCUpdate[[i]][[j]])
         {
+
+          if(nchar(Sys.getenv("DISPLAY"))>0 & ncol(par.ts.mean[[i]][[j]]) == 1)
+          {
+            hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
+            ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
+            plot(hpd95[1, ], type = "l", lty = "dotted", col = "red",
+                 ylim = ylim , ylab = j, main = i)
+            points(hpd95[2, ], type = "l", lty = "dotted", col = "red")
+            points(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid", col = "blue")
+            points(par.ts.median[[i]][[j]][,1], type = "l", lty = "dashed", col = "black")
+
+            legend("topright",ncol = 1,
+                   lty = c("dotted", "solid", "dashed"),
+                   col = c("red", "blue", "black"),
+                   legend = c("95% HPD", "Posterior mean", "Posterior median"))
+
+          }
+
           obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
                            par.mean[[i]][[j]],
+                           par.median[[i]][[j]],
                            par.sd[[i]][[j]])
           rownames(obj.par) <- c("acc.prob", "par.mean",
-                                 "par.sd")
+                                 "par.median", "par.sd")
           colnames(obj.par) <- names(par.mean[[i]][[j]])
 
           obj <- rbind(beta.mean[[i]][[j]],
+                       beta.median[[i]][[j]],
                        beta.sd[[i]][[j]],
                        betaIdx.mean[[i]][[j]],
                        beta.ineff[[i]][[j]])
 
-          rownames(obj) <- c("beta.mean", "beta.sd", "betaIdx.mean", "beta.ineff")
+          rownames(obj) <- c("beta.mean", "beta.median", "beta.sd", "betaIdx.mean", "beta.ineff")
           colnames(obj) <- paste(rep(colnames(obj.par),
                                      each = ncol(obj)/ncol(obj.par)),
                                  colnames(obj), sep = "|")
@@ -122,4 +189,18 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
     }
   }
 
+  out <- list(par.mean = par.mean,
+              par.median = par.median,
+              par.sd = par.sd,
+              par.ts.mean = par.ts.mean,
+              par.ts.median = par.ts.median,
+              par.ts.sd = par.ts.sd,
+              par.ts.hpd95 = par.ts.hpd95,
+              beta.mean = beta.mean,
+              beta.median = beta.median,
+              beta.sd = beta.sd,
+              betaIdx.mean = betaIdx.mean,
+              beta.ineff = beta.ineff)
+
+  invisible(out)
 }

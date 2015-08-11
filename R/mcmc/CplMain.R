@@ -123,7 +123,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
+  optimInit <- TRUE
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
   {

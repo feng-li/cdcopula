@@ -30,8 +30,8 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("^SML", "^OEX", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
-                   list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("lambdaL" = T, "lambdaU" = T))
 
 names(MCMCUpdate) <- MargisNM

@@ -138,8 +138,8 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
       g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
       g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
-      try(plot(g.num.joint, g.ana, main = as.character(chainCaller),
-               pch = 20, col = "blue"), silent = TRUE)
+      ## try(plot(g.num.joint, g.ana, main = as.character(chainCaller),
+      ##          pch = 20, col = "blue"), silent = TRUE)
       g.lm <- try(lm(g.ana~0+g.num.joint), silent = TRUE)
       if(is(g.lm, "try-error") || is.na(g.lm$coef) ||abs(g.lm$coef-1)>0.1)
       {

@@ -290,7 +290,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     ## The acceptance probability
     accept.prob.curr <- exp(min(0, logMHRatio))
     ## browser()
-    ## cat(diag(beta.prop.sigma), accept.prob.curr)
+    ## cat(iMH, logPost.prop, logPost.curr, logJump.propATprop, logJump.currATpropRev, accept.prob.curr, "\n")
 ###----------------------------------------------------------------------------
 ### THE MH ACCEPTANCE PROBABILITY AND ACCEPT/REJECT THE PROPOSED DRAW.
 ###----------------------------------------------------------------------------
