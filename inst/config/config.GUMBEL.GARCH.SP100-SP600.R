@@ -88,7 +88,7 @@ Mdl.X[[2]] <- list(include.mean = FALSE,
                    cond.dist = "norm",
                    trace = TRUE)
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][, 1:3], X[[MargisNM[2]]][, 1:3])[nObsIdx, 1:7, drop = FALSE]
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][nObsIdx, 1:3], X[[MargisNM[2]]][nObsIdx, 1:3])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate

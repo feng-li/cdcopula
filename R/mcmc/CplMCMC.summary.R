@@ -22,8 +22,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
   }
 
   dev.width <- getOption("width")
-  graphics.off()
-
+  has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
 
   ## The burning
   n.burn.default <- round(nIter*burnin)
@@ -121,21 +120,33 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
 
 
 
+    if(has.Display)
+    {
+      nPlot <- sum(sapply(MCMCUpdate, function(x) any(unlist(x) == TRUE)))
+      nDev <- length(dev.list())
+      if( nDev < nPlot)
+      {
+        replicate(nPlot-nDev, dev.new())
+
+      }
+      jDev <- 1
+    }
 
     for(i in names(MCMC.beta))
     {
       npar <- sum(unlist(MCMCUpdate[[i]]))
-      if(nchar(Sys.getenv("DISPLAY")) & npar>0)
+      if(has.Display & npar>0)
       {
-        dev.new(height = getOption("height"))
+        dev.set(dev.list()[jDev])
         par(mfrow = c(npar, 1))
+        jDev <- jDev+1
       }
       for(j in names(MCMC.beta[[i]]))
       {
         if(MCMCUpdate[[i]][[j]])
         {
 
-          if(nchar(Sys.getenv("DISPLAY"))>0 & ncol(par.ts.mean[[i]][[j]]) == 1)
+          if(has.Display && ncol(par.ts.mean[[i]][[j]]) == 1)
           {
             hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
             ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
@@ -145,11 +156,10 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
             points(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid", col = "blue")
             points(par.ts.median[[i]][[j]][,1], type = "l", lty = "dashed", col = "black")
 
-            legend("topright",ncol = 1,
+            legend("topright",ncol = 3,bg = "grey",
                    lty = c("dotted", "solid", "dashed"),
                    col = c("red", "blue", "black"),
                    legend = c("95% HPD", "Posterior mean", "Posterior median"))
-
           }
 
           obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
@@ -166,7 +176,8 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
                        betaIdx.mean[[i]][[j]],
                        beta.ineff[[i]][[j]])
 
-          rownames(obj) <- c("beta.mean", "beta.median", "beta.sd", "betaIdx.mean", "beta.ineff")
+          rownames(obj) <- c("beta.mean", "beta.median", "beta.sd",
+                             "betaIdx.mean", "beta.ineff")
           colnames(obj) <- paste(rep(colnames(obj.par),
                                      each = ncol(obj)/ncol(obj.par)),
                                  colnames(obj), sep = "|")
