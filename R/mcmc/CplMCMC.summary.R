@@ -12,12 +12,14 @@
 ##' TODO: write this function as a summary
 CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MCMC)
 {
-  ## Set the print interval and consider burnin
-  printIter <- c(5, seq(from = floor(nIter*interval),
-                        to = nIter,
-                        by = floor(nIter*interval)))
+  ## Set the print interval and consider burnin. If print interval is to narrow, set to
+  ## one.
+  printInterval <- ifelse(floor(nIter*interval) == 0,  1, floor(nIter*interval))
+  printIter <- seq(from = printInterval,
+                   to = nIter,
+                   by = printInterval)
   if(printIter[length(printIter)] != nIter)
-  {
+  {# Always print summary at last iteration.
     printIter <- c(printIter, nIter)
   }
 
