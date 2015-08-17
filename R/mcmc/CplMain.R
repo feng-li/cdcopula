@@ -196,7 +196,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                       parUpdate = parUpdate)
 
         ## Optimize the initial values
-        betaVecOptimComp <- try(optimx(par = betaVecInitComp,
+        betaVecOptimComp <- optimx(par = betaVecInitComp,
                                        fn = logPostOptim,
                                        control = list(maximize = TRUE,
                                                       ## all.methods = TRUE,
@@ -214,9 +214,10 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                        staticCache = staticCache.sample,
                                        parUpdate = parUpdate,
                                        MCMCUpdateStrategy = "twostage"
-                                       ), silent = FALSE)
+                                   )#, silent = FALSE)
 
-        if(is(betaVecOptimComp, "try-error") == TRUE)
+        if(is(betaVecOptimComp, "try-error") == TRUE
+           || any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecOptimComp)]))))
         {# It does not have to be converged.
           cat("Initializing algorithm failed,  retry...\n")
           InitGoodCompCurr <- FALSE
@@ -244,7 +245,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       print(Mdl.beta[[CompCaller]])
     }
   }
-
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------
@@ -284,23 +284,27 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
         namesPar.ij <- "1.1"
       }
 
+
+      nMCMC <- ifelse(MCMCUpdate[[CompCaller]][[parCaller]], nIter, 1)
+
       ## The MCMC storage
       MCMC.betaIdx[[CompCaller]][[parCaller]] <- matrix(Mdl.betaIdx[[CompCaller]][[parCaller]],
-                                                        nIter, ncolX.ij*nPar.ij,
+                                                        nMCMC, ncolX.ij*nPar.ij,
                                                         dimnames = list(NULL, namesX.ij),
                                                         byrow = TRUE)
       MCMC.beta[[CompCaller]][[parCaller]] <- matrix(Mdl.beta[[CompCaller]][[parCaller]],
-                                                     nIter, ncolX.ij*nPar.ij,
+                                                     nMCMC, ncolX.ij*nPar.ij,
                                                      dimnames = list(NULL, namesX.ij),
                                                      byrow = TRUE)
 
-      MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nIter, nTraining, nPar.ij),
+      MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMC, nTraining, nPar.ij),
                                                    dimnames = list(NULL, NULL, namesPar.ij))
 
       ## The Metropolis-Hasting acceptance rate
-      MCMC.AccProb[[CompCaller]][[parCaller]] <- matrix(NA, nIter, 1)
+      MCMC.AccProb[[CompCaller]][[parCaller]] <- matrix(NA, nMCMC, 1)
     }
   }
+
 
 ###----------------------------------------------------------------------------
 ### THE GIBBS SAMPLER (WITH METROPOLIS-HASTINGS)

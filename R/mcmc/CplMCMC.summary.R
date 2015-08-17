@@ -30,7 +30,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
   n.burn.default <- round(nIter*burnin)
   n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
-
+  browser()
   subFun <- function(x, iIter, fun){
     obj <- x[(n.burn+1):iIter, ,drop = FALSE]
     if(any(is.na(obj)))
@@ -92,7 +92,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
     par.mean <- rapply(MCMC.par, subFun3, how = "replace",
                        iIter = iIter,  fun = mean, dim = 3)
     par.median <- rapply(MCMC.par, subFun3, how = "replace",
-                       iIter = iIter,  fun = median, dim = 3)
+                         iIter = iIter,  fun = median, dim = 3)
     par.sd <- rapply(MCMC.par, subFun3, how = "replace",
                      iIter = iIter,  fun = sd, dim = 3)
 
@@ -119,7 +119,6 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
     ## Efficiency factor of MCMC
     beta.ineff <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,
                          fun = ineff)
-
 
 
     if(has.Display)
