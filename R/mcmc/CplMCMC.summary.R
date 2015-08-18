@@ -30,29 +30,48 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
   n.burn.default <- round(nIter*burnin)
   n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
-  browser()
   subFun <- function(x, iIter, fun){
-    obj <- x[(n.burn+1):iIter, ,drop = FALSE]
-    if(any(is.na(obj)))
+    candIdx <- (n.burn+1):iIter
+    if((dim(x)[1] == 1 && length(candIdx)>1) ||
+       (dim(x)[1] == 1 && length(candIdx) == 1 && candIdx != 1))
     {
       out <- NA
     }
     else
     {
-      out <- apply(obj, 2, fun)
+      obj <- x[candIdx, ,drop = FALSE]
+      if(any(is.na(obj)))
+      {
+        out <- NA
+      }
+      else
+      {
+        out <- apply(obj, 2, fun)
+      }
     }
+
     return(out)
   }
 
-  subFun3 <- function(x, iIter, fun, dim, ...){
-    obj <- x[(n.burn+1):iIter, , ,drop = FALSE]
-    if(any(is.na(obj)))
+  subFun3 <- function(x, iIter, fun, dim, ...)
+  {
+    candIdx <- (n.burn+1):iIter
+    if((dim(x)[1] == 1 && length(candIdx)>1) ||
+       (dim(x)[1] == 1 && length(candIdx) == 1 && candIdx != 1))
     {
       out <- NA
     }
     else
     {
-      out <- apply(obj, dim, fun, ...)
+      obj <- x[candIdx, , ,drop = FALSE]
+      if(any(is.na(obj)))
+      {
+        out <- NA
+      }
+      else
+      {
+        out <- apply(obj, dim, fun, ...)
+      }
     }
     return(out)
   }

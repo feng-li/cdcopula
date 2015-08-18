@@ -26,7 +26,10 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   ## configure files.
   if(missing(Mdl.X.testing) || missing(Mdl.Y.testing))
   {
-    subsetFun <- function(x, idx)x[idx, , drop = FALSE]
+    subsetFun <- function(x, idx)
+    {
+      x[idx, , drop = FALSE]
+    }
     ## Mdl.Idx.testing <- crossValidIdx[["testing"]][[iCross]]
 
     Mdl.Y.testing <- rapply(object=Mdl.Y,
@@ -136,8 +139,22 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     for(j in MCMC.sampleIdx) ## Just the likelihood function with posterior samples
     {
 
+      subsetFun4beta <- function(x, idx)
+      {
+        if((dim(x)[1] == 1 && length(idx)>1) ||
+           (dim(x)[1] == 1 && length(idx) == 1 && idx != 1))
+        {# check whether some parameters are not updated
+          out <- x
+        }
+        else
+        {
+          out <- x[idx, , drop = FALSE]
+        }
+        return(out)
+      }
+
       Mdl.beta.curr <- rapply(object=MCMC.beta,
-                              f = subsetFun,
+                              f = subsetFun4beta,
                               idx = j,
                               how = "replace")
 
