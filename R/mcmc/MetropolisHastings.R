@@ -53,10 +53,17 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## No. of covariates
   nCovs <- dim(betaIdx.curr)[1]
   nPar <- dim(betaIdx.curr)[2]
-
   ## Randomly propose a subset for covariates to change
   beta01Mat <- matrix(1:(nCovs*nPar), nCovs, nPar)
+
   varSelCandRow <- varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
+
+  if(length(varSelCandRow)>nCovs)
+  {
+    stop("The number of variable selection candidates should not be greater than the number of covariates for: ", paste(chainCaller, collapse = "-"))
+  }
+
+
   varSelCand <- beta01Mat[varSelCandRow, ] # sub.p-by-lq
 
   ## If variable selection is available, make a change proposal. Otherwise no variable

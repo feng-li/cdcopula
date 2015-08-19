@@ -196,7 +196,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                       parUpdate = parUpdate)
 
         ## Optimize the initial values
-        betaVecOptimComp <- optimx(par = betaVecInitComp,
+        betaVecOptimComp <- try(optimx(par = betaVecInitComp,
                                        fn = logPostOptim,
                                        control = list(maximize = TRUE,
                                                       ## all.methods = TRUE,
@@ -214,7 +214,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                                        staticCache = staticCache.sample,
                                        parUpdate = parUpdate,
                                        MCMCUpdateStrategy = "twostage"
-                                   )#, silent = FALSE)
+                                       ), silent = FALSE)
 
         if(is(betaVecOptimComp, "try-error") == TRUE
            || any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecOptimComp)]))))

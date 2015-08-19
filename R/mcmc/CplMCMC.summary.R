@@ -93,7 +93,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
 
     if(iIter  == printIter[1])
     {
-      cat(TimeToGo, " hours to go.\n", sep = "")
+      cat("about", TimeToGo, " hours to go.\n", sep = " ")
       return()
     }
 
@@ -218,20 +218,20 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
     {
       cat(rep("-", dev.width), "\n\n",  sep = "")
     }
+    out <- list(par.mean = par.mean,
+                par.median = par.median,
+                par.sd = par.sd,
+                par.ts.mean = par.ts.mean,
+                par.ts.median = par.ts.median,
+                par.ts.sd = par.ts.sd,
+                par.ts.hpd95 = par.ts.hpd95,
+                beta.mean = beta.mean,
+                beta.median = beta.median,
+                beta.sd = beta.sd,
+                betaIdx.mean = betaIdx.mean,
+                beta.ineff = beta.ineff)
+
+    invisible(out)
   }
 
-  out <- list(par.mean = par.mean,
-              par.median = par.median,
-              par.sd = par.sd,
-              par.ts.mean = par.ts.mean,
-              par.ts.median = par.ts.median,
-              par.ts.sd = par.ts.sd,
-              par.ts.hpd95 = par.ts.hpd95,
-              beta.mean = beta.mean,
-              beta.median = beta.median,
-              beta.sd = beta.sd,
-              betaIdx.mean = betaIdx.mean,
-              beta.ineff = beta.ineff)
-
-  invisible(out)
 }
