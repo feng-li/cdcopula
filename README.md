@@ -70,6 +70,41 @@ Run the copula model
 
 command will invoke the default setting and run the default model.
 
+Implement other copula models
+-----------------------------
+
+Edit the following files
+
+### The copula model
+
+* `dCpl.R` Density function for copulas.
+
+* `logCplGrad.R` Gradient function for log copula density w.r.t. copula parameters.
+
+* `logCplRepGrad.R` Gradient function for reparameterized log copula density w.r.t. copula
+parameters which may require
+
+  * `parCplRep2Std.R`
+
+  * `kendalltauGrad.R`
+
+  * `lambdaGrad.R`
+
+### The marginal model
+
+* If you want to implement a native marginal model edit the following files
+
+  * `MargiModel.R` CDF and PDF of the marginal distribution
+
+  * `MargiModelGrad.R` Gradient for CDF and PDF of the marginal distribution
+
+* If you want to include a foreign model with existing algorithms, edit the following
+files
+
+
+  * `MargiModelForeignEval.R`
+
+  * `MargiModelForeignPred.R`
 
 References
 ----------

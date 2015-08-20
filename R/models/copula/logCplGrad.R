@@ -387,7 +387,48 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
       out[["u"]] <- logCplGrad.u
     }
   }
+  else if(tolower(CplNM) == "clayton")
+  {
+    delta <- parCpl[["delta"]] # n-by-1
 
+    if("delta" %in% tolower(parCaller))
+    {
+      u1 <- u[, 1]
+      u2 <- u[, 2]
+
+      A <- (-1 + u1^(-delta) + u2^(-delta))
+      logCplGrad.delta <- (1/(1 + delta) - log(u1) - log(u2) +
+                           (-2 - 1/delta)*(-u1^(-delta)*log(u1)
+                             - u2^(-delta)*log(u2))/A +
+                           log(A)/(delta^2))
+      out[["delta"]] <- logCplGrad.delta
+    }
+
+    if(any(c("u1", "u2") %in% tolower(parCaller)))
+    {
+      if(tolower(parCaller) == "u1")
+      {
+        u <-  u[, 1:2, drop = FALSE]
+      }
+      else if(tolower(parCaller) == "u2")
+      {
+        u <-  u[, 2:1, drop = FALSE]
+      }
+      else
+      {
+        stop("No such copula parameter!")
+      }
+
+      A <- u1^delta*(-1+u2^delta)
+      logCplGrad.u <- (-(u2^delta*delta + A*(1+delta))/(u1*(-u2^delta+ A)))
+
+      out[["u"]] <- logCplGrad.u
+    }
+    else
+    {
+      stop("No such copula defined!")
+    }
+  }
 
   return(out)
 }

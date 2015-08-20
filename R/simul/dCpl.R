@@ -133,15 +133,23 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                 log(u.tildeSumdelta^(1/delta)+delta-1))
   }
   else if(tolower(CplNM)  == "frank")
-  {
-    ## The quantile for normal CDF
+  {# Joe 1997. p.142 Family B3
+    delta <- as.vector(parCpl[["delta"]]) # delta >= 0
+
     u1 <- u[, 1]
     u2 <- u[, 2]
     ## The copula function
-    density <- -1/theta*log(1+(exp(-theta*u1)-1)*(exp(-theta*u2)-1)/
-                            (exp(-theta)-1))
-    ## The output
-    out <- density
+    eta <- 1-exp(-delta)
+    out.log <- (log(detla)+log(eta)-delta*(u1+u2)-
+                2*log(eta-(1-exp(-delta*u1))*-(1-exp(-delta*u1))))
+  }
+  else if(tolower(CplNM)  == "clayton")
+  { # Joe 1997. p 141 Family B4
+    delta <- as.vector(parCpl[["delta"]]) # delta >= 0
+    u1 <- u[, 1]
+    u2 <- u[, 2]
+    out.log <- (log(1+delta) + (-delta -1)*(log(u1)+ log(u2)) +
+                (-2-1/delta)*log(u1^(-delta) + u2^(-delta) -1))
   }
   else
   {

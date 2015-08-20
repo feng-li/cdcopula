@@ -61,7 +61,6 @@ pCpl <- function(u, CplNM, parCpl, log = FALSE)
     ## TODO: apply pmvt is very slow
     out <- matrix(percentile)
   }
-
   else if(tolower(CplNM) == "fgm")
   {
     u1 <- u[, 1]

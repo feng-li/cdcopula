@@ -67,6 +67,12 @@ kendalltau <- function(CplNM, parCpl)
     delta <- parCpl[["delta"]]
     out <- 1/delta^2
   }
+  else if (tolower(CplNM) == "clayton")
+  { # Joe 1997, p.78,  Example 3.2
+    delta <- parCpl[["delta"]]
+    out <- delta/(delta+2)
+  }
+
   else
   {
     stop("No such copula!")
