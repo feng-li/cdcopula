@@ -60,7 +60,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
   if(length(varSelCandRow)>nCovs)
   {
-    stop("The number of variable selection candidates should not be greater than the number of covariates for: ", paste(chainCaller, collapse = "-"))
+    stop("The number of variable selection candidates should not be greater than the number of covariates for: ", paste(chainCaller, collapse = "-"), ". Check variable selection settings.")
   }
 
 

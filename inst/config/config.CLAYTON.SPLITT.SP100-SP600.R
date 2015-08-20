@@ -27,12 +27,12 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisType <- c("SPLITT", "SPLITT", "GUMBEL")
-MargisNM <- c("^SML", "^OEX", "GUMBEL")
+MargisType <- c("SPLITT", "SPLITT", "CLAYTON")
+MargisNM <- c("^SML", "^OEX", "CLAYTON")
 
-MCMCUpdate <- list(list("mu" = T, "phi"= F, "df"= F, "lmd"= F),
-                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("tau" = TRUE))
+MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+                   list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+                   list("tau" = T))
 
 names(MCMCUpdate) <- MargisNM
 
@@ -80,7 +80,6 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
-
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, NULL])
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, NULL])
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, NULL])
@@ -105,15 +104,14 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
-                                  nPar = (length(MargisType)-1)*(length(MargisType)-2)/2)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[1]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -122,7 +120,7 @@ varSelArgs[[1]][["df"]] <- list(cand = NULL,
 varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[2]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -139,7 +137,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 10000
+nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -215,10 +213,9 @@ propArgs[[2]][[4]] <-
          "indicators" = list(type = "binom", prob = 0.5))
 
 propArgs[[3]][[1]] <-
-  list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
-       "beta" = list(type = "mvt", df = 6),
-       "indicators" = list(type = "binom", prob = 0.5))
-
+    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+         "beta" = list(type = "mvt", df = 6),
+         "indicators" = list(type = "binom", prob = 0.5))
 
 ## POSTERIOR INFERENCE OPTIONS
 ##-----------------------------------------------------------------------------

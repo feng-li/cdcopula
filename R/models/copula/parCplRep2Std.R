@@ -123,6 +123,13 @@ parCplRep2Std <- function(CplNM, parCplRep)
     delta <- 1/(1-tau)
     out[["delta"]] <- delta
   }
+  else if(tolower(CplNM) == "clayton")
+  {
+    tau <- parCplRep[["tau"]]
+
+    delta <- 2*tau/(1-tau)
+    out[["delta"]] <- delta
+  }
   else
   {
     stop("This copula is not implemented!")

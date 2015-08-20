@@ -136,8 +136,8 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                                  how = "replace")
 
     which.j <- 0
-    for(j in MCMC.sampleIdx) ## Just the likelihood function with posterior samples
-    {
+    for(j in MCMC.sampleIdx)
+    {## Just the likelihood function with posterior samples
 
       subsetFun4beta <- function(x, idx)
       {
