@@ -10,7 +10,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 ##' TODO: write this function as a summary
-CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MCMC)
+CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC)
 {
   ## Set the print interval and consider burnin. If print interval is to narrow, set to
   ## one.
@@ -27,7 +27,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
   has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
 
   ## The burning
-  n.burn.default <- round(nIter*burnin)
+  n.burn.default <- round(nIter*MCMC.burninProp)
   n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
   subFun <- function(x, iIter, fun){
@@ -99,7 +99,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, burnin, OUT.MC
 
     donePercent <- round(iIter/nIter*100)
     welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
-                     round(n.burn/nIter*100), "% burnin) "
+                     round(n.burn/nIter*100), "% MCMC.burninProp) "
                    , TimeToGo, " hours to go.\n", sep = "")
     cat("\n", rep("=", dev.width), "\n", sep = "")
     cat(welcome)

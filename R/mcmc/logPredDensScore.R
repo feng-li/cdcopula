@@ -23,36 +23,24 @@ logPredDensScore <- function(logPredLst)
   ## NOTE: LPDS in a copula model:
   ## LPDS_full  =  sum(LPDS_marginals) + LPDS_copula
 
-  ## Check if the log PredLst is from time series.
-  ## One fold and within each fold multi-columns
+  ## Check if the log PredLst is from time series.  One fold and within each fold
+  ## multi-columns
   nFold <- length(logPredLst)
   dim0 <- logPredLst[[1]]
-  ## LikLst.len <- dim0[2]
   nMCMCSample <- dim(logPredLst[[1]])[1]
 
-  ## LPDS.vec <- matrix(NA, LikLst.len, 1)
-  ## LPDS.nse.vec <- matrix(NA, LikLst.len, 1)
-  ## for(i in 1:LikLst.len)
-  ##   {
-
-  ## if(partiMethod  == "time-series")
-  ##   {
-  ##     logPredMatrix <- logPredLst[[1]][, i]
-  ##   }
-  ## else
-  ##   {
-  ##     ## matrix NOT from time series settings or only one observation in
-  ##     ## the prediction
   logPredMatrix <- matrix(unlist(logPredLst), nMCMCSample, nFold)
-  ## }
 
-  ## The LPDS
   scaleFactors <- apply(logPredMatrix,2, median)
   scaleMatrix <- matrix(scaleFactors, nMCMCSample, nFold)
 
   expPredMatrix <- exp(logPredMatrix-scaleMatrix)
   expPredMatrix[is.infinite(expPredMatrix)] <- NA # TODO: Think about it carefully
   expPredMean <- colMeans(expPredMatrix, na.rm = TRUE)
+
+
+
+  ## The LPDS and numerical standard error
   LPDS <- mean(scaleFactors + log(expPredMean))
 
   if (sum(is.infinite(expPredMatrix)) > nMCMCSample*.05)
@@ -84,12 +72,6 @@ logPredDensScore <- function(logPredLst)
   var.MeanexpPredMatrix <- predVar/nMCMCSample*(1+2*ACFxx)
   nvarLPDS <- 1/nFold^2*sum(1/(expPredMean)^2*var.MeanexpPredMatrix)
   LPDS.nse <- sqrt(nvarLPDS)
-
-  ## LPDS.nse.vec[i] <- nseLPDS
-  ## }
-
-  ## LPDS <- sum(LPDS.vec)
-  ## LPDS.nse <- sum(LPDs.nse.vec)
 
   out <- list(LPDS = LPDS, LPDS.nse = LPDS.nse)
   return(out)

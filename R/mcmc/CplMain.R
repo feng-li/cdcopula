@@ -88,6 +88,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
                            idx = Mdl.Idx.training, how = "replace")
 
+  browser()
   if(any(rapply(Mdl.X, class) != "matrix"))
   { ## Evaluating Foreign marginal models.
     cat("Evaluating foreign marginal models...\n")
@@ -396,7 +397,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     if(track.MCMC == TRUE && iInner == nInner)
     {
       CplMCMC.summary(iIter = iIter, nIter = nIter,
-                      interval = 0.01, burnin = burnin,
+                      interval = 0.01, MCMC.burninProp = MCMC.burninProp,
                       OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                       MCMC.betaIdx = MCMC.betaIdx,
                                       MCMC.par = MCMC.par,

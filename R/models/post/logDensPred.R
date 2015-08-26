@@ -1,13 +1,12 @@
-##' The log predictive likelihood density.
+##' The MCMC samples for log predictive likelihood/density.
 ##'
-##' This is used for prediction and LPDS.
+##' This is used for calculating mean prediction, posterior creditable interval and LPDS.
 ##' @param CplOut
 ##' @param Mdl.Idx.testing
 ##' @param Mdl.X.testing
 ##' @param Mdl.Y.testing
-##' @param pred "character" The predictive likelihood for marginal or copula
-##' likelihood.
-##' @return "matrix" "mcmc sample by Lik.len"
+##' @param pred "character" The predictive likelihood for marginal or copula likelihood.
+##' @return "matrix" "No. of MCMC samples-by- length of predictive likelihood/density"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
@@ -19,6 +18,9 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
   list2env(CplOut, envir = environment())
   ## browser()
+
+  ## MCMC.sampleProp
+
 ###----------------------------------------------------------------------------
 ### The testing covariates
 ###----------------------------------------------------------------------------
@@ -64,17 +66,17 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ### The MCMC burnin
 ###----------------------------------------------------------------------------
 
-  n.burnin <- floor(nIter*burnin)
+  n.burnin <- floor(nIter*MCMC.burninProp)
   nUsed <- nIter - n.burnin
 
   partiMethod <- crossValidArgs$partiMethod
 
   ## The sample indices for LPDS after burn-in Make a decreasing sequence and
-  ## sort it by increasing order. Just to make sure last draw is allays used
+  ## sort it by increasing order. Just to make sure last draw is always used
   ## The exact size may not same as the result from sample proportion.
   MCMC.sampleIdxRev <- seq(from = nIter,
                            to = (nIter-nUsed+1),
-                           by = -round(1/sampleProp))
+                           by = -round(1/MCMC.sampleProp))
   MCMC.sample.len <- length(MCMC.sampleIdxRev)
   MCMC.sampleIdx <- MCMC.sampleIdxRev[MCMC.sample.len:1]
 
@@ -94,27 +96,23 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     LikLst.Idx <- list(1:nPred) # length of 1
   }
 
-  ## Allocate the log predictive matrix
+  ## Allocate the log MCMC predictive matrix
   LikLst.len <- length(LikLst.Idx)
-
-  out.pred <- matrix(NA, MCMC.sample.len, LikLst.len)
+  MCMC.logPred <- matrix(NA, MCMC.sample.len, LikLst.len)
 ###----------------------------------------------------------------------------
 ### Calculate the predictive densities in all likelihood segments
 ###----------------------------------------------------------------------------
-  ## The predictive likelihood
+  ## Specify the predictive likelihood components
   if(tolower(pred) == "joint")
-  {
+  { ## Use the whole copula likelihood/density
     MCMCUpdateStrategy4LPDS <- "joint"
-    ## Use the whole copula likelihood
     parUpdate <- rapply(parUpdate,  function(x) TRUE,
                         how  = "replace")
 
   }
   else
-  {
+  {## Use the marginal likelihood/density
     MCMCUpdateStrategy4LPDS <- "margin"
-
-    ## The marginal likelihood
     parUpdate <- rapply(parUpdate,
                         function(x) FALSE,
                         how  = "replace")
@@ -123,7 +121,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                                 how  = "replace")
   }
 
-
+  ## Calculate the predictive likelihood
   for(i in 1:LikLst.len)
   {
     Mdl.X.testing.curr <- rapply(object=Mdl.X.testing,
@@ -178,7 +176,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
       which.j <- which.j + 1
 
-      out.pred[which.j, i] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+      MCMC.logPred[which.j, i] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
     }
 
 
@@ -190,11 +188,11 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   {
     ## Sum to get the loglikelihood when the likelihood are calculated
     ## conditionally.
-    out <- matrix(apply(out.pred, 1, sum))
+    out <- matrix(apply(MCMC.logPred, 1, sum))
   }
   else
   {
-    out <- out.pred
+    out <- MCMC.logPred
   }
   return(out)
 }

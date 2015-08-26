@@ -124,7 +124,7 @@ varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
 nIter <- 20
 
 ## BURN-IN RATIO
-burnin <- 0.1 # zero indicates no burn-in
+MCMC.burninProp <- 0.1 # zero indicates no burn-in
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
