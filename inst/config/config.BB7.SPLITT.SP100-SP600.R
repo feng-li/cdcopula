@@ -141,7 +141,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 100
+MCMC.nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -153,7 +153,7 @@ save.output <- "~/running"
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------
 ## If TRUE,  the MCMC should be tracked during the evaluation.
-track.MCMC <- TRUE
+MCMC.track <- TRUE
 
 MCMCUpdateOrder <- MCMCUpdate
 MCMCUpdateOrder[[1]][[1]] <- 1

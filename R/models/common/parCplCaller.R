@@ -5,7 +5,7 @@
 ##'
 ##' @param parUpdateOrder
 ##'
-##' @param nIter if nIter is not 1. This indicating the two stage copula estimation is
+##' @param MCMC.nIter if MCMC.nIter is not 1. This indicating the two stage copula estimation is
 ##' used. Therefore it will generate the complete updating sequence matrix for each
 ##' iteration.
 ##'

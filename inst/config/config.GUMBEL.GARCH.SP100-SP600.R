@@ -118,7 +118,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = NULL, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 10000
+MCMC.nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -130,7 +130,7 @@ save.output <- "~/running"
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------
 ## If TRUE,  the MCMC should be tracked during the evaluation.
-track.MCMC <- TRUE
+MCMC.track <- TRUE
 
 MCMCUpdateOrder <- MCMCUpdate
 MCMCUpdateOrder[[1]][[1]] <- 1

@@ -60,7 +60,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-30):nObsRaw
+nObsIdx <- (1 + nObsRaw-50):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -113,7 +113,7 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[1]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -122,7 +122,7 @@ varSelArgs[[1]][["df"]] <- list(cand = NULL,
 varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[2]][["mu"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -139,7 +139,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 10000
+MCMC.nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -151,7 +151,7 @@ save.output <- "~/running"
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------
 ## If TRUE,  the MCMC should be tracked during the evaluation.
-track.MCMC <- TRUE
+MCMC.track <- TRUE
 
 MCMCUpdateOrder <- MCMCUpdate
 MCMCUpdateOrder[[1]][[1]] <- 1
@@ -229,14 +229,13 @@ propArgs[[3]][[1]] <-
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
 
-nCross <- 1
+nCross <- 3
 crossValidArgs <- list(N.subsets = nCross,
-                       partiMethod = "time-series",
-                       testRatio = 0.001)
+                       partiMethod = "systematic",
+                       testRatio = 0.1)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
-## nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
 MCMC.sampleProp <- 0.8

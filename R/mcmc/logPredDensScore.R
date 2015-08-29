@@ -12,7 +12,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note First version: Tue Nov 30 23:18:18 CET 2010;
 ##'       Current:       Tue Nov 30 23:18:25 CET 2010.
-##' TODO: Don't use the full draws when nIter is large.
+##' TODO: Don't use the full draws when MCMC.nIter is large.
 ##'       Still doubt the nseLPDS
 logPredDensScore <- function(logPredLst)
 {

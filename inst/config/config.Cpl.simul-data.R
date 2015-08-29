@@ -121,7 +121,7 @@ varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-nIter <- 20
+MCMC.nIter <- 20
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in
@@ -136,7 +136,7 @@ save.output <- FALSE
 ## MCMC TRAJECTORY
 ##-----------------------------------------------------------------------------
 ## If TRUE,  the MCMC should be tracked during the evaluation.
-track.MCMC = TRUE
+MCMC.track = TRUE
 
 ## WHICH VARIABLE SHOULD BE UPDATED?
 MCMCUpdate <- MCMCUpdate

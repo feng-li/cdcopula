@@ -1,7 +1,7 @@
 ##' Trajectory MCMC.
 ##'
 ##' This function can also be used for summarizing the posterior results.
-##' @param nIter "integer"
+##' @param MCMC.nIter "integer"
 ##' @param iIter "integer"
 ##' @param interval e.g. 10%
 ##' @param ... Other arguments used
@@ -10,24 +10,24 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 ##' TODO: write this function as a summary
-CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC)
+CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC)
 {
   ## Set the print interval and consider burnin. If print interval is to narrow, set to
   ## one.
-  printInterval <- ifelse(floor(nIter*interval) == 0,  1, floor(nIter*interval))
+  printInterval <- ifelse(floor(MCMC.nIter*interval) == 0,  1, floor(MCMC.nIter*interval))
   printIter <- seq(from = printInterval,
-                   to = nIter,
+                   to = MCMC.nIter,
                    by = printInterval)
-  if(printIter[length(printIter)] != nIter)
+  if(printIter[length(printIter)] != MCMC.nIter)
   {# Always print summary at last iteration.
-    printIter <- c(printIter, nIter)
+    printIter <- c(printIter, MCMC.nIter)
   }
 
   dev.width <- getOption("width")
   has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
 
   ## The burning
-  n.burn.default <- round(nIter*MCMC.burninProp)
+  n.burn.default <- round(MCMC.nIter*MCMC.burninProp)
   n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
   subFun <- function(x, iIter, fun){
@@ -89,7 +89,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, MCMC.burninPro
     Starting.time <- OUT.MCMC$Starting.time
 
     TimeToGo <-  round(difftime(Sys.time(), Starting.time,
-                                units = "hours")/(iIter-1)*(nIter-iIter), 2)
+                                units = "hours")/(iIter-1)*(MCMC.nIter-iIter), 2)
 
     if(iIter  == printIter[1])
     {
@@ -97,9 +97,9 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, MCMC.burninPro
       return()
     }
 
-    donePercent <- round(iIter/nIter*100)
+    donePercent <- round(iIter/MCMC.nIter*100)
     welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
-                     round(n.burn/nIter*100), "% MCMC.burninProp) "
+                     round(n.burn/MCMC.nIter*100), "% MCMC.burninProp) "
                    , TimeToGo, " hours to go.\n", sep = "")
     cat("\n", rep("=", dev.width), "\n", sep = "")
     cat(welcome)
@@ -214,7 +214,7 @@ CplMCMC.summary <- function(nIter, iIter = nIter, interval = 0.1, MCMC.burninPro
       }
     }
 
-    if(iIter == nIter)
+    if(iIter == MCMC.nIter)
     {
       cat(rep("-", dev.width), "\n\n",  sep = "")
     }

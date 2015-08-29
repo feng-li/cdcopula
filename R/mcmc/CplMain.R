@@ -88,7 +88,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
                            idx = Mdl.Idx.training, how = "replace")
 
-  browser()
   if(any(rapply(Mdl.X, class) != "matrix"))
   { ## Evaluating Foreign marginal models.
     cat("Evaluating foreign marginal models...\n")
@@ -259,8 +258,8 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   if(!exists("MCMC.density"))
   {
     ## MCMC.density <- list()
-    ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  nIter))
-    ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  nIter))
+    ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  MCMC.nIter))
+    ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  MCMC.nIter))
     ## FIXME: This is really big ~ 1G
   }
 
@@ -286,7 +285,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
       }
 
 
-      nMCMC <- ifelse(MCMCUpdate[[CompCaller]][[parCaller]], nIter, 1)
+      nMCMC <- ifelse(MCMCUpdate[[CompCaller]][[parCaller]], MCMC.nIter, 1)
 
       ## The MCMC storage
       MCMC.betaIdx[[CompCaller]][[parCaller]] <- matrix(Mdl.betaIdx[[CompCaller]][[parCaller]],
@@ -337,7 +336,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   Starting.time <- Sys.time()
 
-  for(iUpdate in 1:(nInner*nIter))
+  for(iUpdate in 1:(nInner*MCMC.nIter))
   {
     iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
     iIter <- floor((iUpdate-1)/nInner)+1
@@ -394,9 +393,9 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
 
     ## MCMC trajectory
-    if(track.MCMC == TRUE && iInner == nInner)
+    if(MCMC.track == TRUE && iInner == nInner)
     {
-      CplMCMC.summary(iIter = iIter, nIter = nIter,
+      CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                       interval = 0.01, MCMC.burninProp = MCMC.burninProp,
                       OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                       MCMC.betaIdx = MCMC.betaIdx,
@@ -417,7 +416,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   ## list2env(out, envir = .GlobalEnv)
   ## GENERATING SHORT MODEL DESCRIPTION
   ModelDescription <- paste(c(MargisNM[-length(MargisNM)],"+",  MargisType, "+" ,
-                              "nObs", nObs, "nCross", nCross, "nIter", nIter, "+",
+                              "nObs", nObs, "nCross", nCross, "MCMC.nIter", MCMC.nIter, "+",
                               format(Starting.time, "%Y%m%d@%H.%M")),
                             collapse = "")
 
