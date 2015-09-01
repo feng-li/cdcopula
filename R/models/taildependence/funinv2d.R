@@ -187,10 +187,6 @@ funinv2d.iter <- function(FUN, x1, y, x2lim, ...)
   ## yields non accurate root.
 
   ## TODO: parallel this code
-
-  ## TODO: "..." argument may be not correctly used.
-
-
   out.x2 <- x1
   parLen <- length(y)
   out.x2[1:parLen] <- NA

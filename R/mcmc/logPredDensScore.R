@@ -1,6 +1,6 @@
 ##' Log predictive density score
 ##'
-##' @param logPredLst "list"
+##' @param logPredDensLst "list"
 ##'
 ##'        The log posterior predictive sampler from MCMC.
 ##'
@@ -14,8 +14,13 @@
 ##'       Current:       Tue Nov 30 23:18:25 CET 2010.
 ##' TODO: Don't use the full draws when MCMC.nIter is large.
 ##'       Still doubt the nseLPDS
-logPredDensScore <- function(logPredLst)
+logPredDensScore <- function(logPredDensLst)
 {
+  if(all(sapply(logPredDensLst, length) == 1))
+  {
+    out <- cbind(LPDS = NA, LPDS.nse = NA)
+    return(out)
+  }
 
 ###----------------------------------------------------------------------------
 ### Calculate the LPDS and its numerical standard error
@@ -25,11 +30,11 @@ logPredDensScore <- function(logPredLst)
 
   ## Check if the log PredLst is from time series.  One fold and within each fold
   ## multi-columns
-  nFold <- length(logPredLst)
-  dim0 <- logPredLst[[1]]
-  nMCMCSample <- dim(logPredLst[[1]])[1]
+  nFold <- length(logPredDensLst)
+  dim0 <- logPredDensLst[[1]]
+  nMCMCSample <- dim(logPredDensLst[[1]])[1]
 
-  logPredMatrix <- matrix(unlist(logPredLst), nMCMCSample, nFold)
+  logPredMatrix <- matrix(unlist(logPredDensLst), nMCMCSample, nFold)
 
   scaleFactors <- apply(logPredMatrix,2, median)
   scaleMatrix <- matrix(scaleFactors, nMCMCSample, nFold)

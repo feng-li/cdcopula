@@ -19,11 +19,11 @@ DGPCpl <- function(DGPconfigfile, export = "list")
 {
   ## TODO: check no visible bindings for DGPCpl,  DGP.par, MdlDGP.*
 
-MdlDGP.par <- NA
-MdlDGP.intercept <- NA
-MdlDGP.parLink <- NA
-MdlDGP.nCovs <- NA
-
+  MdlDGP.par <- NA
+  MdlDGP.intercept <- NA
+  MdlDGP.parLink <- NA
+  MdlDGP.nCovs <- NA
+  nObs <- NA
   ## source the configure file
   source(file = DGPconfigfile, local = TRUE)
 

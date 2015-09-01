@@ -170,21 +170,24 @@ for(iLPDS in LPDS)
 {
   if(nCross>1 & nCores >1)
   {
-    logPredLst <- clusterMap(cl = cl4CV,
+    MCMC.PredLst <- clusterMap(cl = cl4CV,
                              fun = logDensPred,
                              CplOut = OUT.CplCross,
-                             pred = iLPDS,
+                             PredDens = iLPDS,
                              Mdl.Idx.testing = crossValidIdx[["testing"]])
   }
   else
   {
     MCMC.PredLst <- mapply(FUN = logDensPred,
                            CplOut = OUT.CplCross,
-                           pred = iLPDS,
+                           PredDens = iLPDS,
                            Mdl.Idx.testing = crossValidIdx[["testing"]],
                            SIMPLIFY = FALSE)
   }
+
+
   OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
+
   OUT.CplMVSK <- lapply(MCMC.PredLst, function(x) x[["MVSK"]])
   OUT.CplRESID <- lapply(MCMC.PredLst, function(x) x[["RESID"]])
 

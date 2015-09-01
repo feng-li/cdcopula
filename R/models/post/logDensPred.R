@@ -5,17 +5,24 @@
 ##' @param Mdl.Idx.testing
 ##' @param Mdl.X.testing
 ##' @param Mdl.Y.testing
-##' @param pred "character" The predictive likelihood for marginal or copula likelihood.
+##' @param PredDens "character" The predictive likelihood for marginal or copula likelihood.
 ##' @return "matrix" "No. of MCMC samples-by- length of predictive likelihood/density"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
 logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
-                        MCMC.beta, MCMC.betaIdx, pred)
+                        MCMC.beta, MCMC.betaIdx, PredDens)
 {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
 ###----------------------------------------------------------------------------
+  MCMC.nIter <- NA
+  MCMC.burninProp <- NA
+  MCMC.sampleProp <- NA
+  crossValidArgs <- NA
+  Mdl.parLink <- NA
+  Mdl.Y <- NA
+  Mdl.X <- NA
   list2env(CplOut, envir = environment())
 
   ## MCMC.sampleProp
@@ -24,16 +31,9 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
   ## Unless user specify the predict covariates, use the default in the
   ## configure files.
-  if(missing(Mdl.X.testing) || missing(Mdl.Y.testing))
+  if(missing(Mdl.X.testing))
   {
-    subsetFun <- function(x, idx)
-    {
-      x[idx, , drop = FALSE]
-    }
-    ## Mdl.Idx.testing <- crossValidIdx[["testing"]][[iCross]]
-
-    Mdl.Y.testing <- rapply(object=Mdl.Y, f = subsetFun,
-                            idx = Mdl.Idx.testing, how = "replace")
+    subsetFun <- function(x, idx) {x[idx, , drop = FALSE]}
 
     if(any(rapply(Mdl.X, class) != "matrix"))
     {## Foreign marginal models are used.
@@ -53,6 +53,9 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
       Mdl.X.testing <- rapply(object=Mdl.X, f = subsetFun,
                               idx = Mdl.Idx.testing, how = "replace")
     }
+
+    Mdl.Y.testing <- rapply(object=Mdl.Y, f = subsetFun,
+                            idx = Mdl.Idx.testing, how = "replace")
 
   }
 
@@ -79,7 +82,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   ## the dependence are used The LPDS is approximated by computing each term
   ## p(y_{t+1}|y_{1:t}) using the same posterior sample base on data update to time t.
   ## See Villani et al 2009 or Li et al 2010
-  LikLst.Idx <- 1:nPred # length of 1
+  LikLst.Idx <- 1:nPred # length of nPred
 
   ## Allocate the log MCMC predictive matrix
   MCMC.logPredDens <- matrix(NA, MCMC.sample.len, 1)
@@ -95,25 +98,30 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
 ### Calculate the predictive densities in all likelihood segments
 ###----------------------------------------------------------------------------
-  ## Specify the predictive likelihood components
-  if(tolower(pred) == "joint")
-  { ## Use the whole copula likelihood/density
-    MCMCUpdateStrategy4LPDS <- "joint"
-    parUpdate <- rapply(parUpdate,  function(x) TRUE, how  = "replace")
 
-  }
-  else
-  {## Use the marginal likelihood/density
-    MCMCUpdateStrategy4LPDS <- "margin"
-    parUpdate <- rapply(parUpdate, function(x) FALSE, how  = "replace")
-    parUpdate[[pred]] <- rapply(parUpdate[[pred]], function(x) TRUE, how  = "replace")
-  }
-
-  ## Calculate the predictive likelihood
   Mdl.X.testing.curr <- rapply(object=Mdl.X.testing, f = subsetFun,
                                idx = LikLst.Idx, how = "replace")
-  Mdl.Y.testing.curr <- rapply(object=Mdl.Y.testing, f = subsetFun,
-                               idx = LikLst.Idx, how = "replace")
+
+  if(!is.na(PredDens))
+  {
+    Mdl.Y.testing.curr <- rapply(object=Mdl.Y.testing, f = subsetFun,
+                                 idx = LikLst.Idx, how = "replace")
+
+    ## Specify the predictive likelihood components
+    if(tolower(PredDens) == "joint")
+    { ## Use the whole copula likelihood/density
+      MCMCUpdateStrategy4LPDS <- "joint"
+      parUpdate <- rapply(parUpdate,  function(x) TRUE, how  = "replace")
+
+    }
+    else
+    {## Use the marginal likelihood/density
+      MCMCUpdateStrategy4LPDS <- "margin"
+      parUpdate <- rapply(parUpdate, function(x) FALSE, how  = "replace")
+      parUpdate[[PredDens]] <- rapply(parUpdate[[PredDens]], function(x) TRUE, how  = "replace")
+    }
+  }
+
 
   j <- 1
   for(iMCMC.sampleIdx in MCMC.sampleIdx)
@@ -153,15 +161,20 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
       MCMC.Y.Pred[[iComp]][j, , ] <-  Mdl.Y.pred.curr[[iComp]]
     }
 
-    Mdl.ud <- logDens(MargisType = MargisType,
-                      Mdl.Y = Mdl.Y.testing.curr,
-                      Mdl.par = Mdl.par.curr,
-                      parUpdate = parUpdate,
-                      MCMCUpdateStrategy = MCMCUpdateStrategy4LPDS)
-    Mdl.d <- Mdl.ud[["Mdl.d"]]
-    Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
-    MCMC.logPredDens[j, ] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+    if(!is.na(PredDens))
+    {
+      Mdl.ud <- logDens(MargisType = MargisType,
+                        Mdl.Y = Mdl.Y.testing.curr,
+                        Mdl.par = Mdl.par.curr,
+                        parUpdate = parUpdate,
+                        MCMCUpdateStrategy = MCMCUpdateStrategy4LPDS)
+      Mdl.d <- Mdl.ud[["Mdl.d"]]
+      Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
+
+      MCMC.logPredDens[j, ] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+    }
+
     j <- j + 1
 
     ## Simple progress bar
@@ -178,17 +191,26 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   MVSK[["HPDU"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3),
                            fun = quantile, probs = 0.975)
 
-  ## Residuals and the uncertainty
-  MCMC.residual <- mapply(function(x, y) matrix(x, nrow(y), ncol(y), byrow = TRUE)-y,
-                          Mdl.Y.testing, lapply(MCMC.Y.Pred, function(x) x[, ,"mean"]),
-                          SIMPLIFY = FALSE)
-  RESID <- list()
-  RESID[["mean"]] <- lapply(MCMC.residual, applyFun, mar = 2, fun = mean)
-  RESID[["var"]] <- lapply(MCMC.residual, applyFun, mar = 2, fun = var)
-  RESID[["HPDL"]] <- lapply(MCMC.residual, applyFun, mar  = 2,
-                            fun = quantile, probs = 0.025)
-  RESID[["HPDU"]] <- lapply(MCMC.residual, applyFun, mar = 2,
-                            fun = quantile, probs = 0.975)
+
+  if(!is.na(PredDens))
+ {
+    ## Residuals and the uncertainty
+    MCMC.residual <- mapply(function(x, y) matrix(x, nrow(y), ncol(y), byrow = TRUE)-y,
+                            Mdl.Y.testing, lapply(MCMC.Y.Pred, function(x) x[, ,"mean"]),
+                            SIMPLIFY = FALSE)
+    RESID <- list()
+    RESID[["mean"]] <- lapply(MCMC.residual, applyFun, mar = 2, fun = mean)
+    RESID[["var"]] <- lapply(MCMC.residual, applyFun, mar = 2, fun = var)
+    RESID[["HPDL"]] <- lapply(MCMC.residual, applyFun, mar  = 2,
+                              fun = quantile, probs = 0.025)
+    RESID[["HPDU"]] <- lapply(MCMC.residual, applyFun, mar = 2,
+                              fun = quantile, probs = 0.975)
+  }
+  else
+  {
+    MCMC.logPredDens <- NA
+    RESID <- NA
+  }
 
   out <- list(MCMC.logPredDens = MCMC.logPredDens,
               MVSK = MVSK,

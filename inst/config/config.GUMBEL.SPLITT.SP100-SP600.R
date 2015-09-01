@@ -39,7 +39,7 @@ names(MCMCUpdate) <- MargisNM
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
 LPDS <- c("joint", MargisNM)
-
+LPDS <- NA
 ## The object structure for the model components
 names(MargisType) <-  MargisNM
 
@@ -229,9 +229,9 @@ propArgs[[3]][[1]] <-
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
 
-nCross <- 3
+nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
-                       partiMethod = "systematic",
+                       partiMethod = "time-series",
                        testRatio = 0.1)
 
 ## Indices for training and testing sample according to cross-validation
