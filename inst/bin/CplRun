@@ -70,12 +70,13 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
     { ## PASS INTERNALLY
       ## PATH TO THE MODEL CONFIGURATION FILE
       CplConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                 ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R")
-                                 ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R")
-                                 ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R")
-                                 "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R")
-                                 ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R")
-                                 ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R")
+                                 ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
+                                 ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
+                                 ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
+                                 "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
+                                 ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
+                                 ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
+                                 )
       nCores <- 1
     }
   else
@@ -177,11 +178,11 @@ for(iLPDS in LPDS)
   }
   else
   {
-   MCMC.PredLst <- mapply(FUN = logDensPred,
-                         CplOut = OUT.CplCross,
-                         pred = iLPDS,
-                         Mdl.Idx.testing = crossValidIdx[["testing"]],
-                         SIMPLIFY = FALSE)
+    MCMC.PredLst <- mapply(FUN = logDensPred,
+                           CplOut = OUT.CplCross,
+                           pred = iLPDS,
+                           Mdl.Idx.testing = crossValidIdx[["testing"]],
+                           SIMPLIFY = FALSE)
   }
   OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
   OUT.CplMVSK <- lapply(MCMC.PredLst, function(x) x[["MVSK"]])

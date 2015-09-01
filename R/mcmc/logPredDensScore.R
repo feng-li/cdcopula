@@ -73,6 +73,6 @@ logPredDensScore <- function(logPredLst)
   nvarLPDS <- 1/nFold^2*sum(1/(expPredMean)^2*var.MeanexpPredMatrix)
   LPDS.nse <- sqrt(nvarLPDS)
 
-  out <- list(LPDS = LPDS, LPDS.nse = LPDS.nse)
+  out <- cbind(LPDS = LPDS, LPDS.nse = LPDS.nse)
   return(out)
 }

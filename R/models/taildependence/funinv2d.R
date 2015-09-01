@@ -178,7 +178,7 @@ twowaytabular <- function(FUN, x1lim, x2lim,tol = 1e-3,
   out <- list(Mat = Mat, nGrid1 = nGrid1, nGrid2 = nGrid2, x2Grid = x2Grid, tol = tol)
   return(out)
 }
-funinv2d.iter <- function(FUN, x1, y, x2lim)
+funinv2d.iter <- function(FUN, x1, y, x2lim, ...)
 {
   ## TODO: The max interval could not handle Inf in the uniroot function.
 

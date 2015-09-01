@@ -37,6 +37,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
     if(any(rapply(Mdl.X, class) != "matrix"))
     {## Foreign marginal models are used.
+      Mdl.ForeignFit <- CplOut[["Mdl.ForeignFit"]]
       Mdl.X.Pred <- MargiModelForeignPred(MargisNM = MargisNM,
                                           MargisType = MargisType,
                                           Mdl.ForeignFit =Mdl.ForeignFit,
@@ -58,7 +59,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
 ### The MCMC burnin
 ###----------------------------------------------------------------------------
-
   n.burnin <- floor(MCMC.nIter*MCMC.burninProp)
   nUsed <- MCMC.nIter - n.burnin
 

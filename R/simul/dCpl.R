@@ -51,7 +51,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
   }
   else if(tolower(CplNM) == "gaussian")
   {
-    rho <- parCpl[["theta"]] # n-by-lq
+    rho <- parCpl[["rho"]] # n-by-lq
 
     ## The quantile for normal CDF
     u.quantile <- qnorm(u) # n-by-q
@@ -140,7 +140,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
     u2 <- u[, 2]
     ## The copula function
     eta <- 1-exp(-delta)
-    out.log <- (log(detla)+log(eta)-delta*(u1+u2)-
+    out.log <- (log(delta)+log(eta)-delta*(u1+u2)-
                 2*log(eta-(1-exp(-delta*u1))*-(1-exp(-delta*u1))))
   }
   else if(tolower(CplNM)  == "clayton")
