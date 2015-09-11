@@ -39,7 +39,7 @@ names(MCMCUpdate) <- MargisNM
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
 LPDS <- c("joint", MargisNM)
-LPDS <- NA
+#LPDS <- NA
 ## The object structure for the model components
 names(MargisType) <-  MargisNM
 

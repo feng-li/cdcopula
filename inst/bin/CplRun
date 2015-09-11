@@ -186,7 +186,10 @@ for(iLPDS in LPDS)
   }
 
 
-  OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
+  if(length(LPDS))
+  {
+    OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
+  }
 
   OUT.CplMVSK <- lapply(MCMC.PredLst, function(x) x[["MVSK"]])
   OUT.CplRESID <- lapply(MCMC.PredLst, function(x) x[["RESID"]])
