@@ -164,8 +164,8 @@ if(nCross>1 & nCores>1)
 ###----------------------------------------------------------------------------
 
 ## Calculate the LPDS
-OUT.CplLPDS <- list()
 cat("Calculating predictions......")
+OUT.CplLPDS <- list()
 for(iLPDS in LPDS)
 {
   if(nCross>1 & nCores >1)
@@ -186,7 +186,7 @@ for(iLPDS in LPDS)
   }
 
 
-  if(length(LPDS))
+  if(length(LPDS)>1 || !is.na(LPDS))
   {
     OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
   }

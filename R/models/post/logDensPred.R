@@ -5,13 +5,14 @@
 ##' @param Mdl.Idx.testing
 ##' @param Mdl.X.testing
 ##' @param Mdl.Y.testing
+##' @param MCMC.beta
 ##' @param PredDens "character" The predictive likelihood for marginal or copula likelihood.
 ##' @return "matrix" "No. of MCMC samples-by- length of predictive likelihood/density"
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
 logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
-                        MCMC.beta, MCMC.betaIdx, PredDens)
+                        MCMC.beta, PredDens)
 {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
@@ -193,7 +194,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
 
   if(!is.na(PredDens))
- {
+  {
     ## Residuals and the uncertainty
     MCMC.residual <- mapply(function(x, y) matrix(x, nrow(y), ncol(y), byrow = TRUE)-y,
                             Mdl.Y.testing, lapply(MCMC.Y.Pred, function(x) x[, ,"mean"]),

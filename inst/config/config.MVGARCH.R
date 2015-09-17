@@ -17,11 +17,13 @@ spec <- gogarchspec(mean.model  =  list(model  =  "constant",  robust  = FALSE,
                                             variance.targeting  =  FALSE),
                     distribution.model  =  "mvnorm")
 
-data <- cbind(Mdl.Y.training[[1]], Mdl.Y.training[[2]])
+data <- cbind(Y[[1]], Y[[2]])
 
 fit <- gogarchfit(spec = spec,  data = data, out.sample = 0)
-
-
-
 resid <- as.ts(fit@mfit$residuals)
+
+
+pred <- gogarchforecast(fit = fit, n.ahead = 10)
+
+
 plot(resid)

@@ -2,18 +2,15 @@
 ##'
 ##' @param logPredDensLst "list"
 ##'
-##'        The log posterior predictive sampler from MCMC.
+##'        The log posterior predictive sampler from MCMC for n-fold.
 ##'
-##' @return "list"
+##' @return "matrix"
 ##'
 ##'        The LPDS and the numerical standard error.
 ##'
 ##' @references Li 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note First version: Tue Nov 30 23:18:18 CET 2010;
-##'       Current:       Tue Nov 30 23:18:25 CET 2010.
-##' TODO: Don't use the full draws when MCMC.nIter is large.
-##'       Still doubt the nseLPDS
+##' @note First: Tue Nov 30 23:18:18 CET 2010; Current: Tue Sep 15 17:49:03 CST 2015
 logPredDensScore <- function(logPredDensLst)
 {
   if(all(sapply(logPredDensLst, length) == 1))
@@ -42,8 +39,6 @@ logPredDensScore <- function(logPredDensLst)
   expPredMatrix <- exp(logPredMatrix-scaleMatrix)
   expPredMatrix[is.infinite(expPredMatrix)] <- NA # TODO: Think about it carefully
   expPredMean <- colMeans(expPredMatrix, na.rm = TRUE)
-
-
 
   ## The LPDS and numerical standard error
   LPDS <- mean(scaleFactors + log(expPredMean))

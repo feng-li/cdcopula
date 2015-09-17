@@ -24,8 +24,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
 
   DEBUGGING <- FALSE
   if(DEBUGGING)
-  {
-    ## Turn warnings into error
+  {## Turn warnings into error
     options(warn = 100)
   }
 ###----------------------------------------------------------------------------
@@ -233,9 +232,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
         }
         nLoopInit <- nLoopInit +1
         if((nLoopInit >= maxLoopInit) & InitGoodCompCurr  == FALSE)
-        {
-          ## InitGood <- TRUE
-          ## Too many failures,  abort!
+        {## Too many failures,  abort!
           cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
           cat("Trying to continue without initial value optimization in this component.\n\n")
           break
