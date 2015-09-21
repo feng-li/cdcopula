@@ -1,7 +1,7 @@
 ##' The Main file for MCMC for the copula model.
 ##'
 ##' For details of individual variables, see the setup file.
-##' @param CplConfigFile "character".
+##' @param MdlConfigFile "character".
 ##'        The path where the setup script is located.
 ##'
 ##' @param Mdl.Idx.training "vector"
@@ -15,7 +15,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##'
 ##' @note Created: Thu Feb 02 13:33:06 CET 2012; Current: Fri Mar 27 12:08:32 CST 2015.
-CplMain <- function(Mdl.Idx.training, CplConfigFile)
+CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 {
 
 ###----------------------------------------------------------------------------
@@ -58,9 +58,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                           ignore.error = TRUE)
 
   ## Source the configuration file for the model
-  source(CplConfigFile, local = TRUE)
-
-
+  source(MdlConfigFile, local = TRUE)
 
   ## Parallel Setting up
   if(as.numeric(R_CPL_NPARALLEL)>1)
@@ -77,6 +75,12 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     })
   }
 
+  ## Generating simple model information
+  Starting.time <- Sys.time()
+  ModelDescription <- paste(c(MargisNM[-length(MargisNM)],"+",  MargisType, "+" , "nObs",
+                              nObs, "nCross", nCross,  "+",
+                              format(Starting.time, "%Y%m%d@%H.%M")),
+                            collapse = "")
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
 ###----------------------------------------------------------------------------
@@ -86,6 +90,17 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   nTraining <- length(Mdl.Idx.training)
   Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
                            idx = Mdl.Idx.training, how = "replace")
+
+  if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
+  {## Special case when a foreign model is introduced
+    browser()
+    out <-ForeignModelEval(model  = MargisType[length(MargisType)],
+                           spec = ForeignModelSpec,
+                           data = Mdl.Y.training)
+    print(out) # Model summary
+
+    return(out)
+  }
 
   if(any(rapply(Mdl.X, class) != "matrix"))
   { ## Evaluating Foreign marginal models.
@@ -104,7 +119,7 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
     Mdl.ForeignFit <- Mdl.X.Fit[["Mdl.ForeignFit"]]
   }
   else
-  {## Native model structure
+  {## Native marginal model structure
     Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
                              idx = Mdl.Idx.training, how = "replace")
   }
@@ -331,8 +346,6 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
   UpdateMat <- parCplRepCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMCUpdateOrder)
   nInner <- nrow(UpdateMat)
 
-  Starting.time <- Sys.time()
-
   for(iUpdate in 1:(nInner*MCMC.nIter))
   {
     iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
@@ -418,6 +431,13 @@ CplMain <- function(Mdl.Idx.training, CplConfigFile)
                             collapse = "")
 
   gc()
+
+  OUT.MCMC = list(MCMC.beta = MCMC.beta,
+                  MCMC.betaIdx = MCMC.betaIdx,
+                  MCMC.par = MCMC.par,
+                  MCMC.AccProb = MCMC.AccProb,
+                  MCMCUpdate = MCMCUpdate,
+                  Starting.time = Starting.time)
 
   out <- as.list(environment())
   return(out)

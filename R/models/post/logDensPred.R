@@ -26,7 +26,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   Mdl.X <- NA
   list2env(CplOut, envir = environment())
 
-  ## MCMC.sampleProp
 ###----------------------------------------------------------------------------
 ### The testing covariates
 ###----------------------------------------------------------------------------
