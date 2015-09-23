@@ -93,12 +93,12 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
   if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
   {## Special case when a foreign model is introduced
-    browser()
-    out <-ForeignModelEval(model  = MargisType[length(MargisType)],
-                           spec = ForeignModelSpec,
-                           data = Mdl.Y.training)
-    print(out) # Model summary
+    Mdl.ForeignFitted <-ModelForeignEval(model  = MargisType[length(MargisType)],
+                                         spec = ForeignModelSpec,
+                                         data = Mdl.Y.training)
+    print(Mdl.ForeignFitted) # Model summary
 
+    out <- as.list(environment())
     return(out)
   }
 
@@ -106,17 +106,17 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
   { ## Evaluating Foreign marginal models.
     cat("Evaluating foreign marginal models...\n")
 
-    Mdl.X.Fit <- MargiModelForeignEval(MargisNM = MargisNM,
-                                       MargisType = MargisType,
-                                       MargisForeignConfig = Mdl.X,
-                                       Mdl.Y = Mdl.Y.training)
+    Mdl.X.training.Fitted <- MargiModelForeignEval(MargisNM = MargisNM,
+                                                   MargisType = MargisType,
+                                                   MargisForeignConfig = Mdl.X,
+                                                   Mdl.Y = Mdl.Y.training)
 
-    Mdl.X.training <- c(Mdl.X.Fit[["Mdl.X"]],
+    Mdl.X.training <- c(Mdl.X.training.Fitted[["Mdl.X"]],
                         rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
                                f = subsetFun,
                                idx = Mdl.Idx.training,
                                how = "replace"))
-    Mdl.ForeignFit <- Mdl.X.Fit[["Mdl.ForeignFit"]]
+    Mdl.ForeignFit <- Mdl.X.training.Fitted[["Mdl.ForeignFit"]]
   }
   else
   {## Native marginal model structure

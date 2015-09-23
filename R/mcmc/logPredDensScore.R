@@ -13,12 +13,6 @@
 ##' @note First: Tue Nov 30 23:18:18 CET 2010; Current: Tue Sep 15 17:49:03 CST 2015
 logPredDensScore <- function(logPredDensLst)
 {
-  if(all(sapply(logPredDensLst, length) == 1))
-  {
-    out <- cbind(LPDS = NA, LPDS.nse = NA)
-    return(out)
-  }
-
 ###----------------------------------------------------------------------------
 ### Calculate the LPDS and its numerical standard error
 ###----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-ForeignModelEval <- function(model, spec, data, ...)
+ModelForeignEval <- function(model, spec, data, ...)
 {
   if(tolower(model)  == "gogarch")
   {

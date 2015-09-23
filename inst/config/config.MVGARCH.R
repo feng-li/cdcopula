@@ -32,7 +32,7 @@ MargisNM <- c("^SML", "^OEX", "DCCGARCH")
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
-LPDS <- c("joint", MargisNM)
+LPDS <- c("joint")
 #LPDS <- NA
 ## The object structure for the model components
 names(MargisType) <-  MargisNM
@@ -112,6 +112,15 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
  }
 }
 
+
+## SAVE OUTPUT PATH
+##-----------------------------------------------------------------------------
+## "save.output = FALSE" it will not save anything.
+## "save.output = "path-to-directory"" it will save the working directory in
+## the given directory.
+save.output <- "~/running"
+
+
 ## POSTERIOR INFERENCE OPTIONS
 ##-----------------------------------------------------------------------------
 
@@ -128,12 +137,6 @@ crossValidArgs <- list(N.subsets = nCross,
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
-
-## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
-MCMC.sampleProp <- 0.8
-
-## BURN-IN RATIO
-MCMC.burninProp <- 0.1 # zero indicates no burn-in
 
 ################################################################################
 ###                                  THE END

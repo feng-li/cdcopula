@@ -24,7 +24,30 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   Mdl.parLink <- NA
   Mdl.Y <- NA
   Mdl.X <- NA
+
   list2env(CplOut, envir = environment())
+
+
+  ## Check if testing data Y is there
+  subsetFun <- function(x, idx) {x[idx, , drop = FALSE]}
+  if(missing(Mdl.Y.testing))
+  {
+    Mdl.Y.testing <- rapply(object=Mdl.Y, f = subsetFun,
+                            idx = Mdl.Idx.testing, how = "replace")
+  }
+
+###----------------------------------------------------------------------------
+### Foreign model/methods used in fitting/prediction
+###----------------------------------------------------------------------------
+  if("Mdl.ForeignFitted" %in% names(CplOut))
+  {
+    ForeignModelType <- MargisType[length(MargisType)]
+
+    out <- ModelForeignPred(model = ForeignModelType,
+                     fitted.model = Mdl.ForeignFitted,
+                     data.pred = Mdl.Y.testing)
+    return(out)
+  }
 
 ###----------------------------------------------------------------------------
 ### The testing covariates
@@ -33,8 +56,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   ## configure files.
   if(missing(Mdl.X.testing))
   {
-    subsetFun <- function(x, idx) {x[idx, , drop = FALSE]}
-
     if(any(rapply(Mdl.X, class) != "matrix"))
     {## Foreign marginal models are used.
       Mdl.ForeignFit <- CplOut[["Mdl.ForeignFit"]]
@@ -53,10 +74,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
       Mdl.X.testing <- rapply(object=Mdl.X, f = subsetFun,
                               idx = Mdl.Idx.testing, how = "replace")
     }
-
-    Mdl.Y.testing <- rapply(object=Mdl.Y, f = subsetFun,
-                            idx = Mdl.Idx.testing, how = "replace")
-
   }
 
 ###----------------------------------------------------------------------------
@@ -85,7 +102,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   LikLst.Idx <- 1:nPred # length of nPred
 
   ## Allocate the log MCMC predictive matrix
-  MCMC.logPredDens <- matrix(NA, MCMC.sample.len, 1)
+  Mdl.logPredDens <- matrix(NA, MCMC.sample.len, 1)
 
   MCMC.Y.Pred <- list()
   for(iComp in (names(MargisType)[-length(MargisType)]))
@@ -172,7 +189,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
       Mdl.d <- Mdl.ud[["Mdl.d"]]
       Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
-      MCMC.logPredDens[j, ] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
+      Mdl.logPredDens[j, ] <- sum(Mdl.d[, unlist(Mdl.PostComp)])
     }
 
     j <- j + 1
@@ -181,7 +198,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     ## progressbar(((iCross-1)*nSample + which.j), nFold*nSample)
   }
 
-  ## "mean", "variance", "skewness",  "kurtosis"
+  ## "mean", "variance", "skewness",  "kurtosis" p(Y_p|Y_old)
   applyFun <- function(x, mar, fun,...) {apply(x, mar, fun, ...)}
   MVSK <- list()
   MVSK[["mean"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3), fun = mean)
@@ -190,7 +207,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                            fun = quantile, probs = 0.025)
   MVSK[["HPDU"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3),
                            fun = quantile, probs = 0.975)
-
 
   if(!is.na(PredDens))
   {
@@ -208,11 +224,11 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   }
   else
   {
-    MCMC.logPredDens <- NA
+    Mdl.logPredDens <- NA
     RESID <- NA
   }
 
-  out <- list(MCMC.logPredDens = MCMC.logPredDens,
+  out <- list(Mdl.logPredDens = Mdl.logPredDens,
               MVSK = MVSK,
               RESID = RESID,
               MCMC.Y.Pred = MCMC.Y.Pred)

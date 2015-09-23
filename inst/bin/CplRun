@@ -1,31 +1,8 @@
 #! /usr/bin/env Rscript
-args <- commandArgs(TRUE); if(!interactive()&("--help" %in% args)){cat("
-NAME:
+args <- commandArgs(TRUE); if(!interactive()&("--help" %in% args)){cat(" NAME: CplRun - Run the covariate-dependent copula model DESCRIPTION: An R script that performs the MCMC and cross-validation for covariate-dependent copula model. USAGE: CplRun <nCores> <MdlConfigFile.R>
+    CplRun --help ARGUMENTS: <MdlConfigFile.R>: The copula configuration file. See example files under inst/config/. <nCores>
 
-    CplRun - Run the covariate-dependent copula model
-
-DESCRIPTION:
-
-    An R script that performs the MCMC and cross-validation for
-    covariate-dependent copula model.
-
-USAGE:
-
-    CplRun <nCores> <MdlConfigFile.R>
-    CplRun --help
-
-ARGUMENTS:
-
-    <MdlConfigFile.R>:
-
-        The copula configuration file. See example files under inst/config/.
-
-    <nCores>
-
-       Number of total parallel processors used. The default value is one, i.e. using
-       serial code.
-
-
+       Number of total parallel processors used. The default value is one, i.e. using serial code.
     --help:
 
         Show the help file.
@@ -67,36 +44,36 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
 
 {
   if(interactive())
-    { ## PASS INTERNALLY
-      ## PATH TO THE MODEL CONFIGURATION FILE
-      MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                 ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
-                                 ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
-                                 ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
-                                 ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
-                                 ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
-                                 ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
-                                 "/inst/config/config.MVGARCH.R"
-                                 )
+  { ## PASS INTERNALLY
+    ## PATH TO THE MODEL CONFIGURATION FILE
+    MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
+                               ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
+                               ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
+                               ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
+                               ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
+                               ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
+                               ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
+                               "/inst/config/config.MVGARCH.R"
+                               )
+    nCores <- 1
+  }
+  else
+  {## Pass via command argument
+    if((length(args) == 1L))
+    {
+      MdlConfigFile <- args
       nCores <- 1
     }
-  else
-    {## Pass via command argument
-      if((length(args) == 1L))
-        {
-          MdlConfigFile <- args
-          nCores <- 1
-        }
-      else if ((length(args) == 2L))
-        {
-          MdlConfigFile <- args[2]
-          nCores <- as.integer(args[1])
-        }
-      else
-        {
-          stop("Model configuration file required. Try --help.")
-        }
+    else if ((length(args) == 2L))
+    {
+      MdlConfigFile <- args[2]
+      nCores <- as.integer(args[1])
     }
+    else
+    {
+      stop("Model configuration file required. Try --help.")
+    }
+  }
 }
 
 ###----------------------------------------------------------------------------
@@ -135,7 +112,7 @@ if(nCross>1 & nCores>1)
               byte.compile = 0,
               recursive = TRUE,
               ignore.error = TRUE)
-    Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
+              Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
   })
 }else
 {
@@ -171,29 +148,29 @@ for(iLPDS in LPDS)
 {
   if(nCross>1 & nCores >1)
   {
-    MCMC.PredLst <- clusterMap(cl = cl4CV,
-                             fun = logDensPred,
-                             CplOut = OUT.CplCross,
-                             PredDens = iLPDS,
-                             Mdl.Idx.testing = crossValidIdx[["testing"]])
+    Mdl.PredLst <- clusterMap(cl = cl4CV,
+                              fun = logDensPred,
+                              CplOut = OUT.CplCross,
+                              PredDens = iLPDS,
+                              Mdl.Idx.testing = crossValidIdx[["testing"]])
   }
   else
   {
-    MCMC.PredLst <- mapply(FUN = logDensPred,
-                           CplOut = OUT.CplCross,
-                           PredDens = iLPDS,
-                           Mdl.Idx.testing = crossValidIdx[["testing"]],
-                           SIMPLIFY = FALSE)
+    Mdl.PredLst <- mapply(FUN = logDensPred,
+                          CplOut = OUT.CplCross,
+                          PredDens = iLPDS,
+                          Mdl.Idx.testing = crossValidIdx[["testing"]],
+                          SIMPLIFY = FALSE)
   }
 
 
   if(length(LPDS)>1 || !is.na(LPDS))
   {
-    OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(MCMC.PredLst, function(x) x[["MCMC.logPredDens"]]))
+    OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(Mdl.PredLst, function(x) x[["Mdl.logPredDens"]]))
   }
 
-  OUT.CplMVSK <- lapply(MCMC.PredLst, function(x) x[["MVSK"]])
-  OUT.CplRESID <- lapply(MCMC.PredLst, function(x) x[["RESID"]])
+  OUT.CplMVSK <- lapply(Mdl.PredLst, function(x) x[["MVSK"]])
+  OUT.CplRESID <- lapply(Mdl.PredLst, function(x) x[["RESID"]])
 
 }
 cat("done\n")
@@ -204,9 +181,9 @@ print(OUT.CplLPDS)
 
 ## Stop the parallel environment
 if(nCross>1 & nCores >1)
-  {
-    stopCluster(cl4CV)
-  }
+{
+  stopCluster(cl4CV)
+}
 save.all(save.output = OUT.CplCross[[1]][["save.output"]],
          ModelDescription = OUT.CplCross[[1]][["ModelDescription"]])
 
