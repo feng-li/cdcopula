@@ -1,11 +1,27 @@
 #! /usr/bin/env Rscript
-args <- commandArgs(TRUE); if(!interactive()&("--help" %in% args)){cat(" NAME: CplRun - Run the covariate-dependent copula model DESCRIPTION: An R script that performs the MCMC and cross-validation for covariate-dependent copula model. USAGE: CplRun <nCores> <MdlConfigFile.R>
-    CplRun --help ARGUMENTS: <MdlConfigFile.R>: The copula configuration file. See example files under inst/config/. <nCores>
+args <- commandArgs(TRUE); if(!interactive()&("--help" %in% args)){cat("
+NAME: CplRun - Run the covariate-dependent copula model
 
-       Number of total parallel processors used. The default value is one, i.e. using serial code.
-    --help:
+DESCRIPTION:
 
-        Show the help file.
+    An R script that performs the MCMC and cross-validation for covariate-dependent copula
+    model.
+
+USAGE:
+
+    CplRun <nCores> <MdlConfigFile.R>
+
+    CplRun --help
+
+ARGUMENTS:
+
+    <MdlConfigFile.R>: The copula configuration file. See example files under inst/config/.
+
+    <nCores>: Number of total parallel processors used. The default value is one, i.e.
+
+     using serial code.
+
+     --help: Show the help file.
 
 ENVIRONMENT:
 
@@ -23,8 +39,7 @@ DETAILS:
 
 VERSION:
 
-    Initial: Wed Jan 09 22:38:48 CET 2013
-    Current: Tue Jul 14 16:40:24 CST 2015
+    Initial: Wed Jan 09 22:38:48 CET 2013 Current: Tue Jul 14 16:40:24 CST 2015
 
 AUTHOR:
 
@@ -50,10 +65,10 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
                                ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
                                ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
                                ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
-                               ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
+                               "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
                                ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
                                ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
-                               "/inst/config/config.MVGARCH.R"
+                               ## "/inst/config/config.MVGARCH.R"
                                )
     nCores <- 1
   }
@@ -71,7 +86,7 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
     }
     else
     {
-      stop("Model configuration file required. Try --help.")
+      stop("Model configuration file required. Try the command with `--help` option.")
     }
   }
 }

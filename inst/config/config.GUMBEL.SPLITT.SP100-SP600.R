@@ -30,9 +30,9 @@
 MargisType <- c("SPLITT", "SPLITT", "GUMBEL")
 MargisNM <- c("^SML", "^OEX", "GUMBEL")
 
-MCMCUpdate <- list(list("mu" = T, "phi"= F, "df"= F, "lmd"= F),
-                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("tau" = TRUE))
+MCMCUpdate <- list(list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
+                   list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
+                   list("tau" = T))
 
 names(MCMCUpdate) <- MargisNM
 
@@ -60,7 +60,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+nObsIdx <- (1 + nObsRaw-300):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -81,17 +81,17 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, NULL])
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, NULL])
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, NULL])
 Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, NULL])
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, NULL])
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
 Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, NULL])
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, NULL])
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, NULL])
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, NULL], X[[2]][nObsIdx, NULL])
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -113,7 +113,7 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = NULL,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
                                 init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -122,7 +122,7 @@ varSelArgs[[1]][["df"]] <- list(cand = NULL,
 varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = NULL,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:3,
                                 init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL,
                                  init = "all-in")
@@ -131,7 +131,7 @@ varSelArgs[[2]][["df"]] <- list(cand = NULL,
 varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:7,
                                  init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 10000
+MCMC.nIter <- 1000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
