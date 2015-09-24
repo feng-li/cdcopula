@@ -24,6 +24,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
   Mdl.parLink <- NA
   Mdl.Y <- NA
   Mdl.X <- NA
+  Mdl.ForeignFitted <- NA
 
   list2env(CplOut, envir = environment())
 

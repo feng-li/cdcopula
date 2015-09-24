@@ -57,7 +57,19 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           recursive = TRUE,
                           ignore.error = TRUE)
 
-  ## Source the configuration file for the model
+  ## Source the configuration file for the model.
+  Mdl.X <- NA
+  Mdl.parLink <- NA
+  MCMC.nIter <- NA
+  MCMCUpdate <- NA
+  MCMC.track <- NA
+  MCMCUpdateStrategy <- NA
+  MCMCUpdateOrder <- NA
+  priArgs <- NA
+  varSelArgs <- NA
+  propArgs <- NA
+  betaInit <- NA
+
   source(MdlConfigFile, local = TRUE)
 
   ## Parallel Setting up
