@@ -222,28 +222,26 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                       parUpdate = parUpdate)
 
         ## Optimize the initial values
-        betaVecOptimComp <- try(optimx(par = betaVecInitComp,
-                                       fn = logPostOptim,
-                                       control = list(maximize = TRUE,
-                                                      ## all.methods = TRUE,
-                                                      maxit = 100),
-                                       method = "BFGS",
-                                       hessian = FALSE,
-                                       MargisType = MargisType,
-                                       Mdl.Y = Mdl.Y.training.sample,
-                                       Mdl.X = Mdl.X.training.sample,
-                                       Mdl.beta = Mdl.beta,
-                                       Mdl.betaIdx = Mdl.betaIdx,
-                                       Mdl.parLink = Mdl.parLink,
-                                       varSelArgs = varSelArgs,
-                                       priArgs = priArgs,
-                                       staticCache = staticCache.sample,
-                                       parUpdate = parUpdate,
-                                       MCMCUpdateStrategy = "twostage"
-                                       ), silent = FALSE)
-
-        if(is(betaVecOptimComp, "try-error") == TRUE
-           || any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecOptimComp)]))))
+        betaVecOptimComp <-  optimx(par = betaVecInitComp,
+                                    fn = logPostOptim,
+                                    control = list(maximize = TRUE,
+                                                   ## all.methods = TRUE,
+                                                   maxit = 100),
+                                    method = "L-BFGS-B",
+                                    hessian = FALSE,
+                                    MargisType = MargisType,
+                                    Mdl.Y = Mdl.Y.training.sample,
+                                    Mdl.X = Mdl.X.training.sample,
+                                    Mdl.beta = Mdl.beta,
+                                    Mdl.betaIdx = Mdl.betaIdx,
+                                    Mdl.parLink = Mdl.parLink,
+                                    varSelArgs = varSelArgs,
+                                    priArgs = priArgs,
+                                    staticCache = staticCache.sample,
+                                    parUpdate = parUpdate,
+                                    MCMCUpdateStrategy = "twostage")
+        ## browser()
+        if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
         {# It does not have to be converged.
           cat("Initializing algorithm failed,  retry...\n")
           InitGoodCompCurr <- FALSE
@@ -252,7 +250,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         else
         {
           InitGoodCompCurr <- TRUE
-          Mdl.beta <- parCplSwap(betaInput = as.numeric(betaVecOptimComp[1, 1:length(betaVecOptimComp)]),
+          Mdl.beta <- parCplSwap(betaInput = as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]),
                                  Mdl.beta = Mdl.beta,
                                  Mdl.betaIdx = Mdl.betaIdx,
                                  parUpdate = parUpdate)
@@ -265,10 +263,14 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
           break
         }
       }
-      cat("The initial values for beta coefficients are:\n(conditional on variable selection indicators)\n")
-      print(Mdl.beta[[CompCaller]])
+
     }
   }
+
+  cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
+      "(conditional on variable selection indicators)\n")
+  print(rapply(Mdl.beta, as.vector, how = "replace"))
+  browser()
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------
@@ -418,7 +420,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     if(MCMC.track == TRUE && iInner == nInner)
     {
       CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                      interval = 0.01, MCMC.burninProp = MCMC.burninProp,
+                      interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                       OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                       MCMC.betaIdx = MCMC.betaIdx,
                                       MCMC.par = MCMC.par,
