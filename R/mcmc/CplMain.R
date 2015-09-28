@@ -155,6 +155,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
   {
     require("optimx")
 
+    ## Sample size to be used. Usually set it as 10% of the full data but no more than 500
+    ## observations. Use the full data unless the it is really small.
     if(nTraining<50)
     {
       nOptim.Sample <- nTraining
@@ -169,7 +171,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                     idx = Mdl.Idx.training.sample, how = "replace")
     Mdl.Y.training.sample <- rapply(object=Mdl.Y.training, f = subsetFun,
                                     idx = Mdl.Idx.training.sample, how = "replace")
-
+    ## browser()
     cat("Optimizing initial values, may take a few minutes...\n\n")
 
     for(CompCaller in names(Mdl.beta))
@@ -227,7 +229,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                     control = list(maximize = TRUE,
                                                    ## all.methods = TRUE,
                                                    maxit = 100),
-                                    method = "L-BFGS-B",
+                                    method = "BFGS",
                                     hessian = FALSE,
                                     MargisType = MargisType,
                                     Mdl.Y = Mdl.Y.training.sample,
@@ -240,10 +242,11 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                     staticCache = staticCache.sample,
                                     parUpdate = parUpdate,
                                     MCMCUpdateStrategy = "twostage")
-        ## browser()
+
         if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
         {# It does not have to be converged.
           cat("Initializing algorithm failed,  retry...\n")
+
           InitGoodCompCurr <- FALSE
           ## break
         }
@@ -270,7 +273,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
   cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
       "(conditional on variable selection indicators)\n")
   print(rapply(Mdl.beta, as.vector, how = "replace"))
-  browser()
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------

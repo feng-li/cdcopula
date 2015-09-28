@@ -136,7 +136,8 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     {## Use the marginal likelihood/density
       MCMCUpdateStrategy4LPDS <- "margin"
       parUpdate <- rapply(parUpdate, function(x) FALSE, how  = "replace")
-      parUpdate[[PredDens]] <- rapply(parUpdate[[PredDens]], function(x) TRUE, how  = "replace")
+      parUpdate[[PredDens]] <- rapply(parUpdate[[PredDens]],
+                                      function(x) TRUE, how  = "replace")
     }
   }
 

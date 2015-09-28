@@ -30,8 +30,8 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("^SML", "^OEX", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
-                   list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = T, "lmd" = T),
+                   list("mu" = T, "phi" = F, "df" = T, "lmd" = T),
                    list("tau" = T, "lambdaL" = T))
 
 names(MCMCUpdate) <- MargisNM
@@ -60,7 +60,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-30):nObsRaw
+nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -80,15 +80,16 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:3, drop = FALSE]
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][, 1:9])[nObsIdx, 1:1, drop = FALSE]
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, NULL])
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, NULL])
+
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, NULL])
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, NULL])
 
 Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3])
 Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3])
@@ -113,25 +114,25 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:4,
                                  init = "all-in")
 varSelArgs[[1]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:3,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:4,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL,
+varSelArgs[[2]][["phi"]] <- list(cand = 2:4,
                                  init = "all-in")
 varSelArgs[[2]][["df"]] <- list(cand = NULL,
                                 init = "all-in")
 varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:7,
                                  init = "all-in")
 varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
                                      init = "all-in")
@@ -239,11 +240,10 @@ propArgs[[3]][[2]] <-
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.001)
+                       testRatio = 0.1)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
-## nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
 MCMC.sampleProp <- 0.8
