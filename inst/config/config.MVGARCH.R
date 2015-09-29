@@ -33,7 +33,7 @@ MargisNM <- c("^SML", "^OEX", "DCCGARCH")
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
 LPDS <- c("joint")
-#LPDS <- NA
+
 ## The object structure for the model components
 names(MargisType) <-  MargisNM
 
@@ -48,13 +48,13 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-300):nObsRaw
+nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -133,7 +133,7 @@ save.output <- "~/running"
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.1)
+                       testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)

@@ -121,7 +121,7 @@ varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 20
+MCMC.nIter <- 10000
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in

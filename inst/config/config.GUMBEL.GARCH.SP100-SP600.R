@@ -54,7 +54,7 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
@@ -88,7 +88,7 @@ Mdl.X[[2]] <- list(include.mean = FALSE,
                    cond.dist = "norm",
                    trace = TRUE)
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][nObsIdx, NULL], X[[MargisNM[2]]][nObsIdx, NULL])
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][nObsIdx, 1:9], X[[MargisNM[2]]][nObsIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -112,7 +112,7 @@ varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19, init = "all-in")
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
@@ -176,7 +176,7 @@ propArgs[[3]][[1]] <-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3,
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.001)
+                       testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)

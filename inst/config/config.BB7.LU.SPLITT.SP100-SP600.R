@@ -54,7 +54,7 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
@@ -80,18 +80,18 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, NULL])
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, NULL])
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, NULL])
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, NULL])
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, NULL])
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, NULL])
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, NULL])
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, NULL])
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
 
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, NULL], X[[2]][nObsIdx, NULL])
-Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][nObsIdx, NULL], X[[2]][nObsIdx, NULL])
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
+Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -113,27 +113,27 @@ Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = NULL,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = NULL,
+varSelArgs[[1]][["df"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
-                                 init = "all-in")
-
-varSelArgs[[2]][["mu"]] <- list(cand = NULL,
-                                init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL,
-                                 init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = NULL,
-                                init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:10,
                                  init = "all-in")
 
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:10,
+                                init = "all-in")
+varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
+                                 init = "all-in")
+varSelArgs[[2]][["df"]] <- list(cand = 2:10,
+                                init = "all-in")
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:10,
+                                 init = "all-in")
+
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
                                      init = "all-in")
-varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL,
+varSelArgs[[3]][["lambdaU"]] <- list(cand = 2:19,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 30
+MCMC.nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -183,48 +183,38 @@ MCMCUpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MCMCUpdate
-propArgs[[1]][[1]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[2]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[3]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[4]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
 
-propArgs[[2]][[1]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[2]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[3]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[4]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
 
-propArgs[[3]][[1]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[3]][[2]] <-
-    list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-         "beta" = list(type = "mvt", df = 6),
-         "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
 
 
 ## POSTERIOR INFERENCE OPTIONS
@@ -239,7 +229,7 @@ propArgs[[3]][[2]] <-
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.001)
+                       testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)

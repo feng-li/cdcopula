@@ -30,8 +30,8 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("^SML", "^OEX", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = T, "lmd" = T),
-                   list("mu" = T, "phi" = F, "df" = T, "lmd" = T),
+MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("tau" = T, "lambdaL" = T))
 
 names(MCMCUpdate) <- MargisNM
@@ -54,7 +54,7 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150205.Rdata"))
+load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 
 ## No. of Total Observations
 nObsRaw <- length(Y[[1]])
@@ -114,27 +114,27 @@ Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = 2:4,
+varSelArgs[[1]][["mu"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = 2:4,
+varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
                                  init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = NULL,
+varSelArgs[[1]][["df"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = NULL,
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:10,
                                  init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:4,
+varSelArgs[[2]][["mu"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = 2:4,
+varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
                                  init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = NULL,
+varSelArgs[[2]][["df"]] <- list(cand = 2:10,
                                 init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = NULL,
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:10,
                                  init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:7,
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
                                  init = "all-in")
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
+varSelArgs[[3]][["lambdaL"]] <- list(cand = 2:19,
                                      init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -142,7 +142,7 @@ varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL,
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 100
+MCMC.nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -240,7 +240,7 @@ propArgs[[3]][[2]] <-
 nCross <- 1
 crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.1)
+                       testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
