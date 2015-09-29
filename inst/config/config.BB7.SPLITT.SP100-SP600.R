@@ -81,18 +81,18 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, NULL])
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, NULL])
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, NULL])
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, NULL])
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3])
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3])
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate

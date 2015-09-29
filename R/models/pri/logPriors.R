@@ -58,7 +58,19 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
         }
         else
         {
-          candIdx <- varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+          varSelCandConfigCurr <- varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+
+          if(class(varSelCandConfigCurr) == "character" &&
+             tolower(varSelCandConfigCurr) == "2:end")
+          {
+            ncolX.ij <- nrow(Mdl.beta[[CompCaller]][[parCaller]])
+            candIdx <- 2:ncolX.ij
+          }
+          else
+          {
+            candIdx <- varSelCandConfigCurr
+          }
+
         }
 
 
@@ -89,7 +101,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ### intercept as special case. The intercept should alway be included.
       priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
 
-      betaCurr <- try(Mdl.beta[[CompCaller]][[parCaller]][1,,drop = FALSE])#intercepts
+      betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1,,drop = FALSE]#intercepts
 
       ## if(is(betaCurr, "try-error")) browser()
 

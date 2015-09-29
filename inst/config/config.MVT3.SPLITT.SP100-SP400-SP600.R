@@ -211,49 +211,49 @@ MCMCUpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MCMCUpdate
-propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-
-propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
 
-propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[3]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[3]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
 
-propArgs[[4]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[4]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[3]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+
+propArgs[[4]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+propArgs[[4]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
 

@@ -25,8 +25,7 @@
 ##'
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
-##' @note Created: Thu Dec 22 15:57:14 CET 2011;
-##'       Current: Wed Apr 29 20:59:46 CST 2015.
+##' @note Created: Thu Dec 22 15:57:14 CET 2011; Current: Tue Sep 29 23:50:07 CST 2015.
 initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 {
   ## The output structure.
@@ -57,27 +56,43 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 ###----------------------------------------------------------------------------
       ## Initial value for variable selection indicators which can be
       ## character or vector
+      varSelCandConfigCurr <- varSelArgs[[i]][[j]][["cand"]]
+
+      if(class(varSelCandConfigCurr) == "character" &&
+         tolower(varSelCandConfigCurr) == "2:end")
+      {
+        varSelCandCurr <- 2:ncolX.ij
+      }
+      else
+      {
+        varSelCandCurr <- varSelCandConfigCurr
+      }
+
+
       varSelInitCurr <- varSelArgs[[i]][[j]][["init"]]
 
+      ## Check if variable selection candidates are all subsets of X.
+      if(!all(varSelCandCurr %in% 1:ncolX.ij))
+      {
+        stop("Variable selection candidates are not subset of covariates in component: ",  i, j, "!")
+      }
+
       if(class(varSelInitCurr) == "character" &&
-                              tolower(varSelInitCurr) == "all-in")
+         tolower(varSelInitCurr) == "all-in")
       {
         Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
       }
       else if(class(varSelInitCurr) == "character" &&
-                                   tolower(varSelInitCurr) == "all-out")
+              tolower(varSelInitCurr) == "all-out")
       {
         Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-
-        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
 
         Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
       }
       else if(class(varSelInitCurr) == "character" &&
-                                   tolower(varSelInitCurr) == "random")
+              tolower(varSelInitCurr) == "random")
       {
         Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
 
         ## Randomly pick up half in
         betaIdxCurrSubOut <- sample(varSelCandCurr,
@@ -87,7 +102,6 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
       else # Do nothing, use user input
       {
         Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
-        varSelCandCurr <- varSelArgs[[i]][[j]][["cand"]]
         Mdl.betaIdx[[i]][[j]][varSelCandCurr, ] <- FALSE
         Mdl.betaIdx[[i]][[j]][varSelInitCurr, ] <- TRUE
       }
@@ -97,7 +111,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 ###----------------------------------------------------------------------------
       betaInitCurr <- betaInit[[i]][[j]]
       if(class(betaInitCurr) == "character" &&
-                            tolower(betaInitCurr) == "random")
+         tolower(betaInitCurr) == "random")
       {
         ## betaInitCurr = runif(ncolX.ij, -1, 1)
         ## Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij,
@@ -112,7 +126,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
 
       }
       else if (class(betaInitCurr) == "character" &&
-                                  tolower(betaInitCurr) == "ols")
+               tolower(betaInitCurr) == "ols")
       {
         Y <- Mdl.Y[[i]]
         X <- Mdl.X[[i]][[j]]
