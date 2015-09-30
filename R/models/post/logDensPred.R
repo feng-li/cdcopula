@@ -55,10 +55,13 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
   ## Unless user specify the predict covariates, use the default in the
   ## configure files.
+
   if(missing(Mdl.X.testing))
   {
     if(any(rapply(Mdl.X, class) != "matrix"))
     {## Foreign marginal models are used.
+     ## We only allow either all margins are foreign or all should be native. mixing is
+     ## not implemented yet!
       Mdl.ForeignFit <- CplOut[["Mdl.ForeignFit"]]
       Mdl.X.Pred <- MargiModelForeignPred(MargisNM = MargisNM,
                                           MargisType = MargisType,
@@ -76,7 +79,6 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                               idx = Mdl.Idx.testing, how = "replace")
     }
   }
-
 ###----------------------------------------------------------------------------
 ### The MCMC burnin
 ###----------------------------------------------------------------------------

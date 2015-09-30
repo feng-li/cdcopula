@@ -272,7 +272,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
   cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
       "(conditional on variable selection indicators)\n")
-  print(rapply(Mdl.beta, as.vector, how = "replace"))
+  print(rapply(Mdl.beta, t, how = "replace"))
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------
@@ -422,7 +422,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     if(MCMC.track == TRUE && iInner == nInner)
     {
       CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                      interval = 0.1, MCMC.burninProp = MCMC.burninProp,
+                      interval = 1, MCMC.burninProp = MCMC.burninProp,
                       OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                       MCMC.betaIdx = MCMC.betaIdx,
                                       MCMC.par = MCMC.par,

@@ -74,7 +74,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
       ## Check if variable selection candidates are all subsets of X.
       if(!all(varSelCandCurr %in% 1:ncolX.ij))
       {
-        stop("Variable selection candidates are not subset of covariates in component: ",  i, j, "!")
+        stop("Variable selection candidates are not subset of covariates in component: ",  i, "-", j, "!")
       }
 
       if(class(varSelInitCurr) == "character" &&

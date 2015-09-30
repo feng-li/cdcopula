@@ -5,28 +5,48 @@ logCplPredict <- function(MargisType, Mdl.par)
   out <- list()
   for(iComp in MargisNM)
   {
-    if("splitt" %in% tolower(MargisType[iComp]))
-    {
+    type <- tolower(MargisType[iComp])
 
+    out.iComp <- list()
+
+    ## Convert model type into standard version
+    if(type  == "garch")
+    {
+      typeStd <- "gaussian"
+    }
+    else
+    {
+      typeStd <- type
+    }
+
+    ## Standard model type
+    if(typeStd == "gaussian")
+    {
+      mu <- Mdl.par[[iComp]][["mu"]]
+      phi <- Mdl.par[[iComp]][["phi"]]
+
+      out.iComp[["mean"]] <- mu
+      out.iComp[["var"]] <- phi^2
+
+    }
+    else if(typeStd == "splitt")
+    {
       mu <- Mdl.par[[iComp]][["mu"]]
       df <- Mdl.par[[iComp]][["df"]]
       phi <- Mdl.par[[iComp]][["phi"]]
       lmd <- Mdl.par[[iComp]][["lmd"]]
 
-      mean <- splitt.mean(mu, df, phi, lmd)
-      var <- splitt.var(df, phi, lmd)
-      skewness <- splitt.skewness(df, phi, lmd)
-      kurtosis <- splitt.kurtosis(df, phi, lmd)
+      out.iComp[["mean"]] <- splitt.mean(mu, df, phi, lmd)
+      out.iComp[["var"]] <- splitt.var(df, phi, lmd)
+      out.iComp[["skewness"]] <- splitt.skewness(df, phi, lmd)
+      out.iComp[["kurtosis"]] <- splitt.kurtosis(df, phi, lmd)
     }
     else
     {
       stop("No such marginal component!")
     }
 
-    out.iComp <- cbind(mean, var, skewness, kurtosis)
-    colnames(out.iComp) <- c("mean", "variance", "skewness", "kurtosis")
-
-    out[[iComp]] <- out.iComp
+    out[[iComp]] <- do.call(cbind, out.iComp)
   }
 
   return(out)

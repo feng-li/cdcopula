@@ -91,7 +91,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
     TimeToGo <-  round(difftime(Sys.time(), Starting.time,
                                 units = "hours")/(iIter-1)*(MCMC.nIter-iIter), 2)
 
-    if(iIter  == printIter[1])
+    if(iIter  == printIter[1] && iIter != MCMC.nIter)
     {
       cat("about", TimeToGo, " hours to go.\n", sep = " ")
       return()

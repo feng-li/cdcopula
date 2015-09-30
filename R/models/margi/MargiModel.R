@@ -22,7 +22,26 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
   ## The out storage
   out <- list()
 
-  if(tolower(type) %in% c("gaussian", "garch-normal"))
+###----------------------------------------------------------------------------
+### CONVERT FOREIGN MODELS INTO STANDARD SPECIFICATIONS
+###----------------------------------------------------------------------------
+  if(all((names(par) %in% c("mu", "phi"))))
+  {
+    typeStd <- "gaussian"
+  }
+  else if(all((names(par) %in% c("mu", "phi", "df", "lmd"))))
+  {
+    typeStd <- "splitt"
+  }
+  else
+  {
+    typeStd <- type
+  }
+
+###----------------------------------------------------------------------------
+### THE STANDARD MARGINAL MODELS
+###----------------------------------------------------------------------------
+  if(tolower(typeStd) %in% c("gaussian"))
   {
     ## The mean and standard deviation for Gaussian density
     mu <- par[["mu"]] # mean parameter
@@ -41,7 +60,7 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
       out[["d"]] <- d
     }
   }
-  else if (tolower(type)  == "splitt")
+  else if (tolower(typeStd)  == "splitt")
   {
     ## The marginal likelihood
     ## Literal translation from GSMMatlab code AsymStudT

@@ -2,9 +2,11 @@ MargiModelForeignEval <- function(MargisNM, MargisType, MargisForeignConfig, Mdl
 {
   Mdl.X <- list()
   Mdl.ForeignFit <- list()
+
   for(iComp in 1:(length(MargisNM)-1)) ## TODO: Parallelize marginal models.
   {
-    if(tolower(MargisType[iComp]) %in% c("garch-normal", "garch-t"))
+    cat("Evaluating foreign marginal model: ", MargisNM[iComp], "...\n")
+    if(tolower(MargisType[iComp])  == "garch")
     {
       require("fGarch")
 
@@ -14,10 +16,16 @@ MargiModelForeignEval <- function(MargisNM, MargisType, MargisForeignConfig, Mdl
       MargiModel.Fit <- eval(MargiModel.Fit.caller)
 
       Mdl.X[[MargisNM[iComp]]] <- list()
-      Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Fit@fitted)
-      Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Fit@sigma.t)
-
+      if(parArgs[["cond.dist"]] == "norm")
+        { # Normal innovation
+          Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Fit@fitted)
+          Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Fit@sigma.t)
+        }
       Mdl.ForeignFit[[MargisNM[iComp]]] <- MargiModel.Fit
+    }
+    else
+    {
+      stop("This foreign model is not implemented!")
     }
   }
 

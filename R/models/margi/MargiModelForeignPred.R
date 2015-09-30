@@ -4,7 +4,7 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
   Mdl.ForeignPred <- list()
   for(iComp in 1:length(Mdl.ForeignFit)) ## TODO: Parallelize marginal models.
   {
-    if(tolower(MargisType[iComp]) %in% c("garch-normal", "garch-t"))
+    if(tolower(MargisType[iComp]) ==  "garch")
     {
       require("fGarch")
 
@@ -14,10 +14,15 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
       MargiModel.Pred <- eval(MargiModel.Pred.caller)
 
       Mdl.X[[MargisNM[iComp]]] <- list()
-      Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred$meanForecast)
-      Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred$standardDeviation)
+
+      Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred[["meanForecast"]])
+      Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred[["standardDeviation"]])
 
       Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+    }
+    else
+    {
+      stop("No such foreign model!")
     }
   }
 

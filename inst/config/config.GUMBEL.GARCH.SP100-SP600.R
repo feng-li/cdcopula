@@ -27,7 +27,7 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisType <- c("GARCH-NORMAL", "GARCH-NORMAL", "GUMBEL")
+MargisType <- c("GARCH", "GARCH", "GUMBEL")
 MargisNM <- c("^SML", "^OEX", "GUMBEL")
 
 MCMCUpdate <- list(list("mu" = F, "phi" = F),
@@ -118,7 +118,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = 2:19, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 10000
+MCMC.nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------

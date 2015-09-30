@@ -6,8 +6,7 @@
 ##' @return
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Fri May 11 09:34:09 CEST 2012;
-##'       Current: Tue Jan 27 21:56:12 CST 2015
+##' @note Created: Fri May 11 09:34:09 CEST 2012; Current: Tue Jan 27 21:56:12 CST 2015
 ##' TODO: Write it in a more elegant way
 parCplMeanFun <- function(Mdl.X,  Mdl.parLink, Mdl.beta, parUpdate, Mdl.par)
 {
@@ -34,9 +33,10 @@ parCplMeanFun <- function(Mdl.X,  Mdl.parLink, Mdl.beta, parUpdate, Mdl.par)
       if(!(tolower(parCaller) %in% tolower(condPar)))
       {
         ## Update the parameters for the updated part
-        Mdl.par[[CompCaller]][[parCaller]] <- parMeanFun(X = Mdl.X[[CompCaller]][[parCaller]],
-                                                         beta = Mdl.beta[[CompCaller]][[parCaller]],
-                                                         linkArgs = Mdl.parLink[[CompCaller]][[parCaller]])
+        parCurr <- parMeanFun(X = Mdl.X[[CompCaller]][[parCaller]],
+                              beta = Mdl.beta[[CompCaller]][[parCaller]],
+                              linkArgs = Mdl.parLink[[CompCaller]][[parCaller]])
+        Mdl.par[[CompCaller]][[parCaller]] <- parCurr
       }
     }
   }
@@ -83,10 +83,10 @@ parCplMeanFun <- function(Mdl.X,  Mdl.parLink, Mdl.beta, parUpdate, Mdl.par)
       }
 
       Mdl.par[[CplNM]][["tau"]] <- parMeanFun(X = XCurr, beta = betaCurr, linkArgs = linkCurr)
-          }
-      }
+    }
+  }
 
 
-    out <- Mdl.par
-    return(out)
+  out <- Mdl.par
+  return(out)
 }

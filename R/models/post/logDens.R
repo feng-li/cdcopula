@@ -34,8 +34,8 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     evalCpl <- TRUE
     Mdl.PostComp <- lapply(parUpdate, function(x) TRUE)
   }
-  else if(tolower(MCMCUpdateStrategy) == "twostage"
-          || tolower(MCMCUpdateStrategy) == "margin")
+  else if(tolower(MCMCUpdateStrategy) == "twostage" ||
+          tolower(MCMCUpdateStrategy) == "margin")
   {
     if(length(MargisUpNM) == 0)
     {
@@ -55,8 +55,6 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
                "not implemented!"))
   }
-
-
 
   ## THE MARGINAL LIKELIHOODS
   densCaller <- list()
