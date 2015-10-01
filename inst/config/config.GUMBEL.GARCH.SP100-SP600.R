@@ -118,7 +118,7 @@ varSelArgs[[3]][["tau"]] <- list(cand = 2:19, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 100
+MCMC.nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -208,14 +208,13 @@ priArgs[[2]][["mu"]] <- NA
 priArgs[[2]][["phi"]] <- NA
 
 
-priArgs[[3]][["tau"]] <-  list("beta" = list(
-         "intercept" = list(type = "custom",
-                            input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
-                                         a = 0.01, b = 0.99),
-                            output = list(type = "norm", shrinkage = 1)),
-         "slopes" = list(type = "cond-mvnorm",
-                         mean = 0, covariance = "identity", shrinkage = 1)),
-                         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["tau"]] <-  list("beta" = list("intercept" = list(type = "custom",
+                                                                input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
+                                                                             a = 0.01, b = 0.99),
+                                                                output = list(type = "norm", shrinkage = 1)),
+                                             "slopes" = list(type = "cond-mvnorm",
+                                                             mean = 0, covariance = "identity", shrinkage = 1)),
+                               "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
