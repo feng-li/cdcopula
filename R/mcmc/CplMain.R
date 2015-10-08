@@ -149,7 +149,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- TRUE
+  optimInit <- FALSE
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
   {
@@ -227,9 +227,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         betaVecOptimComp <-  optimx(par = betaVecInitComp,
                                     fn = logPostOptim,
                                     control = list(maximize = TRUE,
-                                                   ## all.methods = TRUE,
+                                                   all.methods = TRUE,
                                                    maxit = 100),
-                                    method = "BFGS",
+                                    ## method = "BFGS",
                                     hessian = FALSE,
                                     MargisType = MargisType,
                                     Mdl.Y = Mdl.Y.training.sample,
@@ -333,7 +333,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
   }
 
-
 ###----------------------------------------------------------------------------
 ### THE GIBBS SAMPLER (WITH METROPOLIS-HASTINGS)
 ###----------------------------------------------------------------------------
@@ -422,7 +421,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     if(MCMC.track == TRUE && iInner == nInner)
     {
       CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                      interval = 1, MCMC.burninProp = MCMC.burninProp,
+                      interval = 0.2, MCMC.burninProp = MCMC.burninProp,
                       OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                       MCMC.betaIdx = MCMC.betaIdx,
                                       MCMC.par = MCMC.par,

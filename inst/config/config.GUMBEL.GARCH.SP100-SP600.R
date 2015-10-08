@@ -81,10 +81,10 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 
-Mdl.X[[1]] <- list(include.mean = FALSE,
+Mdl.X[[1]] <- list(include.mean = TRUE,
                    cond.dist = "norm",
                    trace = TRUE)
-Mdl.X[[2]] <- list(include.mean = FALSE,
+Mdl.X[[2]] <- list(include.mean = TRUE,
                    cond.dist = "norm",
                    trace = TRUE)
 

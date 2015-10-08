@@ -30,10 +30,10 @@
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 
-MCMCUpdate <- list(list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
-                   list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
-                   list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
-                   list("tau" = T, "lambdaL" = T))
+MCMCUpdate <- list(list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+                   list("tau" = T, "lambdaL" = F))
 
 names(MCMCUpdate) <- MargisNM
 
@@ -61,7 +61,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-100):nObsRaw
+nObsIdx <- (1 + nObsRaw-30):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
