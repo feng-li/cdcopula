@@ -33,7 +33,7 @@ MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 MCMCUpdate <- list(list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
                    list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
                    list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("tau" = T, "lambdaL" = T))
+                   list("df" = T, "rho" = T))
 
 names(MCMCUpdate) <- MargisNM
 
@@ -96,8 +96,8 @@ Mdl.X[[3]][["phi"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
 Mdl.X[[3]][["df"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
 Mdl.X[[3]][["lmd"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
 
-Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
-Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
+Mdl.X[[4]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
+Mdl.X[[4]][["rho"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -116,9 +116,8 @@ Mdl.parLink[[3]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
 Mdl.parLink[[3]][["lmd"]] <- list(type = "log",  nPar = 1)
 
-Mdl.parLink[[4]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
-                                  nPar = (length(MargisType)-1)*(length(MargisType)-2)/2)
-Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99,
+Mdl.parLink[[4]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[4]][["rho"]] <- list(type = "glogit", a = 0.01, b = 0.99,
                                       nPar = (length(MargisType)-1)*(length(MargisType)-2)/2)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
@@ -153,10 +152,10 @@ varSelArgs[[3]][["df"]] <- list(cand = "2:end",
 varSelArgs[[3]][["lmd"]] <- list(cand = "2:end",
                                  init = "all-in")
 
-varSelArgs[[4]][["tau"]] <- list(cand = "2:end",
+varSelArgs[[4]][["df"]] <- list(cand = "2:end",
                                  init = "all-in")
-varSelArgs[[4]][["lambdaL"]] <- list(cand = "2:end",
-                                     init = "all-in")
+varSelArgs[[4]][["rho"]] <- list(cand = "2:end",
+                                 init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
@@ -369,20 +368,19 @@ priArgs[[3]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
                               "indicators" = list(type = "bern", prob = 0.5))
 
 
-priArgs[[4]][["tau"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
+priArgs[[4]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
+                                                              input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                              output = list(type = "norm", shrinkage = 1)),
+                                            "slopes" = list(type = "cond-mvnorm",
+                                                            mean = 0, covariance = "identity", shrinkage = 1)),
+                              "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[4]][["rho"]] <- list("beta" = list("intercept" = list(type = "custom",
+                                                               input = list(type = "gbeta",  mean = 0.1, variance = 0.05,
                                                                             a = 0.01, b = 0.99),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
                               "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[4]][["lambdaL"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                   input = list(type = "gbeta",  mean = 0.1, variance = 0.05,
-                                                                                a = 0.01, b = 0.78),
-                                                                   output = list(type = "norm", shrinkage = 1)),
-                                                "slopes" = list(type = "cond-mvnorm",
-                                                                mean = 0, covariance = "identity", shrinkage = 1)),
-                                  "indicators" = list(type = "bern", prob = 0.5))
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
 ### The parameters in the current MCMC iteration. For the first iteration, it

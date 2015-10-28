@@ -40,7 +40,6 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 
       out <- logCplGrad.par[["theta"]]*(1/lambdaGrad.par[["theta"]])
     }
-
     else if(tolower(parCaller) == "tau")
     {
       ## logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
@@ -83,35 +82,48 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
 
     parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
     df <- parCpl[["df"]] # n-by-1
-    ## rho <- parCpl[["rho"]] # n-by-lq
 
-    u.quantile <- qt(u, df)
-    if(tolower(parCaller) == "lambdal")
+    if(tolower(parCaller) %in% c("lambdal", "df"))
     { ## CopulaDensity-MVT.nb
 
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
                                    parCpl = parCpl, parCaller = c("df")) # n-by-1
 
-      lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                   parCaller = c("df"))
+      if(tolower(parCaller) == "df")
+      {
+        ## No reparameterization
+        parRepGrad <- 1
+      }
+      else
+      {
+        lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
+                                     parCaller = c("df"))
+        parRepGrad <- (1/lambdaGrad.par[["df"]])
+      }
 
       ## The chain gradient
-      out <- (logCplGrad[["df"]]*(1/lambdaGrad.par[["df"]])) # n-by-lq
-
+      out <- (logCplGrad.par[["df"]]*parRepGrad) # n-by-lq
     }
-    else if(tolower(parCaller) == "tau")
+    else if(tolower(parCaller) %in% c("tau", "rho"))
     {
       logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
                                    parCpl = parCpl, parCaller = c("rho")) # n-by-lq
 
-      kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                           parCaller = "rho")
+      if(tolower(parCaller) == "rho")
+      {
+        parRepGrad <- 1
+      }
+      else
+      {
+        kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
+                                             parCaller = "rho")
+        parRepGrad <- (1/kendalltauGrad.par[["rho"]])
+      }
 
-      out <- 2*logCplGrad.par[["rho"]]*(1/kendalltauGrad.par[["rho"]]) # n-by-lq
+      out <- 2*logCplGrad.par[["rho"]]*parRepGrad # n-by-lq
 
       ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
       ## result. need further verification.
-
     }
     else
     {

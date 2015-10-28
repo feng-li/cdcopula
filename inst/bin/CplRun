@@ -67,7 +67,8 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
                                ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
                                ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
                                ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
-                               "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
+                               ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
+                               "/inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
                                ## "/inst/config/config.MVGARCH.R"
                                )
     nCores <- 1

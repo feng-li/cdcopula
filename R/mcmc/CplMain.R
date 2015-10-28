@@ -149,7 +149,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
   ## Generate initial values that does not let log posterior be -Inf.
   ## Loop and count how many times tried for generating initial values
-  optimInit <- FALSE
+  optimInit <- TRUE
   if(optimInit == TRUE &&
      any(tolower(unlist(betaInit)) == "random"))
   {
@@ -182,7 +182,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
       cat("\nInitializing model component:", CompCaller, "...\n")
       InitGoodCompCurr <- FALSE
       nLoopInit <- 0
-      maxLoopInit <- 3
+      maxLoopInit <- 1
 
       ## Only current component is updated.
       parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
@@ -227,9 +227,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         betaVecOptimComp <-  optimx(par = betaVecInitComp,
                                     fn = logPostOptim,
                                     control = list(maximize = TRUE,
-                                                   all.methods = TRUE,
+                                                   all.methods = FALSE,
                                                    maxit = 100),
-                                    ## method = "BFGS",
+                                    method = "BFGS",
                                     hessian = FALSE,
                                     MargisType = MargisType,
                                     Mdl.Y = Mdl.Y.training.sample,
@@ -299,9 +299,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
       nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
       namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
 
-      if(CompCaller %in% MargisNM[length(MargisNM)])
+      if((CompCaller %in% MargisNM[length(MargisNM)]) & nPar.ij != 1)
       {
-        ## browser()
         nDim <- length(MargisNM)-1
         namesParFull.ij <- matrix(paste(matrix(1:nDim, nDim, nDim),
                                         matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
@@ -324,7 +323,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                                      nMCMC, ncolX.ij*nPar.ij,
                                                      dimnames = list(NULL, namesX.ij),
                                                      byrow = TRUE)
-
+      ## if(CompCaller == "MVT" & parCaller  == "rho") browser()
       MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMC, nTraining, nPar.ij),
                                                    dimnames = list(NULL, NULL, namesPar.ij))
 
