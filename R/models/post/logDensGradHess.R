@@ -188,6 +188,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   }
 
   ## Error checking
+  if(length(logCplGradObs) == 0) browser()
   if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))
   {
     return(list(errorFlag = TRUE))

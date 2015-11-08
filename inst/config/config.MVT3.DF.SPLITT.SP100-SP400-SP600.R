@@ -30,9 +30,9 @@
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 
-MCMCUpdate <- list(list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
-                   list("mu" = F, "phi"= F, "df"= F, "lmd"= F),
+MCMCUpdate <- list(list("mu" = T, "phi"= T, "df"= F, "lmd"= F),
+                   list("mu" = T, "phi"= T, "df"= F, "lmd"= F),
+                   list("mu" = T, "phi"= T, "df"= F, "lmd"= F),
                    list("df" = T, "rho" = T))
 
 names(MCMCUpdate) <- MargisNM
@@ -61,7 +61,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-30):nObsRaw
+nObsIdx <- (1 + nObsRaw-300):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -81,23 +81,23 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, 1:3])
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1])
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1])
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1])
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, 1])
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, 1:3])
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1])
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1])
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, 1])
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, 1])
 
-Mdl.X[[3]][["mu"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
-Mdl.X[[3]][["phi"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
-Mdl.X[[3]][["df"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
-Mdl.X[[3]][["lmd"]] <- cbind(1, X[[3]][nObsIdx, 1:3])
+Mdl.X[[3]][["mu"]] <- cbind(1, X[[3]][nObsIdx, 1])
+Mdl.X[[3]][["phi"]] <- cbind(1, X[[3]][nObsIdx, 1])
+Mdl.X[[3]][["df"]] <- cbind(1, X[[3]][nObsIdx, 1])
+Mdl.X[[3]][["lmd"]] <- cbind(1, X[[3]][nObsIdx, 1])
 
-Mdl.X[[4]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
-Mdl.X[[4]][["rho"]] <- cbind(1, X[[1]][nObsIdx, 1:3], X[[2]][nObsIdx, 1:3], X[[3]][nObsIdx, 1:3])
+Mdl.X[[4]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1], X[[2]][nObsIdx, 1], X[[3]][nObsIdx, 1])
+Mdl.X[[4]][["rho"]] <- cbind(1, X[[1]][nObsIdx, 1], X[[2]][nObsIdx, 1], X[[3]][nObsIdx, 1])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate

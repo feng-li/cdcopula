@@ -120,7 +120,6 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
                                CplNM = CplNM,
                                parCplRep = Mdl.par[[CplNM]],
                                sum = FALSE) # n-by-1
-
     Mdl.d[, CplNM] <- Mdl.logLikCpl
   }
 

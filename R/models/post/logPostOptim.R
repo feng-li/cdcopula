@@ -41,6 +41,5 @@ logPostOptim <- function(betaVec, MargisType, Mdl.Y, Mdl.X, Mdl.beta,
                         MCMCUpdateStrategy = MCMCUpdateStrategy)
 
   out <- logPostOut[["Mdl.logPost"]]
-  print(out)
   return(out)
 }

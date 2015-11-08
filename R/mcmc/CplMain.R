@@ -222,12 +222,13 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                       Mdl.beta = Mdl.beta,
                                       Mdl.betaIdx = Mdl.betaIdx,
                                       parUpdate = parUpdate)
-
+        ## if(CompCaller == "MVT") browser()
         ## Optimize the initial values
         betaVecOptimComp <-  optimx(par = betaVecInitComp,
                                     fn = logPostOptim,
                                     control = list(maximize = TRUE,
                                                    all.methods = FALSE,
+                                                   kkt = FALSE,
                                                    maxit = 100),
                                     method = "BFGS",
                                     hessian = FALSE,

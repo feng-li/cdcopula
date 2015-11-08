@@ -11,7 +11,7 @@
 ##' @references Joe 1997, p. 153
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Oct 20 18:15:13 CEST 2011;
-##'       Current: Mon May 21 14:37:01 CEST 2012.
+##'       Current: Sun Nov 08 20:10:52 CST 2015.
 logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
 {
   parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)

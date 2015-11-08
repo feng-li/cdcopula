@@ -74,9 +74,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
     {
 ################################################################################
 ### DEBUGGING
-      ## u <- matrix(c(0.6, 0.3), 1, )
-      ## theta <- 3.5
-      ## delta <- 2.4
+## u <- matrix(c(0.6, 0.3), 1, )
+## theta <- 3.5
+## delta <- 2.4
 ### PASSED
 ################################################################################
 
@@ -114,13 +114,13 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         PT1^(-1-2*delta)*(rowSums(T1^delta)-PT1^delta)^2*
                                                        (1/theta*PT1^(-delta)*(-SD12*(1+delta)*theta*(
                                                          -2+theta-2*delta*theta+L1^(1/delta)*(1+2*delta)*theta)-
-                                                                               L1*PT1^(1+delta)*(C1*(-1+theta)*(
-                                                                                 -1+theta-theta*delta
-                                                                                 +L1^(1/delta)*(1+delta)*theta)+
-                                                                                                 theta*(C2+delta+C2*delta*theta-
-                                                                                                        L1^(1/delta)*(1+delta)*(1+C2*theta))))+
-                                                                    L1*(-1-delta*theta+
-                                                                         L1^(1/delta)*(1+delta)*theta)*
+                                                         L1*PT1^(1+delta)*(C1*(-1+theta)*(
+                                                           -1+theta-theta*delta
+                                                           +L1^(1/delta)*(1+delta)*theta)+
+                                                           theta*(C2+delta+C2*delta*theta-
+                                                                  L1^(1/delta)*(1+delta)*(1+C2*theta))))+
+                                                                  L1*(-1-delta*theta+
+                                                                       L1^(1/delta)*(1+delta)*theta)*
                                                                     (rowSums(T1[, 2:1]*(T1+(1-u)^theta*(1+delta))*log(1-u))))
       }
 
@@ -131,28 +131,20 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
     if(any(paste("u", 1:q, sep = "") %in% tolower(parCaller)))
     {
-      ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are
-      ## exchangeable which means the expression for the gradient w.r.t u1
-      ## and u2 are the same if swap u1 and u2
-      if(tolower(parCaller) == "u1")
-      {
-        u <-  u[, 1:2, drop = FALSE]
-      }
-      else if(tolower(parCaller) == "u2")
-      {
-        u <-  u[, 2:1, drop = FALSE]
-      }
-      else
-      {
-        stop("No such copula parameter!")
-      }
+      ## Gradient w.r.t u. NOTE: The BB7 copula's marginal are exchangeable which means
+      ## the expression for the gradient w.r.t u1 and u2 are the same if swap u1 and u2
+      imar <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
+      uIdx <- 1:q
+      uIdx[1] <- imar
+      uIdx[imar] <- 1
+      u <- u[, uIdx]
 
 ################################################################################
-      ## DEBUGGING
-      ## u <- matrix(c(0.2, 0.3), 1, )
-      ## theta <- 1.5
-      ## delta <- 2.4
-      ## PASSED
+## DEBUGGING
+## u <- matrix(c(0.2, 0.3), 1, )
+## theta <- 1.5
+## delta <- 2.4
+## PASSED
 ################################################################################
 
       ub <- 1 - u
@@ -234,107 +226,105 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         C1 <- solve(Sigma, (x-mu))
         C0 <- as.vector(t(x-mu)%*%C1)
         logGradCpl.Sigma <- -1/2*solve(Sigma)-(v+p)/2*(1+C0/v)^(-1)*(-C1%*%t(C1))/v
-        out <- logGradCpl.Sigma[lower.tri(
-                      logGradCpl.Sigma, diag = FALSE)]
+        out <- logGradCpl.Sigma[lower.tri(logGradCpl.Sigma, diag = FALSE)]
 
-              return(out)
-            }
-          logCplGrad.rho <- t(apply(matrix(1:nObs), 1,
-                                    gradFun,
-                                    rho = rho,
-                                    df = df,
-                                    u.quantile = u.quantile)) # n-by-lq
+        return(out)
+      }
+      logCplGrad.rho <- t(apply(matrix(1:nObs), 1,
+                                gradFun,
+                                rho = rho,
+                                df = df,
+                                u.quantile = u.quantile)) # n-by-lq
 
 
-          out[["rho"]] <- 2*logCplGrad.rho # n-by-lq
-          ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
-          ## result. need further verification.
+      out[["rho"]] <- 2*logCplGrad.rho # n-by-lq
+      ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
+      ## result. need further verification.
 
+    }
+
+    if(any(paste("u", 1:q, sep = "") %in% tolower(parCaller)))
+    {
+      ## The gradient with respect to u_i Reorder the parameters.
+      imar <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
+      uIdx <- 1:q
+      uIdx[1] <- imar
+      uIdx[imar] <- 1
+
+      u <- u[, uIdx]
+
+      x <- u.quantile[, uIdx]
+      x1 <- x[, 1]
+      mu <- 0
+
+      ## The t copula and related copulas EQ.(6)
+      fx1 <- dt(x = x1, df = df, log = FALSE) # n-by-1
+      f1x1 <- -(x1-mu)*df*(1+df)*(df/(df+(x1-mu)^2))^(-1+(1+df)/2)/
+                                                     ((df+(x1-mu)^2)^2*sqrt(df)*beta(df/2, 1/2)) # n-by-q
+
+
+      ## The first marginal CDF derivative with respect to x1.
+      F1x1 <- matrix(NA, nObs, 1) # n-by-1
+      I0 <- (x1<mu)
+      I <- !I0
+      if(any(I))
+      {
+        df.1 <- df[I]
+        x1.1 <- x1[I]
+
+        F1x1.I <- {
+          -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/
+                                             ((x1.1-mu)^2+df.1))*
+           (1-(x1.1-mu)^2/((x1.1-mu)^2+df.1))^(-1+df.1/2)/
+                                              (2*sqrt((x1.1-mu)^2/((x1.1-mu)^2+df.1))*
+                                               beta(1/2, df.1/2))
         }
 
-      if(any(c("u1", "u2") %in% tolower(parCaller)))
+        F1x1[I] <- F1x1.I
+      }
+
+      if(any(I0))
+      {
+        df.0 <- df[I0]
+        x1.0 <- x1[I0]
+
+        F1X.I0 <- {
+          -(x1.0-mu)*df.0*
+           (df.0/((x1.0-mu)^2+df.0))^(-1+df.0/2)/((x1.0-mu)^2+df.0)^2/
+                                                                    sqrt(1-df.0/((x1.0-mu)^2+df.0))/beta(df.0/2, 1/2)
+        }
+        F1x1[I0] <- F1X.I0
+
+      }
+
+
+      ## The gradient for copula with respect to x1.
+      FUN <- function(i, x, mu, df, rho, uIdx)
+      {
+        Sigma0 <- vech2m(rho[i, ], diag = FALSE)
+        Sigma <- Sigma0[uIdx, uIdx]
+
+        if(!is.positivedefinite(Sigma))
         {
-          ## The gradient with respect to u_i
-          ## Reorder the parameters.
-          imar <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
-
-          uIdx <- 1:q
-          uIdx[1] <- imar
-          uIdx[imar] <- 1
-
-          u <- u[, uIdx]
-          x <- u.quantile[, uIdx]
-          x1 <- x[, 1]
-          mu <- 0
-
-          ## The t copula and related copulas EQ.(6)
-          fx1 <- dt(x = x1, df = df, log = FALSE) # n-by-1
-          f1x1 <- -(x1-mu)*df*(1+df)*(df/(df+(x1-mu)^2))^(-1+(1+df)/2)/
-          ((df+(x1-mu)^2)^2*sqrt(df)*beta(df/2, 1/2)) # n-by-q
-
-
-          ## The first marginal CDF derivative with respect to x1.
-          F1x1 <- matrix(NA, nObs, 1) # n-by-1
-          I0 <- (x1<mu)
-          I <- !I0
-          if(any(I))
-            {
-              df.1 <- df[I]
-              x1.1 <- x1[I]
-
-              F1x1.I <- {
-                -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/
-                  ((x1.1-mu)^2+df.1))*
-                (1-(x1.1-mu)^2/((x1.1-mu)^2+df.1))^(-1+df.1/2)/
-                (2*sqrt((x1.1-mu)^2/((x1.1-mu)^2+df.1))*
-                 beta(1/2, df.1/2))
-              }
-
-              F1x1[I] <- F1x1.I
-            }
-
-          if(any(I0))
-            {
-              df.0 <- df[I0]
-              x1.0 <- x1[I0]
-
-              F1X.I0 <- {
-                -(x1.0-mu)*df.0*
-                (df.0/((x1.0-mu)^2+df.0))^(-1+df.0/2)/((x1.0-mu)^2+df.0)^2/
-                sqrt(1-df.0/((x1.0-mu)^2+df.0))/beta(df.0/2, 1/2)
-              }
-              F1x1[I0] <- F1X.I0
-
-            }
-
-
-          ## The gradient for copula with respect to x1.
-          FUN <- function(i, x, mu, df, rho, uIdx)
-            {
-              Sigma0 <- vech2m(rho[i, ], diag = FALSE)
-              Sigma <- Sigma0[uIdx, uIdx]
-
-              if(!is.positivedefinite(Sigma))
-                {
-                  out <- NA
-                }
-
-              p <- dim(Sigma)[1]
-              v <- df[i]
-              x_i <- matrix(x[i, ])
-
-              C2 <- as.vector(t(x_i-mu)%*%solve(Sigma)%*%(x_i-mu))
-              out <- -(v+p)/2*C2^(-1)*
-              1/v*(2*solve(Sigma)%*%(x_i-mu))
-              return(out)
-            }
-          gradLogCpl.x1 <- t(apply(matrix(1:nObs), 1, FUN,
-                                   df = df, x = x, mu = mu,
-                                   rho = rho, uIdx = uIdx))[, 1] # n-by-1
-
-          logCplGrad.u <- gradLogCpl.x1*(1/F1x1)- 1/fx1*f1x1/F1x1
-          out[["u"]] <-  logCplGrad.u
+          out <- NA
         }
+
+        p <- dim(Sigma)[1]
+        v <- df[i]
+        x_i <- matrix(x[i, ])
+
+        C2 <- as.vector(t(x_i-mu)%*%solve(Sigma)%*%(x_i-mu))
+        out <- -(v+p)/2*C2^(-1)*
+                           1/v*(2*solve(Sigma)%*%(x_i-mu))
+        return(out)
+      }
+      gradLogCpl.x1 <- t(apply(matrix(1:nObs), 1, FUN,
+                               df = df, x = x, mu = mu,
+                               rho = rho, uIdx = uIdx))[, 1] # n-by-1
+
+      logCplGrad.u <- gradLogCpl.x1*(1/F1x1)- 1/fx1*f1x1/F1x1
+      out[["u"]] <-  logCplGrad.u
+    }
   }
   else if(tolower(CplNM) == "gumbel")
   {
@@ -363,20 +353,16 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
       out[["delta"]] <- logCplGrad.delta
     }
 
-    if(any(c("u1", "u2") %in% tolower(parCaller)))
+
+    if(any(paste("u", 1:q, sep = "") %in% tolower(parCaller)))
     {
-      if(tolower(parCaller) == "u1")
-      {
-        u <-  u[, 1:2, drop = FALSE]
-      }
-      else if(tolower(parCaller) == "u2")
-      {
-        u <-  u[, 2:1, drop = FALSE]
-      }
-      else
-      {
-        stop("No such copula parameter!")
-      }
+      ## The gradient with respect to u_i
+      ## Reorder the parameters.
+      imar <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
+      uIdx <- 1:q
+      uIdx[1] <- imar
+      uIdx[imar] <- 1
+      u <- u[, uIdx]
 
       u1 <- u[, 1]
       logCplGrad.u <- (-1/u1 + ((-1+delta - (1+uDelta^(2/delta)
@@ -399,24 +385,19 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
       logCplGrad.delta <- (1/(1 + delta) - log(u1) - log(u2) +
                            (-2 - 1/delta)*(-u1^(-delta)*log(u1)
                              - u2^(-delta)*log(u2))/A +
-                           log(A)/(delta^2))
+                             log(A)/(delta^2))
       out[["delta"]] <- logCplGrad.delta
     }
 
-    if(any(c("u1", "u2") %in% tolower(parCaller)))
+    if(any(paste("u", 1:q, sep = "") %in% tolower(parCaller)))
     {
-      if(tolower(parCaller) == "u1")
-      {
-        u <-  u[, 1:2, drop = FALSE]
-      }
-      else if(tolower(parCaller) == "u2")
-      {
-        u <-  u[, 2:1, drop = FALSE]
-      }
-      else
-      {
-        stop("No such copula parameter!")
-      }
+      ## The gradient with respect to u_i
+      ## Reorder the parameters.
+      imar <- as.numeric(substr(parCaller, 2, nchar(parCaller)))
+      uIdx <- 1:q
+      uIdx[1] <- imar
+      uIdx[imar] <- 1
+      u <- u[, uIdx]
 
       A <- u1^delta*(-1+u2^delta)
 
@@ -431,5 +412,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
   }
 
 
+  if(length(out) == 0)
+  {
+    stop("No such copula parameter defined or implemented.")
+  }
   return(out)
 }

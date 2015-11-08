@@ -96,8 +96,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
       }
       else
       {
-        lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl,
-                                     parCaller = c("df"))
+        lambdaGrad.par <- lambdaGrad(CplNM = CplNM, parCpl = parCpl, parCaller = c("df"))
         parRepGrad <- (1/lambdaGrad.par[["df"]])
       }
 
@@ -115,8 +114,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
       }
       else
       {
-        kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl,
-                                             parCaller = "rho")
+        kendalltauGrad.par <- kendalltauGrad(CplNM = CplNM, parCpl = parCpl, parCaller = "rho")
         parRepGrad <- (1/kendalltauGrad.par[["rho"]])
       }
 
@@ -129,8 +127,8 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
     {
       ## The gradient with respect to u_i
       ## Reorder the parameters.
-      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u,
-                                   parCpl = parCpl, parCaller = parCaller) # n-by-lq
+      logCplGrad.par <- logCplGrad(CplNM = CplNM, u = u, parCpl = parCpl,
+                                   parCaller = parCaller) # n-by-lq
 
       out <- logCplGrad.par[["u"]]
     }
