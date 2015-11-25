@@ -181,6 +181,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                             parCaller = cplCaller)
       logCplGradObs <- logCplGradObs.num
     }
+
   }
   else
   {
@@ -188,8 +189,9 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   }
 
   ## Error checking
-  if(length(logCplGradObs) == 0) browser()
-  if(any(is.na(logCplGradObs)) || any(is.infinite(logCplGradObs)))
+  if(length(logCplGradObs) == 0 ||
+     any(is.na(logCplGradObs)) ||
+     any(is.infinite(logCplGradObs)))
   {
     return(list(errorFlag = TRUE))
   }
@@ -198,7 +200,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 ###----------------------------------------------------------------------------
 ### THE OUTPUT
 ###----------------------------------------------------------------------------
-  ## The gradient for the full likelihood,  n-by-1
+## The gradient for the full likelihood,  n-by-1
   logDensGradObs <- (logCplGradObs*MargiGradObs.u) + MargiGradObs.d #*LinkGradObs
 
   ## The output

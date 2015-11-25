@@ -1,6 +1,6 @@
 ## The gradient for the copula function. scaler input and output NOTE: The numerical
 ## gradient may not work well if the tabular version of Kendall's tau is used (due to the
-## precision).
+## precision) in BB7 copula.
 logCplRepGradNum <- function(CplNM, u, parCplRep, parCaller)
 {
   require("numDeriv")

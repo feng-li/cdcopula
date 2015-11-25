@@ -87,11 +87,27 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
       out[["d"]] <- d
     }
   }
+  else if (tolower(typeStd)  == "poisson")
+  {
+    mu <- par[["mu"]]  # location parameter
+
+    if("u" %in% tolower(densCaller))
+    {
+      u <- ppois(q = y, lambda = mu, log.p = FALSE)
+      out[["u"]] <- u
+    }
+
+    if("d" %in% tolower(densCaller))
+    {
+      d <- dpois(x = y, lambda = mu, log = TRUE)
+      out[["d"]] <- d
+    }
+
+  }
   else
   {
     stop("This type of margin is not implemented.")
   }
-
 
   ## The output
   return(out)

@@ -137,7 +137,7 @@ rCpl <- function(n, parCpl, CplNM, exArgs = NA)
       P.mat[upper.tri(P.mat)] <- t(P.mat)[upper.tri(P.mat)]
       corr <- P.mat # The covariance matrix with scale 1.
 
-      x <- matrix(rmvt(n*p, df = df, sigma = corr), n, p)
+      x <- matrix(rmvt(n*p, df = df, sigma = corr, type = "shifted"), n, p)
       u <- pt(x, df = df) # The percentile
 
       ## Kendall's tau,  empirical

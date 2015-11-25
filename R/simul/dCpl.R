@@ -71,7 +71,6 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                           x = u.quantile, rho = rho)
 
     logDensLower <- apply(dnorm(u.quantile, log = TRUE), 1, sum)
-
     logDens <- logDensUpper-logDensLower
 
     ## The output
@@ -79,34 +78,35 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
   }
   else if(tolower(CplNM) == "mvt") # The multivariate t-copula
   {## Demarta & McNeil (2005),  The t copula and related copulas
-
     require("mvtnorm")
 
     ## df, corr
     df <- parCpl[["df"]] # n-by-1
     rho <- parCpl[["rho"]] # n-by-lq
 
-    ## The quantile for *univariate* t
+    ## The quantile for *univariate* t, that is x in t(x, df)
     u.quantile <- qt(u, df = df)
     ## u.quantile <- X
 
-
-    ## The copula density function C_12(u1, u2)
+    ## The log copula density function C_12(u1, u2)
     nObs <- length(df)
     dmvtVecFun <- function(i, x, rho, df)
     {
+      ## the formula right before formula (1.4) in Genz and Bretz (2009), also in
+      ## Wikipedia
+
       Sigma = vech2m(rho[i, ], diag = FALSE)
       out <- dmvt(x = x[i, , drop = FALSE],
                   sigma = Sigma,
+                  type = "shifted", # wikipedia type
                   df = df[i], log = TRUE)
-
       return(out)
     }
+
+    ## The density of the t copula,  Demarta & Department (2006) Eq(6)
     logDensUpper <- apply(matrix(1:nObs),1,dmvtVecFun,
                           x = u.quantile, rho = rho, df = df)
-
     logDensLower <- apply(dt(u.quantile, df = df, log = TRUE), 1, sum)
-
     logDens <- logDensUpper-logDensLower
 
     ## The output

@@ -60,7 +60,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+nObsIdx <- (1 + 200-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)

@@ -17,12 +17,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
   if(tolower(CplNM) == "bb7")
   {
-    ## The name of marginal model
-    MargisNM <- dimnames(u)[[2]]
     nObs <- dim(u)[1]
 
     ## The standard copula parameters (recycled if necessary, should be a vector).
-
     delta <- as.numeric(parCpl[["delta"]])
     theta <- as.numeric(parCpl[["theta"]]) # ff(delta)
 
@@ -175,21 +172,17 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
   }
   else if(tolower(CplNM) == "mvt")
   {
-    ## The name of marginal model
-    MargisNM <- dimnames(u)[[2]]
     nObs <- dim(u)[1]
 
     df <- parCpl[["df"]] # n-by-1
     rho <- parCpl[["rho"]] # n-by-lq
 
-    u.quantile <- qt(u, df)
+    u.quantile <- qt(u, df) # the x in t(x, df)
     if("df" %in% tolower(parCaller))
     { ## CopulaDensity-MVT.nb
-      gradFun <- function(i, rho, df, u.quantile)
+      gradFun4df <- function(i, rho, df, u.quantile)
       {
         Sigma <- vech2m(rho[i, ], diag = FALSE)
-
-
         v <- df[i]
         x <- matrix(u.quantile[i, ]) # col-vector
         mu <- 0
@@ -199,22 +192,26 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         C2 <- as.vector(t(x-mu)%*%solve(Sigma, (x-mu)))
 
         out <- ((C2-q -(C2+v)*log((C2+v)/v)+
-                 (C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/
-                (2*(C2+v)))
+                 (C2+v)*(-digamma(v/2)+digamma((q+v)/2)))/(2*(C2+v)))
         return(out)
       }
-      logCplGrad.df <- apply(matrix(1:nObs), 1,
-                             gradFun,
-                             rho = rho,
-                             df = df,
-                             u.quantile = u.quantile) # n-by-1
 
-      out[["df"]] <- logCplGrad.df
+      ## The gradient of the t copula numerator,  Demarta & Department (2006) Eq(6)
+      logCplGrad.df.upper <- apply(matrix(1:nObs), 1, gradFun4df,
+                                   rho = rho, df = df, u.quantile = u.quantile) # n-by-1
+
+      ## The gradient of the t copula denominator, (split-t in MargiModelGrad())
+      logCplGrad.df.lowerMat <- apply(u.quantile, 2, MargiModelGrad,
+                                    par = list(mu = 0, df = df, phi = 1, lmd = 1),
+                                    type = "splitt", parCaller = "df", densCaller = "d")
+      logCplGrad.df.lower <- apply(logCplGrad.df.lowerMat, 1,  sum)
+
+      out[["df"]] <- logCplGrad.df.upper -logCplGrad.df.lower
     }
 
     if("rho" %in% tolower(parCaller))
     {
-      gradFun <- function(i, rho, df, u.quantile)
+      gradFun4rho <- function(i, rho, df, u.quantile)
       {
         Sigma <- vech2m(rho[i, ], diag = FALSE)
         v <- df[i]
@@ -231,16 +228,12 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         return(out)
       }
       logCplGrad.rho <- t(apply(matrix(1:nObs), 1,
-                                gradFun,
+                                gradFun4rho,
                                 rho = rho,
                                 df = df,
                                 u.quantile = u.quantile)) # n-by-lq
 
-
-      out[["rho"]] <- 2*logCplGrad.rho # n-by-lq
-      ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
-      ## result. need further verification.
-
+      out[["rho"]] <- logCplGrad.rho # n-by-lq
     }
 
     if(any(paste("u", 1:q, sep = "") %in% tolower(parCaller)))

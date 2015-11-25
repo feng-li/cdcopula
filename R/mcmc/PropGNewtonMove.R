@@ -95,20 +95,20 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                             Mdl.parLink = Mdl.parLink,
                                             parUpdate = parUpdate,
                                             staticCache = staticCache.curr,
-                                            gradMethods = "analytic",
+                                            gradMethods = c("analytic", "numeric")[1],
                                             MCMCUpdateStrategy = MCMCUpdateStrategy)
 
     ## cat("Analytical gradient:\n")
     ## print(proc.time()-a)
 
     ## DEBUGING FIXME: DEBUGING code
-    DEBUGGING <- FALSE
+    DEBUGGING <- TRUE
     if(DEBUGGING == TRUE)
     {
       ## APPROACH ONE: This version calculates the numerical gradient with respect to
       ## the model parameters (not the covariate dependent beta parameters) via the
       ## chain rule.
-      a <- proc.time()
+      ## a <- proc.time()
       logDensGradHess.prop.num.split <- logDensGradHess(MargisType = MargisType,
                                                         Mdl.Y = Mdl.Y,
                                                         Mdl.parLink = Mdl.parLink,
@@ -120,7 +120,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
       ## cat("Numerical gradient (split):\n")
       ## print(proc.time()-a)
 
-      a <- proc.time()
+      ## a <- proc.time()
       logDensGradHess.prop.num.joint <- logDensGradHessNum(MargisType = MargisType,
                                                            Mdl.Y = Mdl.Y,
                                                            Mdl.parLink = Mdl.parLink,
@@ -138,14 +138,26 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
       g.num.split <- logDensGradHess.prop.num.split[["logGradObs"]]
       g.num.joint <- logDensGradHess.prop.num.joint[["logGradObs"]]
 
-      ## try(plot(g.num.joint, g.ana, main = as.character(chainCaller),
-      ##          pch = 20, col = "blue"), silent = TRUE)
-      g.lm <- try(lm(g.ana~0+g.num.joint), silent = TRUE)
-      if(is(g.lm, "try-error") || is.na(g.lm$coef) ||abs(g.lm$coef-1)>0.1)
+      nplot = ncol(g.ana)
+      ncol = min(3, nplot)
+      a  = try(par(mfrow = c(nplot%%ncol+1, ncol)))
+      if(is(a, "try-error")) browser()
+      print(c(nplot, ncol))
+      for(i in 1:nplot)
       {
-        ## Sys.sleep(1)
-        warning("Something Wrong in the Gradient!")
+        try(plot(g.num.joint[, i], g.ana[, i], main = as.character(chainCaller),
+                 pch = 20, col = "blue"), silent = TRUE)
+
+        g.lm <- try(lm(g.ana[, i]~0+g.num.joint[, i]), silent = TRUE)
+        print(g.lm)
+        if(is(g.lm, "try-error") || is.na(g.lm$coef) ||abs(g.lm$coef-1)>0.1)
+        {
+          ## Sys.sleep(1)
+          warning("Analytical and numerical gradients fail to match.")
+        }
+
       }
+
     }
 
     ## Break the loop if something went wrong in the gradient

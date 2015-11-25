@@ -118,7 +118,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
         parRepGrad <- (1/kendalltauGrad.par[["rho"]])
       }
 
-      out <- 2*logCplGrad.par[["rho"]]*parRepGrad # n-by-lq
+      out <- logCplGrad.par[["rho"]]*parRepGrad # n-by-lq
 
       ## FIXME: for some reason, the analytical result is always 1/2 of the numerical
       ## result. need further verification.

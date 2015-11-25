@@ -57,6 +57,7 @@ pCpl <- function(u, CplNM, parCpl, log = FALSE)
     corr <- P.mat # The covariance matrix with scale 1.
     u.quantile <- qt(u, df = df)
     percentile <- apply(u.quantile, 1, function(x) pmvt(lower = rep(-Inf, p),
+                                                        type = "shifted",
                                                         upper = x, corr = corr, df = df)[1])
     ## TODO: apply pmvt is very slow
     out <- matrix(percentile)

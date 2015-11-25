@@ -18,8 +18,9 @@ logCplPredict <- function(MargisType, Mdl.par)
     {
       typeStd <- type
     }
-
-    ## Standard model type
+###----------------------------------------------------------------------------
+### Standard model type
+###----------------------------------------------------------------------------
     if(typeStd == "gaussian")
     {
       mu <- Mdl.par[[iComp]][["mu"]]
@@ -40,6 +41,11 @@ logCplPredict <- function(MargisType, Mdl.par)
       out.iComp[["var"]] <- splitt.var(df, phi, lmd)
       out.iComp[["skewness"]] <- splitt.skewness(df, phi, lmd)
       out.iComp[["kurtosis"]] <- splitt.kurtosis(df, phi, lmd)
+    }
+    else if(typeStd == "poisson")
+    {
+      mu <- Mdl.par[[iComp]][["mu"]]
+      out.iComp[["mean"]] <- mu
     }
     else
     {
