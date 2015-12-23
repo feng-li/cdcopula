@@ -158,6 +158,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                      Mdl.betaIdx = Mdl.betaIdx.curr,
                                      staticCache = staticCache.curr,
                                      MCMCUpdateStrategy = MCMCUpdateStrategy)
+
     }
     else if(tolower(algmArgs[["type"]])  == "randomwalk")
     { ## Random walk metropolis (with/without variable selection)
@@ -229,6 +230,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                         Mdl.betaIdx = Mdl.betaIdx.prop,
                                         staticCache = staticCache,
                                         MCMCUpdateStrategy = MCMCUpdateStrategy)
+
     }
     else if(tolower(algmArgs[["type"]])  == "randomwalk")
     {

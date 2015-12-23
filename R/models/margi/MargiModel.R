@@ -15,8 +15,7 @@
 ##'
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note Created: Tue Jan 17 19:27:25 CET 2012;
-##'       Current: Mon Jan 05 16:24:51 CST 2015.
+##' @note Created: Tue Jan 17 19:27:25 CET 2012; Current: Mon Jan 05 16:24:51 CST 2015.
 MargiModel <- function(y, type, par, densCaller = c("u", "d"))
 {
   ## The out storage
@@ -25,11 +24,12 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
 ###----------------------------------------------------------------------------
 ### CONVERT FOREIGN MODELS INTO STANDARD SPECIFICATIONS
 ###----------------------------------------------------------------------------
-  if(all((names(par) %in% c("mu", "phi"))))
+  if(all((names(par) %in% c("mu", "phi"))) && length(names(par)) == 2)
   {
     typeStd <- "gaussian"
   }
-  else if(all((names(par) %in% c("mu", "phi", "df", "lmd"))))
+  else if(all((names(par) %in% c("mu", "phi", "df", "lmd"))) &&
+          length(names(par)) == 4)
   {
     typeStd <- "splitt"
   }
@@ -73,8 +73,10 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
     ## CDF
     if("u" %in% tolower(densCaller))
     {
-      u <- psplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
-                   log = FALSE)
+        u <- try(psplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
+                         log = FALSE))
+
+        ## if(is(u, "try-error")) browser()
       out[["u"]] <- u
     }
     ## PDF

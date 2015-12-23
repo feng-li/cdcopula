@@ -10,7 +10,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 ##' TODO: write this function as a summary
-CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC)
+CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
 {
   ## Set the print interval and consider burnin. If print interval is to narrow, set to
   ## one.
@@ -158,7 +158,14 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
       if(has.Display & npar>0)
       {
         dev.set(dev.list()[jDev])
-        par(mfrow = c(npar, 1))
+        if(npar <= 2)
+        {
+          par(mfrow = c(npar, 1))
+        }
+        else
+        {
+          par(mfrow = c(ceiling(npar/2), 2))
+        }
         jDev <- jDev+1
       }
       for(j in names(MCMC.beta[[i]]))
@@ -176,7 +183,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
             points(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid", col = "blue")
             points(par.ts.median[[i]][[j]][,1], type = "l", lty = "dashed", col = "black")
 
-            legend("topright",ncol = 3,bg = "grey",
+            legend("topright",ncol = 1,
                    lty = c("dotted", "solid", "dashed"),
                    col = c("red", "blue", "black"),
                    legend = c("95% HPD", "Posterior mean", "Posterior median"))
@@ -207,9 +214,16 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
 
           cat("\n", rep("-", dev.width-1), "\n", sep = "")
           cat(i, j, "(", donePercent, "% )\n")
+
+          covprint <- min(maxcovprint, ncol(obj))
+          covrintCol <- order(obj["betaIdx.mean", ], decreasing = TRUE)[0:covprint]
           print(obj.par)
           cat("\n")
-          print(obj)
+          print(obj[, covrintCol, drop = FALSE])
+          if(maxcovprint< ncol(obj))
+          {
+            cat("(Too many covariates used, Only the first 20 largest `betaIdx.mean` printed.)\n" )
+          }
         }
       }
     }

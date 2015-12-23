@@ -93,10 +93,11 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
 ###----------------------------------------------------------------------------
 ### UPDATING THE LIKELIHOOD
 ###----------------------------------------------------------------------------
-
   ## Updating the marginal models TODO: parallel version
   for(CompCaller in names(densCaller))
   {
+      ## if(CompCaller == "BABA") browser()
+
     Mdl.ud <- MargiModel(y = Mdl.Y[[CompCaller]],
                          type = MargisType[which(MargisNM == CompCaller)],
                          par = Mdl.par[[CompCaller]],

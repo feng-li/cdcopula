@@ -15,14 +15,21 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      varSelArgs, priArgs, parUpdate)
+                      varSelArgs, priArgs, parUpdate, Mdl.logPri)
 {
   ## Allocate the structure.
-  ## if(missing(Mdl.logPri))
-  ##   {
-  Mdl.logPri <- rapply(Mdl.beta, function(x) NA, how = "replace")
-  ## }
-  ## Loop over all updated parameter candidates
+    if(missing(Mdl.logPri))
+    {
+        Mdl.logPri <- rapply(Mdl.beta, function(x) NA, how = "replace")
+    }
+
+    if(missing(parUpdate))
+    {
+        parUpdate <- rapply(Mdl.beta, function(x) TRUE, how = "replace")
+    }
+
+
+    ## Loop over all updated parameter candidates
 
   CompNM <- names(priArgs)
   for(CompCaller in CompNM)
