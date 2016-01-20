@@ -30,7 +30,7 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("^SML", "^OEX", "BB7")
 
-MCMCUpdate <- list(list("mu" = F, "phi" = F, "df" = F, "lmd" = F),
+MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
                    list("mu" = F, "phi" = F, "df" = F, "lmd" = F),
                    list("lambdaL" = T, "lambdaU" = T))
 
@@ -106,7 +106,7 @@ Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
 
 Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
-Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.8)
+Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full

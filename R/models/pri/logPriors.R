@@ -87,8 +87,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
           ## TRUE or FALSE of variable selection candidates
 
           varSelCandTF <- betaIdxCurr[candIdx, , drop = FALSE]
-
-          logDens <- sum(dbinom(x = varSelCandTF, size = 1,
+          logDens <- sum(dbinom(x = as.numeric(varSelCandTF), size = 1,
                                 prob = probMat, log = TRUE))
         }
         else

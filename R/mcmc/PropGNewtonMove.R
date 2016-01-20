@@ -68,7 +68,6 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                 parUpdate = parUpdate,
                                 staticCache = staticCache,
                                 MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
-
 ###----------------------------------------------------------------------------
 ### The K-step Generalized Newton Move
 ###----------------------------------------------------------------------------
