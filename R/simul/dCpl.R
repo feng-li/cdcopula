@@ -49,7 +49,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                           (-2+1/theta)*log(L6)+
                           log(-1+theta+L5^(1/delta)*L6*(1+delta)*theta))
 
-      out.log <- matrix(as.numeric(logCplDensObs))
+      out.log <- matrix(logCplDensObs)
       return(out.log)
     }
     ## The usual log density
@@ -64,9 +64,10 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       require("Rmpfr")
       precBits <- 500
       ## MPFR class used for u, theta,  delta
-      out.log.redo <- logDensFun(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),
-                                 theta = mpfr(theta[redo.idx], precBits = precBits),
-                                 delta = mpfr(delta[redo.idx], precBits = precBits))
+      out.log.redoMPFR <- logDensFun(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),
+                                     theta = mpfr(theta[redo.idx], precBits = precBits),
+                                     delta = mpfr(delta[redo.idx], precBits = precBits))
+      out.log.redo <- as.numeric(out.log.redoMPFR)
       out.log[redo.idx] <- out.log.redo
 
       if(any(is.infinite(out.log.redo) | is.nan(out.log.redo)))

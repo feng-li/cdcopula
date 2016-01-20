@@ -188,7 +188,6 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                                   parCaller = cplCaller)
             logCplGradObs <- logCplGradObs.num
         }
-
     }
     else
     {
