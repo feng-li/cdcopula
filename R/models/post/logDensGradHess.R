@@ -144,14 +144,12 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
     }
 
     ## Error checking
-    if(length(MargiGradObs.u) != 0 &&
-       (any(is.na(MargiGradObs.u)) ||
-        any(is.infinite(MargiGradObs.u))))
+    if(length(MargiGradObs.u) != 0 && (any(!is.finite(MargiGradObs.u))))
     {
         return(list(errorFlag = TRUE))
     }
 
-    if(any(is.na(MargiGradObs.d)) || any(is.infinite(MargiGradObs.d)))
+    if(any(!is.finite(MargiGradObs.d)))
     {
         return(list(errorFlag = TRUE))
     }
@@ -197,10 +195,8 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 
     ## Error checking
     if(length(logCplGradObs) == 0 || ## NULL happens
-       any(is.na(logCplGradObs)) ||
-       any(is.infinite(logCplGradObs)))
+       any(!is.finite(logCplGradObs))) ## NA/NaN, Inf
     {
-        ## browser()
         return(list(errorFlag = TRUE))
     }
 

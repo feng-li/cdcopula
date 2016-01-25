@@ -126,8 +126,6 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
     Mdl.u <- Mdl.ud[["Mdl.u"]]
     Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 
-    ## if(any(is.infinite(Mdl.d))) browser()
-
     Mdl.logLik.SubSum <- sum(Mdl.d[, unlist(Mdl.PostComp)])
 ###----------------------------------------------------------------------------
 ### THE STATIC ARGUMENT UPDATE

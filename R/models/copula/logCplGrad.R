@@ -58,7 +58,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             }
 
             gradout <- gradFun4delta(u = u, theta = theta, delta = delta)
-            redo.idx <- (is.infinite(gradout) | is.nan(gradout))
+            redo.idx <- (!is.finite(gradout))
             if(any(redo.idx))
             {
                 require("Rmpfr")
@@ -69,7 +69,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                                               delta = mpfr(delta[redo.idx], precBits = precBits))
                 gradout.redo <- as.numeric(gradout.redoMPFR)
                 gradout[redo.idx] <- gradout.redo
-                if(any(is.infinite(gradout.redo) | is.nan(gradout.redo)))
+                if(any(!is.finite(gradout.redo)))
                     warning("MPFR used with insufficient ", precBits,
                             " precBits in BB7 gradient for ", parCaller)
             }
@@ -117,7 +117,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
             ## The chain gradient
             gradout <- gradFun4theta(u = u, theta = theta, delta = delta)
-            redo.idx <- (is.infinite(gradout) | is.nan(gradout))
+            redo.idx <- (!is.finite(gradout))
             if(any(redo.idx))
             {
                 require("Rmpfr")
@@ -129,7 +129,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                 gradout.redo <- as.numeric(gradout.redoMPFR)
                 gradout[redo.idx] <- gradout.redo
 
-                if(any(is.infinite(gradout.redo) | is.nan(gradout.redo)))
+                if(any(!is.finite(gradout.redo)))
                     warning("MPFR used with insufficient ", precBits,
                             " precBits in BB7 gradient for ", parCaller)
             }
@@ -179,10 +179,9 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             )
             out[["u"]] <- gradCpl.u
         }
-        if(any(sapply(out, is.na) | sapply(out, is.nan) | sapply(out, is.infinite)))
+        if(any(!sapply(out, is.finite)))
         {
-            warning("Bad gradients.")
-            browser()
+            warning("Bad gradients with NA/NaN or Inf.")
         }
     }
     else if(tolower(CplNM) == "mvt")

@@ -84,7 +84,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                          chainCaller = chainCaller)
 
         ## Error checking
-        ## if(any(is.na(LinkGradObs)) || any(is.infinite(LinkGradObs)))
+        ## if(any(!is.finite(LinkGradObs)))
         ##   {
         ##     return(list(errorFlag = TRUE))
         ##   }

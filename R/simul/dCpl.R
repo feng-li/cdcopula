@@ -58,7 +58,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
     ## BB7 density is very unstable numerically. Use "Multiple Precision Floating-Point
     ## Reliable" based on GNU Multiple Precision Library for "those errors only (NA, NAN,
     ## Inf)" found in the result.
-    redo.idx <- (is.infinite(out.log) | is.nan(out.log))
+    redo.idx <- (!is.finite(out.log))
     if(any(redo.idx))
     {
       require("Rmpfr")
@@ -70,7 +70,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
       out.log.redo <- as.numeric(out.log.redoMPFR)
       out.log[redo.idx] <- out.log.redo
 
-      if(any(is.infinite(out.log.redo) | is.nan(out.log.redo)))
+      if(any(!is.finite(out.log.redo)))
         warning("MPFR used with insufficient ", precBits, " precBits in BB7 density.")
     }
   }

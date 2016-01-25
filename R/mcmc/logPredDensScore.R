@@ -35,15 +35,15 @@ logPredDensScore <- function(logPredDensLst)
     scaleMatrix <- matrix(scaleFactors, nMCMCSample, nFold)
 
     expPredMatrix <- exp(logPredMatrix-scaleMatrix)
-    expPredMatrix[is.infinite(expPredMatrix)] <- NA # TODO: Think about it carefully
+    expPredMatrix[!is.finite(expPredMatrix)] <- NA # TODO: Think about it carefully
     expPredMean <- colMeans(expPredMatrix, na.rm = TRUE)
 
     ## The LPDS and numerical standard error
     LPDS <- mean(scaleFactors + log(expPredMean))
 
-    if (sum(is.infinite(expPredMatrix)) > nMCMCSample*.05)
+    if (sum(!is.finite(expPredMatrix)) > nMCMCSample*.05)
     {
-        warning("Too many infinite predict densities produced. The LPDS may not be accurate.")
+        warning("Too many NA/NAN or Inf predict densities produced. The LPDS may not be accurate.")
     }
 
     ## The numerical standard error for LPDS.
