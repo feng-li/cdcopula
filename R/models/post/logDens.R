@@ -113,7 +113,6 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     }
   }
 
-
   ## Updating the copula model if required
   if(evalCpl == TRUE)
   {

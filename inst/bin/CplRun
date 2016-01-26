@@ -157,7 +157,6 @@ if(nCross>1 & nCores>1)
 ###----------------------------------------------------------------------------
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
-
 ## Calculate the LPDS
 cat("Calculating predictions......")
 OUT.CplLPDS <- list()

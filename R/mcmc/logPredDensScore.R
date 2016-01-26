@@ -72,5 +72,11 @@ logPredDensScore <- function(logPredDensLst)
     LPDS.nse <- sqrt(nvarLPDS)
 
     out <- cbind(LPDS = LPDS, LPDS.nse = LPDS.nse)
+
+    if(is.nan(LPDS.nse))
+    {
+        warning("NaN in LPDS.nse probably caused by ill-behaved MCMC samples.")
+    }
+
     return(out)
 }

@@ -31,9 +31,9 @@ logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
         out <- logCplDensObs
     }
 
-
     if(any(!is.finite(out)))
     {
+        browser()
         stop("NA, NAN or Inf occurs in log likelihood.")
     }
 
