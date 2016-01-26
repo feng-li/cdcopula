@@ -418,7 +418,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         if(MCMC.track == TRUE && iInner == nInner)
         {
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                            interval = 0.2, MCMC.burninProp = MCMC.burninProp,
+                            interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                             MCMC.betaIdx = MCMC.betaIdx,
                                             MCMC.par = MCMC.par,

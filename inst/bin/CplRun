@@ -52,7 +52,7 @@ require("methods", quietly = TRUE)
 ###----------------------------------------------------------------------------
 
 R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
-if(length(R_CPL_LIB_ROOT_DIR) == 0L)
+if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
 {
     stop("R_CPL_LIB_ROOT_DIR is not set properly!")
 }
@@ -63,8 +63,8 @@ if(length(R_CPL_LIB_ROOT_DIR) == 0L)
         ## PATH TO THE MODEL CONFIGURATION FILE
         MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
                                    ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
-                                   ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
-                                   "/inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
+                                   "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
+                                   ## "/inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
                                    ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
                                    ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
                                    ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
