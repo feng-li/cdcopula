@@ -138,6 +138,7 @@ crossValidArgs <- list(N.subsets = nCross,
 ## Indices for training and testing sample according to cross-validation
 crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
 
+optimInit <- TRUE
 ################################################################################
 ###                                  THE END
 ################################################################################
