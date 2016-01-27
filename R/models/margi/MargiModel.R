@@ -73,14 +73,11 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
     ## CDF
     if("u" %in% tolower(densCaller))
     {
-        u <- try(psplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
-                         log = FALSE))
+        u <- psplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd, log = FALSE)
 
-        ## if(is(u, "try-error")) browser()
-      out[["u"]] <- u
+        out[["u"]] <- u
     }
     ## PDF
-
     if("d" %in% tolower(densCaller))
     {
       d <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,

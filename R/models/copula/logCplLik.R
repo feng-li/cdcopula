@@ -30,13 +30,5 @@ logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
         ## The log copula density,  vector
         out <- logCplDensObs
     }
-
-    if(any(!is.finite(out)))
-    {
-        browser()
-        stop("NA, NAN or Inf occurs in log likelihood.")
-    }
-
-
     return(out)
 }

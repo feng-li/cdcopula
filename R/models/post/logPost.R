@@ -106,14 +106,12 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
 ###----------------------------------------------------------------------------
 ### UPDATING THE MODEL LIKELIHOOD PARAMETERS
 ###----------------------------------------------------------------------------
-    ## browser()
     Mdl.par <- parCplMeanFun(Mdl.X = Mdl.X,
                              Mdl.parLink = Mdl.parLink,
                              Mdl.beta = Mdl.beta,
                              parUpdate = parUpdate,
                              Mdl.par = Mdl.par)
 
-    ## if(any(is.nan(unlist(Mdl.beta)))) browser()
 
     Mdl.ud <- logDens(MargisType = MargisType,
                       Mdl.Y = Mdl.Y,

@@ -335,23 +335,29 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 ###----------------------------------------------------------------------------
 ### THE GIBBS SAMPLER (WITH METROPOLIS-HASTINGS)
 ###----------------------------------------------------------------------------
-
-    cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
-
-
     ## Dry run to obtain staticcache for the initial values. Again this time all the
     ## parameters should be updated.
 
-    staticCache <- logPost(MargisType = MargisType,
-                           Mdl.Y = Mdl.Y.training,
-                           Mdl.X = Mdl.X.training,
-                           Mdl.beta = Mdl.beta,
-                           Mdl.betaIdx = Mdl.betaIdx,
-                           Mdl.parLink = Mdl.parLink,
-                           varSelArgs = varSelArgs,
-                           priArgs = priArgs,
-                           parUpdate = MCMCUpdate,
-                           MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+    Mdl.DryRun <- logPost(MargisType = MargisType,
+                          Mdl.Y = Mdl.Y.training,
+                          Mdl.X = Mdl.X.training,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          Mdl.parLink = Mdl.parLink,
+                          varSelArgs = varSelArgs,
+                          priArgs = priArgs,
+                          parUpdate = MCMCUpdate,
+                          MCMCUpdateStrategy = MCMCUpdateStrategy)
+    staticCache <- Mdl.DryRun[["staticCache"]]
+
+
+    cat("\nMEAN INITIAL VALUES FOR MODEL PARAMETERS:\n")
+
+    Mdl.par <- staticCache[["Mdl.par"]]
+    Mdl.par.mean <- rapply(Mdl.par, mean, how = "replace")
+    print(Mdl.par.mean)
+
+    cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
 
     ## Clear all warnings during initial value optimization. NOTE: not working
     ## warningsClear(envir = environment())
@@ -417,6 +423,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## MCMC trajectory
         if(MCMC.track == TRUE && iInner == nInner)
         {
+            progressbar(iIter = iIter, nIter = MCMC.nIter)
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                             interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,

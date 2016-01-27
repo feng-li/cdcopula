@@ -93,8 +93,8 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
 
     if(iIter  == printIter[1] && iIter != MCMC.nIter)
     {
-      cat("about", TimeToGo, " hours to go.\n", sep = " ")
-      return()
+        cat("\nabout", TimeToGo, " hours to go.\n", sep = " ")
+        return()
     }
 
     donePercent <- round(iIter/MCMC.nIter*100)
