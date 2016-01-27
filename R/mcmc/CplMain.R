@@ -174,7 +174,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
         for(CompCaller in names(Mdl.beta))
         {
-            ## If nothing to update, optimization inside this components skipped.
+            ## If nothing to update, skip optimizing this component.
             if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
 
             cat("\nInitializing model component:", CompCaller, "...\n")
@@ -182,9 +182,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             nLoopInit <- 0
             maxLoopInit <- 1
 
-            ## Only current component is updated.
-            parUpdate <- rapply(MCMCUpdate, function(x) FALSE,
-                                how = "replace")
+            ## Only current component to be updated.
+            parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
             parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
 
             while(InitGoodCompCurr == FALSE)

@@ -45,6 +45,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 ### Prior for variable selection indicators
 ###----------------------------------------------------------------------------
+
       priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["indicators"]]
       betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-yb-lq
       nPar <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]

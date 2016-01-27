@@ -74,9 +74,10 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 varSelArgs = varSelArgs,
-                                priArgs = priArgs)
+                                priArgs = priArgs,
+                                parUpdate = parUpdate)
 
-        staticCache <- list(Mdl.logPri =  parUpdate,
+        staticCache <- list(Mdl.logPri =  Mdl.logPri,
                             Mdl.par = Mdl.par,
                             Mdl.d = Mdl.d,
                             Mdl.u = Mdl.u)
