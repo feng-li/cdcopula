@@ -96,12 +96,12 @@ Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
 Mdl.parLink <- MCMCUpdate
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
-Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2)
+Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
 Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
 
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
-Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2)
+Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2, b = 30)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
 
 Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
@@ -111,26 +111,17 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = 2:10,
-                                init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = 2:10,
-                                 init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = 2:10,
-                                init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = 2:10,
-                                 init = "all-in")
+varSelArgs[[1]][["mu"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[1]][["phi"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[1]][["df"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[1]][["lmd"]] <- list(cand = 2:10, init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = 2:10,
-                                init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = 2:10,
-                                 init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = 2:10,
-                                init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = 2:10,
-                                 init = "all-in")
+varSelArgs[[2]][["mu"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[2]][["phi"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[2]][["df"]] <- list(cand = 2:10, init = "all-in")
+varSelArgs[[2]][["lmd"]] <- list(cand = 2:10, init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:19,
-                                 init = "all-in")
+varSelArgs[[3]][["tau"]] <- list(cand = 2:19, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION

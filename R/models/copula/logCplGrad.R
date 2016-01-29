@@ -215,10 +215,19 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                                          rho = rho, df = df, u.quantile = u.quantile) # n-by-1
 
             ## The gradient of the t copula denominator, (split-t in MargiModelGrad())
-            logCplGrad.df.lowerMat <- apply(u.quantile, 2, MargiModelGrad,
+            logCplGrad.df.lowerMat <- apply(u.quantile, 2,
+                                            function(y, par, type, parCaller, densCaller)
+                                            {
+                                                MargiModelGrad(y = y, par = par,
+                                                               type = type,
+                                                               parCaller = parCaller,
+                                                               densCaller = densCaller)$d
+                                            },
                                             par = list(mu = 0, df = df, phi = 1, lmd = 1),
-                                            type = "splitt", parCaller = "df", densCaller = "d")
-            logCplGrad.df.lower <- apply(logCplGrad.df.lowerMat, 1,  sum)
+                                            type = "splitt", parCaller = "df",
+                                            densCaller = "d")
+
+            logCplGrad.df.lower <- rowSums(logCplGrad.df.lowerMat)
 
             out[["df"]] <- logCplGrad.df.upper -logCplGrad.df.lower
         }

@@ -60,7 +60,7 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + 200-nObsRaw):nObsRaw
+nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 ## No. of used Observations
 nObs <- length(nObsIdx)
@@ -98,7 +98,7 @@ Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
 Mdl.parLink <- MCMCUpdate
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
-Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2)
+Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
 Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
 
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)

@@ -29,8 +29,7 @@
 ##'       Return log density instead of current form.
 dCpl <- function(CplNM, u, parCpl, log = TRUE)
 {
-
-    if(any(!sapply(parCpl, is.finite)))
+    if(any(!unlist(lapply(parCpl, is.finite))))
     {
         stop("NA/NaN/Inf are not allowed in copula parameters input.")
     }

@@ -173,8 +173,10 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
         if(MCMCUpdate[[i]][[j]])
         {
 
-          if(has.Display && ncol(par.ts.mean[[i]][[j]]) == 1)
-          {
+            if(has.Display)
+            {
+                if(ncol(par.ts.mean[[i]][[j]]) == 1)
+                    {
             hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
             ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
             plot(hpd95[1, ], type = "l", lty = "dotted", col = "red",
@@ -187,6 +189,12 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
                    lty = c("dotted", "solid", "dashed"),
                    col = c("red", "blue", "black"),
                    legend = c("95% HPD", "Posterior mean", "Posterior median"))
+                    }
+                else
+                {
+                    plot(0, main = i, ylab = j,
+                         xlab = "(multivariate parameters such as covariance matrix are not plotted)")
+                }
           }
 
           obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
@@ -222,7 +230,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
           print(obj[, covrintCol, drop = FALSE])
           if(maxcovprint< ncol(obj))
           {
-            cat("(Too many covariates used, Only the first 20 largest `betaIdx.mean` printed.)\n" )
+            cat("(Too many covariates used. The first 20 largest `betaIdx.mean` printed.)\n" )
           }
         }
       }

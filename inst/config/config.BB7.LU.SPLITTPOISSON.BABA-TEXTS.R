@@ -30,8 +30,8 @@
 MargisType <- c("SPLITT", "POISSON", "BB7")
 MargisNM <- c("BABA", "TEXTS", "BB7")
 
-MCMCUpdate <- list(list("mu" = F, "phi" = F, "df" = F, "lmd" = F),
-                   list("mu" = F),
+MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("mu" = T),
                    list("lambdaL" = T, "lambdaU" = T))
 
 names(MCMCUpdate) <- MargisNM
@@ -221,52 +221,59 @@ MCMC.burninProp <- 0.1 # zero indicates no burn-in
 ## coefficients as long as we use a dynamic link function.
 
 priArgs <- MCMCUpdate
-priArgs[[1]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                              input = list(type = "norm",  mean = 0, variance = 1),
-                                                              output = list(type = "norm", shrinkage = 1)),
-                                           "slopes" = list(type = "cond-mvnorm",
-                                                           mean = 0, covariance = "identity", shrinkage = 1)),
-                             "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
-                                                               output = list(type = "norm", shrinkage = 1)),
-                                            "slopes" = list(type = "cond-mvnorm",
-                                                            mean = 0, covariance = "identity", shrinkage = 1)),
-                              "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                              input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
-                                                              output = list(type = "norm", shrinkage = 1)),
-                                           "slopes" = list(type = "cond-mvnorm",
-                                                           mean = 0, covariance = "identity", shrinkage = 1)),
-                             "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
-                                                               output = list(type = "norm", shrinkage = 1)),
-                                            "slopes" = list(type = "cond-mvnorm",
-                                                            mean = 0, covariance = "identity", shrinkage = 1)),
-                              "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[1]][["mu"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "norm",  mean = 0, variance = 1),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[1]][["phi"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[1]][["df"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[1]][["lmd"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
 
-priArgs[[2]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                              input = list(type = "lognorm",  mean = 1, variance = 1),
-                                                              output = list(type = "norm", shrinkage = 1)),
-                                           "slopes" = list(type = "cond-mvnorm",
-                                                           mean = 0, covariance = "identity", shrinkage = 1)),
-                             "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[2]][["mu"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
 
-priArgs[[3]][["lambdaL"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                   input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
-                                                                                a = 0.05, b = 0.95),
-                                                                   output = list(type = "norm", shrinkage = 1)),
-                                                "slopes" = list(type = "cond-mvnorm",
-                                                                mean = 0, covariance = "identity", shrinkage = 1)),
-                                  "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                   input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
-                                                                                a = 0.05, b = 0.95),
-                                                                   output = list(type = "norm", shrinkage = 1)),
-                                                "slopes" = list(type = "cond-mvnorm",
-                                                                mean = 0, covariance = "identity", shrinkage = 1)),
-                                  "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["lambdaL"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
+                                                       a = 0.05, b = 0.95),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
+priArgs[[3]][["lambdaU"]] <-
+    list("beta" = list("intercept" = list(type = "custom",
+                                          input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
+                                                       a = 0.05, b = 0.95),
+                                          output = list(type = "norm", shrinkage = 1)),
+                       "slopes" = list(type = "cond-mvnorm",
+                                       mean = 0, covariance = "identity", shrinkage = 1)),
+         "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION

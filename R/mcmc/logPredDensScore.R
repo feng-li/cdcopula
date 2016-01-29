@@ -75,7 +75,7 @@ logPredDensScore <- function(logPredDensLst)
 
     if(is.nan(LPDS.nse))
     {
-        warning("NaN in LPDS.nse probably caused by ill-behaved MCMC samples.")
+        warning("NaN in LPDS.nse for this component probably caused by ill-behaved MCMC samples.")
     }
 
     return(out)

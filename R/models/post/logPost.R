@@ -52,9 +52,8 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
     ## use options(warn = 1)
     ## immediate. <- FALSE
 
-    ## The cached (pre-saved) information. The idea is to make even staticCache
-    ## is not available, the log posterior is still working.
-    ## TODO: Change staticCache.
+    ## The cached (pre-saved) information. The idea is to ensure that even staticCache is
+    ## not available, the log posterior is still working.  TODO: Change staticCache.
 
     if(missing(staticCache))
     {
