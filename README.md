@@ -28,7 +28,7 @@ Installations
 
 ### Clone the repository and submodules
 
-    git clone git@bitbucket.org:fli/copula.git
+    git clone git@bitbucket.org:fli/cdcopula.git
     cd copula
     git submodule update --init --recursive
 
