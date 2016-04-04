@@ -421,7 +421,10 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## MCMC trajectory
         if(MCMC.track == TRUE && iInner == nInner)
         {
-            progressbar(iIter = iIter, nIter = MCMC.nIter)
+            ## ProgressBar only available in interactive mode
+            if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
+
+            ## Summary
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                             interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
