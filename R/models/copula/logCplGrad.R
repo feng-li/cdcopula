@@ -61,7 +61,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             redo.idx <- (!is.finite(gradout))
             if(any(redo.idx))
             {
-                require("Rmpfr")
+                require("Rmpfr", quietly = TRUE)
                 precBits <- 1024
                 ## MPFR class used for u, theta,  delta
                 gradout.redoMPFR <- gradFun4delta(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),
@@ -120,7 +120,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             redo.idx <- (!is.finite(gradout))
             if(any(redo.idx))
             {
-                require("Rmpfr")
+                require("Rmpfr", quietly = TRUE)
                 precBits <- 1024
                 ## MPFR class used for u, theta,  delta
                 gradout.redoMPFR <- gradFun4theta(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),

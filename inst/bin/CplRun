@@ -45,7 +45,7 @@ AUTHOR:
 
     Feng Li, Central University of Finance and Economics
 
-");q()}
+");q("no")}
 require("methods", quietly = TRUE)
 ###----------------------------------------------------------------------------
 ### MODEL CONFIGURE PATH
@@ -72,7 +72,7 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
                                    ## "/inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
                                    ## "/inst/config/config.MVGARCH.R"
                                    )
-        nCores <- 1
+        nCores <- 1 # Set to 1 for no parallelism
     }
     else
     {## Pass via command argument
@@ -100,6 +100,8 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
 ## Load dependences
 require("mvtnorm", quietly = TRUE)
 require("optimx", quietly = TRUE)
+require("Rmpfr", quietly = TRUE)
+
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
@@ -199,6 +201,7 @@ OUT.CplLPDS <- list()
  save.all(save.output = OUT.CplCross[[1]][["save.output"]],
           ModelDescription = OUT.CplCross[[1]][["ModelDescription"]])
 }
+if(!interactive())q("no")
 ###----------------------------------------------------------------------------
 ### THE END
 ###----------------------------------------------------------------------------

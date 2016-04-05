@@ -33,6 +33,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## Load dependences
     require("mvtnorm", quietly = TRUE)
     require("numDeriv", quietly = TRUE)
+    require("Rmpfr", quietly = TRUE)
 
     ## Load the sourceDir tool
     R_CPL_LIB_ROOT_DIR <- Sys.getenv("R_CPL_LIB_ROOT_DIR")
@@ -78,6 +79,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         require("parallel", quietly = TRUE)
         require("snow", quietly = TRUE)
         cl4MCMC <- makeCluster(as.numeric(R_CPL_NPARALLEL), type = "MPI")
+
         setDefaultCluster(cl4MCMC)
         ce4MCMC <- clusterEvalQ(cl4MCMC,
         {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
@@ -434,6 +436,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                             MCMCUpdate = MCMCUpdate,
                                             Starting.time = Starting.time))
         }
+        ## cat("(", iIter,"," , iInner, "); ", sep = "")
 
     }
 

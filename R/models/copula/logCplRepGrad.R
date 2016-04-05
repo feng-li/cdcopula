@@ -204,11 +204,15 @@ logCplRepGradParallel <- function(CplNM, u, parCplRep, parCaller)
   splitlist <- function(data, index) lapply(data, subfun, index = index)
   parCplRep.Lst <- rapply(dataSubIdxLst, splitlist, data = parCplRep, how = "replace")
 
+    ## Parallel code is far slow than serial code due to commnication.
+    ## system.time(out0 <- logCplRepGrad(u = u, parCplRep = parCplRep,
+    ##                                   CplNM = CplNM, parCaller = parCaller))
   out.Lst <- clusterMap(cl, logCplRepGrad,
                         u = u.Lst,
                         parCplRep = parCplRep.Lst,
                         MoreArgs = list(CplNM = CplNM,
                                         parCaller = parCaller))
+
   out <- do.call(rbind, out.Lst)
 
   return(out)
