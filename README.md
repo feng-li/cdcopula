@@ -2,10 +2,10 @@
 
 ## Copyright
 
-Feng Li  <feng.li@cufe.edu.cn>
-School of Statistics and Mathematics
-Central University of Finance and Economics
-http://feng.li/
+    Feng Li  <feng.li@cufe.edu.cn>
+    School of Statistics and Mathematics
+    Central University of Finance and Economics
+    http://feng.li/
 
 ## Preparations
 
@@ -28,15 +28,13 @@ http://feng.li/
 #### Clone the repository and submodules
 
     git clone git@bitbucket.org:fli/cdcopula.git
-    cd copula
-    git submodule update --init --recursive
 
 #### Load the package to R
 
 
-* This package depends on `flutils` package ("https://bitbucket.org/fli/flutils/"). Use git to
-  clone the latest version to the disk. In the path `cdcopula/R/`, make a symbolic link to
-  the `flutils` package.
+* This package depends on `flutils` package ("https://bitbucket.org/fli/flutils/"). Use
+  git to clone the latest version to the disk. In the path `cdcopula/R/`, make a symbolic
+  link to the `flutils` package.
 
 * Let the environment variable `R_CPL_LIB_ROOT_DIR` in `~/.Renviron` file point to the
   root directory of the the package.
@@ -55,11 +53,11 @@ http://feng.li/
 * Running scripts are provided at `$R_CPL_LIB_ROOT_DIR/inst/bin/`.  For more information,
   you may type
 
-        inst/bin/CplRun --help
+        $ inst/bin/CplRun --help
 
 * Within R, use
 
-        > source("inst/bin/CplRun")
+        R> source("inst/bin/CplRun")
 
 command will invoke the default setting and run the default model.
 
@@ -76,27 +74,27 @@ Edit the following files
 * `logCplRepGrad.R` Gradient function for reparameterized log copula density w.r.t. copula
 parameters which may require
 
-  * `parCplRep2Std.R`
+    * `parCplRep2Std.R`
 
-  * `kendalltauGrad.R`
+    * `kendalltauGrad.R`
 
-  * `lambdaGrad.R`
+    * `lambdaGrad.R`
 
 ### The marginal model
 
 * If you want to implement a native marginal model edit the following files
 
-  * `MargiModel.R` CDF and PDF of the marginal distribution
+    * `MargiModel.R` CDF and PDF of the marginal distribution
 
-  * `MargiModelGrad.R` Gradient for CDF and PDF of the marginal distribution
+    * `MargiModelGrad.R` Gradient for CDF and PDF of the marginal distribution
 
 * If you want to include a foreign model with existing algorithms, edit the following
 files
 
 
-  * `MargiModelForeignEval.R`
+    * `MargiModelForeignEval.R`
 
-  * `MargiModelForeignPred.R`
+    * `MargiModelForeignPred.R`
 
 ## References
 
