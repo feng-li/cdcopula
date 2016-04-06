@@ -1,13 +1,13 @@
-Covariate-dependent copula model
-================================
+# Covariate-dependent copula model
 
-Copyright
----------
+## Copyright
 
 Feng Li  <feng.li@cufe.edu.cn>
+School of Statistics and Mathematics
+Central University of Finance and Economics
+http://feng.li/
 
-Preparations
-------------
+## Preparations
 
 ### Environment requirements
 
@@ -19,43 +19,36 @@ Preparations
 
          * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
-      * Required R packages: `mvtnorm` `optimx`.
+      * Required R packages: `mvtnorm` `optimx` `Rmfpr` `numDeriv` `optimix`.
 
       * Optional R packages: `compiler`, `parallel`.
 
-Installations
--------------
+### Installations
 
-### Clone the repository and submodules
+#### Clone the repository and submodules
 
     git clone git@bitbucket.org:fli/cdcopula.git
     cd copula
     git submodule update --init --recursive
 
-### Load the package to R
+#### Load the package to R
 
 
-* This package depends on `flutils` package ("http://repo.feng.li/flutils/"). Use git to
-  clone the latest version to the disk. In the `cdcopula` package, make a symbolic link to
+* This package depends on `flutils` package ("https://bitbucket.org/fli/flutils/"). Use git to
+  clone the latest version to the disk. In the path `cdcopula/R/`, make a symbolic link to
   the `flutils` package.
 
 * Let the environment variable `R_CPL_LIB_ROOT_DIR` in `~/.Renviron` file point to the
   root directory of the the package.
 
-Post-installation
------------------
+### Post-installation
 
-### Sync with the remote repository and submodules
+#### Sync with the remote repository and submodules
 
     cd copula
     git pull
-    git submodule sync
-    git submodule foreach git checkout master
-    git submodule foreach git pull
-    git submodule update
 
-Run the copula model
---------------------
+## Run the copula model
 
 * The example model configuration files are located at `$R_CPL_LIB_ROOT_DIR/inst/config/`.
 
@@ -70,8 +63,7 @@ Run the copula model
 
 command will invoke the default setting and run the default model.
 
-Implement other copula models
------------------------------
+## Implement other copula models
 
 Edit the following files
 
@@ -106,8 +98,7 @@ files
 
   * `MargiModelForeignPred.R`
 
-References
-----------
+## References
 
 * Li, F. 2015 _Modeling covariate-contingent correlation and tail-dependence with copulas_.
 
