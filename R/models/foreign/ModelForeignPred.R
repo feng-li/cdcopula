@@ -31,7 +31,7 @@ ModelForeignPred <- function(model, fitted.model, data.pred, ...)
     {
       stop("Not implemented yet!")
     }
-    Mdl.logPredDens <- matrix(sum(PredDens))
+    Mdl.logPredDens <- matrix(sum(PredDens), 1, 1, dimnames = list(NULL, "joint"))
 
 
     RESID <- list()
@@ -71,8 +71,7 @@ ModelForeignPred <- function(model, fitted.model, data.pred, ...)
       stop("Not implemented yet!")
     }
 
-    Mdl.logPredDens <- matrix(sum(PredDens))
-
+    Mdl.logPredDens <- matrix(sum(PredDens), 1, 1, dimnames = list(NULL, "joint"))
     RESID <- list()
     RESID[["mean"]] <- dataMat-MVSK[["mean"]]
 

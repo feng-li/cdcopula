@@ -8,7 +8,7 @@ MargiModelForeignEval <- function(MargisNM, MargisType, MargisForeignConfig, Mdl
     cat("Evaluating foreign marginal model: ", MargisNM[iComp], "...\n")
     if(tolower(MargisType[iComp])  == "garch")
     {
-      require("fGarch")
+      require("fGarch", quietly = TRUE)
 
       parArgs <- MargisForeignConfig[[iComp]]
       parArgs[["data"]] <- Mdl.Y[[MargisNM[iComp]]]

@@ -7,7 +7,7 @@ MargiModelGradNum <- function(y, par, type, parCaller, densCaller)
     nSubTask <- length(subtask)
     out <- matrix(NA, nSubTask, length(densCaller), dimnames = list(NULL, densCaller))
 
-    require("numDeriv")
+    require("numDeriv", quietly = TRUE)
     MargiModelGradNumFun <- function(x, parCaller, parCurr, yCurr, typeCurr, densCallerCurr)
     {## browser()
       parCurr[[parCaller]] <- x

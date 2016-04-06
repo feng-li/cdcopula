@@ -6,7 +6,7 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
   {
     if(tolower(MargisType[iComp]) ==  "garch")
     {
-      require("fGarch")
+      require("fGarch", quietly = TRUE)
 
       MargiModel.Pred.caller <- as.call(c(predict, Mdl.ForeignFit[[iComp]],
                                           n.ahead = length(Mdl.Y[[iComp]])))

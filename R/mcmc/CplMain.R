@@ -54,7 +54,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Load the whole library
     Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
-                            byte.compile = 0,
+                            byte.compile = 1,
                             recursive = TRUE,
                             ignore.error = TRUE)
 
@@ -83,7 +83,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         setDefaultCluster(cl4MCMC)
         ce4MCMC <- clusterEvalQ(cl4MCMC,
         {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-                   byte.compile = 0,
+                   byte.compile = 1,
                    recursive = TRUE,
                    ignore.error = TRUE)
         })
@@ -153,7 +153,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     if(optimInit == TRUE &&
        any(tolower(unlist(betaInit)) == "random"))
     {
-        require("optimx")
+        require("optimx", quietly = TRUE)
 
         ## Sample size to be used. Usually set it as 10% of the full data but no more than 500
         ## observations. Use the full data unless the it is really small.

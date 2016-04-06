@@ -13,7 +13,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
   if(!interactive())
     {
       ## Assume the cluster is already registered. If not,  threw out an error.
-      require("parallel")
+      require("parallel", quietly = TRUE)
       cl <- parallel:::defaultCluster()
       nSubTasks <- length(cl)
       dataSubIdxLst <- data.partition(
@@ -58,7 +58,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
                            MCMCUpdateStrategy)
   {
-    require("numDeriv")
+    require("numDeriv", quietly = TRUE)
 
     ## The updating chain
     chainCaller <- parCplRepCaller(parUpdate)

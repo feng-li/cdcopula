@@ -70,7 +70,7 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 {if(tolower(MargisType[length(MargisType)]) == "gogarch")
  {
    ## GoGARCH
-   require("rmgarch")
+   require("rmgarch", quietly = TRUE)
 
    mean.model <- list(model  =  "constant",  robust  = FALSE,
                       lag  =  1,  lag.max  =  NULL,
@@ -91,7 +91,7 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
  else if(tolower(MargisType[length(MargisType)]) == "dccgarch")
  {
    ## DCC-GARCH
-   require("rmgarch")
+   require("rmgarch", quietly = TRUE)
    uspec <- ugarchspec()
    mspec <- multispec(replicate(2, uspec))
 

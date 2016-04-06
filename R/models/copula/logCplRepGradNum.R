@@ -3,7 +3,7 @@
 ## precision) in BB7 copula.
 logCplRepGradNum <- function(CplNM, u, parCplRep, parCaller)
 {
-  require("numDeriv")
+  require("numDeriv", quietly = TRUE)
   logCplGradNumFun <- function(x, u, iRun, parCaller, CplNM, parCplRep)
   {
     if(tolower(parCaller) %in% paste("u", 1:ncol(u), sep = ""))

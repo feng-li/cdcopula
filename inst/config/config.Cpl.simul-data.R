@@ -40,7 +40,7 @@ sourceDir(file.path(pathLibRoot, c("flutils/stable", "mcmc", "models", "simul"))
           byte.compile = FALSE, ignore.error = TRUE)
 
 ## LOAD DEPENDENCES
-require("mvtnorm")
+require("mvtnorm", quietly = TRUE)
 
 ###----------------------------------------------------------------------------
 ### SPECIFY THE MODEL
@@ -121,7 +121,7 @@ varSelArgs[[3]][[2]] <- list(cand = c(2, 4),
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 10000
+MCMC.nIter <- 1000
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in

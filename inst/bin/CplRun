@@ -63,14 +63,14 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
         ## PATH TO THE MODEL CONFIGURATION FILE
         MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
                                    ## "/inst/config/config.BB7.SPLITT.SP100-SP600.R"
-                                   "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
+                                   ## "/inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
                                    ## "/inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
                                    ## "/inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
                                    ## "/inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
                                    ## "/inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
                                    ## "/inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
                                    ## "/inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
-                                   ## "/inst/config/config.MVGARCH.R"
+                                   "/inst/config/config.MVGARCH.R"
                                    )
         nCores <- 1 # Set to 1 for no parallelism
     }
@@ -108,7 +108,7 @@ sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
 
 ## Load the whole Copula library
 Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
-                        byte.compile = 0,
+                        byte.compile = 1,
                         recursive = TRUE,
                         ignore.error = TRUE)
 
@@ -128,7 +128,7 @@ if(nCross>1 & nCores>1)
     cl4CV <- makeCluster(nCross, type = "MPI")
     ce4CV <- clusterEvalQ(cl4CV,{
         sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-                  byte.compile = 0,
+                  byte.compile = 1,
                   recursive = TRUE,
                   ignore.error = TRUE)
         Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
