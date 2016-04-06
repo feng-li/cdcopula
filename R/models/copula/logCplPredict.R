@@ -9,8 +9,8 @@ logCplPredict <- function(MargisType, Mdl.par)
 
     out.iComp <- list()
 
-    ## Convert model type into standard version
-    if(type  == "garch")
+    ## Convert model types into standard version
+    if(type  %in% c("garch", "stochvol"))
     {
       typeStd <- "gaussian"
     }
