@@ -38,7 +38,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     }
 
 ###----------------------------------------------------------------------------
-### Foreign model/methods used in fitting/prediction
+### Foreign multivariate model/methods used in fitting/prediction
 ###----------------------------------------------------------------------------
     if("Mdl.ForeignFitted" %in% names(CplOut))
     {

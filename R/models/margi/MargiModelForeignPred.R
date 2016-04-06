@@ -1,31 +1,49 @@
 MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
 {
-  Mdl.X <- list()
-  Mdl.ForeignPred <- list()
-  for(iComp in 1:length(Mdl.ForeignFit)) ## TODO: Parallelize marginal models.
-  {
-    if(tolower(MargisType[iComp]) ==  "garch")
+    Mdl.X <- list()
+    Mdl.ForeignPred <- list()
+    for(iComp in 1:length(Mdl.ForeignFit)) ## TODO: Parallelize marginal models.
     {
-      require("fGarch", quietly = TRUE)
+        if(tolower(MargisType[iComp]) ==  "garch")
+        {
+            require("fGarch", quietly = TRUE)
 
-      MargiModel.Pred.caller <- as.call(c(predict, Mdl.ForeignFit[[iComp]],
-                                          n.ahead = length(Mdl.Y[[iComp]])))
+            MargiModel.Pred.caller <- as.call(c(predict, Mdl.ForeignFit[[iComp]],
+                                                n.ahead = length(Mdl.Y[[iComp]])))
 
-      MargiModel.Pred <- eval(MargiModel.Pred.caller)
+            MargiModel.Pred <- eval(MargiModel.Pred.caller)
 
-      Mdl.X[[MargisNM[iComp]]] <- list()
+            Mdl.X[[MargisNM[iComp]]] <- list()
 
-      Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred[["meanForecast"]])
-      Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred[["standardDeviation"]])
+            Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred[["meanForecast"]])
+            Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred[["standardDeviation"]])
 
-      Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+            Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+        }
+        else if(tolower(MargisType[iComp]) ==  "stochvol")
+        {
+            ## MargiModel.Pred.caller <- as.call(c(predict.svdraws,
+            ##                                     Mdl.ForeignFit[[iComp]],
+            ##                                     steps = length(Mdl.Y[[iComp]])))
+            ## MargiModel.Pred <- eval(MargiModel.Pred.caller)
+
+            MargiModel.Pred <- predict.svdraws(object = Mdl.ForeignFit[[iComp]],
+                                               steps = length(Mdl.Y[[iComp]]))
+
+            Mdl.X[[MargisNM[iComp]]] <- list()
+
+            Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(apply(MargiModel.Pred, 2, mean))
+            Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(apply(MargiModel.Pred, 2, sd))
+
+            Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+
+        }
+        else
+        {
+            stop("No such foreign marginal model!")
+        }
     }
-    else
-    {
-      stop("No such foreign model!")
-    }
-  }
 
-  out <- list(Mdl.X = Mdl.X, Mdl.ForeignPred = Mdl.ForeignPred)
-  return(out)
+    out <- list(Mdl.X = Mdl.X, Mdl.ForeignPred = Mdl.ForeignPred)
+    return(out)
 }

@@ -106,7 +106,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                              idx = Mdl.Idx.training, how = "replace")
 
     if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
-    {## Special case when a foreign model is introduced
+    {## Special case when a foreign multivariate model is introduced
         Mdl.ForeignFitted <-ModelForeignEval(model  = MargisType[length(MargisType)],
                                              spec = ForeignModelSpec,
                                              data = Mdl.Y.training)
