@@ -2,38 +2,43 @@
 ### Configuration file for the copula data generating process
 ###############################################################################
 
-## COPULA DENSITY NAME AND PARAMETERS
-CplNM <- "BB7"
-CplParNM <- list(c("tau", "lambdaL"))
-
+###----------------------------------------------------------------------------
+### SPECIFY THE MODEL
+###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisNM <- c("SP500", "NASDAQ100")
-MargisType <- c("GAUSSIAN", "GAUSSIAN")
-MargisParNM <- list(c("mu", "sigma"),
-                    c("mu", "sigma"))
+MargisType <- c("SPLITT", "SPLITT", "BB7")
+MargisNM <- c("M1", "M2", "BB7")
 
-## Attribute name on the arguments
-names(CplParNM) <- CplNM
-names(MargisType) <- MargisNM
-names(MargisParNM) <- MargisNM
+MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("lambdaL" = T, "lambdaU" = T))
+
+names(MCMCUpdate) <- MargisNM
 
 ## The object structure for the model components
-MCMCUpdate <- initDataStruc(CplParNM, MargisParNM)
+names(MargisType) <-  MargisNM
+
 
 ## NO. OF OBSERVATIONS
 nObs <- 15
 
+## SEED
+seed <- 123
+
 ## THE LINK FUNCTION USED IN THE MODEL
-MdlDGP.parLink <- MCMCUpdate
-MdlDGP.parLink[[1]][[1]] <- "identity"
-MdlDGP.parLink[[1]][[2]] <- "log"
-MdlDGP.parLink[[2]][[1]] <- "identity"
-MdlDGP.parLink[[2]][[2]] <- "log"
-MdlDGP.parLink[[3]][[1]] <- "logit"
-MdlDGP.parLink[[3]][[2]] <- "glogit"
+Mdl.parLink <- MCMCUpdate
+Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
+Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
+Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
+
+Mdl.parLink[[2]][["mu"]] <- list(type = "log", nPar = 1)
+
+Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
+Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 
 ## -----------------------------------------------------------------------------
-## THE TRUE PARAMETER VALUES IN THE DGP
+## TRUE PARAMETER VALUES IN DGP
 ## -----------------------------------------------------------------------------
 ## The parameters are the features of the model, e.g. mean, variance, ...  The
 ## parameters are observation specified (each observation has its own
@@ -43,16 +48,20 @@ MdlDGP.parLink[[3]][[2]] <- "glogit"
 MdlDGP.par <- MCMCUpdate
 
 ## The first margin
-MdlDGP.par[[1]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
-MdlDGP.par[[1]][[2]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1))
+MdlDGP.par[[1]][["mu"]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1), nObs, 1)
+MdlDGP.par[[1]][["phi"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
+MdlDGP.par[[1]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 0, sd = 1), nObs, 1)
+MdlDGP.par[[1]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
 
 ## The second margin
-MdlDGP.par[[2]][[1]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1))
-MdlDGP.par[[2]][[2]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1))
+MdlDGP.par[[2]][["mu"]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1), nObs, 1)
+MdlDGP.par[[2]][["phi"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
+MdlDGP.par[[3]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 6, sd = 1), nObs, 1)
+MdlDGP.par[[3]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
 
-## The copula
-MdlDGP.par[[3]][[1]] <- matrix(rbeta2(n = nObs, mean = 0.7, sd = 0.1))
-MdlDGP.par[[3]][[2]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.1))
+## The copula component
+MdlDGP.par[[3]][["lambdaL"]] <- matrix(rbeta2(n = nObs, mean = 0.7, sd = 0.1), nObs, 1)
+MdlDGP.par[[3]][["lambdaU"]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.1), nObs, 1)
 
 ##------------------------------------------------------------------------------
 ## THE TRUE COVARIATE-DEPENDENT PARAMETER VALUES IN THE DGP
@@ -69,43 +78,37 @@ MdlDGP.intercept <- MCMCUpdate
 
 MdlDGP.intercept[[1]][[1]] <- TRUE
 MdlDGP.intercept[[1]][[2]] <- TRUE
+MdlDGP.intercept[[1]][[3]] <- TRUE
+MdlDGP.intercept[[1]][[4]] <- TRUE
+
 MdlDGP.intercept[[2]][[1]] <- TRUE
 MdlDGP.intercept[[2]][[2]] <- TRUE
+MdlDGP.intercept[[2]][[3]] <- TRUE
+MdlDGP.intercept[[2]][[4]] <- TRUE
+
 MdlDGP.intercept[[3]][[1]] <- TRUE
 MdlDGP.intercept[[3]][[2]] <- TRUE
 
-## THE COEFFICIENTS
-## When the coefficient are not NA, the parameter are fixed. Otherwise it was
-## determined by the spline covariates. If the intercept is included, the first
-## entry should always be "NA".
-## MdlDGP.beta <- MCMCUpdate
-
-## ## The first margin
-## MdlDGP.beta[[1]][[1]] <- matrix(c(NA, 1,  -1,  NA, NA, NA))
-## MdlDGP.beta[[1]][[2]] <- matrix(c(NA, 1,  -1,  NA, NA, NA))
-
-## ## The second margin
-## MdlDGP.beta[[2]][[1]] <- matrix(c(NA, NA, NA,  NA, NA))
-## MdlDGP.beta[[2]][[2]] <- matrix(c(NA, NA, NA,  NA, NA))
-
-## ## The copula
-## MdlDGP.beta[[3]][[1]] <- matrix(c(NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
-## MdlDGP.beta[[3]][[2]] <- matrix(c(NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
-
-## NUMBER OF COVARIATES (EXCLUDING INTERCEPT)
-MdlDGP.nCovs <- MCMCUpdate
+## NUMBER OF COVARIATES (INCLUDING INTERCEPT)
+## If MdlDGP.intercept is TRUE, the first element in MdlDGP.beta is the intercept.
+MdlDGP.beta <- MCMCUpdate
 
 ## The first margin
-MdlDGP.nCovs[[1]][[1]] <- list(total = 4, fixed = 2)
-MdlDGP.nCovs[[1]][[2]] <- list(total = 4, fixed = 2)
+MdlDGP.beta[[1]][[1]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[2]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[3]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[4]] <- matrix(c(1, 1, -1, 0, 0))
 
 ## The second margin
-MdlDGP.nCovs[[2]][[1]] <- list(total = 5, fixed = 2)
-MdlDGP.nCovs[[2]][[2]] <- list(total = 5, fixed = 2)
+MdlDGP.beta[[1]][[1]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[2]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[3]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[1]][[4]] <- matrix(c(1, 1, -1, 0, 0))
 
 ## The copula
-MdlDGP.nCovs[[3]][[1]] <- list(total = 10, fixed = 4)
-MdlDGP.nCovs[[3]][[2]] <- list(total = 10, fixed = 4)
+MdlDGP.beta[[3]][[1]] <- matrix(c(1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0))
+MdlDGP.beta[[3]][[2]] <- matrix(c(1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0))
 
-## Generating the numerical tabular for the inverse Kendall's tau
-tauTabular <- kendalltauTabular(CplNM = CplNM, tol = 0.005)
+################################################################################
+###                                  THE END
+################################################################################

@@ -19,7 +19,11 @@
 
          * See the ["R Installation and Administration"](http://cran.r-project.org/doc/manuals/R-admin.pdf) for details.
 
-      * Required R packages: `mvtnorm` `optimx` `Rmfpr` `numDeriv` `optimix`.
+      * Required R packages:
+
+          * `mvtnorm` `Rmfpr` `numDeriv` `optimix`
+
+          * `rugarch` `rmgarch`  `fGarch` `stochvol`.
 
       * Optional R packages: `compiler`, `parallel`.
 

@@ -21,7 +21,7 @@ theta0 <- theta(x, y)
 
 
 out0 <- rep(NA, n)
-require("numDeriv")
+require("numDeriv", quietly = TRUE)
 for(i in 1:length(theta0))
 {
   out0[i] <- grad(func = zthea,
