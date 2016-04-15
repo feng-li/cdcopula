@@ -11,100 +11,67 @@
 ##' @return See "export" argument.
 ##' @references Li, F., 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
-##' @note
-##'       DEPENDS: flutils
-##'       Created: Wed Mar 07 17:33:13 CET 2012;
-##'       Current: Wed Mar 07 17:33:20 CET 2012.
+##' @note Created: Wed Mar 07 17:33:13 CET 2012; Current: Tue Apr 12 19:09:49 CST 2016
 DGPCpl <- function(DGPconfigfile, export = "list")
 {
-  ## TODO: check no visible bindings for DGPCpl,  DGP.par, MdlDGP.*
-  CplNM <- NA
-  MCMCUpdate <- NA
-  MdlDGP.par <- NA
-  MdlDGP.intercept <- NA
-  MdlDGP.parLink <- NA
-  MdlDGP.nCovs <- NA
-  nObs <- NA
-  ## source the configure file
-  source(file = DGPconfigfile, local = TRUE)
+    CplNM <- NA
+    MCMCUpdate <- NA
+    MdlDGP.par <- NA
+    MdlDGP.intercept <- NA
+    MdlDGP.parLink <- NA
+    MdlDGP.nCovs <- NA
+    nObs <- NA
+
+    ## source the configure file
+    source(file = DGPconfigfile, local = TRUE)
+
+    nMargis <- length(MargisType)
+    out <- vector("list", nMargis)
+    names(out) <- names(MargisType)
 
 
-  ## THE RANDOM CDF VARIABLE IN THE COPULA
-  uOut <- rCpl(n = nObs, parCpl = MdlDGP.par[[CplNM]], CplNM = CplNM)
+    ## THE RANDOM CDF VARIABLE IN THE COPULA
+    CplNM <- MargisType[length(MargisType)]
 
-  ## Generate the response variables
-  Mdl.Y <- qCpl(u = uOut$u, parMargis = MdlDGP.par[MargisNM],
-                MargisType = MargisType)
+    parCplStd <- parCplRep2Std(CplNM = CplNM, parCplRep = MdlDGP.par[[CplNM]])
+    Mdl.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
 
-  ## The base covariates
-  MdlDGP.beta <- MCMCUpdate
-  Mdl.X <- MCMCUpdate
-  Mdl.XFixed <- MCMCUpdate
-
-  for(i in names(MCMCUpdate))
-  {
-    for(j in names(MCMCUpdate[[i]]))
+    if(length(MargisType)>1)
     {
-      Intercept <- ifelse(MdlDGP.intercept[[i]][[j]], TRUE, FALSE)
-
-      linkCurr <- MdlDGP.parLink[[i]][[j]]
-      if(tolower(linkCurr)  == "glogit")
-      {
-        warning("DGPCpl function needs review with conditional link,  Feng")
-        tau <- MdlDGP.par[[CplNM]][["tau"]]
-        a <- 0 ## The lower bound of generalized logit link
-        b <- 2^(1/2-1/(2*tau)) ## the upper bound
-        linkArgs <- list(a = a, b = b, type = linkCurr)
-      }
-      else
-      {
-        linkArgs <- list(type = linkCurr)
-      }
-
-      ## FIXME: Conditional link function
-      ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
-                            linkArgs = linkArgs)
-
-      nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
-      nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
-
-      betaFixed <- runif(n = nCovsFixed, min = 0, max = 1)
-
-      Mdl.XFixed[[i]][[j]] <- DGPlm(Y = ParResp, beta = betaFixed,
-                                    Xlim = c(0, 1),
-                                    intercept = Intercept)
-      MdlDGP.beta[[i]][[j]] <- matrix(c(betaFixed,
-                                        rep(0, nCovsTol-nCovsFixed)))
+        Mdl.Y <- vector("list", nMargis-1)
+        for(iComp in 1:(length(MargisType)-1))
+        {
+            Mdl.Y[[iComp]] <- MargiModelInv(u = Mdl.u$u[, iComp], par = MdlDGP.par[[iComp]],
+                                            type = MargisType[[iComp]])
+        }
     }
-  }
 
-  ## The extended covariates that are from the combination of the base
-  ## covariates FIXME: it is better to select the non-fixed covariates from
-  ## the known fixed covariates.
-  for(i in names(MCMCUpdate))
-  {
-    for(j in names(MCMCUpdate[[i]]))
+    ## The base covariates
+    Mdl.X <- MCMCUpdate
+    Mdl.XFixed <- MCMCUpdate
+
+    for(i in names(MCMCUpdate))
     {
-      nCovsTol <- MdlDGP.nCovs[[i]][[j]]$total
-      nCovsFixed <- MdlDGP.nCovs[[i]][[j]]$fixed
+        for(j in names(MCMCUpdate[[i]]))
+        {
+            browser()
 
-      XFinal1 <- Mdl.XFixed[[i]][[j]]
-      XFinal2 <- matrix(runif(nObs*(nCovsTol-nCovsFixed)), nObs)
-
-      XFinal <- cbind(XFinal1, XFinal2)
-
-      Mdl.X[[i]][[j]] <- XFinal
+            ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
+                                  linkArgs = Mdl.parLink[[i]][[j]])
+            Mdl.XFixed[[i]][[j]] <- DGPlm(Y = ParResp, beta = MdlDGP.beta[[i]][[j]],
+                                          Xlim = c(0, 1),
+                                          intercept = MdlDGP.intercept[[i]][[j]])
+        }
     }
-  }
 
-  ## The output
-  out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, MdlDGP.beta = MdlDGP.beta)
-  if(tolower(export)  == "list")
-  {
-    return(out)
-  }
-  else if(tolower(export)  == "parent.env")
-  {
-    list2env(x = out, envir = sys.frame(sys.parent(1)))
-  }
+    ## The output
+    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, Mdl.u = Mdl.u, MdlDGP.beta = MdlDGP.beta)
+    if(tolower(export)  == "list")
+    {
+        return(out)
+    }
+    else if(tolower(export)  == "parent.env")
+    {
+        list2env(x = out, envir = sys.frame(sys.parent(1)))
+    }
 }
