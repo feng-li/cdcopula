@@ -34,12 +34,13 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     CplNM <- MargisType[length(MargisType)]
 
     parCplStd <- parCplRep2Std(CplNM = CplNM, parCplRep = MdlDGP.par[[CplNM]])
-    MdlDGP.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
 
+    MdlDGP.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
+    colnames(MdlDGP.u[["u"]]) <- MargisNM[-length(MargisNM)]
 
     ## Marginal models are also simulated
     CompUpLst <- unlist(lapply(MCMCUpdate, function(x) any(unlist(x) == TRUE)))
-    Mdl.Y <- vector("list", nMargis-1)
+    Mdl.Y <- list()
     for(iComp in setdiff(MargisNM, CplNM))
     {
         if(CompUpLst[iComp])
@@ -54,7 +55,6 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         }
     }
 
-
     ## The base covariates
     Mdl.X <- MCMCUpdate
     for(i in names(MCMCUpdate))
@@ -63,6 +63,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         {
             parLin <- parLinkFun(MdlDGP.par[[i]][[j]],
                                  linkArgs = Mdl.parLink[[i]][[j]])
+
             Mdl.X[[i]][[j]] <- DGPlm(Y = parLin, beta = MdlDGP.beta[[i]][[j]],
                                      Xlim = c(0, 1),
                                      intercept = MdlDGP.intercept[[i]][[j]])
@@ -70,12 +71,11 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     }
 
 
-
-
-
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
-                MdlDGP.u = MdlDGP.u, MdlDGP.beta = MdlDGP.beta)
+                MdlDGP.u = MdlDGP.u, MdlDGP.beta = MdlDGP.beta,
+                Mdl.parLink = Mdl.parLink)
+
     if(tolower(export)  == "list")
     {
         return(out)

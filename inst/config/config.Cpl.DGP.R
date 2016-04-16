@@ -32,7 +32,10 @@ Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
 Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
 
-Mdl.parLink[[2]][["mu"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
+Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
+Mdl.parLink[[2]][["lmd"]] <- list(type = "log", nPar = 1)
 
 Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
@@ -50,14 +53,14 @@ MdlDGP.par <- MCMCUpdate
 ## The first margin
 MdlDGP.par[[1]][["mu"]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1), nObs, 1)
 MdlDGP.par[[1]][["phi"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
-MdlDGP.par[[1]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 0, sd = 1), nObs, 1)
+MdlDGP.par[[1]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 6, sd = 1), nObs, 1)
 MdlDGP.par[[1]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
 
 ## The second margin
 MdlDGP.par[[2]][["mu"]] <- matrix(rnorm(n = nObs, mean = 0, sd = 1), nObs, 1)
 MdlDGP.par[[2]][["phi"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
-MdlDGP.par[[3]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 6, sd = 1), nObs, 1)
-MdlDGP.par[[3]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
+MdlDGP.par[[2]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 6, sd = 1), nObs, 1)
+MdlDGP.par[[2]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
 
 ## The copula component
 MdlDGP.par[[3]][["lambdaL"]] <- matrix(rbeta2(n = nObs, mean = 0.7, sd = 0.1), nObs, 1)
@@ -100,14 +103,14 @@ MdlDGP.beta[[1]][[3]] <- matrix(c(1, 1, -1, 0, 0))
 MdlDGP.beta[[1]][[4]] <- matrix(c(1, 1, -1, 0, 0))
 
 ## The second margin
-MdlDGP.beta[[1]][[1]] <- matrix(c(1, 1, -1, 0, 0))
-MdlDGP.beta[[1]][[2]] <- matrix(c(1, 1, -1, 0, 0))
-MdlDGP.beta[[1]][[3]] <- matrix(c(1, 1, -1, 0, 0))
-MdlDGP.beta[[1]][[4]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[2]][[1]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[2]][[2]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[2]][[3]] <- matrix(c(1, 1, -1, 0, 0))
+MdlDGP.beta[[2]][[4]] <- matrix(c(1, 1, -1, 0, 0))
 
 ## The copula
-MdlDGP.beta[[3]][[1]] <- matrix(c(1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0))
-MdlDGP.beta[[3]][[2]] <- matrix(c(1, 1, -1, 1, -1, 1, -1, 0, 0, 0, 0))
+MdlDGP.beta[[3]][[1]] <- matrix(c(1, 1, -1, 1, -1, 0, 0, 0, 0))
+MdlDGP.beta[[3]][[2]] <- matrix(c(1, 1, -1, 1, -1, 0, 0, 0, 0))
 
 ################################################################################
 ###                                  THE END

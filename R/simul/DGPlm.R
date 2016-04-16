@@ -61,13 +61,14 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     ## Algorithm that finds x_1, ...x_p for y = x_1*b1+...+x_p*b_p give y and b1, ...bp
     ## Randomly select some positions to be determined from all observations.
     if(length(betaIdx.NonZero) == 1)
-        {
-            IdxLastN <- rep(betaIdx.NonZero, n)
-        }
+    {
+        IdxLastN <- rep(betaIdx.NonZero, n)
+    }
     else
-        {
-            IdxLastN <- sample(x = betaIdx.NonZero, size = n, replace = TRUE)
-        }
+    {
+        if(length(betaIdx.NonZero) == 0) browser()
+        IdxLastN <- sample(x = betaIdx.NonZero, size = n, replace = TRUE)
+    }
 
     IdxLastNLoc <- whichInd(arr.ind = cbind(1:n, IdxLastN), dims = c(n, NA))
 

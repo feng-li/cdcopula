@@ -28,7 +28,7 @@
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
 MargisType <- c("SPLITT", "SPLITT", "BB7")
-MargisNM <- c("^SML", "^OEX", "BB7")
+MargisNM <- c("M1", "M2", "BB7")
 
 MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
@@ -53,11 +53,13 @@ names(MargisType) <-  MargisNM
 ## should be in the following structure:
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
-
-load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
+## Mdl.u: "list" each list contains the CDF for response variable of that margin.
+DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
+                                 "inst/config/config.Cpl.DGP.R"),
+       export = "parent.env")
 
 ## No. of Total Observations
-nObsRaw <- length(Y[[1]])
+nObsRaw <- nrow(MdlDGP.u[["u"]])
 
 ## Data subset used
 nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
@@ -65,13 +67,9 @@ nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## No. of used Observations
 nObs <- length(nObsIdx)
 
-## THE RESPONSE VARIABLES
-Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
+## THE RESPONSE VARIABLES (LOADED VIA DGP)
 
-## The name of respond variables
-names(Mdl.Y) <- MargisNM[-length(MargisNM)]
-
-## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS
+## COVARIATES USED FOR THE MARGINAL AND COPULA PARAMETERS ((LOADED VIA DGP))
 ## ------------------------------------------------------------------------------
 
 ## A trick to include foreign marginal models in the estimation which are hard to directly
@@ -79,34 +77,8 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
 ## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
-Mdl.X <- MCMCUpdate
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][nObsIdx, 1:9])
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][nObsIdx, 1:9])
-
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
-Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][nObsIdx, 1:9], X[[2]][nObsIdx, 1:9])
-
-## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MCMCUpdate
-Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
-Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
-Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
-
-Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
-Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2, b = 30)
-Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
-
-Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
-Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
+## THE LINK FUNCTION USED IN THE MODEL (LOADED VIA DGP)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full

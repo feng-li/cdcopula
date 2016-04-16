@@ -106,7 +106,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                              idx = Mdl.Idx.training, how = "replace")
 
     if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
-    {## Special case when a foreign multivariate model is introduced
+    {## Special case when a foreign multivariate model is introduced. Fit the model and
+        ## quit the MCMC directly.
         Mdl.ForeignFitted <-ModelForeignEval(model  = MargisType[length(MargisType)],
                                              spec = ForeignModelSpec,
                                              data = Mdl.Y.training)
@@ -117,7 +118,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     if(any(rapply(Mdl.X, class) != "matrix"))
-    { ## Evaluating Foreign marginal models.
+    {
+        ## Special case when a foreign marginal model is introduced.  Evaluating
+        ## Foreign marginal models.
         cat("Evaluating foreign marginal models...\n")
 
         Mdl.X.training.Fitted <- MargiModelForeignEval(MargisNM = MargisNM,
