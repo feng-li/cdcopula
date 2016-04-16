@@ -134,7 +134,7 @@ varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[3]][["tau"]] <- list(cand = 2:19, init = "all-in")
+varSelArgs[[3]][["tau"]] <- list(cand = "2:end", init = "all-in")
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------

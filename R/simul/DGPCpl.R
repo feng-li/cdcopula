@@ -28,44 +28,54 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     nMargis <- length(MargisType)
     out <- vector("list", nMargis)
     names(out) <- names(MargisType)
-
+    MargisNM <- names(MargisType)
 
     ## THE RANDOM CDF VARIABLE IN THE COPULA
     CplNM <- MargisType[length(MargisType)]
 
     parCplStd <- parCplRep2Std(CplNM = CplNM, parCplRep = MdlDGP.par[[CplNM]])
-    Mdl.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
+    MdlDGP.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
 
-    if(length(MargisType)>1)
+
+    ## Marginal models are also simulated
+    CompUpLst <- unlist(lapply(MCMCUpdate, function(x) any(unlist(x) == TRUE)))
+    Mdl.Y <- vector("list", nMargis-1)
+    for(iComp in setdiff(MargisNM, CplNM))
     {
-        Mdl.Y <- vector("list", nMargis-1)
-        for(iComp in 1:(length(MargisType)-1))
+        if(CompUpLst[iComp])
         {
-            Mdl.Y[[iComp]] <- MargiModelInv(u = Mdl.u$u[, iComp], par = MdlDGP.par[[iComp]],
+            Mdl.Y[[iComp]] <- MargiModelInv(u = MdlDGP.u$u[, iComp],
+                                            par = MdlDGP.par[[iComp]],
                                             type = MargisType[[iComp]])
+        }
+        else
+        {
+            Mdl.Y[[iComp]] <- NA
         }
     }
 
+
     ## The base covariates
     Mdl.X <- MCMCUpdate
-    Mdl.XFixed <- MCMCUpdate
-
     for(i in names(MCMCUpdate))
     {
         for(j in names(MCMCUpdate[[i]]))
         {
-            browser()
-
-            ParResp <- parLinkFun(MdlDGP.par[[i]][[j]],
-                                  linkArgs = Mdl.parLink[[i]][[j]])
-            Mdl.XFixed[[i]][[j]] <- DGPlm(Y = ParResp, beta = MdlDGP.beta[[i]][[j]],
-                                          Xlim = c(0, 1),
-                                          intercept = MdlDGP.intercept[[i]][[j]])
+            parLin <- parLinkFun(MdlDGP.par[[i]][[j]],
+                                 linkArgs = Mdl.parLink[[i]][[j]])
+            Mdl.X[[i]][[j]] <- DGPlm(Y = parLin, beta = MdlDGP.beta[[i]][[j]],
+                                     Xlim = c(0, 1),
+                                     intercept = MdlDGP.intercept[[i]][[j]])
         }
     }
 
+
+
+
+
     ## The output
-    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X, Mdl.u = Mdl.u, MdlDGP.beta = MdlDGP.beta)
+    out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
+                MdlDGP.u = MdlDGP.u, MdlDGP.beta = MdlDGP.beta)
     if(tolower(export)  == "list")
     {
         return(out)
