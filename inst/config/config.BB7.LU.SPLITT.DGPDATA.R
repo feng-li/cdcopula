@@ -55,7 +55,7 @@ names(MargisType) <-  MargisNM
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 ## Mdl.u: "list" each list contains the CDF for response variable of that margin.
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
-                                 "inst/config/config.Cpl.DGP.R"),
+                                 "inst/config/dgp/config.Cpl.DGP.R"),
        export = "parent.env")
 
 ## No. of Total Observations
