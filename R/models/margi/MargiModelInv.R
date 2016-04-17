@@ -15,7 +15,6 @@ MargiModelInv <- function(u, par, type)
 
         out <- matrix(qsplitt(p = u, mu =  mu, df = df,
                               phi = phi, lmd = lmd))
-
     }
     else if(tolower(margiType) == "poisson") # the discrete case
     {
