@@ -1,5 +1,5 @@
-logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
-                    MCMCUpdateStrategy)
+logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
+                    parUpdate, MCMCUpdateStrategy)
 {
 ###----------------------------------------------------------------------------
 ### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
@@ -27,7 +27,6 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
     MargisNM <- CompNM[CompNM  != CplNM]
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
-
     ## THE COPULA LOG LIKELIHOOD
     if(tolower(MCMCUpdateStrategy) == "joint")
     {
@@ -46,8 +45,10 @@ logDens <- function(MargisType, Mdl.Y, Mdl.par, Mdl.u, Mdl.d, parUpdate,
         }
         else
         {
+            ## Only updating marginal density
             evalCpl <- FALSE
             Mdl.PostComp <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
+            Mdl.PostComp[[CplNM]] <- FALSE
         }
     }
     else

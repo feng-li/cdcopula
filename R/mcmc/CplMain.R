@@ -102,8 +102,17 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     subsetFun <- function(x, idx)x[idx, , drop = FALSE]
 
     nTraining <- length(Mdl.Idx.training)
-    Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
-                             idx = Mdl.Idx.training, how = "replace")
+
+    if(exists("Mdl.Y"))
+    {   ## Marginal Y supplies
+        Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
+                                 idx = Mdl.Idx.training, how = "replace")
+    }
+    else
+    {
+        ## No marginal information supplies. Update copula component only
+        Mdl.u.training <- Mdl.u[Mdl.Idx.training, , drop = FALSE]
+    }
 
     if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
     {## Special case when a foreign multivariate model is introduced. Fit the model and
@@ -172,8 +181,18 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         Mdl.Idx.training.sample <- floor(seq(1, nTraining, length.out = nOptim.Sample))
         Mdl.X.training.sample <- rapply(object=Mdl.X.training, f = subsetFun,
                                         idx = Mdl.Idx.training.sample, how = "replace")
-        Mdl.Y.training.sample <- rapply(object=Mdl.Y.training, f = subsetFun,
-                                        idx = Mdl.Idx.training.sample, how = "replace")
+
+        if(exists("Mdl.Y"))
+        {
+            Mdl.Y.training.sample <- rapply(object=Mdl.Y.training, f = subsetFun,
+                                            idx = Mdl.Idx.training.sample,
+                                            how = "replace")
+        }
+        else
+        {
+            Mdl.u.training.sample <- Mdl.u.training[Mdl.Idx.training.sample,, drop = FALSE]
+        }
+
         ## browser()
         cat("Optimizing initial values, may take a few minutes...\n\n")
 
@@ -352,7 +371,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           parUpdate = MCMCUpdate,
                           MCMCUpdateStrategy = MCMCUpdateStrategy)
     staticCache <- Mdl.DryRun[["staticCache"]]
-
+    ## browser()
 
     cat("\nMEAN INITIAL VALUES FOR MODEL PARAMETERS:\n")
 

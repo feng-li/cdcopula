@@ -30,8 +30,8 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("M1", "M2", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
-                   list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+MCMCUpdate <- list(list("mu" = F, "phi" = F, "df" = F, "lmd" = F),
+                   list("mu" = F, "phi" = F, "df" = F, "lmd" = F),
                    list("lambdaL" = T, "lambdaU" = T))
 
 names(MCMCUpdate) <- MargisNM
@@ -53,7 +53,6 @@ names(MargisType) <-  MargisNM
 ## should be in the following structure:
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
-## Mdl.u: "list" each list contains the CDF for response variable of that margin.
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
                                  "inst/config/dgp/config.Cpl.DGP.R"),
        export = "parent.env")
@@ -141,7 +140,7 @@ MCMCUpdateOrder[[3]][[2]] <- 10
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMCUpdateStrategy <- "joint"
+MCMCUpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MCMCUpdate
