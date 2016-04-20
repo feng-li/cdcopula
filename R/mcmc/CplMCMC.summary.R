@@ -197,12 +197,11 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
                 }
           }
 
-          obj.par <- rbind(round(accept.prob.mean[[i]][[j]], 2),
-                           par.mean[[i]][[j]],
+          obj.par <- rbind(par.mean[[i]][[j]],
                            par.median[[i]][[j]],
-                           par.sd[[i]][[j]])
-          rownames(obj.par) <- c("acc.prob", "par.mean",
-                                 "par.median", "par.sd")
+                           par.sd[[i]][[j]],
+                           round(accept.prob.mean[[i]][[j]], 2))
+          rownames(obj.par) <- c("par.mean", "par.median", "par.sd", "acc.prob")
           colnames(obj.par) <- names(par.mean[[i]][[j]])
 
           obj <- rbind(beta.mean[[i]][[j]],

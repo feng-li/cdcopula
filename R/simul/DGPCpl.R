@@ -63,12 +63,36 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         {
             parLin <- parLinkFun(MdlDGP.par[[i]][[j]],
                                  linkArgs = Mdl.parLink[[i]][[j]])
+            if(is.na(MdlDGP.beta[[i]][[j]]))
+            {
+                Mdl.X[[i]][[j]] <- matrix(1, nObs, 1)
+                MdlDGP.beta[[i]][[j]] <- matrix(parLin[1])
 
-            Mdl.X[[i]][[j]] <- DGPlm(Y = parLin, beta = MdlDGP.beta[[i]][[j]],
-                                     Xlim = c(0, 1),
-                                     intercept = MdlDGP.intercept[[i]][[j]])
+            }
+            else
+            {
+                Mdl.X[[i]][[j]] <- DGPlm(Y = parLin, beta = MdlDGP.beta[[i]][[j]],
+                                         Xlim = c(0, 1),
+                                         intercept = MdlDGP.intercept[[i]][[j]])
+            }
         }
     }
+
+
+
+    dev.width <- getOption("width")
+    cat("DGP DATA SUMMARY...")
+    cat("\n", rep("-", dev.width-1), "\n", sep = "")
+    MdlDGP.Summary <- rbind(unlist(rapply(MdlDGP.par, mean, how = "replace")),
+                            unlist((rapply(MdlDGP.par, sd, how = "replace"))),
+                            unlist(MdlDGP.intercept))
+    rownames(MdlDGP.Summary) <- c("par.mean", "par.sd", "intercept(Y/N)")
+    print(MdlDGP.Summary)
+
+    cat("DGP True Coefficients:\n")
+    print(unlist(rapply(MdlDGP.beta, t, how = "replace"), recursive = T))
+    cat("\n", rep("-", dev.width-1), "\n", sep = "")
+    ## print(Mdl.parLink)
 
 
     ## The output

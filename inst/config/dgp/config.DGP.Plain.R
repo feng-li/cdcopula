@@ -59,7 +59,7 @@ MdlDGP.par[[1]][["lmd"]] <- matrix(1, nObs, 1)
 ## The second margin
 MdlDGP.par[[2]][["mu"]] <- matrix(0, nObs, 1)
 MdlDGP.par[[2]][["phi"]] <- matrix(0.5, nObs, 1)
-MdlDGP.par[[2]][["df"]] <- matrix(0, nObs, 1)
+MdlDGP.par[[2]][["df"]] <- matrix(6, nObs, 1)
 MdlDGP.par[[2]][["lmd"]] <- matrix(1,  nObs, 1)
 
 ## The copula component
@@ -97,20 +97,20 @@ MdlDGP.intercept[[3]][[2]] <- TRUE
 MdlDGP.beta <- MCMCUpdate
 
 ## The first margin
-MdlDGP.beta[[1]][[1]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[1]][[2]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[1]][[3]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[1]][[4]] <- matrix(c(1, 1, 0))
+MdlDGP.beta[[1]][[1]] <- NA
+MdlDGP.beta[[1]][[2]] <- NA
+MdlDGP.beta[[1]][[3]] <- NA
+MdlDGP.beta[[1]][[4]] <- NA
 
 ## The second margin
-MdlDGP.beta[[2]][[1]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[2]][[2]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[2]][[3]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[2]][[4]] <- matrix(c(1, 1, 0))
+MdlDGP.beta[[2]][[1]] <- NA
+MdlDGP.beta[[2]][[2]] <- NA
+MdlDGP.beta[[2]][[3]] <- NA
+MdlDGP.beta[[2]][[4]] <- NA
 
 ## The copula
-MdlDGP.beta[[3]][[1]] <- matrix(c(1, 1, 0))
-MdlDGP.beta[[3]][[2]] <- matrix(c(1, 1, 0))
+MdlDGP.beta[[3]][[1]] <- NA
+MdlDGP.beta[[3]][[2]] <- NA
 ################################################################################
 ###                                  THE END
 ################################################################################

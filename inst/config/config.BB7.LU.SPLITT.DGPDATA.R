@@ -85,18 +85,18 @@ nObs <- length(nObsIdx)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION

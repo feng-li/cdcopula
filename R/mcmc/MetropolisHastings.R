@@ -61,7 +61,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   if(class(varSelCandConfigRow) == "character" &&
      tolower(varSelCandConfigRow) == "2:end")
   {
-    varSelCandRow <- 2:nCovs
+      varSelCandRow <- 2:nCovs
   }
   else
   {
