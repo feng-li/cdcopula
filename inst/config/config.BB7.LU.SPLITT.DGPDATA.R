@@ -54,8 +54,9 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
-                                 "inst/config/dgp/config.Cpl.DGP.R"),
-       export = "parent.env")
+                                 ## "inst/config/dgp/config.DGP.R"
+                                 "inst/config/dgp/config.DGP.Plain.R"
+                                 ), export = "parent.env")
 
 ## No. of Total Observations
 nObsRaw <- nrow(MdlDGP.u[["u"]])

@@ -52,7 +52,7 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
 
 
     ## Variational Y with constant X is not possible when intercept in.
-    if(((length(betaIdxLen.NonZero) == 0) & intercept & any(Y != beta[1])) ||
+    if((betaIdxLen.NonZero == 0 & intercept & any(Y != beta[1])) ||
        (all(beta == 0) & any(Y != 0)))
     {
         stop("Variational Y with constant X is not possible!")
