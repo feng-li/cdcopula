@@ -26,7 +26,7 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011; Current: Tue Sep 29 23:50:07 CST 2015.
-initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
+initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink, parUpdate)
 {
   ## The output structure.
   Mdl.betaIdx <- betaInit
@@ -92,6 +92,7 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
       else if(class(varSelInitCurr) == "character" &&
               tolower(varSelInitCurr) == "random")
       {
+
         Mdl.betaIdx[[i]][[j]] <- matrix(TRUE, ncolX.ij, nPar.ij)
 
         ## Randomly pick up half in
@@ -113,6 +114,14 @@ initPar <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink)
       if(class(betaInitCurr) == "character" &&
          tolower(betaInitCurr) == "random")
       {
+
+          if(parUpdate[[i]][[j]] == FALSE)
+          {
+              stop("Using random initial values but don't update (",  i, ", " ,  j ,
+                   ") component is neither logical nor allowed.")
+          }
+
+
         ## betaInitCurr = runif(ncolX.ij, -1, 1)
         ## Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij,
         ## 1)) Mdl.beta[[i]][[j]][!Mdl.betaIdx[[i]][[j]]] <- 0 let

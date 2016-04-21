@@ -198,7 +198,7 @@ crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
 ## nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
-MCMC.sampleProp <- 0.8
+MCMC.sampleProp <- 1
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in
@@ -288,16 +288,7 @@ priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custo
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
-betaInit <- MCMCUpdate
-betaInit[[1]][[1]] <- "random"
-betaInit[[1]][[2]] <- "random"
-betaInit[[1]][[3]] <- "random"
-betaInit[[1]][[4]] <- "random"
-
-betaInit[[2]][[1]] <- "random"
-betaInit[[2]][[2]] <- "random"
-betaInit[[2]][[3]] <- "random"
-betaInit[[2]][[4]] <- "random"
+betaInit <- MdlDGP.beta
 
 betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"

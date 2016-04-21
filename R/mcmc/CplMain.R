@@ -150,9 +150,10 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                  idx = Mdl.Idx.training, how = "replace")
     }
     ## Assign the initial values
+    ## browser()
     initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
-                          Mdl.parLink = Mdl.parLink)
+                          Mdl.parLink = Mdl.parLink, parUpdate = MCMCUpdate)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
@@ -217,7 +218,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                            betaInit = betaInit,
                                            Mdl.X = Mdl.X.training.sample,
                                            Mdl.Y = Mdl.Y.training.sample,
-                                           Mdl.parLink = Mdl.parLink)
+                                           Mdl.parLink = Mdl.parLink,
+                                           parUpdate = parUpdate)
             Mdl.betaIdx[[CompCaller]] <- initParOut.CompCurr[["Mdl.betaIdx"]][[CompCaller]]
             Mdl.beta[[CompCaller]] <- initParOut.CompCurr[["Mdl.beta"]][[CompCaller]]
 
