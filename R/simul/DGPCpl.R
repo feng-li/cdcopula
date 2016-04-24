@@ -98,6 +98,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
                 MdlDGP.u = MdlDGP.u, MdlDGP.beta = MdlDGP.beta,
+                MdlDGP.par = MdlDGP.par,
                 Mdl.parLink = Mdl.parLink)
 
     if(tolower(export)  == "list")
