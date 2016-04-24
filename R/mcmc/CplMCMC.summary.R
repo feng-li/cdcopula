@@ -177,20 +177,40 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
                     {
                         if(ncol(par.ts.mean[[i]][[j]]) == 1)
                         {
-                            ## browser()
                             hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
                             ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
-                            plot(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid", col = "blue", ylim = ylim, ylab = j)
-                            polygon(x = c(1:ncol(hpd95), ncol(hpd95):1), c(hpd95[1, ], rev(hpd95[2, ])), border = "grey", col = "grey")
 
-                            points(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid", col = "blue", lwd = 2)
-                            ## points(par.ts.median[[i]][[j]][,1], type = "l", lty = "dashed", col = "black")
+                            ## Initial plot to draw the plot window
+                            plot(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid",
+                                 col = "blue", ylim = ylim, ylab = j)
 
-                            legend("topright",ncol = 3,
-                                   lty = c("dotted", "solid", "dashed"),
-                                   lwd = c(10, 1, 1),
-                                   col = c("grey", "blue", "black"),
-                                   legend = c("95% HPD", "Posterior mean", "Posterior median"))
+
+                            ## HPD Polygon
+                            polygon(x = c(1:ncol(hpd95), ncol(hpd95):1),
+                                    y = c(hpd95[1, ], rev(hpd95[2, ])),
+                                    border = "grey", col = "grey")
+
+                            points(par.ts.mean[[i]][[j]][, 1],
+                                   type = "l", lty = "solid", col = "blue", lwd = 2)
+
+                            MdlDGP.par <- OUT.MCMC[["MdlDGP.par"]]
+                            if(!(length(MdlDGP.par) = 1 & is.null(MdlDGP.par)))
+                            {
+                                Mdl.Idx.training <- OUT.MCMC[["Mdl.Idx.training"]]
+                                points(MdlDGP.par[[i]][[j]][Mdl.Idx.training],
+                                       type = "l", lty = "solid", col = "red", lwd = 2)
+                                legend.idx <- 1:3
+                            }
+                            else
+                            {
+                                legend.idx <- 1:2
+                            }
+
+                            legend("topright",ncol = length(legend.idx),
+                                   lty = c("dotted", "solid", "dashed")[legend.idx],
+                                   lwd = c(10, 1, 1)[legend.idx],
+                                   col = c("grey", "blue", "red")[legend.idx],
+                                   legend = c("95% HPD", "Posterior mean", "DGP values")[legend.idx])
                         }
                         else
                         {

@@ -165,7 +165,6 @@ if(nCross>1 & nCores>1)
 ## Calculate the LPDS
 cat("Calculating predictions......")
 OUT.CplLPDS <- list()
-browser()
 {if(nCross>1 & nCores >1)
  {
      Mdl.PredLst <- clusterMap(cl = cl4CV,
