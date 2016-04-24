@@ -94,7 +94,6 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     cat("\n", rep("-", dev.width-1), "\n", sep = "")
     ## print(Mdl.parLink)
 
-
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
                 MdlDGP.u = MdlDGP.u, MdlDGP.beta = MdlDGP.beta,
