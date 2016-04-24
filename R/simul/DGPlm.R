@@ -66,7 +66,7 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     }
     else
     {
-        if(length(betaIdx.NonZero) == 0) browser()
+        ## if(length(betaIdx.NonZero) == 0) browser()
         IdxLastN <- sample(x = betaIdx.NonZero, size = n, replace = TRUE)
     }
 

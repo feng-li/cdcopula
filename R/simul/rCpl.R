@@ -109,7 +109,7 @@ rCpl <- function(n, parCpl, CplNM, exArgs = NA)
 
         ## Kendall's tau,  theoretical
         theotau <- kendalltau(CplNM=CplNM, parCpl = list(rho = theta))
-        out <- list(u = u, theotau = theotau)
+        out <- list(u = u, emptau = emptau, theotau = theotau)
     }
     else if(tolower(CplNM) == "mvt") ## the multivariate t Demarta Mcneil (2005)
     {
@@ -164,7 +164,7 @@ rCpl <- function(n, parCpl, CplNM, exArgs = NA)
         ## Kendall's tau,  theoretical
         theotau <- kendalltau(CplNM=CplNM, parCpl = parCpl)
 
-        out <- list(u = u, theotau = theotau, emptau = emptau)
+        out <- list(u = u, emptau = emptau, theotau = theotau)
     }
     else if(tolower(CplNM) == "gumbel")
     {

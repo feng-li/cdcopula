@@ -189,7 +189,7 @@ propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, 
 ## predict the new interval)
 
 nCross <- 1
-crossValidArgs <- list(N.subsets = nCross,
+crossValidArgs <- list(N.subsets = 0,
                        partiMethod = "time-series",
                        testRatio = 0.2)
 
@@ -293,7 +293,7 @@ betaInit <- MdlDGP.beta
 betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"
 
-optimInit <- TRUE
+optimInit <- FALSE
 ################################################################################
 ###                                  THE END
 ################################################################################
