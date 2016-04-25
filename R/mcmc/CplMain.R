@@ -448,7 +448,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         if(MCMC.track == TRUE && iInner == nInner)
         {
             ## ProgressBar only available in interactive mode
-            if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
+            ## if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
+            cat(round(nIter/MCMC.nIter*100), "%...")
+
 
             ## browser()
             ## Summary
