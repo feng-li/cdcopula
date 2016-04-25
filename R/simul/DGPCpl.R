@@ -63,7 +63,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         {
             parLin <- parLinkFun(MdlDGP.par[[i]][[j]],
                                  linkArgs = Mdl.parLink[[i]][[j]])
-            if(is.na(MdlDGP.beta[[i]][[j]]))
+            if(all(is.na(MdlDGP.beta[[i]][[j]])))
             {
                 Mdl.X[[i]][[j]] <- matrix(1, nObs, 1)
                 MdlDGP.beta[[i]][[j]] <- matrix(parLin[1])

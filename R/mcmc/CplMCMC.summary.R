@@ -172,17 +172,19 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
             {
                 if(MCMCUpdate[[i]][[j]])
                 {
-
                     if(has.Display)
                     {
                         if(ncol(par.ts.mean[[i]][[j]]) == 1)
                         {
+
+                            par(mar = c(3, 4, 0, 0)+0.1)
+
                             hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
                             ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
 
                             ## Initial plot to draw the plot window
                             plot(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid",
-                                 col = "blue", ylim = ylim, ylab = j)
+                                 col = "blue", ylim = ylim, ylab = j, xlab = "")
 
 
                             ## HPD Polygon
@@ -190,25 +192,27 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
                                     y = c(hpd95[1, ], rev(hpd95[2, ])),
                                     border = "grey", col = "grey")
 
+                            ## Posterior Mean
                             points(par.ts.mean[[i]][[j]][, 1],
                                    type = "l", lty = "solid", col = "blue", lwd = 2)
 
+                            ## DGP (Only for DGP data)
                             MdlDGP.par <- OUT.MCMC[["MdlDGP.par"]]
-                            if(!(length(MdlDGP.par) = 1 & is.null(MdlDGP.par)))
+                            if(!(length(MdlDGP.par)  == 0 & is.null(MdlDGP.par)))
                             {
                                 Mdl.Idx.training <- OUT.MCMC[["Mdl.Idx.training"]]
                                 points(MdlDGP.par[[i]][[j]][Mdl.Idx.training],
-                                       type = "l", lty = "solid", col = "red", lwd = 2)
+                                       type = "l", lty = "dashed", col = "red", lwd = 2)
                                 legend.idx <- 1:3
-                            }
-                            else
+                            } else
                             {
                                 legend.idx <- 1:2
                             }
 
+                            ## Legend
                             legend("topright",ncol = length(legend.idx),
                                    lty = c("dotted", "solid", "dashed")[legend.idx],
-                                   lwd = c(10, 1, 1)[legend.idx],
+                                   lwd = c(30, 1, 1)[legend.idx],
                                    col = c("grey", "blue", "red")[legend.idx],
                                    legend = c("95% HPD", "Posterior mean", "DGP values")[legend.idx])
                         }

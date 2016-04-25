@@ -450,15 +450,19 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             ## ProgressBar only available in interactive mode
             if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
 
+            ## browser()
             ## Summary
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                             interval = 0.1, MCMC.burninProp = MCMC.burninProp,
-                            OUT.MCMC = list(MCMC.beta = MCMC.beta,
-                                            MCMC.betaIdx = MCMC.betaIdx,
-                                            MCMC.par = MCMC.par,
-                                            MCMC.AccProb = MCMC.AccProb,
-                                            MCMCUpdate = MCMCUpdate,
-                                            Starting.time = Starting.time))
+                            OUT.MCMC = as.list(environment()))
+
+    ## list(MCMC.beta = MCMC.beta,
+    ##                                         MCMC.betaIdx = MCMC.betaIdx,
+    ##                                         MCMC.par = MCMC.par,
+    ##                                         MCMC.AccProb = MCMC.AccProb,
+    ##                                         MdlDGP.par = ifelse(exists("MdlDGP.par"), MdlDGP.par, NULL),
+    ##                                         MCMCUpdate = MCMCUpdate,
+    ##                                         Starting.time = Starting.time))
         }
         ## cat("(", iIter,"," , iInner, "); ", sep = "")
 

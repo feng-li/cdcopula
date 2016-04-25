@@ -20,7 +20,7 @@ names(MargisType) <-  MargisNM
 
 
 ## NO. OF OBSERVATIONS
-nObs <- 1000
+nObs <- 100
 
 ## SEED
 seed <- 123

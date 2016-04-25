@@ -54,8 +54,8 @@ names(MargisType) <-  MargisNM
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
-                                 ## "inst/config/dgp/config.DGP.R"
-                                 "inst/config/dgp/config.DGP.Plain.R"
+                                 "inst/config/dgp/config.DGP.R"
+                                 ## "inst/config/dgp/config.DGP.Plain.R"
                                  ), export = "parent.env")
 
 ## No. of Total Observations
@@ -85,18 +85,18 @@ nObs <- length(nObsIdx)
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 varSelArgs <- MCMCUpdate
-varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
-varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
+varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
+varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
@@ -293,7 +293,7 @@ betaInit <- MdlDGP.beta
 betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"
 
-optimInit <- FALSE
+optimInit <- TRUE
 ################################################################################
 ###                                  THE END
 ################################################################################
