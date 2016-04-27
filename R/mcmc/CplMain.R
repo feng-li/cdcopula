@@ -448,25 +448,12 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         if(MCMC.track == TRUE && iInner == nInner)
         {
             ## ProgressBar only available in interactive mode
-            ## if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
-            cat(round(nIter/MCMC.nIter*100), "%...")
+            if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
 
-
-            ## browser()
-            ## Summary
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                             interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = as.list(environment()))
-
-    ## list(MCMC.beta = MCMC.beta,
-    ##                                         MCMC.betaIdx = MCMC.betaIdx,
-    ##                                         MCMC.par = MCMC.par,
-    ##                                         MCMC.AccProb = MCMC.AccProb,
-    ##                                         MdlDGP.par = ifelse(exists("MdlDGP.par"), MdlDGP.par, NULL),
-    ##                                         MCMCUpdate = MCMCUpdate,
-    ##                                         Starting.time = Starting.time))
         }
-        ## cat("(", iIter,"," , iInner, "); ", sep = "")
 
     }
 

@@ -23,7 +23,7 @@
 
           * `mvtnorm` `Rmfpr` `numDeriv` `optimix`
 
-          * `rugarch` `rmgarch`  `fGarch` `stochvol`.
+          * `rugarch` `rmgarch`  `fGarch` `stochvol`
 
       * Optional R packages: `compiler`, `parallel`.
 
@@ -92,13 +92,21 @@ parameters which may require
 
     * `MargiModelGrad.R` Gradient for CDF and PDF of the marginal distribution
 
-* If you want to include a foreign model with existing algorithms, edit the following
-files
+    * `MargiModelInv.R` The inverse for marginal model
 
+* If you want to include a foreign marginal model with existing algorithms, edit the
+following files
 
     * `MargiModelForeignEval.R`
 
     * `MargiModelForeignPred.R`
+
+* If you want to include a foreign multivariate model for model comparison, edit the
+  following files
+
+    * `ModelForeignEval.R`
+
+    * `ModelForeignPred.R`
 
 ## References
 
