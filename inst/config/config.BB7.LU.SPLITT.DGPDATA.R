@@ -290,6 +290,16 @@ priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custo
 ## The possible inputs are ("random", "ols"  or user-input).
 betaInit <- MdlDGP.beta
 
+## betaInit[[1]][[1]] <- "random"
+## betaInit[[1]][[2]] <- "random"
+## betaInit[[1]][[3]] <- "random"
+## betaInit[[1]][[4]] <- "random"
+
+## betaInit[[2]][[1]] <- "random"
+## betaInit[[2]][[2]] <- "random"
+## betaInit[[2]][[3]] <- "random"
+## betaInit[[2]][[4]] <- "random"
+
 betaInit[[3]][[1]] <- "random"
 betaInit[[3]][[2]] <- "random"
 

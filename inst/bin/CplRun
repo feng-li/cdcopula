@@ -204,6 +204,11 @@ OUT.CplLPDS <- list()
  save.all(save.output = OUT.CplCross[[1]][["save.output"]],
           ModelDescription = OUT.CplCross[[1]][["ModelDescription"]])
 }
+
+## Print warnings
+if(length(last.warning)>0) warnings()
+
+## Quit
 if(!interactive())q("no")
 ###----------------------------------------------------------------------------
 ### THE END
