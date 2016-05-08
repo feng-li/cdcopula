@@ -18,9 +18,10 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     MCMCUpdate <- NA
     MdlDGP.par <- NA
     MdlDGP.intercept <- NA
-    MdlDGP.parLink <- NA
     MdlDGP.nCovs <- NA
     nObs <- NA
+    MargisType <- NA
+    Mdl.parLink <- NA
 
     ## source the configure file
     source(file = DGPconfigfile, local = TRUE)

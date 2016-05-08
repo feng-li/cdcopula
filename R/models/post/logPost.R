@@ -143,7 +143,5 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                 Mdl.logPri = Mdl.logPri.SubSum,
                 staticCache = staticCache,
                 errorFlag = errorFlag)
-
-
     return(out)
 }

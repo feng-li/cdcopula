@@ -18,7 +18,7 @@ ModelForeignEval <- function(model, spec, data, ...)
   }
   else
   {
-    stop("No such model implemented!")
+    stop("No such foreign multivariate model implemented!")
   }
   return(out)
 }

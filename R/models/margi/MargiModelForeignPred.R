@@ -26,6 +26,7 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
             ##                                     Mdl.ForeignFit[[iComp]],
             ##                                     steps = length(Mdl.Y[[iComp]])))
             ## MargiModel.Pred <- eval(MargiModel.Pred.caller)
+            require("stochvol", quietly = TRUE)
 
             MargiModel.Pred <- predict.svdraws(object = Mdl.ForeignFit[[iComp]],
                                                steps = length(Mdl.Y[[iComp]]))

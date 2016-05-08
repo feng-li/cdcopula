@@ -54,22 +54,30 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Load the whole library
     Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
-                            byte.compile = 1,
+                            byte.compile = 0,
                             recursive = TRUE,
                             ignore.error = TRUE)
 
     ## Source the configuration file for the model.
+    nObs <- NA
+    nCross <- NA
     Mdl.X <- NA
+    Mdl.Y <- NA
+    MargisType <- NA
+    MargisNM <- NA
     Mdl.parLink <- NA
     MCMC.nIter <- NA
     MCMCUpdate <- NA
     MCMC.track <- NA
+    MCMC.burninProp <- NA
     MCMCUpdateStrategy <- NA
     MCMCUpdateOrder <- NA
     priArgs <- NA
     varSelArgs <- NA
     propArgs <- NA
     betaInit <- NA
+    optimInit <- NA
+    Mdl.u <- NA
 
     source(MdlConfigFile, local = TRUE)
 
@@ -83,7 +91,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         setDefaultCluster(cl4MCMC)
         ce4MCMC <- clusterEvalQ(cl4MCMC,
         {sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
-                   byte.compile = 1,
+                   byte.compile = 0,
                    recursive = TRUE,
                    ignore.error = TRUE)
         })
@@ -101,8 +109,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## Extract the training and testing data according to cross-validation
     subsetFun <- function(x, idx)x[idx, , drop = FALSE]
 
-    nTraining <- length(Mdl.Idx.training)
-
     if(exists("Mdl.Y"))
     {   ## Marginal Y supplies
         Mdl.Y.training <- rapply(object=Mdl.Y, f = subsetFun,
@@ -114,7 +120,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         Mdl.u.training <- Mdl.u[Mdl.Idx.training, , drop = FALSE]
     }
 
-    if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
+    ## if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
+    if(exists("ForeignModelSpec") &&  ForeignModelSpec  != NA)
     {## Special case when a foreign multivariate model is introduced. Fit the model and
         ## quit the MCMC directly.
         Mdl.ForeignFitted <-ModelForeignEval(model  = MargisType[length(MargisType)],
@@ -149,154 +156,16 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
                                  idx = Mdl.Idx.training, how = "replace")
     }
+
     ## Assign the initial values
-    ## browser()
-    initParOut <- initPar(varSelArgs = varSelArgs, betaInit = betaInit,
+    initParOut <- initPar(varSelArgs = varSelArgs, priArgs = priArgs,
+                          betaInit = betaInit, MargisType = MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
-                          Mdl.parLink = Mdl.parLink, parUpdate = MCMCUpdate)
+                          Mdl.parLink = Mdl.parLink, MCMCUpdate = MCMCUpdate,
+                          optimInit = optimInit)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
-###----------------------------------------------------------------------------
-### STABILIZE THE INITIAL VALUES VIA NEWTON ITERATIONS
-###----------------------------------------------------------------------------
-
-    ## Generate initial values that does not let log posterior be -Inf.
-    ## Loop and count how many times tried for generating initial values
-    if(optimInit == TRUE &&
-       any(tolower(unlist(betaInit)) == "random"))
-    {
-        require("optimx", quietly = TRUE)
-
-        ## Sample size to be used. Usually set it as 10% of the full data but no more than 500
-        ## observations. Use the full data unless the it is really small.
-        if(nTraining<50)
-        {
-            nOptim.Sample <- nTraining
-        }
-        else
-        {
-            nOptim.Sample <- max(min(floor(nTraining*.10), 500), 50)
-        }
-
-        Mdl.Idx.training.sample <- floor(seq(1, nTraining, length.out = nOptim.Sample))
-        Mdl.X.training.sample <- rapply(object=Mdl.X.training, f = subsetFun,
-                                        idx = Mdl.Idx.training.sample, how = "replace")
-
-        if(exists("Mdl.Y"))
-        {
-            Mdl.Y.training.sample <- rapply(object=Mdl.Y.training, f = subsetFun,
-                                            idx = Mdl.Idx.training.sample,
-                                            how = "replace")
-        }
-        else
-        {
-            Mdl.u.training.sample <- Mdl.u.training[Mdl.Idx.training.sample,, drop = FALSE]
-        }
-
-        ## browser()
-        cat("Optimizing initial values, may take a few minutes...\n\n")
-
-        for(CompCaller in names(Mdl.beta))
-        {
-            ## If nothing to update, skip optimizing this component.
-            if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
-
-            cat("\nInitializing model component:", CompCaller, "...\n")
-            InitGoodCompCurr <- FALSE
-            nLoopInit <- 0
-            maxLoopInit <- 1
-
-            ## Only current component to be updated.
-            parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
-            parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
-
-            while(InitGoodCompCurr == FALSE)
-        {
-            ## Reassign the initial values
-            initParOut.CompCurr <- initPar(varSelArgs = varSelArgs,
-                                           betaInit = betaInit,
-                                           Mdl.X = Mdl.X.training.sample,
-                                           Mdl.Y = Mdl.Y.training.sample,
-                                           Mdl.parLink = Mdl.parLink,
-                                           parUpdate = parUpdate)
-            Mdl.betaIdx[[CompCaller]] <- initParOut.CompCurr[["Mdl.betaIdx"]][[CompCaller]]
-            Mdl.beta[[CompCaller]] <- initParOut.CompCurr[["Mdl.beta"]][[CompCaller]]
-
-            ## Dry run to obtain the initial "staticCache" NOTE: As this is the
-            ## very first run, the "parUpdate" should be all on for this time.
-
-            staticCache.sample <- logPost(MargisType = MargisType,
-                                          Mdl.Y = Mdl.Y.training.sample,
-                                          Mdl.X = Mdl.X.training.sample,
-                                          Mdl.beta = Mdl.beta,
-                                          Mdl.betaIdx = Mdl.betaIdx,
-                                          Mdl.parLink = Mdl.parLink,
-                                          varSelArgs = varSelArgs,
-                                          priArgs = priArgs,
-                                          parUpdate = MCMCUpdate,
-                                          MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
-
-            ## Optimize the initial values via BFGS. NOTE: The variable selection
-            ## indicators are fixed (not optimized) loop over all the marginal
-            ## models and copula via TWO STAGE OPTIMIZATION
-
-            betaVecInitComp <- parCplSwap(betaInput = Mdl.beta,
-                                          Mdl.beta = Mdl.beta,
-                                          Mdl.betaIdx = Mdl.betaIdx,
-                                          parUpdate = parUpdate)
-            ## if(CompCaller == "MVT") browser()
-            ## Optimize the initial values
-            betaVecOptimComp <-  optimx(par = betaVecInitComp,
-                                        fn = logPostOptim,
-                                        control = list(maximize = TRUE,
-                                                       all.methods = FALSE,
-                                                       kkt = FALSE,
-                                                       maxit = 100),
-                                        method = "BFGS",
-                                        hessian = FALSE,
-                                        MargisType = MargisType,
-                                        Mdl.Y = Mdl.Y.training.sample,
-                                        Mdl.X = Mdl.X.training.sample,
-                                        Mdl.beta = Mdl.beta,
-                                        Mdl.betaIdx = Mdl.betaIdx,
-                                        Mdl.parLink = Mdl.parLink,
-                                        varSelArgs = varSelArgs,
-                                        priArgs = priArgs,
-                                        staticCache = staticCache.sample,
-                                        parUpdate = parUpdate,
-                                        MCMCUpdateStrategy = "twostage")
-
-            if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
-            {# It does not have to be converged.
-                cat("Initializing algorithm failed,  retry...\n")
-
-                InitGoodCompCurr <- FALSE
-                ## break
-            }
-            else
-            {
-                InitGoodCompCurr <- TRUE
-                Mdl.beta <- parCplSwap(betaInput = as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]),
-                                       Mdl.beta = Mdl.beta,
-                                       Mdl.betaIdx = Mdl.betaIdx,
-                                       parUpdate = parUpdate)
-            }
-            nLoopInit <- nLoopInit +1
-            if((nLoopInit >= maxLoopInit) & InitGoodCompCurr  == FALSE)
-            {## Too many failures,  abort!
-                cat("The initializing algorithm failed more that", nLoopInit, "times.\n")
-                cat("Trying to continue without initial value optimization in this component.\n\n")
-                break
-            }
-        }
-
-        }
-    }
-
-    cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
-        "(conditional on variable selection indicators)\n")
-    print(rapply(Mdl.beta, t, how = "replace"))
 ###----------------------------------------------------------------------------
 ###  ALLOCATE THE STORAGE
 ###----------------------------------------------------------------------------
@@ -315,6 +184,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## FIXME: This is really big ~ 1G
     }
 
+    nTraining <- length(Mdl.Idx.training)
     for(CompCaller in names(MCMCUpdate))
     {
         for(parCaller in names(MCMCUpdate[[CompCaller]]))

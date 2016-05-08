@@ -16,7 +16,7 @@ MargiModelInv <- function(u, par, type)
         out <- matrix(qsplitt(p = u, mu =  mu, df = df,
                               phi = phi, lmd = lmd))
     }
-    else if(tolower(margiType) == "poisson") # the discrete case
+    else if(tolower(type) == "poisson") # the discrete case
     {
         stop("Poisson uses latent variable instead.!")
     }
