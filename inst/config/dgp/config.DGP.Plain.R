@@ -22,9 +22,6 @@ names(MargisType) <-  MargisNM
 ## NO. OF OBSERVATIONS
 nObs <- 1000
 
-## SEED
-seed <- 123
-
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)

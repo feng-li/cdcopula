@@ -102,9 +102,9 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
 ###----------------------------------------------------------------------------
 
 ## Load dependences
-require("mvtnorm", quietly = TRUE)
-require("optimx", quietly = TRUE)
-require("Rmpfr", quietly = TRUE)
+## require("mvtnorm", quietly = TRUE)
+## require("optimx", quietly = TRUE)
+## require("Rmpfr", quietly = TRUE)
 
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
@@ -118,7 +118,7 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 
 
 ## Initialize R environment FIXME: bad structure
-source(MdlConfigFile, local = TRUE)
+source(MdlConfigFile, local = TRUE, echo = FALSE)
 
 
 ## Set Parallel Computing environment

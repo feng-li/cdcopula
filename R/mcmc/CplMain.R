@@ -249,9 +249,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     Mdl.par <- staticCache[["Mdl.par"]]
     Mdl.par.mean <- rapply(Mdl.par, mean, how = "replace")
-    print(Mdl.par.mean)
+    print(unlist(Mdl.par.mean, recursive = TRUE))
 
-    cat("Posterior sampling using Metropolis-Hastings within Gibbs\n")
+    cat("\nPosterior sampling using Metropolis-Hastings within Gibbs\n")
 
     ## Clear all warnings during initial value optimization. NOTE: not working
     ## warningsClear(envir = environment())

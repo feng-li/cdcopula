@@ -145,7 +145,6 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
                                             MCMCUpdateStrategy = "twostage")
-
                 if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
                 {# It does not have to be converged.
                     cat("Initializing algorithm failed,  retry...\n")
@@ -184,7 +183,6 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
     cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
         "(conditional on variable selection indicators)\n")
     print(rapply(Mdl.beta, t, how = "replace"))
-
 
     ## browser()
     out <- list(Mdl.beta = Mdl.beta,

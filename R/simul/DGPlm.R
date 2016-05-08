@@ -82,7 +82,7 @@ DGPlm <- function(Y, beta, Xlim, intercept = TRUE)
     ## Fix the hole
     X[IdxLastNLoc] <- XLastN
 
-    print(X[1, ])
+    ## print(X[1, ])
     return(X)
 }
 

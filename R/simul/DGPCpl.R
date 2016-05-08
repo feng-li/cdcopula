@@ -82,7 +82,9 @@ DGPCpl <- function(DGPconfigfile, export = "list")
 
 
     dev.width <- getOption("width")
-    cat("DGP DATA SUMMARY...")
+
+    cat("\n", rep("-", dev.width-1), "\n", sep = "")
+    cat("DGP DATA SUMMARY ...")
     cat("\n", rep("-", dev.width-1), "\n", sep = "")
     MdlDGP.Summary <- rbind(unlist(rapply(MdlDGP.par, mean, how = "replace")),
                             unlist((rapply(MdlDGP.par, sd, how = "replace"))),
@@ -90,10 +92,19 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     rownames(MdlDGP.Summary) <- c("par.mean", "par.sd", "intercept(Y/N)")
     print(MdlDGP.Summary)
 
-    cat("DGP True Coefficients:\n")
-    print(unlist(rapply(MdlDGP.beta, t, how = "replace"), recursive = T))
+    cat("\nDGP True Coefficients:\n")
+    cat(rep("-", dev.width-1), "\n", sep = "")
+
+    for(i in names(MdlDGP.beta))
+    {
+        for(j in names(MdlDGP.beta[[i]]))
+        {
+            cat(i,"." , j, ": ", sep = "")
+            cat(MdlDGP.beta[[i]][[j]], "\n")
+        }
+    }
+
     cat("\n", rep("-", dev.width-1), "\n", sep = "")
-    ## print(Mdl.parLink)
 
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
