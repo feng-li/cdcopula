@@ -114,7 +114,7 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                 ##                               varSelArgs = varSelArgs,
                 ##                               priArgs = priArgs,
                 ##                               parUpdate = MCMCUpdate,
-                ##                               MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+                ##                               MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 
                 ## Optimize the initial values via BFGS. NOTE: The variable selection
                 ## indicators are fixed (not optimized) loop over all the marginal
@@ -144,7 +144,7 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                                             priArgs = priArgs,
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
-                                            MCMCUpdateStrategy = "twostage")
+                                            MCMC.UpdateStrategy = "twostage")
                 if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
                 {# It does not have to be converged.
                     cat("Initializing algorithm failed,  retry...\n")

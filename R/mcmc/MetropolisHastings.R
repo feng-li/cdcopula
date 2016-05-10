@@ -19,7 +19,7 @@
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
 MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                               propArgs, MargisType, staticCache, MCMCUpdateStrategy)
+                               propArgs, MargisType, staticCache, MCMC.UpdateStrategy)
 {
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(parUpdate)
@@ -157,7 +157,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                      Mdl.beta = Mdl.beta.curr,
                                      Mdl.betaIdx = Mdl.betaIdx.curr,
                                      staticCache = staticCache.curr,
-                                     MCMCUpdateStrategy = MCMCUpdateStrategy)
+                                     MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
     }
     else if(tolower(algmArgs[["type"]])  == "randomwalk")
@@ -229,7 +229,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                         Mdl.beta = Mdl.beta.prop,
                                         Mdl.betaIdx = Mdl.betaIdx.prop,
                                         staticCache = staticCache,
-                                        MCMCUpdateStrategy = MCMCUpdateStrategy)
+                                        MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
     }
     else if(tolower(algmArgs[["type"]])  == "randomwalk")
@@ -286,7 +286,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                priArgs = priArgs,
                                parUpdate = parUpdate,
                                staticCache = staticCache,
-                               MCMCUpdateStrategy = MCMCUpdateStrategy)
+                               MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
     logPost.prop <- logPost.propOut[["Mdl.logPost"]]
     staticCache.prop <- logPost.propOut[["staticCache"]]
@@ -302,7 +302,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                             priArgs = priArgs,
                             parUpdate = parUpdate,
                             staticCache = staticCache,
-                            MCMCUpdateStrategy = MCMCUpdateStrategy)[["Mdl.logPost"]]
+                            MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["Mdl.logPost"]]
 
     ## Compute the (log) MH ratio.
     logMHRatio <- logPost.prop - logPost.curr +

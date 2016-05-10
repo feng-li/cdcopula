@@ -1,7 +1,7 @@
 ## This is the optimization version. Note that this should only work with one observation.
 logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
                          Mdl.par, Mdl.u, Mdl.d, parUpdate,
-                         MCMCUpdateStrategy)
+                         MCMC.UpdateStrategy)
 {
   ## There should be only one chain in parUpdate
 
@@ -17,7 +17,7 @@ logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
                     Mdl.u = Mdl.u,
                     Mdl.d = Mdl.d,
                     parUpdate = parUpdate,
-                    MCMCUpdateStrategy = MCMCUpdateStrategy)
+                    MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
   Mdl.d <- Mdl.ud[["Mdl.d"]]
   Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]

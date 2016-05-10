@@ -27,7 +27,7 @@
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
 PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
                             Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                            MargisType, staticCache, MCMCUpdateStrategy)
+                            MargisType, staticCache, MCMC.UpdateStrategy)
 {
     require("MASS")
 
@@ -67,7 +67,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                 priArgs = priArgs,
                                 parUpdate = parUpdate,
                                 staticCache = staticCache,
-                                MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+                                MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 ###----------------------------------------------------------------------------
 ### The K-step Generalized Newton Move
 ###----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                                 parUpdate = parUpdate,
                                                 staticCache = staticCache.curr,
                                                 gradMethods = c("analytic", "numeric")[1],
-                                                MCMCUpdateStrategy = MCMCUpdateStrategy)
+                                                MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
         ## cat("Analytical gradient:\n")
         ## print(proc.time()-a)
@@ -117,7 +117,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                                               parUpdate = parUpdate,
                                                               staticCache = staticCache.curr,
                                                               gradMethods = "numeric",
-                                                              MCMCUpdateStrategy = MCMCUpdateStrategy)
+                                                              MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
             ## cat("Numerical gradient (split):\n")
             ## print(proc.time()-a)
@@ -128,7 +128,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                                                  Mdl.parLink = Mdl.parLink,
                                                                  parUpdate = parUpdate,
                                                                  staticCache = staticCache.curr,
-                                                                 MCMCUpdateStrategy = MCMCUpdateStrategy) # n-by-pp
+                                                                 MCMC.UpdateStrategy = MCMC.UpdateStrategy) # n-by-pp
 
             ## cat("Numerical gradient (joint):\n")
             ## print(proc.time()-a)
@@ -269,7 +269,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                         priArgs = priArgs,
                                         parUpdate = parUpdate,
                                         staticCache = staticCache.curr,
-                                        MCMCUpdateStrategy = MCMCUpdateStrategy)[["staticCache"]]
+                                        MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 
             ## Mdl.par0 <- unlist(staticCache.curr[["Mdl.par"]])
             ## if(any(is.na(Mdl.par0))) browser()

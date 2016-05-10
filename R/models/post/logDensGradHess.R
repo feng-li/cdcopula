@@ -31,7 +31,7 @@
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
 logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                             gradMethods = c("analytic","numeric")[1],
-                            staticCache, MCMCUpdateStrategy)
+                            staticCache, MCMC.UpdateStrategy)
 {
     ## The updating chain
     CplNM <- MargisType[length(MargisType)]
@@ -52,7 +52,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 ###----------------------------------------------------------------------------
     if(CompCaller != CplNM)
     {
-        if(tolower(MCMCUpdateStrategy) == "joint")
+        if(tolower(MCMC.UpdateStrategy) == "joint")
         {
             evalCpl <- TRUE
             cplCaller <- paste("u", which(MargisNM%in%CompCaller), sep = "")
@@ -60,7 +60,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
             evalMargi <- TRUE
             densCaller <- c("u", "d")
         }
-        else if(tolower(MCMCUpdateStrategy) == "twostage")
+        else if(tolower(MCMC.UpdateStrategy) == "twostage")
         {
             ## Stage one of the two stage approach
             evalCpl <- FALSE
@@ -69,7 +69,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
             evalMargi <- TRUE
             densCaller <- c("d")
         }
-        else if(tolower(MCMCUpdateStrategy) == "margin")
+        else if(tolower(MCMC.UpdateStrategy) == "margin")
         {
             evalCpl <- FALSE
             cplCaller <- NA
@@ -79,7 +79,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
         }
         else
         {
-            stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+            stop(paste("MCMC update strategy:", MCMC.UpdateStrategy,
                        "not implemented!"))
         }
     }

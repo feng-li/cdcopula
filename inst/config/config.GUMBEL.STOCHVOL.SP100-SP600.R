@@ -60,13 +60,11 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
-## No. of used Observations
-nObs <- length(nObsIdx)
 
 ## THE RESPONSE VARIABLES
-Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
+Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], dataUsedIdx)
 
 ## The name of respond variables
 names(Mdl.Y) <- MargisNM[-length(MargisNM)]
@@ -77,7 +75,7 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## A trick to include foreign marginal models in the estimation which are hard to directly
 ## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
-## the features in "Mdl.X" directly.  (3) Set MCMCUpdateStrategy be "two-stage". (4) Set
+## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
 Mdl.X <- MCMCUpdate
 
@@ -110,7 +108,7 @@ Mdl.X[[2]] <- list(draws  =  1000,
                    keeptau  =  FALSE,
                    quiet  =  FALSE)
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][nObsIdx, 1:9], X[[MargisNM[2]]][nObsIdx, 1:9])
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][dataUsedIdx, 1:9], X[[MargisNM[2]]][dataUsedIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMCUpdate
@@ -154,16 +152,16 @@ save.output <- "~/running"
 ## If TRUE,  the MCMC should be tracked during the evaluation.
 MCMC.track <- TRUE
 
-MCMCUpdateOrder <- MCMCUpdate
-MCMCUpdateOrder[[1]][[1]] <- 1
+MCMC.UpdateOrder <- MCMCUpdate
+MCMC.UpdateOrder[[1]][[1]] <- 1
 
-MCMCUpdateOrder[[2]][[1]] <- 2
+MCMC.UpdateOrder[[2]][[1]] <- 2
 
-MCMCUpdateOrder[[3]][[1]] <- 3
+MCMC.UpdateOrder[[3]][[1]] <- 3
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------
-## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMCUpdateOrder
+## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMC.UpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
 
@@ -171,7 +169,7 @@ MCMCUpdateOrder[[3]][[1]] <- 3
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMCUpdateStrategy <- "twostage"
+MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 propArgs <- MCMCUpdate
@@ -201,7 +199,7 @@ crossValidArgs <- list(N.subsets = nCross,
                        testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
-crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
+crossValidIdx <- set.crossvalid(length(dataUsedIdx),crossValidArgs)
 ## nCrossFold <- length(crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,

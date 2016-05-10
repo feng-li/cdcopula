@@ -70,8 +70,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     MCMCUpdate <- NA
     MCMC.track <- NA
     MCMC.burninProp <- NA
-    MCMCUpdateStrategy <- NA
-    MCMCUpdateOrder <- NA
+    MCMC.UpdateStrategy <- NA
+    MCMC.UpdateOrder <- NA
     priArgs <- NA
     varSelArgs <- NA
     propArgs <- NA
@@ -241,7 +241,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           varSelArgs = varSelArgs,
                           priArgs = priArgs,
                           parUpdate = MCMCUpdate,
-                          MCMCUpdateStrategy = MCMCUpdateStrategy)
+                          MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     staticCache <- Mdl.DryRun[["staticCache"]]
     ## browser()
 
@@ -257,7 +257,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## warningsClear(envir = environment())
 
     ## The updating matrix
-    UpdateMat <- parCplRepCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMCUpdateOrder)
+    UpdateMat <- parCplRepCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMC.UpdateOrder)
     nInner <- nrow(UpdateMat)
 
     for(iUpdate in 1:(nInner*MCMC.nIter))
@@ -287,7 +287,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                     Mdl.betaIdx = Mdl.betaIdx,
                                     Mdl.parLink = Mdl.parLink,
                                     staticCache = staticCache,
-                                    MCMCUpdateStrategy = MCMCUpdateStrategy)
+                                    MCMC.UpdateStrategy = MCMC.UpdateStrategy)
 
         if(MHOut$errorFlag == FALSE)
         { ## Update the MH results to the current parameter structure

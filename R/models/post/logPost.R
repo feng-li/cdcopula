@@ -44,7 +44,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Sat Jul 18 10:47:12 CST 2015
 logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                    varSelArgs,priArgs,parUpdate,staticCache, MCMCUpdateStrategy)
+                    varSelArgs,priArgs,parUpdate,staticCache, MCMC.UpdateStrategy)
 {
     ## Assume no error a priori
     errorFlag <- FALSE
@@ -119,7 +119,7 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                       Mdl.u = Mdl.u,
                       Mdl.d = Mdl.d,
                       parUpdate = parUpdate,
-                      MCMCUpdateStrategy = MCMCUpdateStrategy)
+                      MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     Mdl.d <- Mdl.ud[["Mdl.d"]]
     Mdl.u <- Mdl.ud[["Mdl.u"]]
     Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]

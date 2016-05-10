@@ -54,13 +54,11 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-nObsIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
-## No. of used Observations
-nObs <- length(nObsIdx)
 
 ## THE RESPONSE VARIABLES
-Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], nObsIdx)
+Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], dataUsedIdx)
 
 ## The name of respond variables
 names(Mdl.Y) <- MargisNM[-length(MargisNM)]

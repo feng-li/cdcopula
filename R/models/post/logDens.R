@@ -1,5 +1,5 @@
 logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
-                    parUpdate, MCMCUpdateStrategy)
+                    parUpdate, MCMC.UpdateStrategy)
 {
 ###----------------------------------------------------------------------------
 ### UPDATE MARGINAL PDF AND/OR CDF THE MARGINAL U AND ONLY UPDATED IF THE CORRESPONDING
@@ -28,13 +28,13 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
     ## THE COPULA LOG LIKELIHOOD
-    if(tolower(MCMCUpdateStrategy) == "joint")
+    if(tolower(MCMC.UpdateStrategy) == "joint")
     {
         evalCpl <- TRUE
         Mdl.PostComp <- lapply(parUpdate, function(x) TRUE)
     }
-    else if(tolower(MCMCUpdateStrategy) == "twostage" ||
-            tolower(MCMCUpdateStrategy) == "margin")
+    else if(tolower(MCMC.UpdateStrategy) == "twostage" ||
+            tolower(MCMC.UpdateStrategy) == "margin")
     {
         if(length(MargisUpNM) == 0)
         {
@@ -53,7 +53,7 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     }
     else
     {
-        stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+        stop(paste("MCMC update strategy:", MCMC.UpdateStrategy,
                    "not implemented!"))
     }
 
@@ -63,22 +63,22 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     {
         if(CompCaller %in% MargisUpNM)
         {
-            if(tolower(MCMCUpdateStrategy) == "joint")
+            if(tolower(MCMC.UpdateStrategy) == "joint")
             {
                 densCaller[[CompCaller]] <- c("u", "d")
             }
-            else if(tolower(MCMCUpdateStrategy) == "twostage")
+            else if(tolower(MCMC.UpdateStrategy) == "twostage")
             {
                 ## Stage two of the two stage approach
                 densCaller[[CompCaller]] <- c("u", "d")
             }
-            else if(tolower(MCMCUpdateStrategy) == "margin")
+            else if(tolower(MCMC.UpdateStrategy) == "margin")
             {
                 densCaller[[CompCaller]] <- c(NA, "d")
             }
             else
             {
-                stop(paste("MCMC update strategy:", MCMCUpdateStrategy,
+                stop(paste("MCMC update strategy:", MCMC.UpdateStrategy,
                            "not implemented!"))
             }
         }

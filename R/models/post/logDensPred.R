@@ -126,12 +126,12 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
         if("joint" %in% tolower(PredDens) |
            tolower(names(MCMC.beta)[length(MCMC.beta)]) %in% tolower(PredDens))
         { ## Use the whole copula likelihood/density
-            MCMCUpdateStrategy4LPDS <- "joint"
+            MCMC.UpdateStrategy4LPDS <- "joint"
             parUpdate <- rapply(MCMC.beta,  function(x) TRUE, how  = "replace")
         }
         else
         {## Use the marginal likelihood/density
-            MCMCUpdateStrategy4LPDS <- "margin"
+            MCMC.UpdateStrategy4LPDS <- "margin"
             parUpdate <- rapply(MCMC.beta, function(x) FALSE, how  = "replace")
             parUpdate[PredDens] <- rapply(parUpdate[PredDens],
                                             function(x) TRUE, how  = "replace")
@@ -192,7 +192,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                               Mdl.Y = Mdl.Y.testing.curr,
                               Mdl.par = Mdl.par.curr,
                               parUpdate = parUpdate,
-                              MCMCUpdateStrategy = MCMCUpdateStrategy4LPDS)
+                              MCMC.UpdateStrategy = MCMC.UpdateStrategy4LPDS)
             Mdl.d <- Mdl.ud[["Mdl.d"]]
             Mdl.PostComp <- Mdl.ud[["Mdl.PostComp"]]
 

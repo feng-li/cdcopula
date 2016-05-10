@@ -1,7 +1,7 @@
 ## APPROACH TWO: This version calculates the numerical gradient (for log
 ## posterior) via the full log likelihood function
 logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
-                               staticCache, MCMCUpdateStrategy)
+                               staticCache, MCMC.UpdateStrategy)
 {
   ## The updating chain
   chainCaller <- parCplRepCaller(parUpdate)
@@ -28,7 +28,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
               Mdl.par = Mdl.par,
               parUpdate = parUpdate,
               MargisType = MargisType,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+              MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     }
   else
     {
@@ -46,7 +46,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
               Mdl.par = Mdl.par,
               parUpdate = parUpdate,
               MargisType = MargisType,
-              MCMCUpdateStrategy = MCMCUpdateStrategy)
+              MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     }
 
   logGradObs <- do.call(rbind, logDensGradObs.Lst)
@@ -56,7 +56,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
 }
 
 logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
-                           MCMCUpdateStrategy)
+                           MCMC.UpdateStrategy)
   {
     require("numDeriv", quietly = TRUE)
 
@@ -95,7 +95,7 @@ logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,p
                          Mdl.u = Mdl.u[dataSubIdx[iSubObs], , drop = FALSE],
                          Mdl.d = Mdl.d[dataSubIdx[iSubObs], , drop = FALSE],
                          parUpdate = parUpdate,
-                         MCMCUpdateStrategy = MCMCUpdateStrategy)
+                         MCMC.UpdateStrategy = MCMC.UpdateStrategy)
                    ,silent = TRUE)
 
             if(is(gradTry, "try-error"))
