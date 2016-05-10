@@ -120,8 +120,6 @@ obj <- ls()
 source(MdlConfigFile, local = TRUE, echo = FALSE)
 rm(list = setdiff(setdiff(ls(), obj), c("nCross", "crossValidIdx")))
 
-nCross <- 1
-crossValidIdx <- list(training  = 1:10, testing = 11:20)
 
 ## Set Parallel Computing environment
 R_CPL_NPARALLEL <- floor(nCores/nCross)
