@@ -118,7 +118,7 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 ## Extract variables from configure files
 obj <- ls()
 source(MdlConfigFile, local = TRUE, echo = FALSE)
-rm(list = setdiff(setdiff(ls(), obj), c("nCross", "crossValidIdx")))
+rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx")))
 
 
 ## Set Parallel Computing environment
@@ -150,12 +150,12 @@ Starting.time <- Sys.time()
 if(nCross>1 & nCores>1)
 {
     OUT.CplCross <- parLapply(cl4CV,
-                              crossValidIdx[["training"]],
+                              Mdl.crossValidIdx[["training"]],
                               CplMain,
                               MdlConfigFile = MdlConfigFile)
 } else
 {
-    OUT.CplCross <- lapply(X = crossValidIdx[["training"]],
+    OUT.CplCross <- lapply(X = Mdl.crossValidIdx[["training"]],
                            FUN = CplMain,
                            MdlConfigFile = MdlConfigFile)
 }
@@ -172,12 +172,12 @@ OUT.CplLPDS <- list()
                                fun = logDensPred,
                                CplOut = OUT.CplCross,
                                PredDens = LPDS,
-                               Mdl.Idx.testing = crossValidIdx[["testing"]])
+                               Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
  } else
  {
      Mdl.PredLst <- mapply(FUN = logDensPred,
                            CplOut = OUT.CplCross,
-                           Mdl.Idx.testing = crossValidIdx[["testing"]],
+                           Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
                            MoreArgs = list(PredDens = LPDS),
                            SIMPLIFY = FALSE)
  }
