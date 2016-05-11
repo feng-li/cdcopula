@@ -9,7 +9,7 @@
 ##' @param Mdl.Y "list" The responses of each marginal model.
 ##'
 ##' @param Mdl.X "list".  The covariate used in each parameter components. The structure
-##'   is designed by "MCMCUpdate" variable in the main file. The intercept is included if
+##'   is designed by "MCMC.Update" variable in the main file. The intercept is included if
 ##'   called in the data construction procedure.
 ##'
 ##' @param Mdl.beta "list".

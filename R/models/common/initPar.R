@@ -27,14 +27,14 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011; Current: Tue Sep 29 23:50:07 CST 2015.
 initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
-                    Mdl.parLink, MCMCUpdate, optimInit)
+                    Mdl.parLink, MCMC.Update, optimInit)
 {
     initParOut <- initPar0(varSelArgs = varSelArgs,
                             betaInit = betaInit,
                             Mdl.X = Mdl.X,
                             Mdl.Y = Mdl.Y,
                             Mdl.parLink = Mdl.parLink,
-                            parUpdate = MCMCUpdate,
+                            parUpdate = MCMC.Update,
                             optimInit = optimInit)
     Mdl.beta = initParOut[["Mdl.beta"]]
     Mdl.betaIdx = initParOut[["Mdl.betaIdx"]]
@@ -87,7 +87,7 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
         for(CompCaller in names(Mdl.beta))
         {
             ## If nothing to update, skip optimizing this component.
-            if(all(unlist(MCMCUpdate[[CompCaller]]) == FALSE)) next
+            if(all(unlist(MCMC.Update[[CompCaller]]) == FALSE)) next
 
             cat("\nInitializing model component:", CompCaller, "...\n")
             InitGoodCompCurr <- FALSE
@@ -95,8 +95,8 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
             maxLoopInit <- 1
 
             ## Only current component to be updated.
-            parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
-            parUpdate[[CompCaller]] <- MCMCUpdate[[CompCaller]]
+            parUpdate <- rapply(MCMC.Update, function(x) FALSE, how = "replace")
+            parUpdate[[CompCaller]] <- MCMC.Update[[CompCaller]]
 
             while(InitGoodCompCurr == FALSE){
 
@@ -113,7 +113,7 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                 ##                               Mdl.parLink = Mdl.parLink,
                 ##                               varSelArgs = varSelArgs,
                 ##                               priArgs = priArgs,
-                ##                               parUpdate = MCMCUpdate,
+                ##                               parUpdate = MCMC.Update,
                 ##                               MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 
                 ## Optimize the initial values via BFGS. NOTE: The variable selection

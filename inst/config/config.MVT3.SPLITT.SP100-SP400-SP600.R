@@ -30,12 +30,12 @@
 MargisType <- c("SPLITT", "SPLITT", "SPLITT", "MVT")
 MargisNM <- c("^SML", "^MID", "^OEX", "MVT")
 
-MCMCUpdate <- list(list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
+MCMC.Update <- list(list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
                    list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
                    list("mu" = T, "phi"= T, "df"= T, "lmd"= T),
                    list("tau" = T, "lambdaL" = T))
 
-names(MCMCUpdate) <- MargisNM
+names(MCMC.Update) <- MargisNM
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
@@ -74,11 +74,11 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## ------------------------------------------------------------------------------
 
 ## A trick to include foreign marginal models in the estimation which are hard to directly
-## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
+## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
 ## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
-Mdl.X <- MCMCUpdate
+Mdl.X <- MCMC.Update
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][dataUsedIdx, 1:9])
 Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][dataUsedIdx, 1:9])
 Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][dataUsedIdx, 1:9])
@@ -98,7 +98,7 @@ Mdl.X[[4]][["tau"]] <- cbind(1, X[[1]][dataUsedIdx, 1:9], X[[2]][dataUsedIdx, 1:
 Mdl.X[[4]][["lambdaL"]] <- cbind(1, X[[1]][dataUsedIdx, 1:9], X[[2]][dataUsedIdx, 1:9], X[[3]][dataUsedIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MCMCUpdate
+Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", a = 2, b = 30, nPar = 1)
@@ -123,7 +123,7 @@ Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MCMCUpdate
+varSelArgs <- MCMC.Update
 varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
 varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
@@ -161,7 +161,7 @@ save.output <- "~/running"
 ## If TRUE,  the MCMC should be tracked during the evaluation.
 MCMC.track <- TRUE
 
-MCMC.UpdateOrder <- MCMCUpdate
+MCMC.UpdateOrder <- MCMC.Update
 MCMC.UpdateOrder[[1]][[1]] <- 1
 MCMC.UpdateOrder[[1]][[2]] <- 2
 MCMC.UpdateOrder[[1]][[3]] <- 3
@@ -183,7 +183,7 @@ MCMC.UpdateOrder[[4]][[2]] <- 14
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------
-## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMC.UpdateOrder
+## "joint"    : Update the joint posterior w.r.t. MCMC.Update and MCMC.UpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
 
@@ -194,7 +194,7 @@ MCMC.UpdateOrder[[4]][[2]] <- 14
 MCMC.UpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MCMCUpdate
+propArgs <- MCMC.Update
 propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
@@ -276,7 +276,7 @@ MCMC.burninProp <- 0.1 # zero indicates no burn-in
 ## between parameters in the models but is will not affect the prior settings on the
 ## coefficients as long as we use a dynamic link function.
 
-priArgs <- MCMCUpdate
+priArgs <- MCMC.Update
 priArgs[[1]][["mu"]] <-
     list("beta" = list("intercept" = list(type = "custom",
                                           input = list(type = "norm",  mean = 0, variance = 1),
@@ -389,7 +389,7 @@ priArgs[[4]][["lambdaL"]] <-
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
-betaInit <- MCMCUpdate
+betaInit <- MCMC.Update
 betaInit[[1]][[1]] <- "random"
 betaInit[[1]][[2]] <- "random"
 betaInit[[1]][[3]] <- "random"

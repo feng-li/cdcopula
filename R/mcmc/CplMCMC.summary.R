@@ -10,7 +10,8 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 ##' TODO: write this function as a summary
-CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
+CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
+                            MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
 {
     ## Set the print interval and consider burnin. If print interval is to narrow, set to
     ## one.
@@ -85,7 +86,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
         MCMC.beta <- OUT.MCMC$MCMC.beta
         MCMC.par <- OUT.MCMC$MCMC.par
         MCMC.AccProb <- OUT.MCMC$MCMC.AccProb
-        MCMCUpdate <- OUT.MCMC$MCMCUpdate
+        MCMC.Update <- OUT.MCMC$MCMC.Update
         Starting.time <- OUT.MCMC$Starting.time
 
         TimeToGo <-  round(difftime(Sys.time(), Starting.time,
@@ -142,7 +143,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
 
         if(has.Display)
         {
-            nPlot <- sum(sapply(MCMCUpdate, function(x) any(unlist(x) == TRUE)))
+            nPlot <- sum(sapply(MCMC.Update, function(x) any(unlist(x) == TRUE)))
             nDev <- length(dev.list())
             if( nDev < nPlot)
             {
@@ -154,7 +155,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
 
         for(i in names(MCMC.beta))
         {
-            npar <- sum(unlist(MCMCUpdate[[i]]))
+            npar <- sum(unlist(MCMC.Update[[i]]))
             if(has.Display & npar>0)
             {
                 dev.set(dev.list()[jDev])
@@ -170,7 +171,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1, MCMC
             }
             for(j in names(MCMC.beta[[i]]))
             {
-                if(MCMCUpdate[[i]][[j]])
+                if(MCMC.Update[[i]][[j]])
                 {
                     if(has.Display)
                     {

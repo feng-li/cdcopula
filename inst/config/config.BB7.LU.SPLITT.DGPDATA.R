@@ -30,11 +30,11 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("M1", "M2", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+MCMC.Update <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
                    list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
                    list("lambdaL" = T, "lambdaU" = T))
 
-names(MCMCUpdate) <- MargisNM
+names(MCMC.Update) <- MargisNM
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
@@ -71,7 +71,7 @@ dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## ------------------------------------------------------------------------------
 
 ## A trick to include foreign marginal models in the estimation which are hard to directly
-## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
+## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
 ## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
@@ -82,7 +82,7 @@ dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MCMCUpdate
+varSelArgs <- MCMC.Update
 varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
 varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
@@ -115,7 +115,7 @@ save.output <- "~/running"
 ## If TRUE,  the MCMC should be tracked during the evaluation.
 MCMC.track <- TRUE
 
-MCMC.UpdateOrder <- MCMCUpdate
+MCMC.UpdateOrder <- MCMC.Update
 MCMC.UpdateOrder[[1]][[1]] <- 1
 MCMC.UpdateOrder[[1]][[2]] <- 2
 MCMC.UpdateOrder[[1]][[3]] <- 3
@@ -131,7 +131,7 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------
-## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMC.UpdateOrder
+## "joint"    : Update the joint posterior w.r.t. MCMC.Update and MCMC.UpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
 
@@ -142,7 +142,7 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MCMCUpdate
+propArgs <- MCMC.Update
 propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
@@ -212,7 +212,7 @@ MCMC.burninProp <- 0.1 # zero indicates no burn-in
 ## between parameters in the models but is will not affect the prior settings on the
 ## coefficients as long as we use a dynamic link function.
 
-priArgs <- MCMCUpdate
+priArgs <- MCMC.Update
 priArgs[[1]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                               input = list(type = "norm",  mean = 0, variance = 1),
                                                               output = list(type = "norm", shrinkage = 1)),

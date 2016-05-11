@@ -30,11 +30,11 @@
 MargisType <- c("STOCHVOL", "STOCHVOL", "GUMBEL")
 MargisNM <- c("^SML", "^OEX", "GUMBEL")
 
-MCMCUpdate <- list(list("mu" = F, "phi" = F),
+MCMC.Update <- list(list("mu" = F, "phi" = F),
                    list("mu" = F, "phi" = F),
                    list("tau" = T))
 
-names(MCMCUpdate) <- MargisNM
+names(MCMC.Update) <- MargisNM
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
@@ -73,11 +73,11 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
 ## ------------------------------------------------------------------------------
 
 ## A trick to include foreign marginal models in the estimation which are hard to directly
-## put into the "MargiModel()" is do the following settings: (1) Let "MCMCUpdate" be FALSE
+## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
 ## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
 ## "betaInit" be one in all marginal features.
-Mdl.X <- MCMCUpdate
+Mdl.X <- MCMC.Update
 
 
 Mdl.X[[1]] <- list(draws  =  1000,
@@ -111,7 +111,7 @@ Mdl.X[[2]] <- list(draws  =  1000,
 Mdl.X[[3]][["tau"]] <- cbind(1, X[[MargisNM[1]]][dataUsedIdx, 1:9], X[[MargisNM[2]]][dataUsedIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MCMCUpdate
+Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "identity", nPar = 1)
 
@@ -125,7 +125,7 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MCMCUpdate
+varSelArgs <- MCMC.Update
 varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
 varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 
@@ -152,7 +152,7 @@ save.output <- "~/running"
 ## If TRUE,  the MCMC should be tracked during the evaluation.
 MCMC.track <- TRUE
 
-MCMC.UpdateOrder <- MCMCUpdate
+MCMC.UpdateOrder <- MCMC.Update
 MCMC.UpdateOrder[[1]][[1]] <- 1
 
 MCMC.UpdateOrder[[2]][[1]] <- 2
@@ -161,7 +161,7 @@ MCMC.UpdateOrder[[3]][[1]] <- 3
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------
-## "joint"    : Update the joint posterior w.r.t. MCMCUpdate and MCMC.UpdateOrder
+## "joint"    : Update the joint posterior w.r.t. MCMC.Update and MCMC.UpdateOrder
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
 
@@ -172,7 +172,7 @@ MCMC.UpdateOrder[[3]][[1]] <- 3
 MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MCMCUpdate
+propArgs <- MCMC.Update
 propArgs[[1]][[1]] <- NA
 propArgs[[1]][[2]] <- NA
 
@@ -219,7 +219,7 @@ MCMC.burninProp <- 0.1 # zero indicates no burn-in
 ## between parameters in the models but is will not affect the prior settings on the
 ## coefficients as long as we use a dynamic link function.
 
-priArgs <- MCMCUpdate
+priArgs <- MCMC.Update
 
 priArgs[[1]][["mu"]] <- NA
 priArgs[[1]][["phi"]] <- NA
@@ -245,7 +245,7 @@ priArgs[[3]][["tau"]] <-
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
-betaInit <- MCMCUpdate
+betaInit <- MCMC.Update
 betaInit[[1]][[1]] <- 1
 betaInit[[1]][[2]] <- 1
 

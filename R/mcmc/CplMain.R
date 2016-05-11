@@ -67,7 +67,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     MargisNM <- NA
     Mdl.parLink <- NA
     MCMC.nIter <- NA
-    MCMCUpdate <- NA
+    MCMC.Update <- NA
     MCMC.track <- NA
     MCMC.burninProp <- NA
     MCMC.UpdateStrategy <- NA
@@ -161,7 +161,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     initParOut <- initPar(varSelArgs = varSelArgs, priArgs = priArgs,
                           betaInit = betaInit, MargisType = MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
-                          Mdl.parLink = Mdl.parLink, MCMCUpdate = MCMCUpdate,
+                          Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
                           optimInit = optimInit)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
@@ -171,10 +171,10 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 ###----------------------------------------------------------------------------
 
     ## The final parameters in current fold
-    MCMC.beta <- MCMCUpdate
-    MCMC.betaIdx <- MCMCUpdate
-    MCMC.par <- MCMCUpdate
-    MCMC.AccProb <- MCMCUpdate
+    MCMC.beta <- MCMC.Update
+    MCMC.betaIdx <- MCMC.Update
+    MCMC.par <- MCMC.Update
+    MCMC.AccProb <- MCMC.Update
 
     if(!exists("MCMC.density"))
     {
@@ -185,9 +185,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     nTraining <- length(Mdl.Idx.training)
-    for(CompCaller in names(MCMCUpdate))
+    for(CompCaller in names(MCMC.Update))
     {
-        for(parCaller in names(MCMCUpdate[[CompCaller]]))
+        for(parCaller in names(MCMC.Update[[CompCaller]]))
         {
             ncolX.ij <- ncol(Mdl.X.training[[CompCaller]][[parCaller]])
             nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
@@ -206,7 +206,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             }
 
 
-            nMCMC <- ifelse(MCMCUpdate[[CompCaller]][[parCaller]], MCMC.nIter, 1)
+            nMCMC <- ifelse(MCMC.Update[[CompCaller]][[parCaller]], MCMC.nIter, 1)
 
             ## The MCMC storage
             MCMC.betaIdx[[CompCaller]][[parCaller]] <- matrix(Mdl.betaIdx[[CompCaller]][[parCaller]],
@@ -240,7 +240,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           Mdl.parLink = Mdl.parLink,
                           varSelArgs = varSelArgs,
                           priArgs = priArgs,
-                          parUpdate = MCMCUpdate,
+                          parUpdate = MCMC.Update,
                           MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     staticCache <- Mdl.DryRun[["staticCache"]]
     ## browser()
@@ -257,7 +257,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## warningsClear(envir = environment())
 
     ## The updating matrix
-    UpdateMat <- parCplRepCaller(parUpdate = MCMCUpdate, parUpdateOrder = MCMC.UpdateOrder)
+    UpdateMat <- parCplRepCaller(parUpdate = MCMC.Update, parUpdateOrder = MCMC.UpdateOrder)
     nInner <- nrow(UpdateMat)
 
     for(iUpdate in 1:(nInner*MCMC.nIter))
@@ -272,7 +272,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
         ## Switch all the updating indicators OFF and switch current updating parameter
         ## indicator ON.
-        parUpdate <- rapply(MCMCUpdate, function(x) FALSE, how = "replace")
+        parUpdate <- rapply(MCMC.Update, function(x) FALSE, how = "replace")
         parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
         ## Call the Metropolis-Hastings algorithm
@@ -346,7 +346,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                     MCMC.betaIdx = MCMC.betaIdx,
                     MCMC.par = MCMC.par,
                     MCMC.AccProb = MCMC.AccProb,
-                    MCMCUpdate = MCMCUpdate,
+                    MCMC.Update = MCMC.Update,
                     Starting.time = Starting.time)
 
     out <- as.list(environment())

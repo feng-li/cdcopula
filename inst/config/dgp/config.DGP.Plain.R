@@ -9,11 +9,11 @@
 MargisType <- c("SPLITT", "SPLITT", "BB7")
 MargisNM <- c("M1", "M2", "BB7")
 
-MCMCUpdate <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+MCMC.Update <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("lambdaL" = T, "lambdaU" = T))
 
-names(MCMCUpdate) <- MargisNM
+names(MCMC.Update) <- MargisNM
 
 ## The object structure for the model components
 names(MargisType) <-  MargisNM
@@ -23,7 +23,7 @@ names(MargisType) <-  MargisNM
 nObs <- 1000
 
 ## THE LINK FUNCTION USED IN THE MODEL
-Mdl.parLink <- MCMCUpdate
+Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
@@ -45,7 +45,7 @@ Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0
 ## features.) This is the desired feature, the TRUE DGP might be not exactly
 ## the same as it. See "Mdl.par" for the comparison.
 ## -----------------------------------------------------------------------------
-MdlDGP.par <- MCMCUpdate
+MdlDGP.par <- MCMC.Update
 
 ## The first margin
 MdlDGP.par[[1]][["mu"]] <- matrix(0, nObs, 1)
@@ -74,7 +74,7 @@ MdlDGP.par[[3]][["lambdaU"]] <- matrix(0.1, nObs, 1)
 ## INTERCEPT INDICATOR
 ## If "TRUE",  the intercept should be in the covariate-dependent parameter
 ## structure.
-MdlDGP.intercept <- MCMCUpdate
+MdlDGP.intercept <- MCMC.Update
 
 MdlDGP.intercept[[1]][[1]] <- TRUE
 MdlDGP.intercept[[1]][[2]] <- TRUE
@@ -91,7 +91,7 @@ MdlDGP.intercept[[3]][[2]] <- TRUE
 
 ## NUMBER OF COVARIATES (INCLUDING INTERCEPT)
 ## If MdlDGP.intercept is TRUE, the first element in MdlDGP.beta is the intercept.
-MdlDGP.beta <- MCMCUpdate
+MdlDGP.beta <- MCMC.Update
 
 ## The first margin
 MdlDGP.beta[[1]][[1]] <- NA
