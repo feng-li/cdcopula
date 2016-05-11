@@ -5,7 +5,7 @@
 ##' gradient for the prior, gradient for the linkage.
 ##' @param CplNM "character".
 ##'
-##' @param MargisType "list".
+##' @param Mdl.MargisType "list".
 ##'
 ##' @param Mdl.Y "list".
 ##'
@@ -13,7 +13,7 @@
 ##'
 ##' @param parUpdate "list".
 ##'
-##' @param varSelArgs "list".
+##' @param Mdl.varSelArgs "list".
 ##'
 ##' @param staticCache "list".
 ##'
@@ -29,12 +29,12 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Feb 02 22:45:42 CET 2012; Current: Mon Dec 22 20:25:44 CST 2014
-logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+logDensGradHess <- function(Mdl.MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                             gradMethods = c("analytic","numeric")[1],
                             staticCache, MCMC.UpdateStrategy)
 {
     ## The updating chain
-    CplNM <- MargisType[length(MargisType)]
+    CplNM <- Mdl.MargisType[length(Mdl.MargisType)]
     chainCaller <- parCplRepCaller(parUpdate)
 
     CompCaller <- chainCaller[1]
@@ -43,8 +43,8 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
     Mdl.par <- staticCache[["Mdl.par"]]
 
     CompNM <- names(parUpdate)
-    MargisNM <- CompNM[(CompNM  != CplNM)]
-    names(MargisType) <- MargisNM
+    Mdl.MargisNM <- CompNM[(CompNM  != CplNM)]
+    names(Mdl.MargisType) <- Mdl.MargisNM
 
     R_CPL_NPARALLEL <- as.numeric(Sys.getenv("R_CPL_NPARALLEL"))
 ###----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
         if(tolower(MCMC.UpdateStrategy) == "joint")
         {
             evalCpl <- TRUE
-            cplCaller <- paste("u", which(MargisNM%in%CompCaller), sep = "")
+            cplCaller <- paste("u", which(Mdl.MargisNM%in%CompCaller), sep = "")
 
             evalMargi <- TRUE
             densCaller <- c("u", "d")
@@ -98,7 +98,7 @@ logDensGradHess <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
     {
         yCurr <- Mdl.Y[[CompCaller]]
         parCurr <- Mdl.par[[CompCaller]]
-        typeCurr <- MargisType[CompCaller]
+        typeCurr <- Mdl.MargisType[CompCaller]
 
         ## Gradient Fraction in the marginal component. n-by-1
         if("analytic" %in% tolower(gradMethods))

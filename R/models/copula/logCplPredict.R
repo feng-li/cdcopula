@@ -1,11 +1,11 @@
-logCplPredict <- function(MargisType, Mdl.par)
+logCplPredict <- function(Mdl.MargisType, Mdl.par)
 {
-  MargisNM <- names(MargisType[-length(MargisType)])
+  Mdl.MargisNM <- names(Mdl.MargisType[-length(Mdl.MargisType)])
 
   out <- list()
-  for(iComp in MargisNM)
+  for(iComp in Mdl.MargisNM)
   {
-    type <- tolower(MargisType[iComp])
+    type <- tolower(Mdl.MargisType[iComp])
 
     out.iComp <- list()
 

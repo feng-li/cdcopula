@@ -21,13 +21,13 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
     MCMC.nIter <- NA
     MCMC.burninProp <- NA
     MCMC.sampleProp <- NA
-    crossValidArgs <- NA
+    Mdl.crossValidArgs <- NA
     Mdl.parLink <- NA
     Mdl.Y <- NA
     Mdl.X <- NA
     Mdl.ForeignFitted <- NA
-    MargisNM <- NA
-    MargisType <- NA
+    Mdl.MargisNM <- NA
+    Mdl.MargisType <- NA
 
     list2env(CplOut, envir = environment())
 
@@ -44,7 +44,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
     if("Mdl.ForeignFitted" %in% names(CplOut))
     {
-        ForeignModelType <- MargisType[length(MargisType)]
+        ForeignModelType <- Mdl.MargisType[length(Mdl.MargisType)]
 
         out <- ModelForeignPred(model = ForeignModelType,
                                 fitted.model = Mdl.ForeignFitted,
@@ -65,13 +65,13 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
             ## Foreign marginal models are used.  We only allow either all margins are
             ## foreign or all should be native. mixing is not implemented yet!
             Mdl.ForeignFit <- CplOut[["Mdl.ForeignFit"]]
-            Mdl.X.Pred <- MargiModelForeignPred(MargisNM = MargisNM,
-                                                MargisType = MargisType,
+            Mdl.X.Pred <- MargiModelForeignPred(Mdl.MargisNM = Mdl.MargisNM,
+                                                Mdl.MargisType = Mdl.MargisType,
                                                 Mdl.ForeignFit =Mdl.ForeignFit,
                                                 Mdl.Y = Mdl.Y.testing)
 
             Mdl.X.testing <- c(Mdl.X.Pred[["Mdl.X"]],
-                               rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
+                               rapply(object=Mdl.X[Mdl.MargisNM[length(Mdl.MargisNM)]],
                                       f = subsetFun, idx = Mdl.Idx.testing,
                                       how = "replace"))
         }
@@ -98,7 +98,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
     nPred <- length(Mdl.Y.testing[[1]])
 
-    partiMethod <- crossValidArgs[["partiMethod"]]
+    partiMethod <- Mdl.crossValidArgs[["partiMethod"]]
 
     ## The independent likelihood. TODO: Special case to be considered for time series
     ## where the dependence are used The LPDS is approximated by computing each term
@@ -140,7 +140,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
     MCMC.Y.Pred <- list()
     CompUpdate <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
-    for(iComp in (names(MargisType)[-length(MargisType)]))
+    for(iComp in (names(Mdl.MargisType)[-length(Mdl.MargisType)]))
     {
         if(CompUpdate[[iComp]])
         {
@@ -178,7 +178,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
                                       Mdl.parLink = Mdl.parLink,
                                       Mdl.beta = Mdl.beta.curr,
                                       parUpdate = parUpdate)
-        Mdl.Y.pred.curr <- logCplPredict(MargisType = MargisType,
+        Mdl.Y.pred.curr <- logCplPredict(Mdl.MargisType = Mdl.MargisType,
                                          Mdl.par = Mdl.par.curr)
 
         for(iComp in names(MCMC.Y.Pred))
@@ -188,7 +188,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 
         if(!is.null(PredDens))
         {
-            Mdl.ud <- logDens(MargisType = MargisType,
+            Mdl.ud <- logDens(Mdl.MargisType = Mdl.MargisType,
                               Mdl.Y = Mdl.Y.testing.curr,
                               Mdl.par = Mdl.par.curr,
                               parUpdate = parUpdate,

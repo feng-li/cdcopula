@@ -6,8 +6,8 @@
 ##' @param Mdl.beta
 ##' @param Mdl.betaIdx
 ##' @param Mdl.parLink
-##' @param varSelArgs
-##' @param priArgs
+##' @param Mdl.varSelArgs
+##' @param Mdl.priArgs
 ##' @param chainCaller
 ##' @return "list". The gradient and Hessian matrix, see below.
 ##' \item   {gradObsPri}
@@ -19,7 +19,7 @@
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
 logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
-                              varSelArgs, priArgs, chainCaller)
+                              Mdl.varSelArgs, Mdl.priArgs, chainCaller)
     {
         ## Only update priors for parameters that need to update.
         ## Initial the storage structure for current log prior
@@ -33,18 +33,18 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### Gradient and Hessian for the intercept as a special case
 ###----------------------------------------------------------------------------
-        priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
+        Mdl.priArgsCurr <- Mdl.priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
         betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1, , drop = FALSE] # the intercepts
         linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
-        if(tolower(priArgsCurr[["type"]]) == "custom")
+        if(tolower(Mdl.priArgsCurr[["type"]]) == "custom")
             {
                 ## Call the any2any() function
-                densOutput <- any2any(densArgs = priArgsCurr, linkArgs = linkCurr)
+                densOutput <- any2any(densArgs = Mdl.priArgsCurr, linkArgs = linkCurr)
 
                 mean <- densOutput$mean
                 variance <- diag(densOutput$variance, length(betaCurr))
-                shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
+                shrinkage <- Mdl.priArgsCurr[["output"]][["shrinkage"]]
 
                 ## Gradient and Hessian for the intercept
                 GradHessInt <- DensGradHess(B = matrix(betaCurr),
@@ -60,7 +60,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
 ### Gradient for beta|I and Hessian for beta (unconditional)
 ###----------------------------------------------------------------------------
 
-        priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
+        Mdl.priArgsCurr <- Mdl.priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
         nPar <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
 
         ## Slopes and variable selection indicators(taking away intercept)
@@ -76,7 +76,7 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
             }
         else
             {
-                if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
+                if(tolower(Mdl.priArgsCurr[["type"]]) == "cond-mvnorm")
                     {
                         ## Normal distribution condition normal The full beta vector is assumed
                         ## as normal. Since variable selection is included in the MCMC, The
@@ -84,9 +84,9 @@ logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
                         ## gradient for the conditional normal density See Mardia p. 63.
 
                         ## Subtract the prior information for the full beta
-                        mean <- priArgsCurr[["mean"]] # mean of density
-                        covariance <- priArgsCurr[["covariance"]] # Covariates
-                        shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
+                        mean <- Mdl.priArgsCurr[["mean"]] # mean of density
+                        covariance <- Mdl.priArgsCurr[["covariance"]] # Covariates
+                        shrinkage <- Mdl.priArgsCurr[["shrinkage"]] # Shrinkage
 
                         ## Split the beta vector by zero and nonzero.
                         Idx1 <- which(betaIdxNoIntCurr == TRUE)

@@ -1,4 +1,4 @@
-logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
+logDens <- function(Mdl.MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
                     parUpdate, MCMC.UpdateStrategy)
 {
 ###----------------------------------------------------------------------------
@@ -22,9 +22,9 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     ## Mdl.logLik <- cbind(Mdl.d, NA)
     ## colnames(Mdl.logLik) <- CompNM
 
-    CplNM <- MargisType[length(MargisType)]
+    CplNM <- Mdl.MargisType[length(Mdl.MargisType)]
     CompUpNM <- unlist(lapply(parUpdate, function(x) any(unlist(x) == TRUE)))
-    MargisNM <- CompNM[CompNM  != CplNM]
+    Mdl.MargisNM <- CompNM[CompNM  != CplNM]
     MargisUpNM <- CompNM[(CompNM  != CplNM) & CompUpNM]
 
     ## THE COPULA LOG LIKELIHOOD
@@ -59,7 +59,7 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
 
     ## THE MARGINAL LIKELIHOODS
     densCaller <- list()
-    for(CompCaller in MargisNM)
+    for(CompCaller in Mdl.MargisNM)
     {
         if(CompCaller %in% MargisUpNM)
         {
@@ -100,7 +100,7 @@ logDens <- function(MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
         ## if(CompCaller == "BABA") browser()
 
         Mdl.ud <- MargiModel(y = Mdl.Y[[CompCaller]],
-                             type = MargisType[which(MargisNM == CompCaller)],
+                             type = Mdl.MargisType[which(Mdl.MargisNM == CompCaller)],
                              par = Mdl.par[[CompCaller]],
                              densCaller = densCaller[[CompCaller]])
 

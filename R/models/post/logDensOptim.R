@@ -1,5 +1,5 @@
 ## This is the optimization version. Note that this should only work with one observation.
-logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
+logDensOptim <- function(x, jPar, Mdl.MargisType, Mdl.Y,
                          Mdl.par, Mdl.u, Mdl.d, parUpdate,
                          MCMC.UpdateStrategy)
 {
@@ -11,7 +11,7 @@ logDensOptim <- function(x, jPar, MargisType, Mdl.Y,
 
   Mdl.par[[CompCaller]][[parCaller]][, jPar] <- x
 
-  Mdl.ud <- logDens(MargisType = MargisType,
+  Mdl.ud <- logDens(Mdl.MargisType = Mdl.MargisType,
                     Mdl.Y = Mdl.Y,
                     Mdl.par = Mdl.par,
                     Mdl.u = Mdl.u,

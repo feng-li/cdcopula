@@ -1,6 +1,6 @@
 ## APPROACH TWO: This version calculates the numerical gradient (for log
 ## posterior) via the full log likelihood function
-logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
+logDensGradHessNum <- function(Mdl.MargisType, Mdl.Y, Mdl.parLink, parUpdate,
                                staticCache, MCMC.UpdateStrategy)
 {
   ## The updating chain
@@ -27,7 +27,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
               Mdl.d = Mdl.d,
               Mdl.par = Mdl.par,
               parUpdate = parUpdate,
-              MargisType = MargisType,
+              Mdl.MargisType = Mdl.MargisType,
               MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     }
   else
@@ -45,7 +45,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
               Mdl.d = Mdl.d,
               Mdl.par = Mdl.par,
               parUpdate = parUpdate,
-              MargisType = MargisType,
+              Mdl.MargisType = Mdl.MargisType,
               MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     }
 
@@ -55,7 +55,7 @@ logDensGradHessNum <- function(MargisType, Mdl.Y, Mdl.parLink, parUpdate,
               logHessObs = NA))
 }
 
-logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
+logDensGradNum <- function(dataSubIdx, Mdl.MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,parUpdate,
                            MCMC.UpdateStrategy)
   {
     require("numDeriv", quietly = TRUE)
@@ -87,7 +87,7 @@ logDensGradNum <- function(dataSubIdx, MargisType, Mdl.Y,Mdl.u, Mdl.d, Mdl.par,p
                     grad(func = logDensOptim,
                          x = Par[dataSubIdx[iSubObs], jPar],
                          jPar = jPar,
-                         MargisType = MargisType,
+                         Mdl.MargisType = Mdl.MargisType,
                          Mdl.Y = lapply(Mdl.Y, subfun, iSubObs = iSubObs,
                              dataSubIdx = dataSubIdx),
                          Mdl.par = rapply(Mdl.par, subfun, iSubObs = iSubObs,

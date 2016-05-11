@@ -2,11 +2,11 @@
 ##'
 ##' This function is only once for the first iteration. The values are updated
 ##' via MCMC scheme.
-##' @param varSelArgs "list".
+##' @param Mdl.varSelArgs "list".
 ##'
 ##'        Variable selection argument
 ##'
-##' @param betaInit "character or numeric".
+##' @param Mdl.betaInit "character or numeric".
 ##'
 ##'        If is "character", the corresponding method are used to generate the
 ##' initial value.
@@ -26,16 +26,16 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011; Current: Tue Sep 29 23:50:07 CST 2015.
-initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
-                    Mdl.parLink, MCMC.Update, optimInit)
+initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.MargisType,
+                    Mdl.parLink, MCMC.Update, MCMC.optimInit)
 {
-    initParOut <- initPar0(varSelArgs = varSelArgs,
-                            betaInit = betaInit,
+    initParOut <- initPar0(Mdl.varSelArgs = Mdl.varSelArgs,
+                            Mdl.betaInit = Mdl.betaInit,
                             Mdl.X = Mdl.X,
                             Mdl.Y = Mdl.Y,
                             Mdl.parLink = Mdl.parLink,
                             parUpdate = MCMC.Update,
-                            optimInit = optimInit)
+                            MCMC.optimInit = MCMC.optimInit)
     Mdl.beta = initParOut[["Mdl.beta"]]
     Mdl.betaIdx = initParOut[["Mdl.betaIdx"]]
 
@@ -44,8 +44,8 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
 ###----------------------------------------------------------------------------
     ## Generate initial values that does not let log posterior be -Inf.
     ## Loop and count how many times tried for generating initial values
-    if(optimInit == TRUE &&
-       any(tolower(unlist(betaInit)) == "random"))
+    if(MCMC.optimInit == TRUE &&
+       any(tolower(unlist(Mdl.betaInit)) == "random"))
     {
         require("optimx", quietly = TRUE)
 
@@ -105,14 +105,14 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
 
                 ## Dry run to obtain the initial "staticCache" NOTE: As this is the
                 ## very first run, the "parUpdate" should be all on for this time.
-                ## staticCache.sample <- logPost(MargisType = MargisType,
+                ## staticCache.sample <- logPost(Mdl.MargisType = Mdl.MargisType,
                 ##                               Mdl.Y = Mdl.Y.optim.sample,
                 ##                               Mdl.X = Mdl.X.optim.sample,
                 ##                               Mdl.beta = Mdl.beta,
                 ##                               Mdl.betaIdx = Mdl.betaIdx,
                 ##                               Mdl.parLink = Mdl.parLink,
-                ##                               varSelArgs = varSelArgs,
-                ##                               priArgs = priArgs,
+                ##                               Mdl.varSelArgs = Mdl.varSelArgs,
+                ##                               Mdl.priArgs = Mdl.priArgs,
                 ##                               parUpdate = MCMC.Update,
                 ##                               MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 
@@ -134,14 +134,14 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                                                            maxit = 100),
                                             method = "BFGS",
                                             hessian = FALSE,
-                                            MargisType = MargisType,
+                                            Mdl.MargisType = Mdl.MargisType,
                                             Mdl.Y = Mdl.Y.optim.sample,
                                             Mdl.X = Mdl.X.optim.sample,
                                             Mdl.beta = Mdl.beta,
                                             Mdl.betaIdx = Mdl.betaIdx,
                                             Mdl.parLink = Mdl.parLink,
-                                            varSelArgs = varSelArgs,
-                                            priArgs = priArgs,
+                                            Mdl.varSelArgs = Mdl.varSelArgs,
+                                            Mdl.priArgs = Mdl.priArgs,
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
                                             MCMC.UpdateStrategy = "twostage")
@@ -153,13 +153,13 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
                     ## break
 
                     ## Reassign the initial values
-                    initParOut <- initPar0(varSelArgs = varSelArgs,
-                                           betaInit = betaInit,
+                    initParOut <- initPar0(Mdl.varSelArgs = Mdl.varSelArgs,
+                                           Mdl.betaInit = Mdl.betaInit,
                                            Mdl.X = Mdl.X.optim.sample,
                                            Mdl.Y = Mdl.Y.optim.sample,
                                            Mdl.parLink = Mdl.parLink,
                                            parUpdate = parUpdate,
-                                           optimInit = optimInit)
+                                           MCMC.optimInit = MCMC.optimInit)
                 }
                 else
                 {
@@ -190,17 +190,17 @@ initPar <- function(varSelArgs, priArgs, betaInit, Mdl.X, Mdl.Y, MargisType,
     return(out)
 }
 
-initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
-                     parUpdate, optimInit)
+initPar0 <- function(Mdl.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
+                     parUpdate, MCMC.optimInit)
 {
     ## The output structure.
-    Mdl.betaIdx <- betaInit
-    Mdl.beta <- betaInit
+    Mdl.betaIdx <- Mdl.betaInit
+    Mdl.beta <- Mdl.betaInit
     nObs <- length(Mdl.Y[[1]])
 
 
     ## Loop to assign the initial values
-    CompNM <- names(betaInit)
+    CompNM <- names(Mdl.betaInit)
     if(length(CompNM) == 0)
     {
         stop("Model component name must be specified first!")
@@ -220,7 +220,7 @@ initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
 ###----------------------------------------------------------------------------
             ## Initial value for variable selection indicators which can be
             ## character or vector
-            varSelCandConfigCurr <- varSelArgs[[i]][[j]][["cand"]]
+            varSelCandConfigCurr <- Mdl.varSelArgs[[i]][[j]][["cand"]]
 
             if(class(varSelCandConfigCurr) == "character" &&
                tolower(varSelCandConfigCurr) == "2:end")
@@ -233,7 +233,7 @@ initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
             }
 
 
-            varSelInitCurr <- varSelArgs[[i]][[j]][["init"]]
+            varSelInitCurr <- Mdl.varSelArgs[[i]][[j]][["init"]]
 
             ## Check if variable selection candidates are all subsets of X.
             if(!all(varSelCandCurr %in% 1:ncolX.ij))
@@ -274,12 +274,12 @@ initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
 ###----------------------------------------------------------------------------
 ### Initial value for coefficients
 ###----------------------------------------------------------------------------
-            betaInitCurr <- betaInit[[i]][[j]]
-            if(class(betaInitCurr) == "character" &&
-               tolower(betaInitCurr) == "random")
+            Mdl.betaInitCurr <- Mdl.betaInit[[i]][[j]]
+            if(class(Mdl.betaInitCurr) == "character" &&
+               tolower(Mdl.betaInitCurr) == "random")
             {
 
-                if(parUpdate[[i]][[j]] == FALSE && optimInit  == FALSE)
+                if(parUpdate[[i]][[j]] == FALSE && MCMC.optimInit  == FALSE)
                 {
                     stop("Using random initial values but don't update (",  i, ", " ,  j ,
                          ") component is neither logical nor allowed.")
@@ -289,8 +289,8 @@ initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
                 Mdl.beta[[i]][[j]] <- array(runif(ncolX.ij*nPar.ij, -1, 1) , c(ncolX.ij, nPar.ij))
 
             }
-            else if (class(betaInitCurr) == "character" &&
-                     tolower(betaInitCurr) == "ols")
+            else if (class(Mdl.betaInitCurr) == "character" &&
+                     tolower(Mdl.betaInitCurr) == "ols")
             {
                 Y <- Mdl.Y[[i]]
                 X <- Mdl.X[[i]][[j]]
@@ -300,7 +300,7 @@ initPar0 <- function(varSelArgs, betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
             }
             else # Do nothing and use user input
             {
-                Mdl.beta[[i]][[j]] <- array(betaInitCurr, c(ncolX.ij, nPar.ij))
+                Mdl.beta[[i]][[j]] <- array(Mdl.betaInitCurr, c(ncolX.ij, nPar.ij))
             }
 
         }

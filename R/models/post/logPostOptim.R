@@ -8,9 +8,9 @@
 ##' @param Mdl.beta
 ##' @param Mdl.betaIdx "list".
 ##' @param Mdl.parLink "list".
-##' @param varSelArgs "list".
-##' @param MargisType "list".
-##' @param priArgs "list".
+##' @param Mdl.varSelArgs "list".
+##' @param Mdl.MargisType "list".
+##' @param Mdl.priArgs "list".
 ##' @param parUpdate "list".
 ##' @param staticCache "list".
 ##' @return "scaler" The log posterior.
@@ -18,9 +18,9 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Sun Jun 03 19:13:54 CEST 2012;
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
-logPostOptim <- function(betaVec, MargisType, Mdl.Y, Mdl.X, Mdl.beta,
-                         Mdl.betaIdx,Mdl.parLink,varSelArgs,
-                         priArgs,parUpdate, staticCache, MCMC.UpdateStrategy)
+logPostOptim <- function(betaVec, Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta,
+                         Mdl.betaIdx,Mdl.parLink,Mdl.varSelArgs,
+                         Mdl.priArgs,parUpdate, staticCache, MCMC.UpdateStrategy)
 {
   ## a wrapper of the log posterior function that can be used for directly
   ## optimization via Newton's method
@@ -28,14 +28,14 @@ logPostOptim <- function(betaVec, MargisType, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.beta = Mdl.beta,
                          Mdl.betaIdx = Mdl.betaIdx,
                          parUpdate = parUpdate)
-  logPostOut <- logPost(MargisType = MargisType,
+  logPostOut <- logPost(Mdl.MargisType = Mdl.MargisType,
                         Mdl.Y = Mdl.Y,
                         Mdl.X = Mdl.X,
                         Mdl.beta = Mdl.beta,
                         Mdl.betaIdx = Mdl.betaIdx,
                         Mdl.parLink = Mdl.parLink,
-                        varSelArgs = varSelArgs,
-                        priArgs = priArgs,
+                        Mdl.varSelArgs = Mdl.varSelArgs,
+                        Mdl.priArgs = Mdl.priArgs,
                         staticCache = staticCache,
                         parUpdate = parUpdate,
                         MCMC.UpdateStrategy = MCMC.UpdateStrategy)

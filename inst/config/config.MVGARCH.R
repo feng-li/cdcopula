@@ -27,15 +27,15 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisType <- c("NA", "NA", "DCCGARCH")
-MargisNM <- c("^SML", "^OEX", "DCCGARCH")
+Mdl.MargisType <- c("NA", "NA", "DCCGARCH")
+Mdl.MargisNM <- c("^SML", "^OEX", "DCCGARCH")
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
 LPDS <- c("joint")
 
 ## The object structure for the model components
-names(MargisType) <-  MargisNM
+names(Mdl.MargisType) <-  Mdl.MargisNM
 
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL
@@ -54,18 +54,18 @@ load(file.path(R_CPL_LIB_ROOT_DIR, "data/SP100-SP400-SP600-20150206.Rdata"))
 nObsRaw <- length(Y[[1]])
 
 ## Data subset used
-dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 
 ## THE RESPONSE VARIABLES
-Mdl.Y <- lapply(Y[MargisNM[-length(MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], dataUsedIdx)
+Mdl.Y <- lapply(Y[Mdl.MargisNM[-length(Mdl.MargisNM)]], function(x, idx)x[idx, ,drop = FALSE], Mdl.dataUsedIdx)
 
 ## The name of respond variables
-names(Mdl.Y) <- MargisNM[-length(MargisNM)]
+names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 
 ### THE MODEL
 ###----------------------------------------------------------------------------
-{if(tolower(MargisType[length(MargisType)]) == "gogarch")
+{if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) == "gogarch")
  {
    ## GoGARCH
    require("rmgarch", quietly = TRUE)
@@ -86,7 +86,7 @@ names(Mdl.Y) <- MargisNM[-length(MargisNM)]
                                    variance.model = variance.model,
                                    distribution.model  =  "mvnorm")
  }
- else if(tolower(MargisType[length(MargisType)]) == "dccgarch")
+ else if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) == "dccgarch")
  {
    ## DCC-GARCH
    require("rmgarch", quietly = TRUE)
@@ -129,14 +129,14 @@ save.output <- "~/running"
 ## predict the new interval)
 
 nCross <- 1
-crossValidArgs <- list(N.subsets = nCross,
+Mdl.crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
                        testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
-crossValidIdx <- set.crossvalid(nObs,crossValidArgs)
+Mdl.crossValidIdx <- set.crossvalid(nObs,Mdl.crossValidArgs)
 
-optimInit <- TRUE
+MCMC.optimInit <- TRUE
 ################################################################################
 ###                                  THE END
 ################################################################################

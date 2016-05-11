@@ -27,21 +27,21 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisType <- c("SPLITT", "SPLITT", "BB7")
-MargisNM <- c("M1", "M2", "BB7")
+Mdl.MargisType <- c("SPLITT", "SPLITT", "BB7")
+Mdl.MargisNM <- c("M1", "M2", "BB7")
 
 MCMC.Update <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
                    list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
                    list("lambdaL" = T, "lambdaU" = T))
 
-names(MCMC.Update) <- MargisNM
+names(MCMC.Update) <- Mdl.MargisNM
 
 ## THE MODEL EVALUATION CRITERION
 ## Set this to NULL to turn of evaluation.
-LPDS <- c("joint", MargisNM)
+LPDS <- c("joint", Mdl.MargisNM)
 
 ## The object structure for the model components
-names(MargisType) <-  MargisNM
+names(Mdl.MargisType) <-  Mdl.MargisNM
 
 ###----------------------------------------------------------------------------
 ### THE DATA AND MODEL
@@ -63,7 +63,7 @@ DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
 nObsRaw <- nrow(MdlDGP.u[["u"]])
 
 ## Data subset used
-dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
+Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 
 ## THE RESPONSE VARIABLES (LOADED VIA DGP)
 
@@ -74,7 +74,7 @@ dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
 ## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
-## "betaInit" be one in all marginal features.
+## "Mdl.betaInit" be one in all marginal features.
 
 ## THE LINK FUNCTION USED IN THE MODEL (LOADED VIA DGP)
 
@@ -82,19 +82,19 @@ dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-varSelArgs <- MCMC.Update
-varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs <- MCMC.Update
+Mdl.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
-varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
@@ -142,37 +142,37 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
-propArgs <- MCMC.Update
-propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs <- MCMC.Update
+MCMC.propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-
-propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                           "beta" = list(type = "mvt", df = 6),
-                           "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
 
-propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
-propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+
+MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
                            "beta" = list(type = "mvt", df = 6),
                            "indicators" = list(type = "binom", prob = 0.5))
 
@@ -187,13 +187,13 @@ propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, 
 ## predict the new interval)
 
 nCross <- 1
-crossValidArgs <- list(N.subsets = 0,
+Mdl.crossValidArgs <- list(N.subsets = 0,
                        partiMethod = "time-series",
                        testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
-crossValidIdx <- set.crossvalid(length(dataUsedIdx),crossValidArgs)
-## nCrossFold <- length(crossValidIdx[["training"]])
+Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx),Mdl.crossValidArgs)
+## nCrossFold <- length(Mdl.crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
 MCMC.sampleProp <- 1
@@ -212,65 +212,65 @@ MCMC.burninProp <- 0.1 # zero indicates no burn-in
 ## between parameters in the models but is will not affect the prior settings on the
 ## coefficients as long as we use a dynamic link function.
 
-priArgs <- MCMC.Update
-priArgs[[1]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs <- MCMC.Update
+Mdl.priArgs[[1]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                               input = list(type = "norm",  mean = 0, variance = 1),
                                                               output = list(type = "norm", shrinkage = 1)),
                                            "slopes" = list(type = "cond-mvnorm",
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                input = list(type = "lognorm",  mean = 1, variance = 1),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
                               "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                               input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
                                                               output = list(type = "norm", shrinkage = 1)),
                                            "slopes" = list(type = "cond-mvnorm",
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[1]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[1]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                input = list(type = "lognorm",  mean = 1, variance = 1),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
                               "indicators" = list(type = "bern", prob = 0.5))
 
-priArgs[[2]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[2]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                               input = list(type = "norm",  mean = 0, variance = 1),
                                                               output = list(type = "norm", shrinkage = 1)),
                                            "slopes" = list(type = "cond-mvnorm",
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[2]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[2]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                input = list(type = "lognorm",  mean = 1, variance = 1),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
                               "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[2]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[2]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                               input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
                                                               output = list(type = "norm", shrinkage = 1)),
                                            "slopes" = list(type = "cond-mvnorm",
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[2]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[2]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                input = list(type = "lognorm",  mean = 1, variance = 1),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
                               "indicators" = list(type = "bern", prob = 0.5))
 
-priArgs[[3]][["lambdaL"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[3]][["lambdaL"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                    input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
                                                                                 a = 0.01, b = 0.99),
                                                                    output = list(type = "norm", shrinkage = 1)),
                                                 "slopes" = list(type = "cond-mvnorm",
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
-priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custom",
+Mdl.priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custom",
                                                                    input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
                                                                                 a = 0.01, b = 0.99),
                                                                    output = list(type = "norm", shrinkage = 1)),
@@ -286,22 +286,22 @@ priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "custo
 
 ## THE PARAMETER COEFFICIENTS STARTING POINT
 ## The possible inputs are ("random", "ols"  or user-input).
-betaInit <- MdlDGP.beta
+Mdl.betaInit <- MdlDGP.beta
 
-## betaInit[[1]][[1]] <- "random"
-## betaInit[[1]][[2]] <- "random"
-## betaInit[[1]][[3]] <- "random"
-## betaInit[[1]][[4]] <- "random"
+## Mdl.betaInit[[1]][[1]] <- "random"
+## Mdl.betaInit[[1]][[2]] <- "random"
+## Mdl.betaInit[[1]][[3]] <- "random"
+## Mdl.betaInit[[1]][[4]] <- "random"
 
-## betaInit[[2]][[1]] <- "random"
-## betaInit[[2]][[2]] <- "random"
-## betaInit[[2]][[3]] <- "random"
-## betaInit[[2]][[4]] <- "random"
+## Mdl.betaInit[[2]][[1]] <- "random"
+## Mdl.betaInit[[2]][[2]] <- "random"
+## Mdl.betaInit[[2]][[3]] <- "random"
+## Mdl.betaInit[[2]][[4]] <- "random"
 
-betaInit[[3]][[1]] <- "random"
-betaInit[[3]][[2]] <- "random"
+Mdl.betaInit[[3]][[1]] <- "random"
+Mdl.betaInit[[3]][[2]] <- "random"
 
-optimInit <- TRUE
+MCMC.optimInit <- TRUE
 ################################################################################
 ###                                  THE END
 ################################################################################

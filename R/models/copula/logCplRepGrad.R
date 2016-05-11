@@ -15,7 +15,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
   if(tolower(CplNM) == "bb7")
   {
     ## The name of marginal model
-    MargisNM <- dimnames(u)[[2]]
+    Mdl.MargisNM <- dimnames(u)[[2]]
     nObs <- dim(u)[1]
 
     parCpl <- parCplRep2Std(CplNM, parCplRep)
@@ -77,7 +77,7 @@ logCplRepGrad <- function(CplNM, u, parCplRep, parCaller)
   else if(tolower(CplNM) == "mvt")
   {
     ## The name of marginal model
-    MargisNM <- dimnames(u)[[2]]
+    Mdl.MargisNM <- dimnames(u)[[2]]
     nObs <- dim(u)[1]
 
     parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)

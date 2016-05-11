@@ -63,8 +63,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     nCross <- NA
     Mdl.X <- NA
     Mdl.Y <- NA
-    MargisType <- NA
-    MargisNM <- NA
+    Mdl.MargisType <- NA
+    Mdl.MargisNM <- NA
     Mdl.parLink <- NA
     MCMC.nIter <- NA
     MCMC.Update <- NA
@@ -72,11 +72,11 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     MCMC.burninProp <- NA
     MCMC.UpdateStrategy <- NA
     MCMC.UpdateOrder <- NA
-    priArgs <- NA
-    varSelArgs <- NA
-    propArgs <- NA
-    betaInit <- NA
-    optimInit <- NA
+    Mdl.priArgs <- NA
+    Mdl.varSelArgs <- NA
+    MCMC.propArgs <- NA
+    Mdl.betaInit <- NA
+    MCMC.optimInit <- NA
     Mdl.u <- NA
 
     source(MdlConfigFile, local = TRUE)
@@ -99,7 +99,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Generating simple model information
     Starting.time <- Sys.time()
-    ModelDescription <- paste(c(MargisNM[-length(MargisNM)],"+",  MargisType, "+" , "nObs",
+    ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",  Mdl.MargisType, "+" , "nObs",
                                 nObs, "nCross", nCross,  "+",
                                 format(Starting.time, "%Y%m%d@%H.%M")),
                               collapse = "")
@@ -120,11 +120,11 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         Mdl.u.training <- Mdl.u[Mdl.Idx.training, , drop = FALSE]
     }
 
-    ## if(tolower(MargisType[length(MargisType)]) %in% c("gogarch", "dccgarch"))
+    ## if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) %in% c("gogarch", "dccgarch"))
     if(exists("ForeignModelSpec") &&  ForeignModelSpec  != NA)
     {## Special case when a foreign multivariate model is introduced. Fit the model and
         ## quit the MCMC directly.
-        Mdl.ForeignFitted <-ModelForeignEval(model  = MargisType[length(MargisType)],
+        Mdl.ForeignFitted <-ModelForeignEval(model  = Mdl.MargisType[length(Mdl.MargisType)],
                                              spec = ForeignModelSpec,
                                              data = Mdl.Y.training)
         print(Mdl.ForeignFitted) # Model summary
@@ -139,13 +139,13 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## Foreign marginal models.
         cat("Evaluating foreign marginal models...\n")
 
-        Mdl.X.training.Fitted <- MargiModelForeignEval(MargisNM = MargisNM,
-                                                       MargisType = MargisType,
+        Mdl.X.training.Fitted <- MargiModelForeignEval(Mdl.MargisNM = Mdl.MargisNM,
+                                                       Mdl.MargisType = Mdl.MargisType,
                                                        MargisForeignConfig = Mdl.X,
                                                        Mdl.Y = Mdl.Y.training)
 
         Mdl.X.training <- c(Mdl.X.training.Fitted[["Mdl.X"]],
-                            rapply(object=Mdl.X[MargisNM[length(MargisNM)]],
+                            rapply(object=Mdl.X[Mdl.MargisNM[length(Mdl.MargisNM)]],
                                    f = subsetFun,
                                    idx = Mdl.Idx.training,
                                    how = "replace"))
@@ -158,11 +158,11 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     ## Assign the initial values
-    initParOut <- initPar(varSelArgs = varSelArgs, priArgs = priArgs,
-                          betaInit = betaInit, MargisType = MargisType,
+    initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
+                          Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
                           Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
-                          optimInit = optimInit)
+                          MCMC.optimInit = MCMC.optimInit)
 
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
@@ -179,8 +179,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     if(!exists("MCMC.density"))
     {
         ## MCMC.density <- list()
-        ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(MargisNM) +1,  MCMC.nIter))
-        ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(MargisNM),  MCMC.nIter))
+        ## MCMC.density[["d"]] <- array(NA, c(nTraining, length(Mdl.MargisNM) +1,  MCMC.nIter))
+        ## MCMC.density[["u"]] <- array(NA, c(nTraining, length(Mdl.MargisNM),  MCMC.nIter))
         ## FIXME: This is really big ~ 1G
     }
 
@@ -193,9 +193,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
             namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
 
-            if((CompCaller %in% MargisNM[length(MargisNM)]) & nPar.ij != 1)
+            if((CompCaller %in% Mdl.MargisNM[length(Mdl.MargisNM)]) & nPar.ij != 1)
             {
-                nDim <- length(MargisNM)-1
+                nDim <- length(Mdl.MargisNM)-1
                 namesParFull.ij <- matrix(paste(matrix(1:nDim, nDim, nDim),
                                                 matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
                 namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
@@ -232,14 +232,14 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## Dry run to obtain staticcache for the initial values. Again this time all the
     ## parameters should be updated.
 
-    Mdl.DryRun <- logPost(MargisType = MargisType,
+    Mdl.DryRun <- logPost(Mdl.MargisType = Mdl.MargisType,
                           Mdl.Y = Mdl.Y.training,
                           Mdl.X = Mdl.X.training,
                           Mdl.beta = Mdl.beta,
                           Mdl.betaIdx = Mdl.betaIdx,
                           Mdl.parLink = Mdl.parLink,
-                          varSelArgs = varSelArgs,
-                          priArgs = priArgs,
+                          Mdl.varSelArgs = Mdl.varSelArgs,
+                          Mdl.priArgs = Mdl.priArgs,
                           parUpdate = MCMC.Update,
                           MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     staticCache <- Mdl.DryRun[["staticCache"]]
@@ -276,10 +276,10 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         parUpdate[[CompCaller]][[parCaller]] <- TRUE
 
         ## Call the Metropolis-Hastings algorithm
-        MHOut <- MetropolisHastings(MargisType = MargisType,
-                                    propArgs = propArgs,
-                                    varSelArgs = varSelArgs,
-                                    priArgs = priArgs,
+        MHOut <- MetropolisHastings(Mdl.MargisType = Mdl.MargisType,
+                                    MCMC.propArgs = MCMC.propArgs,
+                                    Mdl.varSelArgs = Mdl.varSelArgs,
+                                    Mdl.priArgs = Mdl.priArgs,
                                     parUpdate = parUpdate,
                                     Mdl.Y = Mdl.Y.training,
                                     Mdl.X = Mdl.X.training,
@@ -335,7 +335,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## Fetch everything at current environment to a list
     ## list2env(out, envir = .GlobalEnv)
     ## GENERATING SHORT MODEL DESCRIPTION
-    ModelDescription <- paste(c(MargisNM[-length(MargisNM)],"+",  MargisType, "+" ,
+    ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",  Mdl.MargisType, "+" ,
                                 "nObs", nObs, "nCross", nCross, "MCMC.nIter", MCMC.nIter, "+",
                                 format(Starting.time, "%Y%m%d@%H.%M")),
                               collapse = "")

@@ -6,8 +6,8 @@
 ##' @param Mdl.parLink "list"
 ##' @param Mdl.beta "list"
 ##' @param Mdl.betaIdx "list"
-##' @param varSelArgs "list"
-##' @param priArgs "list"
+##' @param Mdl.varSelArgs "list"
+##' @param Mdl.priArgs "list"
 ##' @param parUpdate "list"
 ##' @param priCurr "list"
 ##' @return "list" synced
@@ -15,7 +15,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      varSelArgs, priArgs, parUpdate, Mdl.logPri)
+                      Mdl.varSelArgs, Mdl.priArgs, parUpdate, Mdl.logPri)
 {
   ## Allocate the structure.
     if(missing(Mdl.logPri))
@@ -31,7 +31,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 
     ## Loop over all updated parameter candidates
 
-  CompNM <- names(priArgs)
+  CompNM <- names(Mdl.priArgs)
   for(CompCaller in CompNM)
   {
 ###----------------------------------------------------------------------------
@@ -40,22 +40,22 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
     parUpdateIdx <- names(parUpdate[[CompCaller]])[unlist(parUpdate[[CompCaller]])]
     for(parCaller in parUpdateIdx)
     {   ## Initial the storage structure for current log prior
-      outCurr <-  priArgs[[CompCaller]][[parCaller]]
+      outCurr <-  Mdl.priArgs[[CompCaller]][[parCaller]]
 
 ###----------------------------------------------------------------------------
 ### Prior for variable selection indicators
 ###----------------------------------------------------------------------------
 
-      priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["indicators"]]
+      Mdl.priArgsCurr <- Mdl.priArgs[[CompCaller]][[parCaller]][["indicators"]]
       betaIdxCurr <- Mdl.betaIdx[[CompCaller]][[parCaller]] # p-yb-lq
       nPar <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
 
-      if(tolower(priArgsCurr[["type"]]) == "bern") # Bernoulli prior
+      if(tolower(Mdl.priArgsCurr[["type"]]) == "bern") # Bernoulli prior
       {
         ## The probability is set for each variable involved in the
         ## variable selection procedure via "valSelArgs"
         ## The probability is recycled if necessary
-        prob <- priArgsCurr[["prob"]]
+        prob <- Mdl.priArgsCurr[["prob"]]
 
         ## Variable section candidates.
         if(dim(betaIdxCurr)[1] == 1)
@@ -66,7 +66,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
         }
         else
         {
-          varSelCandConfigCurr <- varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+          varSelCandConfigCurr <- Mdl.varSelArgs[[CompCaller]][[parCaller]][["cand"]]
 
           if(class(varSelCandConfigCurr) == "character" &&
              tolower(varSelCandConfigCurr) == "2:end")
@@ -106,7 +106,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 ###----------------------------------------------------------------------------
 
 ### intercept as special case. The intercept should alway be included.
-      priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
+      Mdl.priArgsCurr <- Mdl.priArgs[[CompCaller]][[parCaller]][["beta"]][["intercept"]]
 
       betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][1,,drop = FALSE]#intercepts
 
@@ -114,14 +114,14 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
 
       linkCurr <- Mdl.parLink[[CompCaller]][[parCaller]]
 
-      if(tolower(priArgsCurr[["type"]]) == "custom")
+      if(tolower(Mdl.priArgsCurr[["type"]]) == "custom")
       {
         ## Call the any2any() function
-        densOutput <- any2any(densArgs = priArgsCurr, linkArgs = linkCurr)
+        densOutput <- any2any(densArgs = Mdl.priArgsCurr, linkArgs = linkCurr)
 
         mean <- densOutput$mean
         variance <- densOutput$variance
-        shrinkage <- priArgsCurr[["output"]][["shrinkage"]]
+        shrinkage <- Mdl.priArgsCurr[["output"]][["shrinkage"]]
 
         logDens <- dnorm(x = betaCurr, mean = mean,
                          sd = sqrt(variance*shrinkage), log = TRUE)
@@ -129,7 +129,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
       }
 
 ### coefficients (conditional on variable selection indicators)
-      priArgsCurr <- priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
+      Mdl.priArgsCurr <- Mdl.priArgs[[CompCaller]][[parCaller]][["beta"]][["slopes"]]
 
       ## Slopes and variable selection indicators(taking away intercept)
       betaCurr <- Mdl.beta[[CompCaller]][[parCaller]][-1, , drop = FALSE]
@@ -143,7 +143,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
       }
       else
       {
-        if(tolower(priArgsCurr[["type"]]) == "cond-mvnorm")
+        if(tolower(Mdl.priArgsCurr[["type"]]) == "cond-mvnorm")
         {
           ## Normal distribution condition normal The full beta
           ## vector is assumed as normal. Since variable
@@ -152,9 +152,9 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
           ## the conditional normal density See Mardia p. 63
 
           ## Subtract the prior information for the full beta
-          mean <- priArgsCurr[["mean"]] # mean of density
-          covariance <- priArgsCurr[["covariance"]] # Covariates
-          shrinkage <- priArgsCurr[["shrinkage"]] # Shrinkage
+          mean <- Mdl.priArgsCurr[["mean"]] # mean of density
+          covariance <- Mdl.priArgsCurr[["covariance"]] # Covariates
+          shrinkage <- Mdl.priArgsCurr[["shrinkage"]] # Shrinkage
 
           ## Split the beta vector by selected and non-selected.
           Idx1 <- which(betaIdxNoIntCurr == TRUE)

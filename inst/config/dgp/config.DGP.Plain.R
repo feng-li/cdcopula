@@ -6,17 +6,17 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-MargisType <- c("SPLITT", "SPLITT", "BB7")
-MargisNM <- c("M1", "M2", "BB7")
+Mdl.MargisType <- c("SPLITT", "SPLITT", "BB7")
+Mdl.MargisNM <- c("M1", "M2", "BB7")
 
 MCMC.Update <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("lambdaL" = T, "lambdaU" = T))
 
-names(MCMC.Update) <- MargisNM
+names(MCMC.Update) <- Mdl.MargisNM
 
 ## The object structure for the model components
-names(MargisType) <-  MargisNM
+names(Mdl.MargisType) <-  Mdl.MargisNM
 
 
 ## NO. OF OBSERVATIONS

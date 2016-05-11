@@ -8,18 +8,18 @@
 ##' @param Mdl.betaIdx
 ##' @param Mdl.parLink
 ##' @param parUpdate
-##' @param priArgs
-##' @param varSelArgs
-##' @param propArgs
-##' @param MargisType
+##' @param Mdl.priArgs
+##' @param Mdl.varSelArgs
+##' @param MCMC.propArgs
+##' @param Mdl.MargisType
 ##' @param staticCache
 ##' @return "list"
 ##' @references Li 2012
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
 MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                               Mdl.parLink, parUpdate, priArgs, varSelArgs,
-                               propArgs, MargisType, staticCache, MCMC.UpdateStrategy)
+                               Mdl.parLink, parUpdate, Mdl.priArgs, Mdl.varSelArgs,
+                               MCMC.propArgs, Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {
   ## The updating component parameter chain
   chainCaller <- parCplRepCaller(parUpdate)
@@ -27,9 +27,9 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   parCaller <- chainCaller[2]
 
   ## The proposal methods
-  algmArgs <- propArgs[[CompCaller]][[parCaller]][["algorithm"]]
-  beta.propArgs <- propArgs[[CompCaller]][[parCaller]][["beta"]]
-  betaIdx.propArgs <- propArgs[[CompCaller]][[parCaller]][["indicators"]]
+  algmArgs <- MCMC.propArgs[[CompCaller]][[parCaller]][["algorithm"]]
+  beta.MCMC.propArgs <- MCMC.propArgs[[CompCaller]][[parCaller]][["beta"]]
+  betaIdx.MCMC.propArgs <- MCMC.propArgs[[CompCaller]][[parCaller]][["indicators"]]
 
 ###----------------------------------------------------------------------------
 ### INITIAL COPY OF CURRENT VALUES
@@ -56,7 +56,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## Randomly propose a subset for covariates to change
   beta01Mat <- matrix(1:(nCovs*nPar), nCovs, nPar)
 
-  varSelCandConfigRow <- varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
+  varSelCandConfigRow <- Mdl.varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
 
   if(class(varSelCandConfigRow) == "character" &&
      tolower(varSelCandConfigRow) == "2:end")
@@ -83,12 +83,12 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## selection.
   if(length(varSelCand) > 0)
   {
-    if(betaIdx.propArgs[["type"]] == "binom")
+    if(betaIdx.MCMC.propArgs[["type"]] == "binom")
     {
       ## Binomial proposal a small subset
       betaIdx.propCandIdx <- which(rbinom(n = length(varSelCand),
                                           size = 1L,
-                                          prob = betaIdx.propArgs[["prob"]]) == 1L)
+                                          prob = betaIdx.MCMC.propArgs[["prob"]]) == 1L)
 
       if(length(betaIdx.propCandIdx) != 0)
       {
@@ -145,10 +145,10 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   {
     if(tolower(algmArgs[["type"]]) == "gnewtonmove")
     { ## Newton method to approach the posterior based on the current draw
-      beta.NTProp <- PropGNewtonMove(MargisType = MargisType,
-                                     propArgs = propArgs,
-                                     varSelArgs = varSelArgs,
-                                     priArgs = priArgs,
+      beta.NTProp <- PropGNewtonMove(Mdl.MargisType = Mdl.MargisType,
+                                     MCMC.propArgs = MCMC.propArgs,
+                                     Mdl.varSelArgs = Mdl.varSelArgs,
+                                     Mdl.priArgs = Mdl.priArgs,
                                      betaIdxProp = betaIdx.prop,
                                      parUpdate = parUpdate,
                                      Mdl.Y = Mdl.Y,
@@ -194,12 +194,12 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
 
     staticCache.prop <- beta.NTProp[["staticCache"]]
-    if(tolower(beta.propArgs[["type"]]) == "mvt")
+    if(tolower(beta.MCMC.propArgs[["type"]]) == "mvt")
     {
       ## require("mvtnorm")
       ## The proposal parameters block
       beta.prop <- beta.prop.mean + rmvt(sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-                                         n = 1, df = beta.propArgs[["df"]])
+                                         n = 1, df = beta.MCMC.propArgs[["df"]])
     }
 
 ###----------------------------------------------------------------------------
@@ -217,10 +217,10 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
     if(tolower(algmArgs[["type"]]) == "gnewtonmove")
     {
-      beta.NTPropRev <- PropGNewtonMove(MargisType = MargisType,
-                                        propArgs = propArgs,
-                                        varSelArgs = varSelArgs,
-                                        priArgs = priArgs,
+      beta.NTPropRev <- PropGNewtonMove(Mdl.MargisType = Mdl.MargisType,
+                                        MCMC.propArgs = MCMC.propArgs,
+                                        Mdl.varSelArgs = Mdl.varSelArgs,
+                                        Mdl.priArgs = Mdl.priArgs,
                                         betaIdxProp = betaIdx.curr,
                                         parUpdate = parUpdate,
                                         Mdl.Y = Mdl.Y,
@@ -263,27 +263,27 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
 
     ## The jump density for proposed point at proposed mode and the jump density for
     ## current draw at reverse proposed mode.
-    if(tolower(beta.propArgs[["type"]]) == "mvt")
+    if(tolower(beta.MCMC.propArgs[["type"]]) == "mvt")
     {
 
       logJump.propATprop <- dmvt(x = beta.prop - beta.prop.mean,
                                  sigma = (beta.prop.sigma+t(beta.prop.sigma))/2,
-                                 df = beta.propArgs[["df"]], log = TRUE)
+                                 df = beta.MCMC.propArgs[["df"]], log = TRUE)
 
       logJump.currATpropRev<- dmvt(x = beta.curr - beta.propRev.mean,
                                    sigma = (beta.propRev.sigma+t(beta.propRev.sigma))/2,
-                                   df = beta.propArgs[["df"]], log = TRUE)
+                                   df = beta.MCMC.propArgs[["df"]], log = TRUE)
     }
 
     ## The log posterior for the proposed draw
-    logPost.propOut <- logPost(MargisType = MargisType,
+    logPost.propOut <- logPost(Mdl.MargisType = Mdl.MargisType,
                                Mdl.Y = Mdl.Y,
                                Mdl.X = Mdl.X,
                                Mdl.beta = Mdl.beta.prop,
                                Mdl.betaIdx = Mdl.betaIdx.prop,
                                Mdl.parLink = Mdl.parLink,
-                               varSelArgs = varSelArgs,
-                               priArgs = priArgs,
+                               Mdl.varSelArgs = Mdl.varSelArgs,
+                               Mdl.priArgs = Mdl.priArgs,
                                parUpdate = parUpdate,
                                staticCache = staticCache,
                                MCMC.UpdateStrategy = MCMC.UpdateStrategy)
@@ -292,14 +292,14 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     staticCache.prop <- logPost.propOut[["staticCache"]]
 
     ## The log posterior for the current draw
-    logPost.curr <- logPost(MargisType = MargisType,
+    logPost.curr <- logPost(Mdl.MargisType = Mdl.MargisType,
                             Mdl.Y = Mdl.Y,
                             Mdl.X = Mdl.X,
                             Mdl.beta = Mdl.beta.curr,
                             Mdl.betaIdx = Mdl.betaIdx.curr,
                             Mdl.parLink = Mdl.parLink,
-                            varSelArgs = varSelArgs,
-                            priArgs = priArgs,
+                            Mdl.varSelArgs = Mdl.varSelArgs,
+                            Mdl.priArgs = Mdl.priArgs,
                             parUpdate = parUpdate,
                             staticCache = staticCache,
                             MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["Mdl.logPost"]]

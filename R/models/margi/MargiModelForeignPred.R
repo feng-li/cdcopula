@@ -1,10 +1,10 @@
-MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
+MargiModelForeignPred <- function(Mdl.MargisNM, Mdl.MargisType, Mdl.ForeignFit, Mdl.Y)
 {
     Mdl.X <- list()
     Mdl.ForeignPred <- list()
     for(iComp in 1:length(Mdl.ForeignFit)) ## TODO: Parallelize marginal models.
     {
-        if(tolower(MargisType[iComp]) ==  "garch")
+        if(tolower(Mdl.MargisType[iComp]) ==  "garch")
         {
             require("fGarch", quietly = TRUE)
 
@@ -13,14 +13,14 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
 
             MargiModel.Pred <- eval(MargiModel.Pred.caller)
 
-            Mdl.X[[MargisNM[iComp]]] <- list()
+            Mdl.X[[Mdl.MargisNM[iComp]]] <- list()
 
-            Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred[["meanForecast"]])
-            Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred[["standardDeviation"]])
+            Mdl.X[[Mdl.MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Pred[["meanForecast"]])
+            Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Pred[["standardDeviation"]])
 
-            Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+            Mdl.ForeignPred[[Mdl.MargisNM[iComp]]] <- MargiModel.Pred
         }
-        else if(tolower(MargisType[iComp]) ==  "stochvol")
+        else if(tolower(Mdl.MargisType[iComp]) ==  "stochvol")
         {
             ## MargiModel.Pred.caller <- as.call(c(predict.svdraws,
             ##                                     Mdl.ForeignFit[[iComp]],
@@ -31,12 +31,12 @@ MargiModelForeignPred <- function(MargisNM, MargisType, Mdl.ForeignFit, Mdl.Y)
             MargiModel.Pred <- predict.svdraws(object = Mdl.ForeignFit[[iComp]],
                                                steps = length(Mdl.Y[[iComp]]))
 
-            Mdl.X[[MargisNM[iComp]]] <- list()
+            Mdl.X[[Mdl.MargisNM[iComp]]] <- list()
 
-            Mdl.X[[MargisNM[iComp]]][["mu"]] <- matrix(apply(MargiModel.Pred, 2, mean))
-            Mdl.X[[MargisNM[iComp]]][["phi"]] <- matrix(apply(MargiModel.Pred, 2, sd))
+            Mdl.X[[Mdl.MargisNM[iComp]]][["mu"]] <- matrix(apply(MargiModel.Pred, 2, mean))
+            Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(apply(MargiModel.Pred, 2, sd))
 
-            Mdl.ForeignPred[[MargisNM[iComp]]] <- MargiModel.Pred
+            Mdl.ForeignPred[[Mdl.MargisNM[iComp]]] <- MargiModel.Pred
 
         }
         else

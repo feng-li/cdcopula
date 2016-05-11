@@ -1,6 +1,6 @@
-randomwalk <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
+randomwalk <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
                        CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                       Mdl.parLink, MargisType, staticCache, MCMC.UpdateStrategy)
+                       Mdl.parLink, Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {
   errorFlag <- NA
     if(errorFlag)

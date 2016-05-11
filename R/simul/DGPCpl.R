@@ -20,35 +20,35 @@ DGPCpl <- function(DGPconfigfile, export = "list")
     MdlDGP.intercept <- NA
     MdlDGP.nCovs <- NA
     nObs <- NA
-    MargisType <- NA
+    Mdl.MargisType <- NA
     Mdl.parLink <- NA
 
     ## source the configure file
     source(file = DGPconfigfile, local = TRUE)
 
-    nMargis <- length(MargisType)
+    nMargis <- length(Mdl.MargisType)
     out <- vector("list", nMargis)
-    names(out) <- names(MargisType)
-    MargisNM <- names(MargisType)
+    names(out) <- names(Mdl.MargisType)
+    Mdl.MargisNM <- names(Mdl.MargisType)
 
     ## THE RANDOM CDF VARIABLE IN THE COPULA
-    CplNM <- MargisType[length(MargisType)]
+    CplNM <- Mdl.MargisType[length(Mdl.MargisType)]
 
     parCplStd <- parCplRep2Std(CplNM = CplNM, parCplRep = MdlDGP.par[[CplNM]])
 
     MdlDGP.u <- rCpl(n = nObs, parCpl = parCplStd, CplNM = CplNM)
-    colnames(MdlDGP.u[["u"]]) <- MargisNM[-length(MargisNM)]
+    colnames(MdlDGP.u[["u"]]) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 
     ## Marginal models are also simulated
     CompUpLst <- unlist(lapply(MCMC.Update, function(x) any(unlist(x) == TRUE)))
     Mdl.Y <- list()
-    for(iComp in setdiff(MargisNM, CplNM))
+    for(iComp in setdiff(Mdl.MargisNM, CplNM))
     {
         if(CompUpLst[iComp])
         {
             Mdl.Y[[iComp]] <- MargiModelInv(u = MdlDGP.u$u[, iComp],
                                             par = MdlDGP.par[[iComp]],
-                                            type = MargisType[[iComp]])
+                                            type = Mdl.MargisType[[iComp]])
         }
         else
         {

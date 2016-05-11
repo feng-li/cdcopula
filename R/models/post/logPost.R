@@ -19,11 +19,11 @@
 ##' @param Mdl.parLink "list".  The link function used in the MCMC procedure. See the main
 ##'   setting file for details.
 ##'
-##' @param varSelArgs "list"
+##' @param Mdl.varSelArgs "list"
 ##'
-##' @param MargisType "list".  The model type in each marginal distribution.
+##' @param Mdl.MargisType "list".  The model type in each marginal distribution.
 ##'
-##' @param priArgs "list".  The prior settings for each parameter components.
+##' @param Mdl.priArgs "list".  The prior settings for each parameter components.
 ##'
 ##' @param parUpdate "list".  The parameters list to be updated. In the MCMC draw. Most
 ##'   time we are doing conditional posterior which means some components are kept
@@ -43,8 +43,8 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Sat Jul 18 10:47:12 CST 2015
-logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                    varSelArgs,priArgs,parUpdate,staticCache, MCMC.UpdateStrategy)
+logPost <- function(Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
+                    Mdl.varSelArgs,Mdl.priArgs,parUpdate,staticCache, MCMC.UpdateStrategy)
 {
     ## Assume no error a priori
     errorFlag <- FALSE
@@ -72,8 +72,8 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                                 Mdl.parLink = Mdl.parLink,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
-                                varSelArgs = varSelArgs,
-                                priArgs = priArgs,
+                                Mdl.varSelArgs = Mdl.varSelArgs,
+                                Mdl.priArgs = Mdl.priArgs,
                                 parUpdate = parUpdate)
 
         staticCache <- list(Mdl.logPri =  Mdl.logPri,
@@ -95,8 +95,8 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                             Mdl.parLink = Mdl.parLink,
                             Mdl.beta = Mdl.beta,
                             Mdl.betaIdx = Mdl.betaIdx,
-                            varSelArgs = varSelArgs,
-                            priArgs = priArgs,
+                            Mdl.varSelArgs = Mdl.varSelArgs,
+                            Mdl.priArgs = Mdl.priArgs,
                             parUpdate = parUpdate,
                             Mdl.logPri = Mdl.logPri)
 
@@ -113,7 +113,7 @@ logPost <- function(MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink
                              Mdl.par = Mdl.par)
 
 
-    Mdl.ud <- logDens(MargisType = MargisType,
+    Mdl.ud <- logDens(Mdl.MargisType = Mdl.MargisType,
                       Mdl.Y = Mdl.Y,
                       Mdl.par = Mdl.par,
                       Mdl.u = Mdl.u,

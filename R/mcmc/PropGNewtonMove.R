@@ -1,8 +1,8 @@
 ##' Generalized Newton move with dimension changes for the copula model.
 ##'
-##' @param propArgs "list".
-##' @param varSelArgs "list".
-##' @param priArgs "list".
+##' @param MCMC.propArgs "list".
+##' @param Mdl.varSelArgs "list".
+##' @param Mdl.priArgs "list".
 ##' @param betaIdxProp "list".
 ##' @param parUpdate "list".
 ##' @param CplNM "list".
@@ -11,7 +11,7 @@
 ##' @param Mdl.beta "list".
 ##' @param Mdl.betaIdx "list".
 ##' @param Mdl.parLink "list".
-##' @param MargisType "list".
+##' @param Mdl.MargisType "list".
 ##' @param staticCache "list".
 ##' @param param.cur "matrix".
 ##'         The initial values for the Newton update.
@@ -25,9 +25,9 @@
 ##' @references Li Villani Kohn 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
-PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdate,
+PropGNewtonMove <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
                             Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                            MargisType, staticCache, MCMC.UpdateStrategy)
+                            Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {
     require("MASS")
 
@@ -49,22 +49,22 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
     ## Finite Newton move. K steps to approach the mode plus one more step to update the
     ## gradient and Hessian at i:th step.
-    kSteps <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["ksteps"]]
-    hessMethod <- propArgs[[CompCaller]][[parCaller]][["algorithm"]][["hess"]]
+    kSteps <- MCMC.propArgs[[CompCaller]][[parCaller]][["algorithm"]][["ksteps"]]
+    hessMethod <- MCMC.propArgs[[CompCaller]][[parCaller]][["algorithm"]][["hess"]]
 
     ## Initialize the Newton move with the proposed variable selection indicator
     Mdl.betaIdx[[CompCaller]][[parCaller]] <- betaIdxProp
     param <- matrix(betaCurr[betaIdxCurr]) # col-vector
 
     ## Initial update staticCache for current Newton move
-    staticCache.curr <- logPost(MargisType = MargisType,
+    staticCache.curr <- logPost(Mdl.MargisType = Mdl.MargisType,
                                 Mdl.Y = Mdl.Y,
                                 Mdl.X = Mdl.X,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 Mdl.parLink = Mdl.parLink,
-                                varSelArgs = varSelArgs,
-                                priArgs = priArgs,
+                                Mdl.varSelArgs = Mdl.varSelArgs,
+                                Mdl.priArgs = Mdl.priArgs,
                                 parUpdate = parUpdate,
                                 staticCache = staticCache,
                                 MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
@@ -78,7 +78,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 ### GRADIENT FRACTION IN THE LINK FUNCTION
 ###----------------------------------------------------------------------------
         ## The gradient for the link function n-by-1
-        LinkGradObs <- parCplMeanFunGrad(CplNM = MargisType[length(MargisType)],
+        LinkGradObs <- parCplMeanFunGrad(CplNM = Mdl.MargisType[length(Mdl.MargisType)],
                                          Mdl.par = staticCache[["Mdl.par"]],
                                          Mdl.parLink = Mdl.parLink,
                                          chainCaller = chainCaller)
@@ -92,7 +92,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
         ## The gradient and Hessian in the likelihood
         ## a <- proc.time()
-        logDensGradHess.prop <- logDensGradHess(MargisType = MargisType,
+        logDensGradHess.prop <- logDensGradHess(Mdl.MargisType = Mdl.MargisType,
                                                 Mdl.Y = Mdl.Y,
                                                 Mdl.parLink = Mdl.parLink,
                                                 parUpdate = parUpdate,
@@ -111,7 +111,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
             ## the model parameters (not the covariate dependent beta parameters) via the
             ## chain rule.
             ## a <- proc.time()
-            logDensGradHess.prop.num.split <- logDensGradHess(MargisType = MargisType,
+            logDensGradHess.prop.num.split <- logDensGradHess(Mdl.MargisType = Mdl.MargisType,
                                                               Mdl.Y = Mdl.Y,
                                                               Mdl.parLink = Mdl.parLink,
                                                               parUpdate = parUpdate,
@@ -123,7 +123,7 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
             ## print(proc.time()-a)
 
             ## a <- proc.time()
-            logDensGradHess.prop.num.joint <- logDensGradHessNum(MargisType = MargisType,
+            logDensGradHess.prop.num.joint <- logDensGradHessNum(Mdl.MargisType = Mdl.MargisType,
                                                                  Mdl.Y = Mdl.Y,
                                                                  Mdl.parLink = Mdl.parLink,
                                                                  parUpdate = parUpdate,
@@ -182,8 +182,8 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
                                                  Mdl.beta = Mdl.beta,
                                                  Mdl.betaIdx = Mdl.betaIdx,
                                                  Mdl.parLink = Mdl.parLink,
-                                                 varSelArgs = varSelArgs,
-                                                 priArgs = priArgs,
+                                                 Mdl.varSelArgs = Mdl.varSelArgs,
+                                                 Mdl.priArgs = Mdl.priArgs,
                                                  chainCaller = chainCaller)
 
         ## Gradient and Hessian for the likelihood with linkage
@@ -259,14 +259,14 @@ PropGNewtonMove <- function(propArgs, varSelArgs, priArgs, betaIdxProp, parUpdat
 
             ## Update the staticCache
             ## Initial update staticCache for current Newton move
-            staticCache.curr <- logPost(MargisType = MargisType,
+            staticCache.curr <- logPost(Mdl.MargisType = Mdl.MargisType,
                                         Mdl.Y = Mdl.Y,
                                         Mdl.X = Mdl.X,
                                         Mdl.beta = Mdl.beta,
                                         Mdl.betaIdx = Mdl.betaIdx,
                                         Mdl.parLink = Mdl.parLink,
-                                        varSelArgs = varSelArgs,
-                                        priArgs = priArgs,
+                                        Mdl.varSelArgs = Mdl.varSelArgs,
+                                        Mdl.priArgs = Mdl.priArgs,
                                         parUpdate = parUpdate,
                                         staticCache = staticCache.curr,
                                         MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
