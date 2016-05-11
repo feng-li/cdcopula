@@ -20,7 +20,7 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 
 
 ## NO. OF OBSERVATIONS
-nObs <- 1000
+nObs <- 100
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update

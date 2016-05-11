@@ -66,18 +66,19 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     Mdl.MargisType <- NA
     Mdl.MargisNM <- NA
     Mdl.parLink <- NA
+    Mdl.priArgs <- NA
+    Mdl.varSelArgs <- NA
+    Mdl.betaInit <- NA
+    Mdl.u <- NA
+
     MCMC.nIter <- NA
     MCMC.Update <- NA
     MCMC.track <- NA
     MCMC.burninProp <- NA
     MCMC.UpdateStrategy <- NA
     MCMC.UpdateOrder <- NA
-    Mdl.priArgs <- NA
-    Mdl.varSelArgs <- NA
     MCMC.propArgs <- NA
-    Mdl.betaInit <- NA
     MCMC.optimInit <- NA
-    Mdl.u <- NA
 
     source(MdlConfigFile, local = TRUE)
 
@@ -342,12 +343,12 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     gc()
 
-    OUT.MCMC = list(MCMC.beta = MCMC.beta,
-                    MCMC.betaIdx = MCMC.betaIdx,
-                    MCMC.par = MCMC.par,
-                    MCMC.AccProb = MCMC.AccProb,
-                    MCMC.Update = MCMC.Update,
-                    Starting.time = Starting.time)
+    ## OUT.MCMC = list(MCMC.beta = MCMC.beta,
+    ##                 MCMC.betaIdx = MCMC.betaIdx,
+    ##                 MCMC.par = MCMC.par,
+    ##                 MCMC.AccProb = MCMC.AccProb,
+    ##                 MCMC.Update = MCMC.Update,
+    ##                 Starting.time = Starting.time)
 
     out <- as.list(environment())
     return(out)

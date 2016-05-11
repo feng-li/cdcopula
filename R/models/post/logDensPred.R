@@ -12,24 +12,25 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
-logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
-                        MCMC.beta, PredDens)
+logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
 {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
 ###----------------------------------------------------------------------------
-    MCMC.nIter <- NA
-    MCMC.burninProp <- NA
-    MCMC.sampleProp <- NA
-    Mdl.crossValidArgs <- NA
-    Mdl.parLink <- NA
-    Mdl.Y <- NA
-    Mdl.X <- NA
-    Mdl.ForeignFitted <- NA
-    Mdl.MargisNM <- NA
-    Mdl.MargisType <- NA
+    MCMC.nIter <- CplOut[["MCMC.nIter"]]
+    MCMC.burninProp <- CplOut[["MCMC.burninProp"]]
+    MCMC.sampleProp <- CplOut[["MCMC.sampleProp"]]
+    Mdl.crossValidArgs <- CplOut[["Mdl.crossValidArgs"]]
+    MCMC.beta <- CplOut[["MCMC.beta"]]
+    Mdl.parLink <- CplOut[["Mdl.parLink"]]
+    Mdl.Y <- CplOut[["Mdl.Y"]]
+    Mdl.X <- CplOut[["Mdl.X"]]
+    Mdl.ForeignFitted <- CplOut[["Mdl.ForeignFitted"]]
+    Mdl.MargisNM <- CplOut[["Mdl.MargisNM"]]
+    Mdl.MargisType <- CplOut[["Mdl.MargisType"]]
+    PredDens <- CplOut[["LPDS"]]
 
-    list2env(CplOut, envir = environment())
+    ## list2env(CplOut, envir = environment())
 
     ## Check if testing data Y is there
     subsetFun <- function(x, idx) {x[idx, , drop = FALSE]}
@@ -42,7 +43,7 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing,
 ###----------------------------------------------------------------------------
 ### Foreign multivariate model/methods used in fitting/prediction
 ###----------------------------------------------------------------------------
-    if("Mdl.ForeignFitted" %in% names(CplOut))
+    if(length(Mdl.ForeignFitted)>0)
     {
         ForeignModelType <- Mdl.MargisType[length(Mdl.MargisType)]
 

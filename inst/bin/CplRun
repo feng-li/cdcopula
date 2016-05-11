@@ -118,7 +118,7 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 ## Extract variables from configure files
 obj <- ls()
 source(MdlConfigFile, local = TRUE, echo = FALSE)
-rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx")))
+rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx", "LPDS")))
 
 
 ## Set Parallel Computing environment
@@ -166,19 +166,18 @@ if(nCross>1 & nCores>1)
 ## Calculate the LPDS
 cat("Calculating predictions......")
 OUT.CplLPDS <- list()
+LPDS <- OUT.CplCross[[1]][["LPDS"]]
 {if(nCross>1 & nCores >1)
  {
      Mdl.PredLst <- clusterMap(cl = cl4CV,
                                fun = logDensPred,
                                CplOut = OUT.CplCross,
-                               PredDens = LPDS,
                                Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
  } else
  {
      Mdl.PredLst <- mapply(FUN = logDensPred,
                            CplOut = OUT.CplCross,
                            Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
-                           MoreArgs = list(PredDens = LPDS),
                            SIMPLIFY = FALSE)
  }
  if(length(LPDS)>1 || !is.null(LPDS))
