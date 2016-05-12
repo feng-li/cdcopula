@@ -12,7 +12,7 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
-logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
+logDensPred <- function(CplFit, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
 {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
@@ -139,13 +139,13 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
         }
     }
 
-    MCMC.Y.Pred <- list()
+    Mdl.YPRED <- list()
     CompUpdate <- lapply(parUpdate, function(x) any(unlist(x) == TRUE))
     for(iComp in (names(Mdl.MargisType)[-length(Mdl.MargisType)]))
     {
         if(CompUpdate[[iComp]])
         {
-            MCMC.Y.Pred[[iComp]] <- array(NA, c(MCMC.sample.len, nPred, 4),
+            Mdl.YPRED[[iComp]] <- array(NA, c(MCMC.sample.len, nPred, 4),
                                           dimnames = list(NULL, rownames(Mdl.X.testing[[1]][[1]]),
                                                           c("mean", "variance",
                                                             "skewness",  "kurtosis")))
@@ -182,9 +182,9 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
         Mdl.Y.pred.curr <- logCplPredict(Mdl.MargisType = Mdl.MargisType,
                                          Mdl.par = Mdl.par.curr)
 
-        for(iComp in names(MCMC.Y.Pred))
+        for(iComp in names(Mdl.YPRED))
         {
-            MCMC.Y.Pred[[iComp]][j, , ] <-  Mdl.Y.pred.curr[[iComp]]
+            Mdl.YPRED[[iComp]][j, , ] <-  Mdl.Y.pred.curr[[iComp]]
         }
 
         if(!is.null(PredDens))
@@ -240,19 +240,19 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
     ## "mean", "variance", "skewness",  "kurtosis" p(Y_p|Y_old)
     MVSK <- list()
     applyFun <- function(x, mar, fun,...){apply(x, mar, fun, ...)}
-    MVSK[["mean"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3), fun = mean)
-    MVSK[["var"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3), fun = var)
-    MVSK[["HPDL"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3),
+    MVSK[["mean"]] <- lapply(Mdl.YPRED, applyFun, mar = c(2, 3), fun = mean)
+    MVSK[["var"]] <- lapply(Mdl.YPRED, applyFun, mar = c(2, 3), fun = var)
+    MVSK[["HPDL"]] <- lapply(Mdl.YPRED, applyFun, mar = c(2, 3),
                              fun = quantile, probs = 0.025)
-    MVSK[["HPDU"]] <- lapply(MCMC.Y.Pred, applyFun, mar = c(2, 3),
+    MVSK[["HPDU"]] <- lapply(Mdl.YPRED, applyFun, mar = c(2, 3),
                              fun = quantile, probs = 0.975)
 
     if(!is.null(PredDens))
     {
         ## Residuals and the uncertainty
         MCMC.residual <- mapply(FUN = function(x, y) {matrix(x, nrow(y), ncol(y), byrow = TRUE)-y},
-                                x = Mdl.Y.testing[names(MCMC.Y.Pred)],
-                                y = lapply(MCMC.Y.Pred, function(x) x[, ,"mean"]),
+                                x = Mdl.Y.testing[names(Mdl.YPRED)],
+                                y = lapply(Mdl.YPRED, function(x) x[, ,"mean"]),
                                 SIMPLIFY = FALSE)
 
         RESID <- list()
@@ -270,8 +270,8 @@ logDensPred <- function(CplOut, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
     }
 
     out <- list(Mdl.logPredDens = Mdl.logPredDens,
-                MVSK = MVSK,
-                RESID = RESID,
-                MCMC.Y.Pred = MCMC.Y.Pred)
+                Mdl.PredMVSK = MVSK,
+                Mdl.RredRESID = RESID,
+                Mdl.YPRED = Mdl.YPRED)
     return(out)
 }

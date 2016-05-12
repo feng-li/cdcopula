@@ -149,15 +149,15 @@ Starting.time <- Sys.time()
 
 if(nCross>1 & nCores>1)
 {
-    OUT.CplCross <- parLapply(cl4CV,
-                              Mdl.crossValidIdx[["training"]],
-                              CplMain,
-                              MdlConfigFile = MdlConfigFile)
+    OUT.FITTED <- parLapply(cl4CV,
+                            Mdl.crossValidIdx[["training"]],
+                            CplMain,
+                            MdlConfigFile = MdlConfigFile)
 } else
 {
-    OUT.CplCross <- lapply(X = Mdl.crossValidIdx[["training"]],
-                           FUN = CplMain,
-                           MdlConfigFile = MdlConfigFile)
+    OUT.FITTED <- lapply(X = Mdl.crossValidIdx[["training"]],
+                         FUN = CplMain,
+                         MdlConfigFile = MdlConfigFile)
 }
 
 ###----------------------------------------------------------------------------
@@ -165,18 +165,18 @@ if(nCross>1 & nCores>1)
 ###----------------------------------------------------------------------------
 ## Calculate the LPDS
 cat("Calculating predictions......")
-OUT.CplLPDS <- list()
-LPDS <- OUT.CplCross[[1]][["LPDS"]]
+OUT.PRED.LPDS <- list()
+LPDS <- OUT.FIT[[1]][["LPDS"]]
 {if(nCross>1 & nCores >1)
  {
      Mdl.PredLst <- clusterMap(cl = cl4CV,
                                fun = logDensPred,
-                               CplOut = OUT.CplCross,
+                               CplFit = OUT.FITTED,
                                Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
  } else
  {
      Mdl.PredLst <- mapply(FUN = logDensPred,
-                           CplOut = OUT.CplCross,
+                           CplFit = OUT.FITTED,
                            Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
                            SIMPLIFY = FALSE)
  }
@@ -184,14 +184,14 @@ LPDS <- OUT.CplCross[[1]][["LPDS"]]
  {
      for(iLPDS in LPDS)
      {
-         OUT.CplLPDS[[iLPDS]] <- logPredDensScore(lapply(Mdl.PredLst, function(x) x[["Mdl.logPredDens"]][, iLPDS, drop = FALSE]))
+         OUT.PRED.LPDS[[iLPDS]] <- logPredDensScore(lapply(Mdl.PredLst, function(x) x[["Mdl.logPredDens"]][, iLPDS, drop = FALSE]))
      }
  }
 
- OUT.CplMVSK <- lapply(Mdl.PredLst, function(x) x[["MVSK"]])
- OUT.CplRESID <- lapply(Mdl.PredLst, function(x) x[["RESID"]])
+ OUT.PRED.MVSK <- lapply(Mdl.PredLst, function(x) x[["MVSK"]])
+ OUT.PRED.RESID <- lapply(Mdl.PredLst, function(x) x[["RESID"]])
  cat("done\n")
- print(OUT.CplLPDS)
+ print(OUT.PRED.LPDS)
 ###----------------------------------------------------------------------------
 ### FINISH THE WORK AND SAVE THE OUTPUT
 ###----------------------------------------------------------------------------
@@ -201,12 +201,12 @@ LPDS <- OUT.CplCross[[1]][["LPDS"]]
  {
      stopCluster(cl4CV)
  }
- save.all(save.output = OUT.CplCross[[1]][["save.output"]],
-          ModelDescription = OUT.CplCross[[1]][["ModelDescription"]])
+ save.all(save.output = OUT.FIT[[1]][["save.output"]],
+          ModelDescription = OUT.FIT[[1]][["ModelDescription"]])
 }
 
 ## Print warnings only in non-interactive mode
-if(!interactive()) warnings()
+if(!interactive() && exists("last.warning",  envir  =  baseenv())) warnings()
 
 ## Quit
 if(!interactive())q("no")

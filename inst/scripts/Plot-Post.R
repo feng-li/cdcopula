@@ -5,4 +5,4 @@ load(file.path("~/running/",
 iCross <- 1
 summary.Cpl <- CplMCMC.summary(iIter = MCMC.nIter, MCMC.nIter = MCMC.nIter,
                                interval = 0.1, MCMC.burninProp = MCMC.burninProp,
-                               OUT.MCMC = OUT.CplCross[[iCross]])
+                               OUT.MCMC = OUT.FIT[[iCross]])

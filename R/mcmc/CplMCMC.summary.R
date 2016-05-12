@@ -82,12 +82,12 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
     if(iIter %in% printIter)
     {
         ## par <- list(...)
-        MCMC.betaIdx <- OUT.MCMC$MCMC.betaIdx
-        MCMC.beta <- OUT.MCMC$MCMC.beta
-        MCMC.par <- OUT.MCMC$MCMC.par
-        MCMC.AccProb <- OUT.MCMC$MCMC.AccProb
-        MCMC.Update <- OUT.MCMC$MCMC.Update
-        Starting.time <- OUT.MCMC$Starting.time
+        MCMC.betaIdx <- OUT.MCMC[["MCMC.betaIdx"]]
+        MCMC.beta <- OUT.MCMC[["MCMC.beta"]]
+        MCMC.par <- OUT.MCMC[["MCMC.par"]]
+        MCMC.AccProb <- OUT.MCMC[["MCMC.AccProb"]]
+        MCMC.Update <- OUT.MCMC[["MCMC.Update"]]
+        Starting.time <- OUT.MCMC[["Starting.time"]]
 
         TimeToGo <-  round(difftime(Sys.time(), Starting.time,
                                     units = "hours")/(iIter-1)*(MCMC.nIter-iIter), 2)
