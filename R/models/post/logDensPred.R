@@ -1,7 +1,7 @@
 ##' The MCMC samples for log predictive likelihood/density.
 ##'
 ##' This is used for calculating mean prediction, posterior creditable interval and LPDS.
-##' @param CplOut
+##' @param CplFitted
 ##' @param Mdl.Idx.testing
 ##' @param Mdl.X.testing
 ##' @param Mdl.Y.testing
@@ -68,7 +68,7 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
             Mdl.MargisForeignFitted <- CplFitted[["Mdl.MargisForeignFitted"]]
             Mdl.X.Pred <- MargiModelForeignPred(Mdl.MargisNM = Mdl.MargisNM,
                                                 Mdl.MargisType = Mdl.MargisType,
-                                                Mdl.ForeignFit = Mdl.MargisForeignFitted,
+                                                Mdl.MargisForeignFitted = Mdl.MargisForeignFitted,
                                                 Mdl.Y = Mdl.Y.testing)
 
             Mdl.X.testing <- c(Mdl.X.Pred[["Mdl.X"]],
