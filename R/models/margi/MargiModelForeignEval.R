@@ -1,7 +1,7 @@
 MargiModelForeignEval <- function(Mdl.MargisNM, Mdl.MargisType, MargisForeignConfig, Mdl.Y)
 {
     Mdl.X <- list()
-    Mdl.ForeignFit <- list()
+    Mdl.MargisForeignFitted <- list()
 
     for(iComp in 1:(length(Mdl.MargisNM)-1)) ## TODO: Parallelize marginal models.
     {
@@ -14,15 +14,15 @@ MargiModelForeignEval <- function(Mdl.MargisNM, Mdl.MargisType, MargisForeignCon
             parArgs <- MargisForeignConfig[[iComp]]
             parArgs[["data"]] <- Mdl.Y[[Mdl.MargisNM[iComp]]]
             MargiModel.Fit.caller <- as.call(c(garchFit, parArgs))
-            MargiModel.Fit <- eval(MargiModel.Fit.caller)
+            MargiModel.Fitted <- eval(MargiModel.Fit.caller)
 
             Mdl.X[[Mdl.MargisNM[iComp]]] <- list()
             if(parArgs[["cond.dist"]] == "norm")
             { # Normal innovation
-                Mdl.X[[Mdl.MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Fit@fitted)
-                Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Fit@sigma.t)
+                Mdl.X[[Mdl.MargisNM[iComp]]][["mu"]] <- matrix(MargiModel.Fitted@fitted)
+                Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(MargiModel.Fitted@sigma.t)
             }
-            Mdl.ForeignFit[[Mdl.MargisNM[iComp]]] <- MargiModel.Fit
+            Mdl.MargisForeignFitted[[Mdl.MargisNM[iComp]]] <- MargiModel.Fitted
         }
         else if(tolower(Mdl.MargisType[iComp])  == "stochvol")
         {
@@ -32,13 +32,13 @@ MargiModelForeignEval <- function(Mdl.MargisNM, Mdl.MargisType, MargisForeignCon
             parArgs <- MargisForeignConfig[[iComp]]
             parArgs[["y"]] <- Mdl.Y[[Mdl.MargisNM[iComp]]]
             MargiModel.Fit.caller <- as.call(c(svsample, parArgs))
-            MargiModel.Fit <- eval(MargiModel.Fit.caller)
+            MargiModel.Fitted <- eval(MargiModel.Fit.caller)
 
             Mdl.X[[Mdl.MargisNM[iComp]]] <- list()
             Mdl.X[[Mdl.MargisNM[iComp]]][["mu"]] <- matrix(0, dim(Mdl.Y[[Mdl.MargisNM[iComp]]])[1], 1)
-            Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(sqrt(apply(exp(MargiModel.Fit$latent), 2, mean)))
+            Mdl.X[[Mdl.MargisNM[iComp]]][["phi"]] <- matrix(sqrt(apply(exp(MargiModel.Fitted$latent), 2, mean)))
 
-            Mdl.ForeignFit[[Mdl.MargisNM[iComp]]] <- MargiModel.Fit
+            Mdl.MargisForeignFitted[[Mdl.MargisNM[iComp]]] <- MargiModel.Fitted
 
         }
         else
@@ -47,6 +47,6 @@ MargiModelForeignEval <- function(Mdl.MargisNM, Mdl.MargisType, MargisForeignCon
         }
     }
 
-    out <- list(Mdl.X = Mdl.X, Mdl.ForeignFit = Mdl.ForeignFit)
+    out <- list(Mdl.X = Mdl.X, Mdl.MargisForeignFitted = Mdl.MargisForeignFitted)
     return(out)
 }

@@ -12,25 +12,25 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Mon Feb 25 19:20:57 CET 2013; Current: Sat Jul 18 09:30:58 CST 2015.
-logDensPred <- function(CplFit, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
+logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
 {
 ###----------------------------------------------------------------------------
 ### Extract the MMCMC output list
 ###----------------------------------------------------------------------------
-    MCMC.nIter <- CplOut[["MCMC.nIter"]]
-    MCMC.burninProp <- CplOut[["MCMC.burninProp"]]
-    MCMC.sampleProp <- CplOut[["MCMC.sampleProp"]]
-    Mdl.crossValidArgs <- CplOut[["Mdl.crossValidArgs"]]
-    MCMC.beta <- CplOut[["MCMC.beta"]]
-    Mdl.parLink <- CplOut[["Mdl.parLink"]]
-    Mdl.Y <- CplOut[["Mdl.Y"]]
-    Mdl.X <- CplOut[["Mdl.X"]]
-    Mdl.ForeignFitted <- CplOut[["Mdl.ForeignFitted"]]
-    Mdl.MargisNM <- CplOut[["Mdl.MargisNM"]]
-    Mdl.MargisType <- CplOut[["Mdl.MargisType"]]
-    PredDens <- CplOut[["LPDS"]]
+    MCMC.nIter <- CplFitted[["MCMC.nIter"]]
+    MCMC.burninProp <- CplFitted[["MCMC.burninProp"]]
+    MCMC.sampleProp <- CplFitted[["MCMC.sampleProp"]]
+    Mdl.crossValidArgs <- CplFitted[["Mdl.crossValidArgs"]]
+    MCMC.beta <- CplFitted[["MCMC.beta"]]
+    Mdl.parLink <- CplFitted[["Mdl.parLink"]]
+    Mdl.Y <- CplFitted[["Mdl.Y"]]
+    Mdl.X <- CplFitted[["Mdl.X"]]
+    Mdl.ForeignFitted <- CplFitted[["Mdl.ForeignFitted"]]
+    Mdl.MargisNM <- CplFitted[["Mdl.MargisNM"]]
+    Mdl.MargisType <- CplFitted[["Mdl.MargisType"]]
+    PredDens <- CplFitted[["LPDS"]]
 
-    ## list2env(CplOut, envir = environment())
+    ## list2env(CplFitted, envir = environment())
 
     ## Check if testing data Y is there
     subsetFun <- function(x, idx) {x[idx, , drop = FALSE]}
@@ -65,10 +65,10 @@ logDensPred <- function(CplFit, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing)
         {
             ## Foreign marginal models are used.  We only allow either all margins are
             ## foreign or all should be native. mixing is not implemented yet!
-            Mdl.ForeignFit <- CplOut[["Mdl.ForeignFit"]]
+            Mdl.MargisForeignFitted <- CplFitted[["Mdl.MargisForeignFitted"]]
             Mdl.X.Pred <- MargiModelForeignPred(Mdl.MargisNM = Mdl.MargisNM,
                                                 Mdl.MargisType = Mdl.MargisType,
-                                                Mdl.ForeignFit =Mdl.ForeignFit,
+                                                Mdl.ForeignFit = Mdl.MargisForeignFitted,
                                                 Mdl.Y = Mdl.Y.testing)
 
             Mdl.X.testing <- c(Mdl.X.Pred[["Mdl.X"]],

@@ -100,7 +100,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Generating simple model information
     Starting.time <- Sys.time()
-    ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",  Mdl.MargisType, "+" , "nObs",
+    ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",
+                                Mdl.MargisType, "+" , "nObs",
                                 nObs, "nCross", nCross,  "+",
                                 format(Starting.time, "%Y%m%d@%H.%M")),
                               collapse = "")
@@ -150,7 +151,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                    f = subsetFun,
                                    idx = Mdl.Idx.training,
                                    how = "replace"))
-        Mdl.ForeignFit <- Mdl.X.training.Fitted[["Mdl.ForeignFit"]]
+        Mdl.MargisForeignFitted <- Mdl.X.training.Fitted[["Mdl.MargisForeignFitted"]]
     }
     else
     {## Native marginal model structure
