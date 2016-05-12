@@ -166,7 +166,7 @@ if(nCross>1 & nCores>1)
 ## Calculate the LPDS
 cat("Calculating predictions......")
 OUT.PRED.LPDS <- list()
-LPDS <- OUT.FIT[[1]][["LPDS"]]
+LPDS <- OUT.FITTED[[1]][["LPDS"]]
 {if(nCross>1 & nCores >1)
  {
      Mdl.PredLst <- clusterMap(cl = cl4CV,
@@ -201,8 +201,8 @@ LPDS <- OUT.FIT[[1]][["LPDS"]]
  {
      stopCluster(cl4CV)
  }
- save.all(save.output = OUT.FIT[[1]][["save.output"]],
-          ModelDescription = OUT.FIT[[1]][["ModelDescription"]])
+ save.all(save.output = OUT.FITTED[[1]][["save.output"]],
+          ModelDescription = OUT.FITTED[[1]][["ModelDescription"]])
 }
 
 ## Print warnings only in non-interactive mode
