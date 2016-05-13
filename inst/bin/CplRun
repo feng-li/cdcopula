@@ -171,12 +171,12 @@ LPDS <- OUT.FITTED[[1]][["LPDS"]]
  {
      Mdl.PredLst <- clusterMap(cl = cl4CV,
                                fun = logDensPred,
-                               CplFit = OUT.FITTED,
+                               CplFitted = OUT.FITTED,
                                Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
  } else
  {
      Mdl.PredLst <- mapply(FUN = logDensPred,
-                           CplFit = OUT.FITTED,
+                           CplFitted = OUT.FITTED,
                            Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
                            SIMPLIFY = FALSE)
  }
