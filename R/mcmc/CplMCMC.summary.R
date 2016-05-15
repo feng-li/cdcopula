@@ -13,19 +13,34 @@
 CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                             MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
 {
-    ## Set the print interval and consider burnin. If print interval is to narrow, set to
-    ## one.
-    printInterval <- ifelse(floor(MCMC.nIter*interval) == 0,  1, floor(MCMC.nIter*interval))
-    printIter <- seq(from = printInterval,
-                     to = MCMC.nIter,
-                     by = printInterval)
-    if(printIter[length(printIter)] != MCMC.nIter)
-    {# Always print summary at last iteration.
-        printIter <- c(printIter, MCMC.nIter)
-    }
 
     dev.width <- getOption("width")
     has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
+
+
+
+    Starting.time <- OUT.MCMC[["Starting.time"]]
+
+    ## Progress statistics
+    TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
+    TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-iIter), 2)
+
+    donePercent <- round(iIter/MCMC.nIter*100)
+
+    progress <- paste("MCMC PROGRESS: ", round(TimeUsed, 2), " hours elapsed, ",
+                      donePercent, "% done, ",
+                      TimeToGo, " hours to go...\n", sep = "")
+
+
+    printInterval2 <- ifelse(floor(MCMC.nIter*interval) == 0,  1,
+                             floor(MCMC.nIter*0.1))
+    printIter2 <- seq(from = printInterval2, to = MCMC.nIter, by = printInterval2)
+    if(iIter  %in% printIter2)
+    {
+        cat(progress)
+    }
+
+
 
     ## The burning
     n.burn.default <- round(MCMC.nIter*MCMC.burninProp)
@@ -79,6 +94,18 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
 
 
+
+
+    ## Set the print interval and consider burnin. If print interval is to narrow, set to
+    ## one.
+    printInterval <- ifelse(floor(MCMC.nIter*interval) == 0,  1,
+                            floor(MCMC.nIter*interval))
+    printIter <- seq(from = printInterval, to = MCMC.nIter, by = printInterval)
+    if(printIter[length(printIter)] != MCMC.nIter)
+    {# Always print summary at last iteration.
+        printIter <- c(printIter, MCMC.nIter)
+    }
+
     if(iIter %in% printIter)
     {
         ## par <- list(...)
@@ -87,18 +114,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
         MCMC.par <- OUT.MCMC[["MCMC.par"]]
         MCMC.AccProb <- OUT.MCMC[["MCMC.AccProb"]]
         MCMC.Update <- OUT.MCMC[["MCMC.Update"]]
-        Starting.time <- OUT.MCMC[["Starting.time"]]
 
-        TimeToGo <-  round(difftime(Sys.time(), Starting.time,
-                                    units = "hours")/(iIter-1)*(MCMC.nIter-iIter), 2)
-
-        if(iIter  == printIter[1] && iIter != MCMC.nIter)
-        {
-            cat("\nabout", TimeToGo, " hours to go.\n", sep = " ")
-            return()
-        }
-
-        donePercent <- round(iIter/MCMC.nIter*100)
         welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
                          round(n.burn/MCMC.nIter*100), "% MCMC.burninProp) "
                        , TimeToGo, " hours to go.\n", sep = "")

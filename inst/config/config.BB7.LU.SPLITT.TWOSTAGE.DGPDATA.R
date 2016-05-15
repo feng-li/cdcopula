@@ -101,7 +101,7 @@ MCMC.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 1000
+MCMC.nIter <- 100
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------

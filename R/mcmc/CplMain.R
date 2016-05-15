@@ -323,14 +323,14 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
 
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                            interval = 0.1, MCMC.burninProp = MCMC.burninProp,
+                            interval = 1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                             MCMC.betaIdx = MCMC.betaIdx,
                                             MCMC.par = MCMC.par,
                                             MCMC.AccProb = MCMC.AccProb,
                                             MCMC.Update = MCMC.Update,
                                             Starting.time = Starting.time)
-)
+                            )
         }
 
     }
