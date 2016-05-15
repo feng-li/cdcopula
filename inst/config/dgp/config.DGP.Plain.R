@@ -20,7 +20,7 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 
 
 ## NO. OF OBSERVATIONS
-nObs <- 100
+nObs <- 1000
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
@@ -60,8 +60,8 @@ MdlDGP.par[[2]][["df"]] <- matrix(6, nObs, 1)
 MdlDGP.par[[2]][["lmd"]] <- matrix(1,  nObs, 1)
 
 ## The copula component
-MdlDGP.par[[3]][["lambdaL"]] <- matrix(0.1, nObs, 1)
-MdlDGP.par[[3]][["lambdaU"]] <- matrix(0.1, nObs, 1)
+MdlDGP.par[[3]][["lambdaL"]] <- matrix(0.9, nObs, 1)
+MdlDGP.par[[3]][["lambdaU"]] <- matrix(0.9, nObs, 1)
 
 ##------------------------------------------------------------------------------
 ## THE TRUE COVARIATE-DEPENDENT PARAMETER VALUES IN THE DGP

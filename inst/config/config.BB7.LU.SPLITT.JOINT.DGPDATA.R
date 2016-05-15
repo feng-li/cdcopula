@@ -30,8 +30,8 @@
 Mdl.MargisType <- c("SPLITT", "SPLITT", "BB7")
 Mdl.MargisNM <- c("M1", "M2", "BB7")
 
-MCMC.Update <- list(list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
-                   list("mu" = T, "phi" = F, "df" = F, "lmd" = F),
+MCMC.Update <- list(list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
+                   list("mu" = T, "phi" = T, "df" = T, "lmd" = T),
                    list("lambdaL" = T, "lambdaU" = T))
 
 names(MCMC.Update) <- Mdl.MargisNM
@@ -55,8 +55,8 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 ## Mdl.Y: "list" each list contains the response variable of that margin.
 set.seed(123)
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
-                                 "inst/config/dgp/config.DGP.R"
-                                 ## "inst/config/dgp/config.DGP.Plain.R"
+                                 ## "inst/config/dgp/config.DGP.VS.R"
+                                 "inst/config/dgp/config.DGP.Plain.R"
                                  ), export = "parent.env")
 
 ## No. of Total Observations
@@ -73,7 +73,7 @@ Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## A trick to include foreign marginal models in the estimation which are hard to directly
 ## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
-## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
+## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "twostage". (4) Set
 ## "Mdl.betaInit" be one in all marginal features.
 
 ## THE LINK FUNCTION USED IN THE MODEL (LOADED VIA DGP)
@@ -82,26 +82,26 @@ Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-Mdl.varSelArgs <- MCMC.Update
-Mdl.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs <- MCMC.Update
+MCMC.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-Mdl.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
+MCMC.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 100
+MCMC.nIter <- 1000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -135,11 +135,11 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 ## "margin"   : the marginal posterior.
 ## "twostage" : Update the joint posterior but using a two stage approach.
 
-## NOTE: If one want to use "margin" or "two-stage" options just to to estimate the copula
+## NOTE: If one want to use "margin" or "twostage" options just to to estimate the copula
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMC.UpdateStrategy <- "twostage"
+MCMC.UpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 MCMC.propArgs <- MCMC.Update
@@ -288,15 +288,15 @@ Mdl.priArgs[[3]][["lambdaU"]] <- list("beta" = list("intercept" = list(type = "c
 ## The possible inputs are ("random", "ols"  or user-input).
 Mdl.betaInit <- MdlDGP.beta
 
-## Mdl.betaInit[[1]][[1]] <- "random"
-## Mdl.betaInit[[1]][[2]] <- "random"
-## Mdl.betaInit[[1]][[3]] <- "random"
-## Mdl.betaInit[[1]][[4]] <- "random"
+Mdl.betaInit[[1]][[1]] <- "random"
+Mdl.betaInit[[1]][[2]] <- "random"
+Mdl.betaInit[[1]][[3]] <- "random"
+Mdl.betaInit[[1]][[4]] <- "random"
 
-## Mdl.betaInit[[2]][[1]] <- "random"
-## Mdl.betaInit[[2]][[2]] <- "random"
-## Mdl.betaInit[[2]][[3]] <- "random"
-## Mdl.betaInit[[2]][[4]] <- "random"
+Mdl.betaInit[[2]][[1]] <- "random"
+Mdl.betaInit[[2]][[2]] <- "random"
+Mdl.betaInit[[2]][[3]] <- "random"
+Mdl.betaInit[[2]][[4]] <- "random"
 
 Mdl.betaInit[[3]][[1]] <- "random"
 Mdl.betaInit[[3]][[2]] <- "random"

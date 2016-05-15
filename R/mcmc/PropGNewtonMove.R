@@ -1,7 +1,7 @@
 ##' Generalized Newton move with dimension changes for the copula model.
 ##'
 ##' @param MCMC.propArgs "list".
-##' @param Mdl.varSelArgs "list".
+##' @param MCMC.varSelArgs "list".
 ##' @param Mdl.priArgs "list".
 ##' @param betaIdxProp "list".
 ##' @param parUpdate "list".
@@ -25,7 +25,7 @@
 ##' @references Li Villani Kohn 2010
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Wed Sep 29 17:18:22 CEST 2010; Current: Mon Mar 05 10:33:29 CET 2012.
-PropGNewtonMove <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
+PropGNewtonMove <- function(MCMC.propArgs, MCMC.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
                             Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
                             Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {
@@ -63,7 +63,7 @@ PropGNewtonMove <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxP
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
                                 Mdl.parLink = Mdl.parLink,
-                                Mdl.varSelArgs = Mdl.varSelArgs,
+                                MCMC.varSelArgs = MCMC.varSelArgs,
                                 Mdl.priArgs = Mdl.priArgs,
                                 parUpdate = parUpdate,
                                 staticCache = staticCache,
@@ -182,7 +182,7 @@ PropGNewtonMove <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxP
                                                  Mdl.beta = Mdl.beta,
                                                  Mdl.betaIdx = Mdl.betaIdx,
                                                  Mdl.parLink = Mdl.parLink,
-                                                 Mdl.varSelArgs = Mdl.varSelArgs,
+                                                 MCMC.varSelArgs = MCMC.varSelArgs,
                                                  Mdl.priArgs = Mdl.priArgs,
                                                  chainCaller = chainCaller)
 
@@ -265,7 +265,7 @@ PropGNewtonMove <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxP
                                         Mdl.beta = Mdl.beta,
                                         Mdl.betaIdx = Mdl.betaIdx,
                                         Mdl.parLink = Mdl.parLink,
-                                        Mdl.varSelArgs = Mdl.varSelArgs,
+                                        MCMC.varSelArgs = MCMC.varSelArgs,
                                         Mdl.priArgs = Mdl.priArgs,
                                         parUpdate = parUpdate,
                                         staticCache = staticCache.curr,

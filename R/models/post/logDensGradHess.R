@@ -13,7 +13,7 @@
 ##'
 ##' @param parUpdate "list".
 ##'
-##' @param Mdl.varSelArgs "list".
+##' @param MCMC.varSelArgs "list".
 ##'
 ##' @param staticCache "list".
 ##'

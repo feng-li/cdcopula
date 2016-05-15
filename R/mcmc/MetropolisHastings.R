@@ -9,7 +9,7 @@
 ##' @param Mdl.parLink
 ##' @param parUpdate
 ##' @param Mdl.priArgs
-##' @param Mdl.varSelArgs
+##' @param MCMC.varSelArgs
 ##' @param MCMC.propArgs
 ##' @param Mdl.MargisType
 ##' @param staticCache
@@ -18,7 +18,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Thu Feb 17 14:03:14 CET 2011; Current: Fri Mar 27 11:29:18 CST 2015.
 MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
-                               Mdl.parLink, parUpdate, Mdl.priArgs, Mdl.varSelArgs,
+                               Mdl.parLink, parUpdate, Mdl.priArgs, MCMC.varSelArgs,
                                MCMC.propArgs, Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {
   ## The updating component parameter chain
@@ -56,7 +56,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
   ## Randomly propose a subset for covariates to change
   beta01Mat <- matrix(1:(nCovs*nPar), nCovs, nPar)
 
-  varSelCandConfigRow <- Mdl.varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
+  varSelCandConfigRow <- MCMC.varSelArgs[[CompCaller]][[parCaller]][["cand"]] # sub.q-by-1
 
   if(class(varSelCandConfigRow) == "character" &&
      tolower(varSelCandConfigRow) == "2:end")
@@ -147,7 +147,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     { ## Newton method to approach the posterior based on the current draw
       beta.NTProp <- PropGNewtonMove(Mdl.MargisType = Mdl.MargisType,
                                      MCMC.propArgs = MCMC.propArgs,
-                                     Mdl.varSelArgs = Mdl.varSelArgs,
+                                     MCMC.varSelArgs = MCMC.varSelArgs,
                                      Mdl.priArgs = Mdl.priArgs,
                                      betaIdxProp = betaIdx.prop,
                                      parUpdate = parUpdate,
@@ -219,7 +219,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
     {
       beta.NTPropRev <- PropGNewtonMove(Mdl.MargisType = Mdl.MargisType,
                                         MCMC.propArgs = MCMC.propArgs,
-                                        Mdl.varSelArgs = Mdl.varSelArgs,
+                                        MCMC.varSelArgs = MCMC.varSelArgs,
                                         Mdl.priArgs = Mdl.priArgs,
                                         betaIdxProp = betaIdx.curr,
                                         parUpdate = parUpdate,
@@ -282,7 +282,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                                Mdl.beta = Mdl.beta.prop,
                                Mdl.betaIdx = Mdl.betaIdx.prop,
                                Mdl.parLink = Mdl.parLink,
-                               Mdl.varSelArgs = Mdl.varSelArgs,
+                               MCMC.varSelArgs = MCMC.varSelArgs,
                                Mdl.priArgs = Mdl.priArgs,
                                parUpdate = parUpdate,
                                staticCache = staticCache,
@@ -298,7 +298,7 @@ MetropolisHastings <- function(CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                             Mdl.beta = Mdl.beta.curr,
                             Mdl.betaIdx = Mdl.betaIdx.curr,
                             Mdl.parLink = Mdl.parLink,
-                            Mdl.varSelArgs = Mdl.varSelArgs,
+                            MCMC.varSelArgs = MCMC.varSelArgs,
                             Mdl.priArgs = Mdl.priArgs,
                             parUpdate = parUpdate,
                             staticCache = staticCache,

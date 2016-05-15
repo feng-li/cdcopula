@@ -76,7 +76,7 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ## A trick to include foreign marginal models in the estimation which are hard to directly
 ## put into the "MargiModel()" is do the following settings: (1) Let "MCMC.Update" be FALSE
 ## in all marginal densities.  (2) Estimate the density features in foreign models and set
-## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "two-stage". (4) Set
+## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "twostage". (4) Set
 ## "Mdl.betaInit" be one in all marginal features.
 Mdl.X <- MCMC.Update
 Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1])
@@ -122,24 +122,24 @@ Mdl.parLink[[4]][["rho"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-Mdl.varSelArgs <- MCMC.Update
-Mdl.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs <- MCMC.Update
+MCMC.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[3]][["mu"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[3]][["phi"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[3]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[3]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[3]][["mu"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[3]][["phi"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[3]][["df"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[3]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[4]][["df"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[4]][["rho"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[4]][["df"]] <- list(cand = "2:end", init = "all-in")
+MCMC.varSelArgs[[4]][["rho"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION

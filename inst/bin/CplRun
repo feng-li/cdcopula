@@ -72,8 +72,8 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
                                    ## "inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
                                    ## "inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
                                    ## "inst/config/config.MVGARCH.R"
-
-                                   "inst/config/config.BB7.LU.SPLITT.DGPDATA.R"
+                                   ## "inst/config/config.BB7.LU.SPLITT.JOINT.DGPDATA.R"
+                                   "inst/config/config.BB7.LU.SPLITT.TWOSTAGE.DGPDATA.R"
                                    )
         nCores <- 1 # Set to 1 for no parallelism
     }

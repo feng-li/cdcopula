@@ -67,7 +67,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     Mdl.MargisNM <- NA
     Mdl.parLink <- NA
     Mdl.priArgs <- NA
-    Mdl.varSelArgs <- NA
+    MCMC.varSelArgs <- NA
     Mdl.betaInit <- NA
     Mdl.u <- NA
 
@@ -160,7 +160,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     ## Assign the initial values
-    initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
+    initParOut <- initPar(MCMC.varSelArgs = MCMC.varSelArgs, Mdl.priArgs = Mdl.priArgs,
                           Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
                           Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
@@ -240,7 +240,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           Mdl.beta = Mdl.beta,
                           Mdl.betaIdx = Mdl.betaIdx,
                           Mdl.parLink = Mdl.parLink,
-                          Mdl.varSelArgs = Mdl.varSelArgs,
+                          MCMC.varSelArgs = MCMC.varSelArgs,
                           Mdl.priArgs = Mdl.priArgs,
                           parUpdate = MCMC.Update,
                           MCMC.UpdateStrategy = MCMC.UpdateStrategy)
@@ -280,7 +280,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## Call the Metropolis-Hastings algorithm
         MHOut <- MetropolisHastings(Mdl.MargisType = Mdl.MargisType,
                                     MCMC.propArgs = MCMC.propArgs,
-                                    Mdl.varSelArgs = Mdl.varSelArgs,
+                                    MCMC.varSelArgs = MCMC.varSelArgs,
                                     Mdl.priArgs = Mdl.priArgs,
                                     parUpdate = parUpdate,
                                     Mdl.Y = Mdl.Y.training,
