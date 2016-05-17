@@ -9,7 +9,6 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
-##' TODO: write this function as a summary
 CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                             MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
 {
@@ -27,8 +26,8 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
     donePercent <- round(iIter/MCMC.nIter*100)
 
-    progress <- paste("MCMC PROGRESS: ", round(TimeUsed, 2), " hours elapsed, ",
-                      donePercent, "% done, ",
+    progress <- paste(date(), ": ", round(TimeUsed, 2),
+                      " hours elapsed, ", donePercent, "% done, ",
                       TimeToGo, " hours to go...\n", sep = "")
 
 
