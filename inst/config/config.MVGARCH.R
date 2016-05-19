@@ -67,46 +67,48 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ###----------------------------------------------------------------------------
 {if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) == "gogarch")
  {
-   ## GoGARCH
-   require("rmgarch", quietly = TRUE)
+     ## GoGARCH
+     require("rmgarch", quietly = TRUE)
 
-   mean.model <- list(model  =  "constant",  robust  = FALSE,
-                      lag  =  1,  lag.max  =  NULL,
-                      lag.criterion  = "AIC",
-                      external.regressors  =  NULL,
-                      robust.control  =  list("gamma"  =  0.25,
-                                              "delta"  =  0.01,
-                                              "nc" =  10,
-                                              "ns"  =  500))
-   variance.model <- list(model  =  "sGARCH",
-                           garchOrder  =  c(1, 1),
-                           submodel  =  NULL,
-                           variance.targeting  =  FALSE)
-   ForeignModelSpec <- gogarchspec(mean.model = mean.model,
-                                   variance.model = variance.model,
-                                   distribution.model  =  "mvnorm")
+     mean.model <- list(model  =  "constant",  robust  = FALSE,
+                        lag  =  1,  lag.max  =  NULL,
+                        lag.criterion  = "AIC",
+                        external.regressors  =  NULL,
+                        robust.control  =  list("gamma"  =  0.25,
+                                                "delta"  =  0.01,
+                                                "nc" =  10,
+                                                "ns"  =  500))
+     variance.model <- list(model  =  "sGARCH",
+                            garchOrder  =  c(1, 1),
+                            submodel  =  NULL,
+                            variance.targeting  =  FALSE)
+     ForeignModelSpec <- gogarchspec(mean.model = mean.model,
+                                     variance.model = variance.model,
+                                     distribution.model  =  "mvnorm")
  }
  else if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) == "dccgarch")
  {
-   ## DCC-GARCH
-   require("rmgarch", quietly = TRUE)
-   uspec <- ugarchspec()
-   mspec <- multispec(replicate(2, uspec))
+     ## DCC-GARCH
+     require("rugarch", quietly = TRUE)
+     require("rmgarch", quietly = TRUE)
 
-   ForeignModelSpec <- dccspec(uspec = mspec, VAR = FALSE,
-                               robust = FALSE, lag = 1, lag.max = NULL,
-                               lag.criterion = "AIC",
-                               external.regressors = NULL,
-                               robust.control = list("gamma" = 0.25, "delta" = 0.01,
-                                                     "nc" = 10, "ns" = 500),
-                               dccOrder = c(1,1), model = "DCC",
-                               groups = rep(1, length(uspec@spec)),
-                               distribution = c("mvnorm"),
-                               start.pars = list(), fixed.pars = list())
+     uspec <- ugarchspec()
+     mspec <- multispec(replicate(2, uspec))
+
+     ForeignModelSpec <- dccspec(uspec = mspec, VAR = FALSE,
+                                 robust = FALSE, lag = 1, lag.max = NULL,
+                                 lag.criterion = "AIC",
+                                 external.regressors = NULL,
+                                 robust.control = list("gamma" = 0.25, "delta" = 0.01,
+                                                       "nc" = 10, "ns" = 500),
+                                 dccOrder = c(1,1), model = "DCC",
+                                 groups = rep(1, length(uspec@spec)),
+                                 distribution = c("mvnorm"),
+                                 start.pars = list(), fixed.pars = list())
  }
  else
  {
-   stop("No such foreign models!")
+     stop("No such foreign marginal models!")
  }
 }
 
@@ -130,11 +132,11 @@ save.output <- "~/running"
 
 nCross <- 1
 Mdl.crossValidArgs <- list(N.subsets = nCross,
-                       partiMethod = "time-series",
-                       testRatio = 0.2)
+                           partiMethod = "time-series",
+                           testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
-Mdl.crossValidIdx <- set.crossvalid(nObs,Mdl.crossValidArgs)
+Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx), Mdl.crossValidArgs)
 
 MCMC.optimInit <- TRUE
 ################################################################################

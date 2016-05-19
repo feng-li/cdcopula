@@ -123,7 +123,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     ## if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) %in% c("gogarch", "dccgarch"))
-    if(exists("ForeignModelSpec") &&  ForeignModelSpec  != NA)
+    if(exists("ForeignModelSpec") &&  class(ForeignModelSpec) != "logical")
     {## Special case when a foreign multivariate model is introduced. Fit the model and
         ## quit the MCMC directly.
         Mdl.ForeignFitted <-ModelForeignEval(model  = Mdl.MargisType[length(Mdl.MargisType)],
