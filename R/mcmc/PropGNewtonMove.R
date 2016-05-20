@@ -188,6 +188,7 @@ PropGNewtonMove <- function(MCMC.propArgs, MCMC.varSelArgs, Mdl.priArgs, betaIdx
 
         ## Gradient and Hessian for the likelihood with linkage
         logDensGrad.prop <- logDensGradHess.prop[["logGradObs"]]*LinkGradObs # n-by-pp
+
         logDensHess.prop <- hessApprox(logDensGrad.prop, hessMethod) # diag elements only
 
         logPriGrad.prop <- logPriGradHess.prop[["gradObs"]] # pp-by-1

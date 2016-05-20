@@ -70,10 +70,10 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
             require("Rmpfr")
             precBits <- 1024
             ## MPFR class used for u, theta,  delta
-            out.log.redoMPFR <- logDensFun(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),
-                                           theta = mpfr(theta[redo.idx], precBits = precBits),
-                                           delta = mpfr(delta[redo.idx], precBits = precBits))
-            out.log.redo <- as.numeric(out.log.redoMPFR)
+            out.logredoMPFR <- logDensFun(u = mpfr(u[redo.idx, , drop = FALSE], precBits = precBits),
+                                          theta = mpfr(theta[redo.idx], precBits = precBits),
+                                          delta = mpfr(delta[redo.idx], precBits = precBits))
+            out.logredo <- as.numeric(out.logredoMPFR)
             out.log[redo.idx] <- out.log.redo
 
             if(any(!is.finite(out.log.redo)))
@@ -121,26 +121,27 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
 
         ## The log copula density function C_12(u1, u2)
         nObs <- length(df)
-        dmvtVecFun <- function(i, x, rho, df)
-        {
-            ## the formula right before formula (1.4) in Genz and Bretz (2009), also in
-            ## Wikipedia
 
-            Sigma = vech2m(rho[i, ], diag = FALSE)
-            out <- dmvt(x = x[i, , drop = FALSE],
-                        sigma = Sigma,
-                        type = "shifted", # wikipedia type
-                        df = df[i], log = TRUE)
-            return(out)
+        ## the formula right before formula (1.4) in Genz and Bretz (2009), also in
+        ## Wikipedia.
+
+        ## The density of the t copula, Demarta & Department (2006) Eq(6)
+
+        logDensUpper <- matrix(NA, nObs, 1)
+
+        for(i in 1:nObs)
+        {
+            logDensUpper[i] <- dmvt(x = u.quantile[i, , drop = FALSE],
+                                    sigma = vech2m(rho[i, ], diag = TRUE),
+                                    type = "shifted", # wikipedia type
+                                    df = df[i], log = TRUE)
         }
 
-        ## The density of the t copula,  Demarta & Department (2006) Eq(6)
-        logDensUpper <- apply(matrix(1:nObs),1,dmvtVecFun,
-                              x = u.quantile, rho = rho, df = df)
         logDensLower <- apply(dt(u.quantile, df = df, log = TRUE), 1, sum)
         logDens <- logDensUpper-logDensLower
 
         ## The output
+        if(any(is.infinite(logDens))) browser()
         out.log <- matrix(logDens)
     }
     else if(tolower(CplNM) == "fgm")

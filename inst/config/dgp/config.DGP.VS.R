@@ -28,14 +28,14 @@ seed <- 123
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
-Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
-Mdl.parLink[[2]][["lmd"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
 Mdl.parLink[[3]][["lambdaL"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 Mdl.parLink[[3]][["lambdaU"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)

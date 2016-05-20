@@ -220,7 +220,7 @@ Mdl.priArgs[[1]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
+                                                               input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
@@ -232,7 +232,7 @@ Mdl.priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
+                                                               input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
@@ -245,7 +245,7 @@ Mdl.priArgs[[2]][["mu"]] <- list("beta" = list("intercept" = list(type = "custom
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["phi"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
+                                                               input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),
@@ -257,7 +257,7 @@ Mdl.priArgs[[2]][["df"]] <- list("beta" = list("intercept" = list(type = "custom
                                                            mean = 0, covariance = "identity", shrinkage = 1)),
                              "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                               input = list(type = "lognorm",  mean = 1, variance = 1),
+                                                               input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                                                output = list(type = "norm", shrinkage = 1)),
                                             "slopes" = list(type = "cond-mvnorm",
                                                             mean = 0, covariance = "identity", shrinkage = 1)),

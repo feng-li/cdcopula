@@ -203,7 +203,7 @@ Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx),Mdl.crossValidArgs)
 ## nCrossFold <- length(Mdl.crossValidIdx[["training"]])
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
-MCMC.sampleProp <- 0.8
+MCMC.sampleProp <- 1
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in

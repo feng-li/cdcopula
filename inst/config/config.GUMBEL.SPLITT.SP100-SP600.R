@@ -94,17 +94,17 @@ Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUse
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[1]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[1]][["df"]] <- list(type = "glog", nPar = 1,  a = 2, b = 30)
-Mdl.parLink[[1]][["lmd"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[1]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
-Mdl.parLink[[2]][["phi"]] <- list(type = "log", nPar = 1)
+Mdl.parLink[[2]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2, b = 30)
-Mdl.parLink[[2]][["lmd"]] <- list(type = "log",  nPar = 1)
+Mdl.parLink[[2]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
 Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
-                                  nPar = (length(Mdl.MargisType)-1)*(length(Mdl.MargisType)-2)/2)
+                                  nPar = 1)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -119,8 +119,8 @@ MCMC.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 MCMC.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
 MCMC.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
 MCMC.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-
 MCMC.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+
 MCMC.varSelArgs[[3]][["tau"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
@@ -221,13 +221,13 @@ MCMC.propArgs[[3]][[1]] <-
 nCross <- 1
 Mdl.crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
-                       testRatio = 0.1)
+                       testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx),Mdl.crossValidArgs)
 
 ## SAMPLER PROPORTION FOR POSTERIOR INFERENCE,
-MCMC.sampleProp <- 0.8
+MCMC.sampleProp <- 1
 
 ## BURN-IN RATIO
 MCMC.burninProp <- 0.1 # zero indicates no burn-in
@@ -253,7 +253,7 @@ Mdl.priArgs[[1]][["mu"]] <-
          "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["phi"]] <-
     list("beta" = list("intercept" = list(type = "custom",
-                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                           output = list(type = "norm", shrinkage = 1)),
                        "slopes" = list(type = "cond-mvnorm",
                                        mean = 0, covariance = "identity", shrinkage = 1)),
@@ -267,7 +267,7 @@ Mdl.priArgs[[1]][["df"]] <-
          "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["lmd"]] <-
     list("beta" = list("intercept" = list(type = "custom",
-                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          input = list(type = "glognorm",  mean = 1, variance = 1 , a = 0.01),
                                           output = list(type = "norm", shrinkage = 1)),
                        "slopes" = list(type = "cond-mvnorm",
                                        mean = 0, covariance = "identity", shrinkage = 1)),
@@ -282,7 +282,7 @@ Mdl.priArgs[[2]][["mu"]] <-
          "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["phi"]] <-
     list("beta" = list("intercept" = list(type = "custom",
-                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                           output = list(type = "norm", shrinkage = 1)),
                        "slopes" = list(type = "cond-mvnorm",
                                        mean = 0, covariance = "identity", shrinkage = 1)),
@@ -296,7 +296,7 @@ Mdl.priArgs[[2]][["df"]] <-
          "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["lmd"]] <-
     list("beta" = list("intercept" = list(type = "custom",
-                                          input = list(type = "lognorm",  mean = 1, variance = 1),
+                                          input = list(type = "glognorm",  mean = 1, variance = 1, a = 0.01),
                                           output = list(type = "norm", shrinkage = 1)),
                        "slopes" = list(type = "cond-mvnorm",
                                        mean = 0, covariance = "identity", shrinkage = 1)),

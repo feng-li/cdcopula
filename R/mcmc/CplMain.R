@@ -100,11 +100,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Generating simple model information
     Starting.time <- Sys.time()
-    ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",
-                                Mdl.MargisType, "+" , "nObs",
-                                nObs, "nCross", nCross,  "+",
-                                format(Starting.time, "%Y%m%d@%H.%M")),
-                              collapse = "")
 ###----------------------------------------------------------------------------
 ### INITIALIZE THE DATA STRUCTURE AND INITIAL VALUES
 ###----------------------------------------------------------------------------
@@ -251,8 +246,10 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     Mdl.par <- staticCache[["Mdl.par"]]
     Mdl.par.mean <- rapply(Mdl.par, mean, how = "replace")
-    print(unlist(Mdl.par.mean, recursive = TRUE))
-
+    for(iComp in names(Mdl.par))
+        {
+            print(unlist(Mdl.par.mean[iComp], recursive = TRUE))
+        }
     cat("\nPosterior sampling using Metropolis-Hastings within Gibbs\n")
 
     ## Clear all warnings during initial value optimization. NOTE: not working
@@ -344,10 +341,13 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## list2env(out, envir = .GlobalEnv)
     ## GENERATING SHORT MODEL DESCRIPTION
     ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",  Mdl.MargisType, "+" ,
-                                "nObs", nObs, "nCross", nCross, "MCMC.nIter", MCMC.nIter, "+",
+                                "nObs", nObsRaw, "nCross", nCross, "MCMC.nIter",
+                                MCMC.nIter, "+",
                                 format(Starting.time, "%Y%m%d@%H.%M")),
                               collapse = "")
 
+
+    rm("MCMC.par") # Remove big objects
     gc()
 
     out <- as.list(environment())

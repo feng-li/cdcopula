@@ -23,7 +23,6 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
     ## Progress statistics
     TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
     TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-iIter), 2)
-
     donePercent <- round(iIter/MCMC.nIter*100)
 
     progress <- paste(date(), ": ", round(TimeUsed, 2),
@@ -31,10 +30,15 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                       TimeToGo, " hours to go...\n", sep = "")
 
 
-    printInterval2 <- ifelse(floor(MCMC.nIter*interval) == 0,  1,
+    printInterval2 <- ifelse(MCMC.nIter*interval < 1,  1,
                              floor(MCMC.nIter*0.1))
+
+    printIter1 <- 3
     printIter2 <- seq(from = printInterval2, to = MCMC.nIter, by = printInterval2)
-    if(iIter  %in% printIter2)
+    printIter4progress <- ifelse(printIter2[1] >= printIter1,
+                                 c(printIter1, printIter2), printIter2)
+
+    if(iIter  %in% printIter4progress)
     {
         cat(progress)
     }
@@ -123,6 +127,63 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
         accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace",
                                    iIter = iIter,  fun = mean)
+
+
+        ## Regenerate ``MCMC.par`` if not supplied
+        if(length(MCMC.par) == 0)
+        {
+            Mdl.X.training <- OUT.MCMC[["Mdl.X.training"]]
+            MCMC.sampleIdx <- 1:iIter
+            nTraining <- nrow(Mdl.X.training[[1]][[1]])
+            nMCMC <- length(MCMC.sampleIdx)
+            for(CompCaller in names(MCMC.Update))
+            {
+                for(parCaller in names(MCMC.Update[[CompCaller]]))
+                {
+                    ncolX.ij <- ncol(Mdl.X.training[[CompCaller]][[parCaller]])
+                    nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
+                    namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
+
+                    MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMC, nTraining, nPar.ij),
+                                                                 dimnames = list(NULL, NULL, namesPar.ij))
+                }
+            }
+
+            subsetFun4beta <- function(x, idx)
+            {
+                if((dim(x)[1] == 1 && length(idx)>1) ||
+                   (dim(x)[1] == 1 && length(idx) == 1 && idx != 1))
+                {# check whether some parameters are not updated
+                    out <- x
+                }
+                else
+                {
+                    out <- x[idx, , drop = FALSE]
+                }
+                return(out)
+            }
+
+            for(iMCMC.sampleIdx in MCMC.sampleIdx)
+            {
+
+                Mdl.beta.curr <- rapply(object=MCMC.beta, f = subsetFun4beta,
+                                        idx = iMCMC.sampleIdx, how = "replace")
+
+                Mdl.par.curr <- parCplMeanFun(Mdl.X = Mdl.X.training,
+                                              Mdl.parLink = Mdl.parLink,
+                                              Mdl.beta = Mdl.beta.curr,
+                                              parUpdate = MCMC.Update)
+
+                for(CompCaller in names(MCMC.Update))
+                {
+                    for(parCaller in names(MCMC.Update[[CompCaller]]))
+                    {
+                        MCMC.par[[CompCaller]][[parCaller]][iMCMC.sampleIdx, ,] <- Mdl.par.curr[[CompCaller]][[parCaller]]
+                    }
+                }
+            }
+        }
+
 
         par.mean <- rapply(MCMC.par, subFun3, how = "replace",
                            iIter = iIter,  fun = mean, dim = 3)

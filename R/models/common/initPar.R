@@ -30,12 +30,12 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
                     Mdl.parLink, MCMC.Update, MCMC.optimInit)
 {
     initParOut <- initPar0(MCMC.varSelArgs = MCMC.varSelArgs,
-                            Mdl.betaInit = Mdl.betaInit,
-                            Mdl.X = Mdl.X,
-                            Mdl.Y = Mdl.Y,
-                            Mdl.parLink = Mdl.parLink,
-                            parUpdate = MCMC.Update,
-                            MCMC.optimInit = MCMC.optimInit)
+                           Mdl.betaInit = Mdl.betaInit,
+                           Mdl.X = Mdl.X,
+                           Mdl.Y = Mdl.Y,
+                           Mdl.parLink = Mdl.parLink,
+                           parUpdate = MCMC.Update,
+                           MCMC.optimInit = MCMC.optimInit)
     Mdl.beta = initParOut[["Mdl.beta"]]
     Mdl.betaIdx = initParOut[["Mdl.betaIdx"]]
 
@@ -103,18 +103,6 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
                 Mdl.betaIdx[[CompCaller]] <- initParOut[["Mdl.betaIdx"]][[CompCaller]]
                 Mdl.beta[[CompCaller]] <- initParOut[["Mdl.beta"]][[CompCaller]]
 
-                ## Dry run to obtain the initial "staticCache" NOTE: As this is the
-                ## very first run, the "parUpdate" should be all on for this time.
-                ## staticCache.sample <- logPost(Mdl.MargisType = Mdl.MargisType,
-                ##                               Mdl.Y = Mdl.Y.optim.sample,
-                ##                               Mdl.X = Mdl.X.optim.sample,
-                ##                               Mdl.beta = Mdl.beta,
-                ##                               Mdl.betaIdx = Mdl.betaIdx,
-                ##                               Mdl.parLink = Mdl.parLink,
-                ##                               MCMC.varSelArgs = MCMC.varSelArgs,
-                ##                               Mdl.priArgs = Mdl.priArgs,
-                ##                               parUpdate = MCMC.Update,
-                ##                               MCMC.UpdateStrategy = MCMC.UpdateStrategy)[["staticCache"]]
 
                 ## Optimize the initial values via BFGS. NOTE: The variable selection
                 ## indicators are fixed (not optimized) loop over all the marginal
@@ -164,7 +152,8 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
                 else
                 {
                     InitGoodCompCurr <- TRUE
-                    Mdl.beta <- parCplSwap(betaInput = as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]),
+                    Mdl.beta <- parCplSwap(betaInput = as.numeric(
+                                               betaVecOptimComp[1, 1:length(betaVecInitComp)]),
                                            Mdl.beta = Mdl.beta,
                                            Mdl.betaIdx = Mdl.betaIdx,
                                            parUpdate = parUpdate)
@@ -182,8 +171,15 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
 
     cat("\nINITIAL VALUES FOR BETA COEFFICIENTS:\n",
         "(conditional on variable selection indicators)\n")
-    print(rapply(Mdl.beta, t, how = "replace"))
-
+    for(iComp in names(Mdl.beta))
+    {
+        for(jPar in names(Mdl.beta[[iComp]]))
+        {
+            prtval <- t(Mdl.beta[[iComp]][[jPar]])
+            rownames(prtval) <- paste(iComp, jPar, sep = ".")
+            print(prtval)
+        }
+    }
     ## browser()
     out <- list(Mdl.beta = Mdl.beta,
                 Mdl.betaIdx = Mdl.betaIdx)
@@ -238,7 +234,6 @@ initPar0 <- function(MCMC.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
             ## Check if variable selection candidates are all subsets of X.
             if(!all(varSelCandCurr %in% 1:ncolX.ij))
             {
-                browser()
                 stop("Variable selection candidates are not subset of covariates in component: ",  i, "-", j, "!")
             }
 
@@ -307,7 +302,7 @@ initPar0 <- function(MCMC.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
         }
     }
 
-   out <- list(Mdl.beta = Mdl.beta,
-               Mdl.betaIdx = Mdl.betaIdx)
+    out <- list(Mdl.beta = Mdl.beta,
+                Mdl.betaIdx = Mdl.betaIdx)
     return(out)
 }

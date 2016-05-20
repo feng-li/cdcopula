@@ -22,24 +22,25 @@ logPostOptim <- function(betaVec, Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta,
                          Mdl.betaIdx,Mdl.parLink,MCMC.varSelArgs,
                          Mdl.priArgs,parUpdate, staticCache, MCMC.UpdateStrategy)
 {
-  ## a wrapper of the log posterior function that can be used for directly
-  ## optimization via Newton's method
-  Mdl.beta <- parCplSwap(betaInput = betaVec,
-                         Mdl.beta = Mdl.beta,
-                         Mdl.betaIdx = Mdl.betaIdx,
-                         parUpdate = parUpdate)
-  logPostOut <- logPost(Mdl.MargisType = Mdl.MargisType,
-                        Mdl.Y = Mdl.Y,
-                        Mdl.X = Mdl.X,
-                        Mdl.beta = Mdl.beta,
-                        Mdl.betaIdx = Mdl.betaIdx,
-                        Mdl.parLink = Mdl.parLink,
-                        MCMC.varSelArgs = MCMC.varSelArgs,
-                        Mdl.priArgs = Mdl.priArgs,
-                        staticCache = staticCache,
-                        parUpdate = parUpdate,
-                        MCMC.UpdateStrategy = MCMC.UpdateStrategy)
+    ## a wrapper of the log posterior function that can be used for directly
+    ## optimization via Newton's method
+    Mdl.beta <- parCplSwap(betaInput = betaVec,
+                           Mdl.beta = Mdl.beta,
+                           Mdl.betaIdx = Mdl.betaIdx,
+                           parUpdate = parUpdate)
 
-  out <- logPostOut[["Mdl.logPost"]]
-  return(out)
+    logPostOut <- logPost(Mdl.MargisType = Mdl.MargisType,
+                          Mdl.Y = Mdl.Y,
+                          Mdl.X = Mdl.X,
+                          Mdl.beta = Mdl.beta,
+                          Mdl.betaIdx = Mdl.betaIdx,
+                          Mdl.parLink = Mdl.parLink,
+                          MCMC.varSelArgs = MCMC.varSelArgs,
+                          Mdl.priArgs = Mdl.priArgs,
+                          staticCache = staticCache,
+                          parUpdate = parUpdate,
+                          MCMC.UpdateStrategy = MCMC.UpdateStrategy)
+
+    out <- logPostOut[["Mdl.logPost"]]
+    return(out)
 }

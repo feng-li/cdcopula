@@ -196,7 +196,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         { ## CopulaDensity-MVT.nb
             gradFun4df <- function(i, rho, df, u.quantile)
             {
-                Sigma <- vech2m(rho[i, ], diag = FALSE)
+                Sigma <- vech2m(rho[i, ], diag = TRUE)
                 v <- df[i]
                 x <- matrix(u.quantile[i, ]) # col-vector
                 mu <- 0
@@ -229,14 +229,16 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
 
             logCplGrad.df.lower <- rowSums(logCplGrad.df.lowerMat)
 
-            out[["df"]] <- logCplGrad.df.upper -logCplGrad.df.lower
+            out[["df"]] <- matrix(logCplGrad.df.upper -logCplGrad.df.lower) # n-by-1
         }
 
         if("rho" %in% tolower(parCaller))
         {
-            gradFun4rho <- function(i, rho, df, u.quantile)
+
+            logCplGrad.rho <- matrix(NA, nObs, ncol(rho))  # n-by-lq
+            for(i in 1:nObs)
             {
-                Sigma <- vech2m(rho[i, ], diag = FALSE)
+                Sigma <- vech2m(rho[i, ], diag = TRUE)
                 v <- df[i]
                 x <- matrix(u.quantile[i, ]) # col-vector
                 mu <- 0
@@ -245,16 +247,11 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                 ## C0 <- as.vector(t(x-mu)%*%solve(Sigma)%*%(x-mu))
                 C1 <- solve(Sigma, (x-mu))
                 C0 <- as.vector(t(x-mu)%*%C1)
-                logGradCpl.Sigma <- -1/2*solve(Sigma)-(v+p)/2*(1+C0/v)^(-1)*(-C1%*%t(C1))/v
-                out <- logGradCpl.Sigma[lower.tri(logGradCpl.Sigma, diag = FALSE)]
+                logGradCpl.Sigma <- (-1/2*solve(Sigma)-(v+p)/2*(1+C0/v)^(-1)*(-C1%*%t(C1))/v)
 
-                return(out)
+                logCplGrad.rho[i, ] <- logGradCpl.Sigma[lower.tri(logGradCpl.Sigma,
+                                                                  diag = TRUE)]
             }
-            logCplGrad.rho <- t(apply(matrix(1:nObs), 1,
-                                      gradFun4rho,
-                                      rho = rho,
-                                      df = df,
-                                      u.quantile = u.quantile)) # n-by-lq
 
             out[["rho"]] <- logCplGrad.rho # n-by-lq
         }
@@ -317,7 +314,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             ## The gradient for copula with respect to x1.
             FUN <- function(i, x, mu, df, rho, uIdx)
             {
-                Sigma0 <- vech2m(rho[i, ], diag = FALSE)
+                Sigma0 <- vech2m(rho[i, ], diag = TRUE)
                 Sigma <- Sigma0[uIdx, uIdx]
 
                 if(!is.positivedefinite(Sigma))
