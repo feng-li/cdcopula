@@ -143,6 +143,5 @@ logPost <- function(Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.par
                 Mdl.logPri = Mdl.logPri.SubSum,
                 staticCache = staticCache,
                 errorFlag = errorFlag)
-    if(is.infinite(Mdl.logPost)) browser()
     return(out)
 }
