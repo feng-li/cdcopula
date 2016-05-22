@@ -118,7 +118,11 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 
 ## Extract variables from configure files
 obj <- ls()
-source(MdlConfigFile, local = TRUE, echo = FALSE)
+
+sink("/dev/null")
+source(MdlConfigFile, local = TRUE)
+sink()
+
 rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx", "LPDS")))
 
 

@@ -125,14 +125,14 @@ Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-MCMC.varSelArgs <- MCMC.Update
-MCMC.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs <- MCMC.Update
+Mdl.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-MCMC.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
-MCMC.varSelArgs[[3]][["tau"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["tau"]] <- list(cand = "2:end", init = "all-in")
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------

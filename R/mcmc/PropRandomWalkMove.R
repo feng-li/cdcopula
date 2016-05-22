@@ -1,4 +1,4 @@
-randomwalk <- function(MCMC.propArgs, MCMC.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
+randomwalk <- function(MCMC.propArgs, Mdl.varSelArgs, Mdl.priArgs, betaIdxProp, parUpdate,
                        CplNM, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx,
                        Mdl.parLink, Mdl.MargisType, staticCache, MCMC.UpdateStrategy)
 {

@@ -8,7 +8,7 @@
 ##' @param Mdl.beta
 ##' @param Mdl.betaIdx "list".
 ##' @param Mdl.parLink "list".
-##' @param MCMC.varSelArgs "list".
+##' @param Mdl.varSelArgs "list".
 ##' @param Mdl.MargisType "list".
 ##' @param Mdl.priArgs "list".
 ##' @param parUpdate "list".
@@ -19,7 +19,7 @@
 ##' @note Created: Sun Jun 03 19:13:54 CEST 2012;
 ##'       Current: Sun Jun 03 19:14:00 CEST 2012.
 logPostOptim <- function(betaVec, Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta,
-                         Mdl.betaIdx,Mdl.parLink,MCMC.varSelArgs,
+                         Mdl.betaIdx,Mdl.parLink,Mdl.varSelArgs,
                          Mdl.priArgs,parUpdate, staticCache, MCMC.UpdateStrategy)
 {
     ## a wrapper of the log posterior function that can be used for directly
@@ -35,7 +35,7 @@ logPostOptim <- function(betaVec, Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta,
                           Mdl.beta = Mdl.beta,
                           Mdl.betaIdx = Mdl.betaIdx,
                           Mdl.parLink = Mdl.parLink,
-                          MCMC.varSelArgs = MCMC.varSelArgs,
+                          Mdl.varSelArgs = Mdl.varSelArgs,
                           Mdl.priArgs = Mdl.priArgs,
                           staticCache = staticCache,
                           parUpdate = parUpdate,

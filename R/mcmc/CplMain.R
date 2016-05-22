@@ -59,7 +59,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                             ignore.error = TRUE)
 
     ## Source the configuration file for the model.
-    nObs <- NA
     nCross <- NA
     Mdl.X <- NA
     Mdl.Y <- NA
@@ -67,9 +66,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     Mdl.MargisNM <- NA
     Mdl.parLink <- NA
     Mdl.priArgs <- NA
-    MCMC.varSelArgs <- NA
+    Mdl.varSelArgs <- NA
     Mdl.betaInit <- NA
-    Mdl.u <- NA
+    ## Mdl.u <- NA
 
     MCMC.nIter <- NA
     MCMC.Update <- NA
@@ -82,7 +81,41 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     source(MdlConfigFile, local = TRUE)
 
-    ## Parallel Setting up
+###----------------------------------------------------------------------------
+### Print model description
+###----------------------------------------------------------------------------
+    cat(rep("-", getOption("width")-1), "\n", sep = "")
+    cat("MODEL DESCRIPTION\n")
+    cat(rep("-", getOption("width")-1), "\n", sep = "")
+
+
+    cat("nObsRaw:", nObsRaw, "\n")
+    cat("MCMC.nIter: ", MCMC.nIter,   "\n")
+    cat("MCMC.burninProp:", MCMC.burninProp, "\n")
+    cat("MCMC.UpateStrategy: ", MCMC.UpdateStrategy, "\n")
+
+    # cat("nCross: ", nCross,  "\n")
+    cat("Mdl.crossValidArgs:\n")
+    print(unlist(Mdl.crossValidArgs))
+
+    ## cat("Mdl.MargisNM: ", Mdl.MargisNM,   "\n")
+    cat("Mdl.MargisType:\n")
+    print(Mdl.MargisType)
+
+    if(all(rapply(Mdl.X, class)  == "matrix"))
+    {
+        cat("No. of covariates used:\n")
+        print(rapply(Mdl.X, ncol))
+    }
+    cat("Mdl.varSelArgs:\n")
+    print(unlist(Mdl.varSelArgs))
+    cat("MCMC.Update:\n")
+    print(unlist(MCMC.Update))
+    cat(rep("-", getOption("width")-1), "\n", sep = "")
+
+###----------------------------------------------------------------------------
+### Parallel Setting up
+###----------------------------------------------------------------------------
     if(as.numeric(R_CPL_NPARALLEL)>1)
     {
         require("parallel", quietly = TRUE)
@@ -113,8 +146,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
     else
     {
+        stop("Not implemented yet!")
         ## No marginal information supplies. Update copula component only
-        Mdl.u.training <- Mdl.u[Mdl.Idx.training, , drop = FALSE]
+        ## Mdl.u.training <- Mdl.u[Mdl.Idx.training, , drop = FALSE]
     }
 
     ## if(tolower(Mdl.MargisType[length(Mdl.MargisType)]) %in% c("gogarch", "dccgarch"))
@@ -150,12 +184,13 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
     else
     {## Native marginal model structure
-        Mdl.X.training <- rapply(object=Mdl.X, f = subsetFun,
+        Mdl.X.training <- rapply(object=Mdl.X,
+                                 f = subsetFun,
                                  idx = Mdl.Idx.training, how = "replace")
     }
 
     ## Assign the initial values
-    initParOut <- initPar(MCMC.varSelArgs = MCMC.varSelArgs, Mdl.priArgs = Mdl.priArgs,
+    initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
                           Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
                           Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
@@ -235,7 +270,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           Mdl.beta = Mdl.beta,
                           Mdl.betaIdx = Mdl.betaIdx,
                           Mdl.parLink = Mdl.parLink,
-                          MCMC.varSelArgs = MCMC.varSelArgs,
+                          Mdl.varSelArgs = Mdl.varSelArgs,
                           Mdl.priArgs = Mdl.priArgs,
                           parUpdate = MCMC.Update,
                           MCMC.UpdateStrategy = MCMC.UpdateStrategy)
@@ -264,6 +299,18 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         iInner <- ifelse((iUpdate%%nInner) == 0, nInner, iUpdate%%nInner)
         iIter <- floor((iUpdate-1)/nInner)+1
 
+
+
+        if(iIter == 2)
+        {
+            Starting.time2 <- Sys.time()
+        }
+        else
+        {
+            Starting.time2 <- Starting.time
+        }
+
+
         ## print(c(iUpdate, iInner, iIter))
         chainCaller <- UpdateMat[iInner, ]
         CompCaller <- UpdateMat[iInner, 1] ## SP100, SP600,  BB7
@@ -277,7 +324,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## Call the Metropolis-Hastings algorithm
         MHOut <- MetropolisHastings(Mdl.MargisType = Mdl.MargisType,
                                     MCMC.propArgs = MCMC.propArgs,
-                                    MCMC.varSelArgs = MCMC.varSelArgs,
+                                    Mdl.varSelArgs = Mdl.varSelArgs,
                                     Mdl.priArgs = Mdl.priArgs,
                                     parUpdate = parUpdate,
                                     Mdl.Y = Mdl.Y.training,
@@ -319,14 +366,19 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
             ## ProgressBar only available in interactive mode
             if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
 
+
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                            interval = 1, MCMC.burninProp = MCMC.burninProp,
+                            interval = 0.1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                             MCMC.betaIdx = MCMC.betaIdx,
                                             MCMC.par = MCMC.par,
                                             MCMC.AccProb = MCMC.AccProb,
                                             MCMC.Update = MCMC.Update,
-                                            Starting.time = Starting.time)
+
+                                            Mdl.parLink = Mdl.parLink,
+                                            Mdl.X.training = Mdl.X.training,
+
+                                            Starting.time = Starting.time2)
                             )
         }
 
@@ -342,7 +394,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ## GENERATING SHORT MODEL DESCRIPTION
     ModelDescription <- paste(c(Mdl.MargisNM[-length(Mdl.MargisNM)],"+",  Mdl.MargisType, "+" ,
                                 "nObs", nObsRaw, "nCross", nCross, "MCMC.nIter",
-                                MCMC.nIter, "+",
+                                MCMC.nIter, MCMC.UpdateStrategy,  "+",
                                 format(Starting.time, "%Y%m%d@%H.%M")),
                               collapse = "")
 

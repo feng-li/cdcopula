@@ -123,24 +123,24 @@ Mdl.parLink[[4]][["lambdaL"]] <- list(type = "glogit", a = 0.01, b = 0.99,
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-MCMC.varSelArgs <- MCMC.Update
-MCMC.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs <- MCMC.Update
+Mdl.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-MCMC.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-MCMC.varSelArgs[[3]][["mu"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[3]][["phi"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[3]][["df"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[3]][["lmd"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-MCMC.varSelArgs[[4]][["tau"]] <- list(cand = "2:end", init = "all-in")
-MCMC.varSelArgs[[4]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[4]][["tau"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[4]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION

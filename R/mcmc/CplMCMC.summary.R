@@ -22,10 +22,11 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
     ## Progress statistics
     TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
-    TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-iIter), 2)
+    TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-1-iIter), 2) # take away first
+                                        # waring-up iteration.
     donePercent <- round(iIter/MCMC.nIter*100)
 
-    progress <- paste(date(), ": ", round(TimeUsed, 2),
+    progress <- paste("  ", date(), ": ", round(TimeUsed, 2),
                       " hours elapsed, ", donePercent, "% done, ",
                       TimeToGo, " hours to go...\n", sep = "")
 
@@ -33,17 +34,17 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
     printInterval2 <- ifelse(MCMC.nIter*interval < 1,  1,
                              floor(MCMC.nIter*0.1))
 
-    printIter1 <- 3
+    printIter1 <- 4
     printIter2 <- seq(from = printInterval2, to = MCMC.nIter, by = printInterval2)
-    printIter4progress <- ifelse(printIter2[1] >= printIter1,
-                                 c(printIter1, printIter2), printIter2)
+    if(printIter2[1] >= printIter1)
+    {
+        printIter2 <- c(printIter1, printIter2)
+    }
 
-    if(iIter  %in% printIter4progress)
+    if(iIter  %in% printIter2)
     {
         cat(progress)
     }
-
-
 
     ## The burning
     n.burn.default <- round(MCMC.nIter*MCMC.burninProp)
@@ -128,14 +129,19 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
         accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace",
                                    iIter = iIter,  fun = mean)
 
-
         ## Regenerate ``MCMC.par`` if not supplied
+        MCMC.par <- NULL
         if(length(MCMC.par) == 0)
         {
+            MCMC.par <- list()
             Mdl.X.training <- OUT.MCMC[["Mdl.X.training"]]
+            Mdl.parLink <- OUT.MCMC[["Mdl.parLink"]]
+
             MCMC.sampleIdx <- 1:iIter
             nTraining <- nrow(Mdl.X.training[[1]][[1]])
             nMCMC <- length(MCMC.sampleIdx)
+
+            Mdl.MargisNM <- names(MCMC.Update)
             for(CompCaller in names(MCMC.Update))
             {
                 for(parCaller in names(MCMC.Update[[CompCaller]]))
@@ -143,6 +149,21 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                     ncolX.ij <- ncol(Mdl.X.training[[CompCaller]][[parCaller]])
                     nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
                     namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
+
+
+                    if((CompCaller %in% Mdl.MargisNM[length(Mdl.MargisNM)]) & nPar.ij != 1)
+                    {
+                        nDim <- length(Mdl.MargisNM)-1
+                        namesParFull.ij <- matrix(paste(matrix(1:nDim, nDim, nDim),
+                                                        matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
+                        namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
+                    }
+                    else
+                    {
+                        namesPar.ij <- "1.1"
+                    }
+
+
 
                     MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMC, nTraining, nPar.ij),
                                                                  dimnames = list(NULL, NULL, namesPar.ij))

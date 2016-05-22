@@ -6,7 +6,7 @@
 ##' @param Mdl.beta
 ##' @param Mdl.betaIdx
 ##' @param Mdl.parLink
-##' @param MCMC.varSelArgs
+##' @param Mdl.varSelArgs
 ##' @param Mdl.priArgs
 ##' @param chainCaller
 ##' @return "list". The gradient and Hessian matrix, see below.
@@ -19,7 +19,7 @@
 ##' @note Created: Tue Mar 30 09:33:23 CEST 2010;
 ##'       Current: Mon Feb 27 15:22:27 CET 2012.
 logPriorsGradHess <- function(Mdl.X, Mdl.beta, Mdl.betaIdx,Mdl.parLink,
-                              MCMC.varSelArgs, Mdl.priArgs, chainCaller)
+                              Mdl.varSelArgs, Mdl.priArgs, chainCaller)
 {
     ## Only update priors for parameters that need to update.
     ## Initial the storage structure for current log prior

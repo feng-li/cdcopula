@@ -2,7 +2,7 @@
 ##'
 ##' This function is only once for the first iteration. The values are updated
 ##' via MCMC scheme.
-##' @param MCMC.varSelArgs "list".
+##' @param Mdl.varSelArgs "list".
 ##'
 ##'        Variable selection argument
 ##'
@@ -26,10 +26,10 @@
 ##' @references Li 2012
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Thu Dec 22 15:57:14 CET 2011; Current: Tue Sep 29 23:50:07 CST 2015.
-initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.MargisType,
+initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.MargisType,
                     Mdl.parLink, MCMC.Update, MCMC.optimInit)
 {
-    initParOut <- initPar0(MCMC.varSelArgs = MCMC.varSelArgs,
+    initParOut <- initPar0(Mdl.varSelArgs = Mdl.varSelArgs,
                            Mdl.betaInit = Mdl.betaInit,
                            Mdl.X = Mdl.X,
                            Mdl.Y = Mdl.Y,
@@ -128,7 +128,7 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
                                             Mdl.beta = Mdl.beta,
                                             Mdl.betaIdx = Mdl.betaIdx,
                                             Mdl.parLink = Mdl.parLink,
-                                            MCMC.varSelArgs = MCMC.varSelArgs,
+                                            Mdl.varSelArgs = Mdl.varSelArgs,
                                             Mdl.priArgs = Mdl.priArgs,
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
@@ -141,7 +141,7 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
                     ## break
 
                     ## Reassign the initial values
-                    initParOut <- initPar0(MCMC.varSelArgs = MCMC.varSelArgs,
+                    initParOut <- initPar0(Mdl.varSelArgs = Mdl.varSelArgs,
                                            Mdl.betaInit = Mdl.betaInit,
                                            Mdl.X = Mdl.X.optim.sample,
                                            Mdl.Y = Mdl.Y.optim.sample,
@@ -186,7 +186,7 @@ initPar <- function(MCMC.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Md
     return(out)
 }
 
-initPar0 <- function(MCMC.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
+initPar0 <- function(Mdl.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
                      parUpdate, MCMC.optimInit)
 {
     ## The output structure.
@@ -216,11 +216,20 @@ initPar0 <- function(MCMC.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
 ###----------------------------------------------------------------------------
             ## Initial value for variable selection indicators which can be
             ## character or vector
-            varSelCandConfigCurr <- MCMC.varSelArgs[[i]][[j]][["cand"]]
+            varSelCandConfigCurr <- Mdl.varSelArgs[[i]][[j]][["cand"]]
 
-            if(class(varSelCandConfigCurr) == "character" &&
-               tolower(varSelCandConfigCurr) == "2:end")
+            if(class(varSelCandConfigCurr) == "character")
             {
+                cand <- strsplit(varSelCandConfigCurr, ":")[[1]]
+                cand1 <- as.numeric(cand[1])
+                if(cand[2] == "end")
+                    {
+                        cand2 <- ncolX.ij
+                    }
+                else
+                {
+                    cand2 <- as.numeric(cand[2])
+                }
                 varSelCandCurr <- 2:ncolX.ij
             }
             else
@@ -228,8 +237,7 @@ initPar0 <- function(MCMC.varSelArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl.parLink,
                 varSelCandCurr <- varSelCandConfigCurr
             }
 
-
-            varSelInitCurr <- MCMC.varSelArgs[[i]][[j]][["init"]]
+            varSelInitCurr <- Mdl.varSelArgs[[i]][[j]][["init"]]
 
             ## Check if variable selection candidates are all subsets of X.
             if(!all(varSelCandCurr %in% 1:ncolX.ij))

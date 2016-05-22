@@ -6,7 +6,7 @@
 ##' @param Mdl.parLink "list"
 ##' @param Mdl.beta "list"
 ##' @param Mdl.betaIdx "list"
-##' @param MCMC.varSelArgs "list"
+##' @param Mdl.varSelArgs "list"
 ##' @param Mdl.priArgs "list"
 ##' @param parUpdate "list"
 ##' @param priCurr "list"
@@ -15,7 +15,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Created: Thu Dec 15 10:45:56 CET 2011;
 logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
-                      MCMC.varSelArgs, Mdl.priArgs, parUpdate, Mdl.logPri)
+                      Mdl.varSelArgs, Mdl.priArgs, parUpdate, Mdl.logPri)
 {
   ## Allocate the structure.
     if(missing(Mdl.logPri))
@@ -66,7 +66,7 @@ logPriors <- function(Mdl.X, Mdl.parLink, Mdl.beta, Mdl.betaIdx,
         }
         else
         {
-          varSelCandConfigCurr <- MCMC.varSelArgs[[CompCaller]][[parCaller]][["cand"]]
+          varSelCandConfigCurr <- Mdl.varSelArgs[[CompCaller]][[parCaller]][["cand"]]
 
           if(class(varSelCandConfigCurr) == "character" &&
              tolower(varSelCandConfigCurr) == "2:end")

@@ -82,19 +82,19 @@ Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## Variable selection candidates, NULL: no variable selection use full
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
-MCMC.varSelArgs <- MCMC.Update
-MCMC.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs <- MCMC.Update
+Mdl.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-MCMC.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
 
-MCMC.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
-MCMC.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION

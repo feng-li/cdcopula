@@ -19,7 +19,7 @@
 ##' @param Mdl.parLink "list".  The link function used in the MCMC procedure. See the main
 ##'   setting file for details.
 ##'
-##' @param MCMC.varSelArgs "list"
+##' @param Mdl.varSelArgs "list"
 ##'
 ##' @param Mdl.MargisType "list".  The model type in each marginal distribution.
 ##'
@@ -44,7 +44,7 @@
 ##' @author Feng Li, Central University of Finance and Economics.
 ##' @note Created: Mon Oct 24 15:07:01 CEST 2011; Current: Sat Jul 18 10:47:12 CST 2015
 logPost <- function(Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.parLink,
-                    MCMC.varSelArgs,Mdl.priArgs,parUpdate,staticCache, MCMC.UpdateStrategy)
+                    Mdl.varSelArgs,Mdl.priArgs,parUpdate,staticCache, MCMC.UpdateStrategy)
 {
     ## Assume no error a priori
     errorFlag <- FALSE
@@ -72,7 +72,7 @@ logPost <- function(Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.par
                                 Mdl.parLink = Mdl.parLink,
                                 Mdl.beta = Mdl.beta,
                                 Mdl.betaIdx = Mdl.betaIdx,
-                                MCMC.varSelArgs = MCMC.varSelArgs,
+                                Mdl.varSelArgs = Mdl.varSelArgs,
                                 Mdl.priArgs = Mdl.priArgs,
                                 parUpdate = parUpdate)
 
@@ -95,7 +95,7 @@ logPost <- function(Mdl.MargisType, Mdl.Y, Mdl.X, Mdl.beta, Mdl.betaIdx, Mdl.par
                             Mdl.parLink = Mdl.parLink,
                             Mdl.beta = Mdl.beta,
                             Mdl.betaIdx = Mdl.betaIdx,
-                            MCMC.varSelArgs = MCMC.varSelArgs,
+                            Mdl.varSelArgs = Mdl.varSelArgs,
                             Mdl.priArgs = Mdl.priArgs,
                             parUpdate = parUpdate,
                             Mdl.logPri = Mdl.logPri)

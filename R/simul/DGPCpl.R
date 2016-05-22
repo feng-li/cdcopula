@@ -104,7 +104,7 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         }
     }
 
-    cat("\n", rep("-", dev.width-1), "\n", sep = "")
+    cat(rep("-", dev.width-1), "\n", sep = "")
 
     ## The output
     out <- list(Mdl.Y = Mdl.Y, Mdl.X = Mdl.X,
