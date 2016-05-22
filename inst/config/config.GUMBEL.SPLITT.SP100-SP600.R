@@ -90,7 +90,7 @@ Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 
 Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
-browser()
+
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)

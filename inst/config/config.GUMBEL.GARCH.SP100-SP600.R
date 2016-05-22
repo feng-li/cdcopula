@@ -96,8 +96,7 @@ Mdl.parLink[[1]][["phi"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[2]][["phi"]] <- list(type = "identity", nPar = 1)
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99,
-                                  nPar = (length(Mdl.MargisType)-1)*(length(Mdl.MargisType)-2)/2)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99, nPar = 1)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full

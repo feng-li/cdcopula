@@ -114,6 +114,20 @@ initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl
                                               parUpdate = parUpdate)
                 ## if(CompCaller == "MVT") browser()
                 ## Optimize the initial values
+                ## Debugging code
+                ## logPostOptim(betaVec = betaVecInitComp,
+                ##              Mdl.MargisType = Mdl.MargisType,
+                ##              Mdl.Y = Mdl.Y.optim.sample,
+                ##              Mdl.X = Mdl.X.optim.sample,
+                ##              Mdl.beta = Mdl.beta,
+                ##              Mdl.betaIdx = Mdl.betaIdx,
+                ##              Mdl.parLink = Mdl.parLink,
+                ##              Mdl.varSelArgs = Mdl.varSelArgs,
+                ##              Mdl.priArgs = Mdl.priArgs,
+                ##              ## staticCache = staticCache.sample,
+                ##              parUpdate = parUpdate,
+                ##              MCMC.UpdateStrategy = "twostage")
+
                 betaVecOptimComp <-  optimx(par = betaVecInitComp,
                                             fn = logPostOptim,
                                             control = list(maximize = TRUE,
@@ -133,6 +147,8 @@ initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
                                             MCMC.UpdateStrategy = "twostage")
+
+
                 if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
                 {# It does not have to be converged.
                     cat("Initializing algorithm failed,  retry...\n")
