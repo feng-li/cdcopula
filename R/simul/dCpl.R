@@ -74,9 +74,9 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
                                           theta = mpfr(theta[redo.idx], precBits = precBits),
                                           delta = mpfr(delta[redo.idx], precBits = precBits))
             out.logredo <- as.numeric(out.logredoMPFR)
-            out.log[redo.idx] <- out.log.redo
+            out.log[redo.idx] <- out.logredo
 
-            if(any(!is.finite(out.log.redo)))
+            if(any(!is.finite(out.logredo)))
                 warning("MPFR used with insufficient ", precBits, " precBits in BB7 density.")
         }
     }
