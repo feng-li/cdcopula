@@ -27,12 +27,12 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-Mdl.MargisType <- c("GARCH", "GARCH", "GUMBEL")
-Mdl.MargisNM <- c("^SML", "^OEX", "GUMBEL")
+Mdl.MargisType <- c("GARCH", "GARCH", "CLAYTON")
+Mdl.MargisNM <- c("^SML", "^OEX", "CLAYTON")
 
 MCMC.Update <- list(list("mu" = F, "phi" = F),
-                   list("mu" = F, "phi" = F),
-                   list("tau" = T))
+                    list("mu" = F, "phi" = F),
+                    list("tau" = T))
 
 names(MCMC.Update) <- Mdl.MargisNM
 
@@ -79,14 +79,10 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ## "Mdl.betaInit" be one in all marginal features.
 Mdl.X <- MCMC.Update
 
-Mdl.X[[1]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
-Mdl.X[[2]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
+Mdl.X[[1]] <- list(include.mean = TRUE, cond.dist = "norm", trace = TRUE)
+Mdl.X[[2]] <- list(include.mean = TRUE, cond.dist = "norm", trace = TRUE)
 
-Mdl.X[[3]][["tau"]] <- cbind(1, X[[Mdl.MargisNM[1]]][Mdl.dataUsedIdx, 1:9], X[[Mdl.MargisNM[2]]][Mdl.dataUsedIdx, 1:9])
+Mdl.X[[3]][["tau"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
@@ -96,7 +92,7 @@ Mdl.parLink[[1]][["phi"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[2]][["mu"]] <- list(type = "identity", nPar = 1)
 Mdl.parLink[[2]][["phi"]] <- list(type = "identity", nPar = 1)
 
-Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", a = 0.01, b = 0.99, nPar = 1)
+Mdl.parLink[[3]][["tau"]] <- list(type = "glogit", nPar = 1, a = 0.01, b = 0.99)
 
 ## THE VARIABLE SELECTION SETTINGS AND STARTING POINT
 ## Variable selection candidates, NULL: no variable selection use full
@@ -110,6 +106,7 @@ Mdl.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
 Mdl.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
 
 Mdl.varSelArgs[[3]][["tau"]] <- list(cand = "2:end", init = "all-in")
+
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
@@ -131,10 +128,12 @@ MCMC.track <- TRUE
 
 MCMC.UpdateOrder <- MCMC.Update
 MCMC.UpdateOrder[[1]][[1]] <- 1
+MCMC.UpdateOrder[[1]][[2]] <- 2
 
-MCMC.UpdateOrder[[2]][[1]] <- 2
+MCMC.UpdateOrder[[2]][[1]] <- 3
+MCMC.UpdateOrder[[2]][[2]] <- 4
 
-MCMC.UpdateOrder[[3]][[1]] <- 3
+MCMC.UpdateOrder[[3]][[1]] <- 5
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------
@@ -156,10 +155,9 @@ MCMC.propArgs[[1]][[2]] <- NA
 MCMC.propArgs[[2]][[1]] <- NA
 MCMC.propArgs[[2]][[2]] <- NA
 
-MCMC.propArgs[[3]][[1]] <-  list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                            "beta" = list(type = "mvt", df = 6),
-                            "indicators" = list(type = "binom", prob = 0.5))
-
+MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+                           "beta" = list(type = "mvt", df = 6),
+                           "indicators" = list(type = "binom", prob = 0.5))
 
 ## POSTERIOR INFERENCE OPTIONS
 ##-----------------------------------------------------------------------------
@@ -206,12 +204,12 @@ Mdl.priArgs[[2]][["phi"]] <- NA
 
 
 Mdl.priArgs[[3]][["tau"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                   input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
-                                                                                a = 0.01, b = 0.99),
-                                                                   output = list(type = "norm", shrinkage = 1)),
-                                                "slopes" = list(type = "cond-mvnorm",
-                                                                mean = 0, covariance = "identity", shrinkage = 1)),
-                                  "indicators" = list(type = "bern", prob = 0.5))
+                                                               input = list(type = "gbeta",  mean = 0.2, variance = 0.05,
+                                                                            a = 0.01, b = 0.95),
+                                                               output = list(type = "norm", shrinkage = 1)),
+                                            "slopes" = list(type = "cond-mvnorm",
+                                                            mean = 0, covariance = "identity", shrinkage = 1)),
+                              "indicators" = list(type = "bern", prob = 0.5))
 
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION

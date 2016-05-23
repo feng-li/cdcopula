@@ -79,12 +79,8 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ## "Mdl.betaInit" be one in all marginal features.
 Mdl.X <- MCMC.Update
 
-Mdl.X[[1]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
-Mdl.X[[2]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
+Mdl.X[[1]] <- list(include.mean = TRUE, cond.dist = "norm", trace = TRUE)
+Mdl.X[[2]] <- list(include.mean = TRUE, cond.dist = "norm", trace = TRUE)
 
 Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
@@ -139,6 +135,7 @@ MCMC.UpdateOrder[[1]][[1]] <- 1
 MCMC.UpdateOrder[[2]][[1]] <- 2
 
 MCMC.UpdateOrder[[3]][[1]] <- 3
+MCMC.UpdateOrder[[3]][[2]] <- 4
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------

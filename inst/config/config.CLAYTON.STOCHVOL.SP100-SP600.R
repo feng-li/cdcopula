@@ -27,8 +27,8 @@
 ### SPECIFY THE MODEL
 ###----------------------------------------------------------------------------
 ## MARGINAL MODELS NAME, TYPE AND PARAMETERS
-Mdl.MargisType <- c("GARCH", "GARCH", "GUMBEL")
-Mdl.MargisNM <- c("^SML", "^OEX", "GUMBEL")
+Mdl.MargisType <- c("STOCHVOL", "STOCHVOL", "CLAYTON")
+Mdl.MargisNM <- c("^SML", "^OEX", "CLAYTON")
 
 MCMC.Update <- list(list("mu" = F, "phi" = F),
                    list("mu" = F, "phi" = F),
@@ -79,12 +79,34 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ## "Mdl.betaInit" be one in all marginal features.
 Mdl.X <- MCMC.Update
 
-Mdl.X[[1]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
-Mdl.X[[2]] <- list(include.mean = TRUE,
-                   cond.dist = "norm",
-                   trace = TRUE)
+
+Mdl.X[[1]] <- list(draws  =  1000,
+                   burnin  =  100,
+                   designmatrix  =  NA,
+                   priormu  =  c(0,  100),
+                   priorphi  =  c(5,  1.5),
+                   priorsigma  =  1,
+                   priornu  =  NA,
+                   priorbeta  =  c(0,  10000),
+                   thinpara  =  1,
+                   thinlatent  =  1,
+                   thintime  =  1,
+                   keeptau  =  FALSE,
+                   quiet  =  FALSE)
+
+Mdl.X[[2]] <- list(draws  =  1000,
+                   burnin  =  100,
+                   designmatrix  =  NA,
+                   priormu  =  c(0,  100),
+                   priorphi  =  c(5,  1.5),
+                   priorsigma  =  1,
+                   priornu  =  NA,
+                   priorbeta  =  c(0,  10000),
+                   thinpara  =  1,
+                   thinlatent  =  1,
+                   thintime  =  1,
+                   keeptau  =  FALSE,
+                   quiet  =  FALSE)
 
 Mdl.X[[3]][["tau"]] <- cbind(1, X[[Mdl.MargisNM[1]]][Mdl.dataUsedIdx, 1:9], X[[Mdl.MargisNM[2]]][Mdl.dataUsedIdx, 1:9])
 
@@ -131,10 +153,12 @@ MCMC.track <- TRUE
 
 MCMC.UpdateOrder <- MCMC.Update
 MCMC.UpdateOrder[[1]][[1]] <- 1
+MCMC.UpdateOrder[[1]][[2]] <- 2
 
-MCMC.UpdateOrder[[2]][[1]] <- 2
+MCMC.UpdateOrder[[2]][[1]] <- 3
+MCMC.UpdateOrder[[2]][[1]] <- 4
 
-MCMC.UpdateOrder[[3]][[1]] <- 3
+MCMC.UpdateOrder[[3]][[1]] <- 5
 
 ## MCMC UPDATING STRATEGY
 ##-----------------------------------------------------------------------------

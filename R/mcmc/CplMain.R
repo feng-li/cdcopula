@@ -21,7 +21,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 ###----------------------------------------------------------------------------
 ### DEBUGGING
 ###----------------------------------------------------------------------------
-
     DEBUGGING <- FALSE
     if(DEBUGGING)
     {## Turn warnings into error
@@ -300,7 +299,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         iIter <- floor((iUpdate-1)/nInner)+1
 
 
-
+        ## Reset starting time from the second iteration to have accurate estimation of
+        ## computing time.
         if(iIter == 2)
         {
             Starting.time2 <- Sys.time()

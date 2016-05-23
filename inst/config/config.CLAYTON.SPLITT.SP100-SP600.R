@@ -163,7 +163,7 @@ MCMC.UpdateOrder[[3]][[1]] <- 9
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMC.UpdateStrategy <- "joint"
+MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 MCMC.propArgs <- MCMC.Update
