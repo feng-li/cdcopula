@@ -155,8 +155,10 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                     {
                         nDim <- length(Mdl.MargisNM)-1
                         namesParFull.ij <- matrix(paste(matrix(1:nDim, nDim, nDim),
-                                                        matrix(1:nDim, nDim, nDim, byrow = TRUE), sep = "."), nDim)
-                        namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij, diag = FALSE)]
+                                                        matrix(1:nDim, nDim, nDim,
+                                                               byrow = TRUE), sep = "."), nDim)
+                        namesPar.ij <- namesParFull.ij[lower.tri(namesParFull.ij,
+                                                                 diag = FALSE)]
                     }
                     else
                     {

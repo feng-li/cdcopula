@@ -132,7 +132,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
         for(i in 1:nObs)
         {
             logDensUpper[i] <- dmvt(x = u.quantile[i, , drop = FALSE],
-                                    sigma = vech2m(rho[i, ], diag = TRUE),
+                                    sigma = vech2m(rho[i, ], diag = FALSE),
                                     type = "shifted", # wikipedia type
                                     df = df[i], log = TRUE)
         }
@@ -141,7 +141,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
         logDens <- logDensUpper-logDensLower
 
         ## The output
-        if(any(is.infinite(logDens))) browser()
+        ## if(any(is.infinite(logDens))) browser()
         out.log <- matrix(logDens)
     }
     else if(tolower(CplNM) == "fgm")

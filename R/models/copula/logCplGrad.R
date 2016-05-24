@@ -196,7 +196,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
         { ## CopulaDensity-MVT.nb
             gradFun4df <- function(i, rho, df, u.quantile)
             {
-                Sigma <- vech2m(rho[i, ], diag = TRUE)
+                Sigma <- vech2m(rho[i, ], diag = FALSE)
                 v <- df[i]
                 x <- matrix(u.quantile[i, ]) # col-vector
                 mu <- 0
@@ -250,9 +250,8 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                 logGradCpl.Sigma <- (-1/2*solve(Sigma)-(v+p)/2*(1+C0/v)^(-1)*(-C1%*%t(C1))/v)
 
                 logCplGrad.rho[i, ] <- logGradCpl.Sigma[lower.tri(logGradCpl.Sigma,
-                                                                  diag = TRUE)]
+                                                                  diag = FALSE)]
             }
-
             out[["rho"]] <- logCplGrad.rho # n-by-lq
         }
 
@@ -314,7 +313,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             ## The gradient for copula with respect to x1.
             FUN <- function(i, x, mu, df, rho, uIdx)
             {
-                Sigma0 <- vech2m(rho[i, ], diag = TRUE)
+                Sigma0 <- vech2m(rho[i, ], diag = FALSE)
                 Sigma <- Sigma0[uIdx, uIdx]
 
                 if(!is.positivedefinite(Sigma))

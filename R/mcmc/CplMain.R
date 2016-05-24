@@ -189,12 +189,14 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     ## Assign the initial values
+    #Rprof()
     initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
                           Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
                           Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
                           MCMC.optimInit = MCMC.optimInit)
-
+    #Rprof(NULL)
+    #summaryRprof()
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
 ###----------------------------------------------------------------------------
@@ -368,7 +370,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
 
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
-                            interval = 0.1, MCMC.burninProp = MCMC.burninProp,
+                            interval = 1, MCMC.burninProp = MCMC.burninProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                             MCMC.betaIdx = MCMC.betaIdx,
                                             MCMC.par = MCMC.par,

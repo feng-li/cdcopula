@@ -88,8 +88,8 @@ Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])[, 1, drop = FALSE]
+Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])[, 1, drop = FALSE]
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
@@ -121,8 +121,8 @@ Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
 Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
 Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
-Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
@@ -167,7 +167,7 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
-MCMC.UpdateStrategy <- "twostage"
+MCMC.UpdateStrategy <- "joint"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 MCMC.propArgs <- MCMC.Update

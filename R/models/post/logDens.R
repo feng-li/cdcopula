@@ -115,12 +115,27 @@ logDens <- function(Mdl.MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     }
 
     ## Updating the copula model if required
+    R_CPL_NPARALLEL <- as.numeric(Sys.getenv("R_CPL_NPARALLEL"))
     if(evalCpl == TRUE)
     {
-        Mdl.logLikCpl <- logCplLik(u = Mdl.u,
-                                   CplNM = CplNM,
-                                   parCplRep = Mdl.par[[CplNM]],
-                                   sum = FALSE) # n-by-1
+
+        if(R_CPL_NPARALLEL>1)
+        {
+            logCplLikFUN.NM <- "logCplLikParallel"
+        }
+        else
+        {
+            logCplLikFUN.NM <- "logCplLik"
+        }
+
+
+        Mdl.logLikCpl.caller <- call(logCplLikFUN.NM,
+                                     u = Mdl.u,
+                                     CplNM = CplNM,
+                                     parCplRep = Mdl.par[[CplNM]],
+                                     sum = FALSE)
+        Mdl.logLikCpl <- eval(Mdl.logLikCpl.caller) # n-by-1
+
         Mdl.d[, CplNM] <- Mdl.logLikCpl
     }
 
