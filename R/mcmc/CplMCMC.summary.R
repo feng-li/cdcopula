@@ -265,9 +265,9 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
                             ## HPD Polygon
                             hpd95.smoothL <- spline(1:length(ObsIdx4Plot), hpd95[1, ],
-                                                    n = length(ObsIdx4Plot)*10)
+                                                    n = length(ObsIdx4Plot)*5)
                             hpd95.smoothU <- spline(1:length(ObsIdx4Plot), hpd95[2, ],
-                                                    n = length(ObsIdx4Plot)*10)
+                                                    n = length(ObsIdx4Plot)*5)
 
                             polygon(x = c(hpd95.smoothL$x, rev(hpd95.smoothU$x)),
                                     y = c(hpd95.smoothL$y, rev(hpd95.smoothU$y)),
