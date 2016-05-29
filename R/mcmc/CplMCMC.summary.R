@@ -24,6 +24,13 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
     TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
     TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-1-iIter), 2) # take away first
                                         # waring-up iteration.
+
+    if(TimeToGo<0)
+    {
+        TimeToGo <- NA
+        TimeUsed <- NA
+    }
+
     donePercent <- round(iIter/MCMC.nIter*100)
 
     progress <- paste("  ", date(), ": ", round(TimeUsed, 2),
@@ -253,13 +260,17 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                             ## browser()
                             ## Initial plot to draw the plot window
                             plot(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1], type = "l",
-                                 lty = "solid", col = "blue",
+                                 lty = "solid", col = "white",
                                  ylim = ylim, ylab = j, xlab = "")
 
-
                             ## HPD Polygon
-                            polygon(x = c(1:ncol(hpd95), ncol(hpd95):1),
-                                    y = c(hpd95[1, ], rev(hpd95[2, ])),
+                            hpd95.smoothL <- spline(1:length(ObsIdx4Plot), hpd95[1, ],
+                                                    n = length(ObsIdx4Plot)*10)
+                            hpd95.smoothU <- spline(1:length(ObsIdx4Plot), hpd95[2, ],
+                                                    n = length(ObsIdx4Plot)*10)
+
+                            polygon(x = c(hpd95.smoothL$x, rev(hpd95.smoothU$x)),
+                                    y = c(hpd95.smoothL$y, rev(hpd95.smoothU$y)),
                                     border = "grey", col = "grey")
 
                             ## Posterior Mean
