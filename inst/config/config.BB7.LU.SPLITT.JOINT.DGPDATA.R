@@ -187,9 +187,7 @@ MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps 
 ## predict the new interval)
 
 nCross <- 1
-Mdl.crossValidArgs <- list(N.subsets = 0,
-                       partiMethod = "time-series",
-                       testRatio = 0.2)
+Mdl.crossValidArgs <- list(N.subsets = 0, partiMethod = "time-series", testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx),Mdl.crossValidArgs)

@@ -10,7 +10,7 @@
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
 CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
-                            MCMC.burninProp, OUT.MCMC, maxcovprint = 20)
+                            MCMC.burninProp, OUT.MCMC, maxcovprint = 20, ObsIdx4Plot = NA)
 {
 
     dev.width <- getOption("width")
@@ -50,56 +50,6 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
     n.burn.default <- round(MCMC.nIter*MCMC.burninProp)
     n.burn <- ifelse(iIter>n.burn.default, n.burn.default, 0)
 
-    subFun <- function(x, iIter, fun){
-        candIdx <- (n.burn+1):iIter
-        if((dim(x)[1] == 1 && length(candIdx)>1) ||
-           (dim(x)[1] == 1 && length(candIdx) == 1 && candIdx != 1))
-        {
-            out <- NA
-        }
-        else
-        {
-            obj <- x[candIdx, ,drop = FALSE]
-            if(any(is.na(obj)))
-            {
-                out <- NA
-            }
-            else
-            {
-                out <- apply(obj, 2, fun)
-            }
-        }
-
-        return(out)
-    }
-
-    subFun3 <- function(x, iIter, fun, dim, ...)
-    {
-        candIdx <- (n.burn+1):iIter
-        if((dim(x)[1] == 1 && length(candIdx)>1) ||
-           (dim(x)[1] == 1 && length(candIdx) == 1 && candIdx != 1))
-        {
-            out <- NA
-        }
-        else
-        {
-            obj <- x[candIdx, , ,drop = FALSE]
-            if(any(is.na(obj)))
-            {
-                out <- NA
-            }
-            else
-            {
-                out <- apply(obj, dim, fun, ...)
-            }
-        }
-        return(out)
-    }
-
-
-
-
-
     ## Set the print interval and consider burnin. If print interval is to narrow, set to
     ## one.
     printInterval <- ifelse(floor(MCMC.nIter*interval) == 0,  1,
@@ -118,6 +68,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
         MCMC.par <- OUT.MCMC[["MCMC.par"]]
         MCMC.AccProb <- OUT.MCMC[["MCMC.AccProb"]]
         MCMC.Update <- OUT.MCMC[["MCMC.Update"]]
+        MCMC.sampleProp <- OUT.MCMC[["MCMC.sampleProp"]]
 
         welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
                          round(n.burn/MCMC.nIter*100), "% MCMC.burninProp) "
@@ -126,8 +77,9 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
         cat(welcome)
         cat(rep("=", dev.width), "\n", sep = "")
 
-        accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace",
-                                   iIter = iIter,  fun = mean)
+        MCMC.sampleIdx <- round(seq(n.burn+1, iIter,
+                                    length.out = round((iIter-n.burn)*MCMC.sampleProp)))
+        nMCMCSample <- length(MCMC.sampleIdx)
 
         ## Regenerate ``MCMC.par`` if not supplied
         MCMC.par <- NULL
@@ -137,9 +89,8 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
             Mdl.X.training <- OUT.MCMC[["Mdl.X.training"]]
             Mdl.parLink <- OUT.MCMC[["Mdl.parLink"]]
 
-            MCMC.sampleIdx <- 1:iIter
+
             nTraining <- nrow(Mdl.X.training[[1]][[1]])
-            nMCMC <- length(MCMC.sampleIdx)
 
             Mdl.MargisNM <- names(MCMC.Update)
             for(CompCaller in names(MCMC.Update))
@@ -166,8 +117,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                     }
 
 
-
-                    MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMC, nTraining, nPar.ij),
+                    MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMCSample, nTraining, nPar.ij),
                                                                  dimnames = list(NULL, NULL, namesPar.ij))
                 }
             }
@@ -186,11 +136,11 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                 return(out)
             }
 
-            for(iMCMC.sampleIdx in MCMC.sampleIdx)
+            for(iMCMC.sampleIdx in 1:nMCMCSample)
             {
-
                 Mdl.beta.curr <- rapply(object=MCMC.beta, f = subsetFun4beta,
-                                        idx = iMCMC.sampleIdx, how = "replace")
+                                        idx = MCMC.sampleIdx[iMCMC.sampleIdx],
+                                        how = "replace")
 
                 Mdl.par.curr <- parCplMeanFun(Mdl.X = Mdl.X.training,
                                               Mdl.parLink = Mdl.parLink,
@@ -208,36 +158,48 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
         }
 
 
-        par.mean <- rapply(MCMC.par, subFun3, how = "replace",
-                           iIter = iIter,  fun = mean, dim = 3)
-        par.median <- rapply(MCMC.par, subFun3, how = "replace",
-                             iIter = iIter,  fun = median, dim = 3)
-        par.sd <- rapply(MCMC.par, subFun3, how = "replace",
-                         iIter = iIter,  fun = sd, dim = 3)
+        subFun3 <- function(obj, fun, dim, ...)
+        {
+            if(any(is.na(obj)))
+            {
+                out <- NA
+            }
+            else
+            {
+                out <- apply(obj, dim, fun, ...)
+            }
+            return(out)
+        }
+        par.mean <- rapply(MCMC.par, subFun3, how = "replace", fun = mean, dim = 3)
+        par.median <- rapply(MCMC.par, subFun3, how = "replace", fun = median, dim = 3,)
+        par.sd <- rapply(MCMC.par, subFun3, how = "replace",   fun = sd, dim = 3)
+        par.ts.mean <- rapply(MCMC.par, subFun3, how = "replace", fun = mean, dim = c(2, 3))
+        par.ts.median <- rapply(MCMC.par, subFun3, how = "replace", fun = median,
+                                dim = c(2, 3))
+        par.ts.sd <- rapply(MCMC.par, subFun3, how = "replace", fun = sd, dim = c(2, 3))
+        par.ts.hpd95 <- rapply(MCMC.par, subFun3, how = "replace", fun = quantile,
+                               dim = c(2, 3), probs = c(0.025, 0.975))
 
-        betaIdx.mean <- rapply(MCMC.betaIdx, subFun, how = "replace",
-                               iIter = iIter, fun = mean)
-        betaIdx.median <- rapply(MCMC.betaIdx, subFun, how = "replace",
-                                 iIter = iIter, fun = median)
-        beta.mean <- rapply(MCMC.beta, subFun, how = "replace",
-                            iIter = iIter,  fun = mean)
-        beta.median <- rapply(MCMC.beta, subFun, how = "replace",
-                              iIter = iIter,  fun = median)
-        beta.sd <- rapply(MCMC.beta, subFun, how = "replace",
-                          iIter = iIter,  fun = sd)
 
-        par.ts.mean <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
-                              fun = mean, dim = c(2, 3))
-        par.ts.median <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
-                                fun = median, dim = c(2, 3))
-        par.ts.sd <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
-                            fun = sd, dim = c(2, 3))
-        par.ts.hpd95 <- rapply(MCMC.par, subFun3, how = "replace", iIter = iIter,
-                               fun = quantile, dim = c(2, 3), probs = c(0.025, 0.975))
-
-        ## Efficiency factor of MCMC
-        beta.ineff <- rapply(MCMC.beta, subFun, how = "replace", iIter = iIter,
-                             fun = ineff)
+        subFun <- function(obj, fun)
+        {
+            if(any(is.na(obj)))
+            {
+                out <- NA
+            }
+            else
+            {
+                out <- apply(obj, 2, fun)
+            }
+            return(out)
+        }
+        accept.prob.mean <- rapply(MCMC.AccProb, subFun, how = "replace", fun = mean)
+        betaIdx.mean <- rapply(MCMC.betaIdx, subFun, how = "replace", fun = mean)
+        betaIdx.median <- rapply(MCMC.betaIdx, subFun, how = "replace", fun = median)
+        beta.mean <- rapply(MCMC.beta, subFun, how = "replace", fun = mean)
+        beta.median <- rapply(MCMC.beta, subFun, how = "replace", fun = median)
+        beta.sd <- rapply(MCMC.beta, subFun, how = "replace",   fun = sd)
+        beta.ineff <- rapply(MCMC.beta, subFun, how = "replace", fun = ineff)
 
 
         if(has.Display)
@@ -250,6 +212,12 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
 
             }
             jDev <- 1
+
+            if(any(is.na(ObsIdx4Plot)))
+            {
+                ObsIdx4Plot <- 1:nTraining
+            }
+
         }
 
         for(i in names(MCMC.beta))
@@ -276,15 +244,17 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                     {
                         if(ncol(par.ts.mean[[i]][[j]]) == 1)
                         {
+                            ## TODO: Add smoothing plot for polygon.
 
                             par(mar = c(3, 4, 0, 0)+0.1)
 
-                            hpd95 <- par.ts.hpd95[[i]][[j]][, , 1]
+                            hpd95 <- par.ts.hpd95[[i]][[j]][, ObsIdx4Plot, 1]
                             ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
-
+                            ## browser()
                             ## Initial plot to draw the plot window
-                            plot(par.ts.mean[[i]][[j]][, 1], type = "l", lty = "solid",
-                                 col = "blue", ylim = ylim, ylab = j, xlab = "")
+                            plot(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1], type = "l",
+                                 lty = "solid", col = "blue",
+                                 ylim = ylim, ylab = j, xlab = "")
 
 
                             ## HPD Polygon
@@ -293,15 +263,15 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                                     border = "grey", col = "grey")
 
                             ## Posterior Mean
-                            points(par.ts.mean[[i]][[j]][, 1],
+                            points(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1],
                                    type = "l", lty = "solid", col = "blue", lwd = 2)
 
                             ## DGP (Only for DGP data)
                             MdlDGP.par <- OUT.MCMC[["MdlDGP.par"]]
                             if(!(length(MdlDGP.par)  == 0 & is.null(MdlDGP.par)))
                             {
-                                Mdl.Idx.training <- OUT.MCMC[["Mdl.Idx.training"]]
-                                points(MdlDGP.par[[i]][[j]][Mdl.Idx.training],
+                                ## Mdl.Idx.training <- OUT.MCMC[["Mdl.Idx.training"]]
+                                points(MdlDGP.par[[i]][[j]][ObsIdx4Plot],
                                        type = "l", lty = "dashed", col = "red", lwd = 2)
                                 legend.idx <- 1:3
                             } else
