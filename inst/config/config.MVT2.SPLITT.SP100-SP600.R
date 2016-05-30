@@ -78,18 +78,18 @@ names(Mdl.Y) <- Mdl.MargisNM[-length(Mdl.MargisNM)]
 ## the features in "Mdl.X" directly.  (3) Set MCMC.UpdateStrategy be "twostage". (4) Set
 ## "Mdl.betaInit" be one in all marginal features.
 Mdl.X <- MCMC.Update
-Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])
+Mdl.X[[1]][["mu"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[1]][["phi"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[1]][["df"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[1]][["lmd"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9])[, 1:2]
 
-Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
+Mdl.X[[2]][["mu"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])[, 1:2]
+Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])[, 1:2]
 
-Mdl.X[[3]][["df"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
-Mdl.X[[3]][["rho"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])
+Mdl.X[[3]][["df"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1], X[[2]][Mdl.dataUsedIdx, 1])
+Mdl.X[[3]][["rho"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1], X[[2]][Mdl.dataUsedIdx, 1])
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
@@ -103,7 +103,7 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2, b = 30)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
-Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, b = 30, nPar = 1)
 Mdl.parLink[[3]][["rho"]] <- list(type = "glogit", a = 0.01, b = 0.99,
                                   nPar = (length(Mdl.MargisType)-1)*(length(Mdl.MargisType)-2)/2)
 
@@ -254,7 +254,7 @@ Mdl.priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custo
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 2),
                                                                   output = list(type = "norm", shrinkage = 1)),
                                                "slopes" = list(type = "cond-mvnorm",
                                                                mean = 0, covariance = "identity", shrinkage = 1)),
@@ -279,7 +279,7 @@ Mdl.priArgs[[2]][["phi"]] <- list("beta" = list("intercept" = list(type = "custo
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 2),
                                                                   output = list(type = "norm", shrinkage = 1)),
                                                "slopes" = list(type = "cond-mvnorm",
                                                                mean = 0, covariance = "identity", shrinkage = 1)),
@@ -292,19 +292,6 @@ Mdl.priArgs[[2]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custo
                                   "indicators" = list(type = "bern", prob = 0.5))
 
 
-Mdl.priArgs[[3]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
-                                                                  output = list(type = "norm", shrinkage = 1)),
-                                               "slopes" = list(type = "cond-mvnorm",
-                                                               mean = 0, covariance = "identity", shrinkage = 1)),
-                                 "indicators" = list(type = "bern", prob = 0.5))
-Mdl.priArgs[[3]][["rho"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                   input = list(type = "gbeta",  mean = 0.5, variance = 0.05,
-                                                                                a = 0.01, b = 0.99),
-                                                                   output = list(type = "norm", shrinkage = 1)),
-                                                "slopes" = list(type = "cond-mvnorm",
-                                                                mean = 0, covariance = "identity", shrinkage = 1)),
-                                  "indicators" = list(type = "bern", prob = 0.5))
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
 ### The parameters in the current MCMC iteration. For the first iteration, it
