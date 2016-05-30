@@ -128,7 +128,7 @@ initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl
                 ##              parUpdate = parUpdate,
                 ##              MCMC.UpdateStrategy = "twostage")
 
-                betaVecOptimComp <-  optimx(par = betaVecInitComp,
+                betaVecOptimComp <-  try(optimx(par = betaVecInitComp,
                                             fn = logPostOptim,
                                             control = list(maximize = TRUE,
                                                            all.methods = FALSE,
@@ -146,10 +146,12 @@ initPar <- function(Mdl.varSelArgs, Mdl.priArgs, Mdl.betaInit, Mdl.X, Mdl.Y, Mdl
                                             Mdl.priArgs = Mdl.priArgs,
                                             ## staticCache = staticCache.sample,
                                             parUpdate = parUpdate,
-                                            MCMC.UpdateStrategy = "twostage")
+                                            MCMC.UpdateStrategy = "twostage"),
+                                         silent = TRUE)
 
 
-                if(any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
+                if(is(betaVecOptimComp, "try-error") ||
+                    any(is.na(as.numeric(betaVecOptimComp[1, 1:length(betaVecInitComp)]))))
                 {# It does not have to be converged.
                     cat("Initializing algorithm failed,  retry...\n")
 
