@@ -157,10 +157,10 @@ MCMC.propArgs[[1]][[2]] <- NA
 MCMC.propArgs[[2]][[1]] <- NA
 MCMC.propArgs[[2]][[2]] <- NA
 
-MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
 
