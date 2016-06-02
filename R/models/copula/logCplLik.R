@@ -56,7 +56,7 @@ logCplLikParallel <- function(u, CplNM, parCplRep, sum = TRUE)
     logCplDensObs.Lst <- clusterMap(cl = cl, fun = dCpl,
                                     u = u.Lst,
                                     parCpl = parCpl.Lst,
-                                    MoreArgs = list(CplNM = CplNM, sum = sum))
+                                    MoreArgs = list(CplNM = CplNM, log = TRUE))
     logCplDensObs <- do.call(rbind, logCplDensObs.Lst)
 
     if(sum)
