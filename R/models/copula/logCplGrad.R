@@ -292,6 +292,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                                                                 beta(1/2, df.1/2))
                 }
 
+                ## FIXME: NAs are not allowed in subscripted assignments
                 F1x1[I] <- F1x1.I
             }
 
