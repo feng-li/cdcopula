@@ -9,33 +9,56 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
-CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
-                            MCMC.burninProp, OUT.MCMC, maxcovprint = 20, ObsIdx4Plot = NA)
+CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp, OUT.MCMC,
+                            maxcovprint = 20, ObsIdx4Plot = NA)
 {
-
     dev.width <- getOption("width")
     has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
 
 
+    ## Set default values for missing arguments
+    if(missing(MCMC.nIter))
+    {
+        MCMC.burninProp <- OUT.MCMC[["MCMC.burninProp"]]
 
-    Starting.time <- OUT.MCMC[["Starting.time"]]
+        MCMC.nIter <- OUT.MCMC[["MCMC.nIter"]]
+
+        if(length(MCMC.burninProp) == 0 | length(MCMC.nIter) == 0)
+        {
+            stop("MCMC.burninProp & MCMC.nIter are not int OUT.MCMC. Supply them manually.")
+        }
+    }
+
+    if(missing(iIter))
+    {
+        iIter <- MCMC.nIter
+    }
+
 
     ## Progress statistics
+    Starting.time <- OUT.MCMC[["Starting.time"]]
+
     TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
     TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-1-iIter), 2) # take away first
                                         # waring-up iteration.
 
+    TimeUsed.units <- ifelse(abs(TimeUsed) < 1, "mins", "hours")
+    TimeToGo.units <- ifelse(abs(TimeToGo) < 1, "mins", "hours")
+
+
     if(TimeToGo<0)
     {
-        TimeToGo <- NA
+        TimeToGo <- 0
         TimeUsed <- NA
     }
 
+
     donePercent <- round(iIter/MCMC.nIter*100)
 
-    progress <- paste("  ", date(), ": ", round(TimeUsed, 2),
-                      " hours elapsed, ", donePercent, "% done, ",
-                      TimeToGo, " hours to go...\n", sep = "")
+    progress <- paste(date(), ": ", round(as.numeric(TimeUsed, units = TimeUsed.units), 1),
+                      " ", TimeUsed.units, " elapsed, ", donePercent, "% done, ",
+                      round(as.numeric(TimeToGo, units = TimeToGo.units), 1),
+                      " ", TimeToGo.units, " to go...\n", sep = "")
 
 
     printInterval2 <- ifelse(MCMC.nIter*interval < 1,  1,
