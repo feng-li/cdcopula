@@ -238,7 +238,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
             logCplGrad.rho <- matrix(NA, nObs, ncol(rho))  # n-by-lq
             for(i in 1:nObs)
             {
-                Sigma <- vech2m(rho[i, ], diag = TRUE)
+                Sigma <- vech2m(rho[i, ], diag = FALSE)
                 v <- df[i]
                 x <- matrix(u.quantile[i, ]) # col-vector
                 mu <- 0
@@ -285,13 +285,13 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                 x1.1 <- x1[I]
 
                 F1x1.I <- {
-                    -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/
-                                                       ((x1.1-mu)^2+df.1))*
+                    -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/((x1.1-mu)^2+df.1))*
                         (1-(x1.1-mu)^2/((x1.1-mu)^2+df.1))^(-1+df.1/2)/
                                                                (2*sqrt((x1.1-mu)^2/((x1.1-mu)^2+df.1))*
                                                                 beta(1/2, df.1/2))
                 }
 
+                ## FIXME: NAs are not allowed in subscripted assignments
                 F1x1[I] <- F1x1.I
             }
 

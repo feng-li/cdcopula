@@ -103,7 +103,7 @@ Mdl.parLink[[2]][["phi"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 Mdl.parLink[[2]][["df"]] <- list(type = "glog", nPar = 1, a = 2, b = 30)
 Mdl.parLink[[2]][["lmd"]] <- list(type = "glog", a = 0.01, b = 100, nPar = 1)
 
-Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, nPar = 1)
+Mdl.parLink[[3]][["df"]] <- list(type = "glog", a = 2, b = 30, nPar = 1)
 Mdl.parLink[[3]][["rho"]] <- list(type = "glogit", a = 0.01, b = 0.99,
                                   nPar = (length(Mdl.MargisType)-1)*(length(Mdl.MargisType)-2)/2)
 
@@ -169,41 +169,41 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF
 ## of margins (i.e. u1, u2, ...)
 
-MCMC.UpdateStrategy <- "joint"
+MCMC.UpdateStrategy <- "twostage"
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 MCMC.propArgs <- MCMC.Update
-MCMC.propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                                "beta" = list(type = "mvt", df = 6),
-                                "indicators" = list(type = "binom", prob = 0.5))
-
-MCMC.propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                                "beta" = list(type = "mvt", df = 6),
-                                "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                                "beta" = list(type = "mvt", df = 6),
-                                "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
-                                "beta" = list(type = "mvt", df = 6),
-                                "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[1]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
 
-
-MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[2]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
-MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 3, hess = "outer"),
+MCMC.propArgs[[2]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+                                "beta" = list(type = "mvt", df = 6),
+                                "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[2]][[3]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+                                "beta" = list(type = "mvt", df = 6),
+                                "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[2]][[4]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+                                "beta" = list(type = "mvt", df = 6),
+                                "indicators" = list(type = "binom", prob = 0.5))
+
+
+MCMC.propArgs[[3]][[1]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
+                                "beta" = list(type = "mvt", df = 6),
+                                "indicators" = list(type = "binom", prob = 0.5))
+MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps = 1, hess = "outer"),
                                 "beta" = list(type = "mvt", df = 6),
                                 "indicators" = list(type = "binom", prob = 0.5))
 
@@ -254,7 +254,7 @@ Mdl.priArgs[[1]][["phi"]] <- list("beta" = list("intercept" = list(type = "custo
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[1]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 2),
                                                                   output = list(type = "norm", shrinkage = 1)),
                                                "slopes" = list(type = "cond-mvnorm",
                                                                mean = 0, covariance = "identity", shrinkage = 1)),
@@ -279,7 +279,7 @@ Mdl.priArgs[[2]][["phi"]] <- list("beta" = list("intercept" = list(type = "custo
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
 Mdl.priArgs[[2]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 2),
                                                                   output = list(type = "norm", shrinkage = 1)),
                                                "slopes" = list(type = "cond-mvnorm",
                                                                mean = 0, covariance = "identity", shrinkage = 1)),
@@ -291,9 +291,8 @@ Mdl.priArgs[[2]][["lmd"]] <- list("beta" = list("intercept" = list(type = "custo
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
 
-
 Mdl.priArgs[[3]][["df"]] <- list("beta" = list("intercept" = list(type = "custom",
-                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 4),
+                                                                  input = list(type = "glognorm",  mean = 5, variance = 10, a = 2),
                                                                   output = list(type = "norm", shrinkage = 1)),
                                                "slopes" = list(type = "cond-mvnorm",
                                                                mean = 0, covariance = "identity", shrinkage = 1)),
@@ -305,6 +304,7 @@ Mdl.priArgs[[3]][["rho"]] <- list("beta" = list("intercept" = list(type = "custo
                                                 "slopes" = list(type = "cond-mvnorm",
                                                                 mean = 0, covariance = "identity", shrinkage = 1)),
                                   "indicators" = list(type = "bern", prob = 0.5))
+
 ###----------------------------------------------------------------------------
 ### THE PARAMETERS FOR INITIAL AND CURRENT MCMC ITERATION
 ### The parameters in the current MCMC iteration. For the first iteration, it
