@@ -1,7 +1,8 @@
 #!/bin/bash -l
 
-#SBATCH -J T2STOCHVOL
+#SBATCH -J T2JOINT
 #SBATCH -n 1 # Number of cores
+#SBATCH -p MCMC
 #SBATCH -t 10-00:00 # Runtime in D-HH:MM
 #SBATCH -o JOB%j.out # File to which STDOUT will be written
 #SBATCH -e JOB%j.err # File to which STDERR will be written
@@ -27,7 +28,7 @@
 # CONFIG_FILE=config.GUMBEL.GARCH.SP100-SP600.R
 # CONFIG_FILE=config.GUMBEL.STOCHVOL.SP100-SP600.R
 
-# CONFIG_FILE=config.MVT2.SPLITT.SP100-SP600.R
+CONFIG_FILE=config.MVT2.SPLITT.SP100-SP600.R
 # CONFIG_FILE=config.MVT2.GARCH.SP100-SP600.R
 # CONFIG_FILE=config.MVT2.STOCHVOL.SP100-SP600.R
 

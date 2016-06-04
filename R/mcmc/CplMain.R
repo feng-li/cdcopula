@@ -59,6 +59,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ## Source the configuration file for the model.
     nCross <- NA
+    nObsRaw <- NA
     Mdl.X <- NA
     Mdl.Y <- NA
     Mdl.MargisType <- NA
@@ -67,6 +68,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     Mdl.priArgs <- NA
     Mdl.varSelArgs <- NA
     Mdl.betaInit <- NA
+
+    Mdl.dataUsedIdx <- NA
+    Mdl.crossValidArgs <- NA
     ## Mdl.u <- NA
 
     MCMC.nIter <- NA
@@ -89,6 +93,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
 
     cat("nObsRaw:", nObsRaw, "\n")
+    cat("nObsUsed:", length(Mdl.dataUsedIdx), "\n")
+
     cat("MCMC.nIter: ", MCMC.nIter,   "\n")
     cat("MCMC.burninProp:", MCMC.burninProp, "\n")
     cat("MCMC.UpateStrategy: ", MCMC.UpdateStrategy, "\n")
@@ -371,6 +377,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
             CplMCMC.summary(iIter = iIter, MCMC.nIter = MCMC.nIter,
                             interval = 1, MCMC.burninProp = MCMC.burninProp,
+                            MCMC.sampleProp = MCMC.sampleProp,
                             OUT.MCMC = list(MCMC.beta = MCMC.beta,
                                             MCMC.betaIdx = MCMC.betaIdx,
                                             MCMC.par = MCMC.par,

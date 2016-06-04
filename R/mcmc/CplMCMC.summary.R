@@ -9,7 +9,8 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
-CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp, OUT.MCMC,
+CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
+                            MCMC.sampleProp, OUT.MCMC,
                             maxcovprint = 20, ObsIdx4Plot = NA)
 {
     dev.width <- getOption("width")
@@ -25,13 +26,24 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp, 
 
         if(length(MCMC.burninProp) == 0 | length(MCMC.nIter) == 0)
         {
-            stop("MCMC.burninProp & MCMC.nIter are not int OUT.MCMC. Supply them manually.")
+            stop("MCMC.burninProp & MCMC.nIter are not available in OUT.MCMC. Supply them manually.")
         }
     }
 
     if(missing(iIter))
     {
         iIter <- MCMC.nIter
+    }
+
+    if(missing(MCMC.sampleProp))
+    {
+        MCMC.sampleProp <- OUT.MCMC[["MCMC.sampleProp"]]
+
+        if(length(MCMC.sampleProp) == 0)
+        {
+            stop("MCMC.sampleProp is not available in OUT.MCMC. Supply it manually.")
+        }
+
     }
 
 
@@ -55,7 +67,8 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp, 
 
     donePercent <- round(iIter/MCMC.nIter*100)
 
-    progress <- paste(date(), ": ", round(as.numeric(TimeUsed, units = TimeUsed.units), 1),
+    progress <- paste(format(Sys.time(), "%Y-%b-%d@%H:%M"), ": ",
+                      round(as.numeric(TimeUsed, units = TimeUsed.units), 1),
                       " ", TimeUsed.units, " elapsed, ", donePercent, "% done, ",
                       round(as.numeric(TimeToGo, units = TimeToGo.units), 1),
                       " ", TimeToGo.units, " to go...\n", sep = "")
@@ -98,7 +111,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp, 
         MCMC.par <- OUT.MCMC[["MCMC.par"]]
         MCMC.AccProb <- OUT.MCMC[["MCMC.AccProb"]]
         MCMC.Update <- OUT.MCMC[["MCMC.Update"]]
-        MCMC.sampleProp <- OUT.MCMC[["MCMC.sampleProp"]]
+        ## MCMC.sampleProp <- OUT.MCMC[["MCMC.sampleProp"]]
 
         welcome <- paste("MCMC SUMMARY: ", donePercent, "% (",
                          round(n.burn/MCMC.nIter*100), "% MCMC.burninProp) "

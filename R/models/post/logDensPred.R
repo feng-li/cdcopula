@@ -271,7 +271,7 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
 
     out <- list(Mdl.logPredDens = Mdl.logPredDens,
                 Mdl.PredMVSK = MVSK,
-                Mdl.RredRESID = RESID,
+                Mdl.RredRESID = RESID
                 # Mdl.PredY = Mdl.PredY # too big
                 )
     return(out)
