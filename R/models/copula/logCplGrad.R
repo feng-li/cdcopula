@@ -285,8 +285,7 @@ logCplGrad <- function(CplNM, u, parCpl, parCaller)
                 x1.1 <- x1[I]
 
                 F1x1.I <- {
-                    -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/
-                                                       ((x1.1-mu)^2+df.1))*
+                    -(2*(x1.1-mu)^3/((x1.1-mu)^2+df.1)^2-2*(x1.1-mu)/((x1.1-mu)^2+df.1))*
                         (1-(x1.1-mu)^2/((x1.1-mu)^2+df.1))^(-1+df.1/2)/
                                                                (2*sqrt((x1.1-mu)^2/((x1.1-mu)^2+df.1))*
                                                                 beta(1/2, df.1/2))
