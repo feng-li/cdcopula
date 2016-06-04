@@ -260,14 +260,14 @@ CplMCMC.summary <- function(MCMC.nIter, iIter = MCMC.nIter, interval = 0.1,
                             ## browser()
                             ## Initial plot to draw the plot window
                             plot(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1], type = "l",
-                                 lty = "solid", col = "white",
+                                 lty = "solid", col = "blue",
                                  ylim = ylim, ylab = j, xlab = "")
 
                             ## HPD Polygon
                             hpd95.smoothL <- spline(1:length(ObsIdx4Plot), hpd95[1, ],
-                                                    n = length(ObsIdx4Plot)*5)
+                                                    n = length(ObsIdx4Plot)*10)
                             hpd95.smoothU <- spline(1:length(ObsIdx4Plot), hpd95[2, ],
-                                                    n = length(ObsIdx4Plot)*5)
+                                                    n = length(ObsIdx4Plot)*10)
 
                             polygon(x = c(hpd95.smoothL$x, rev(hpd95.smoothU$x)),
                                     y = c(hpd95.smoothL$y, rev(hpd95.smoothU$y)),
