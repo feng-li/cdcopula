@@ -77,6 +77,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     MCMC.Update <- NA
     MCMC.track <- NA
     MCMC.burninProp <- NA
+    MCMC.sampleProp <- NA
     MCMC.UpdateStrategy <- NA
     MCMC.UpdateOrder <- NA
     MCMC.propArgs <- NA

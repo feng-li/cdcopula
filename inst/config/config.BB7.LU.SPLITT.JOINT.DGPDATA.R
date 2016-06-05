@@ -58,6 +58,7 @@ DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
                                  ## "inst/config/dgp/config.DGP.VS.R"
                                  "inst/config/dgp/config.DGP.Plain.R"
                                  ), export = "parent.env")
+set.seed(as.numeric(Sys.time()))
 
 ## No. of Total Observations
 nObsRaw <- nrow(MdlDGP.u[["u"]])
@@ -101,7 +102,7 @@ Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 1000
+MCMC.nIter <- 5000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
