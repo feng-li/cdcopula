@@ -140,6 +140,7 @@ dCpl <- function(CplNM, u, parCpl, log = TRUE)
         logDensLower <- apply(dt(u.quantile, df = df, log = TRUE), 1, sum)
         logDens <- logDensUpper-logDensLower
 
+        ## browser()
         ## The output
         ## if(any(is.infinite(logDens))) browser()
         out.log <- matrix(logDens)

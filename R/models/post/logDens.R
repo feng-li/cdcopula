@@ -138,7 +138,7 @@ logDens <- function(Mdl.MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
 
         Mdl.d[, CplNM] <- Mdl.logLikCpl
     }
-
+    ## browser()
     ## if(any(!is.finite(Mdl.u))) browser()
     out <- list(Mdl.d = Mdl.d, Mdl.u = Mdl.u,
                 Mdl.PostComp = Mdl.PostComp)

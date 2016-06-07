@@ -18,9 +18,6 @@
 ##' @note Created: Tue Jan 17 19:27:25 CET 2012; Current: Mon Jan 05 16:24:51 CST 2015.
 MargiModel <- function(y, type, par, densCaller = c("u", "d"))
 {
-    ## The out storage
-    out <- list()
-
 ###----------------------------------------------------------------------------
 ### CONVERT FOREIGN MODELS INTO STANDARD SPECIFICATIONS
 ###----------------------------------------------------------------------------
@@ -51,13 +48,11 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
         if("u" %in% tolower(densCaller))
         {
             u <- pnorm(y, mean = mu, sd = phi, log = FALSE)
-            out[["u"]] <- u
         }
         ## The quantile representation
         if("d" %in% tolower(densCaller))
         {
             d <- dnorm(y, mean = mu, sd = phi, log = TRUE)
-            out[["d"]] <- d
         }
     }
     else if (tolower(typeStd)  == "splitt")
@@ -74,16 +69,12 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
         if("u" %in% tolower(densCaller))
         {
             u <- psplitt(q = y, mu = mu, df = df, phi = phi, lmd = lmd)
-
-            out[["u"]] <- u
         }
         ## PDF
         if("d" %in% tolower(densCaller))
         {
             d <- dsplitt(x = y, mu = mu, df = df, phi = phi, lmd = lmd,
                          log = TRUE)
-
-            out[["d"]] <- d
         }
     }
     else if (tolower(typeStd)  == "poisson")
@@ -93,13 +84,11 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
         if("u" %in% tolower(densCaller))
         {
             u <- ppois(q = y, lambda = mu, log.p = FALSE)
-            out[["u"]] <- u
         }
 
         if("d" %in% tolower(densCaller))
         {
             d <- dpois(x = y, lambda = mu, log = TRUE)
-            out[["d"]] <- d
         }
 
     }
@@ -108,6 +97,37 @@ MargiModel <- function(y, type, par, densCaller = c("u", "d"))
         stop("This type of margin is not implemented.")
     }
 
+
+    ## The out storage
+    out <- list()
+
     ## The output
+    if("u" %in% tolower(densCaller))
+    {
+        ## Numeric stability check for u
+
+        tol <- 1e-6
+        u0.idx <- (u<tol)
+        if(any(u0.idx))
+        {
+            u[u0.idx] <- 0+tol
+            warning(paste("Marginal CDF too close to 0, replaced with", tol))
+        }
+
+        u1.idx <- ((1-u)<tol)
+        if(any(u1.idx))
+        {
+            u[u1.idx] <- 1-tol
+            warning(paste("Marginal CDF too close to 1, replaced with", 1-tol))
+        }
+
+        out[["u"]] <- u
+
+    }
+    if("d" %in% tolower(densCaller))
+    {
+        out[["d"]] <- d
+
+    }
     return(out)
 }

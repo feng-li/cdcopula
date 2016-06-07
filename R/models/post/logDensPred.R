@@ -167,9 +167,12 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
         }
         return(out)
     }
+
+    cat("Calculating predictive density, may take a few minutes...")
     j <- 1
     for(iMCMC.sampleIdx in MCMC.sampleIdx)
-    {   ## Just the likelihood function with posterior samples
+    {
+        ## Just the likelihood function with posterior samples
         Mdl.beta.curr <- rapply(object=MCMC.beta, f = subsetFun4beta,
                                 idx = iMCMC.sampleIdx, how = "replace")
 
@@ -268,7 +271,6 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
         Mdl.logPredDens <- NA
         RESID <- NA
     }
-
     out <- list(Mdl.logPredDens = Mdl.logPredDens,
                 Mdl.PredMVSK = MVSK,
                 Mdl.RredRESID = RESID

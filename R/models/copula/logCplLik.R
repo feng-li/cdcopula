@@ -17,7 +17,7 @@ logCplLik <- function(u, CplNM, parCplRep, sum = TRUE)
     parCpl <- parCplRep2Std(CplNM = CplNM, parCplRep = parCplRep)
 
     logCplDensObs <- dCpl(CplNM = CplNM, u = u, parCpl = parCpl, log = TRUE)
-
+    ## browser()
     ## The output
     if(sum)
     {
