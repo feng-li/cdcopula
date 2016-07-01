@@ -310,14 +310,14 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
         ## Reset starting time from the second iteration to have accurate estimation of
         ## computing time.
-        if(iIter == 2)
-        {
-            Starting.time2 <- Sys.time()
-        }
-        else
-        {
-            Starting.time2 <- Starting.time
-        }
+        ## if(iIter == 2)
+        ## {
+        ##     Starting.time2 <- Sys.time()
+        ## }
+        ## else
+        ## {
+        ##     Starting.time2 <- Starting.time
+        ## }
 
 
         ## print(c(iUpdate, iInner, iIter))
@@ -384,11 +384,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                             MCMC.par = MCMC.par,
                                             MCMC.AccProb = MCMC.AccProb,
                                             MCMC.Update = MCMC.Update,
-
                                             Mdl.parLink = Mdl.parLink,
                                             Mdl.X.training = Mdl.X.training,
-
-                                            Starting.time = Starting.time2)
+                                            Starting.time = Starting.time)
                             )
         }
 

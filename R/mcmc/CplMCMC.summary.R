@@ -51,9 +51,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
     Starting.time <- OUT.MCMC[["Starting.time"]]
 
     TimeUsed <- difftime(Sys.time(), Starting.time, units = "hours")
-    TimeToGo <-  round(TimeUsed/(iIter-1)*(MCMC.nIter-1-iIter), 2) # take away first
-                                        # waring-up iteration.
-
+    TimeToGo <- TimeUsed/iIter*(MCMC.nIter-iIter)
     TimeUsed.units <- ifelse(abs(TimeUsed) < 1, "mins", "hours")
     TimeToGo.units <- ifelse(abs(TimeToGo) < 1, "mins", "hours")
 
@@ -64,6 +62,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
         TimeUsed <- NA
     }
 
+    ## if(TimeUsed <- 0.01) browser()
 
     donePercent <- round(iIter/MCMC.nIter*100)
 
@@ -74,8 +73,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
                       " ", TimeToGo.units, " to go...\n", sep = "")
 
 
-    printInterval2 <- ifelse(MCMC.nIter*interval < 1,  1,
-                             floor(MCMC.nIter*0.1))
+    printInterval2 <- ifelse(MCMC.nIter*interval < 1,  1, floor(MCMC.nIter*0.1))
 
     printIter1 <- 4
     printIter2 <- seq(from = printInterval2, to = MCMC.nIter, by = printInterval2)
