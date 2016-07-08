@@ -170,7 +170,7 @@ if(nCross>1 & nCores>1)
 ### POSTERIOR INFERENCE, PREDICTION ETC
 ###----------------------------------------------------------------------------
 ## Calculate the LPDS
-cat("Calculating predictions......")
+cat("Calculating predictions...\n")
 OUT.PRED.LPDS <- list()
 LPDS <- OUT.FITTED[[1]][["LPDS"]]
 {if(nCross>1 & nCores >1)
