@@ -62,14 +62,14 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
     { ## PASS INTERNALLY
         ## PATH TO THE MODEL CONFIGURATION FILE
         MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                   ## "inst/config/config.BB7.SPLITT.SP100-SP600.R"
+                                   "inst/config/config.BB7.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.GARCH.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
                                    ## "inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
                                    ## "inst/config/config.GUMBEL.STOCHVOL.SP100-SP600.R"
                                    ## "inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
-                                   "inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
+                                   ## "inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
                                    ## "inst/config/config.MVT2.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
@@ -128,7 +128,13 @@ rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx", "LPDS")))
 
 
 ## Set Parallel Computing environment
-R_CPL_NPARALLEL <- floor(nCores/nCross)
+if(nCross != 0)
+{
+    R_CPL_NPARALLEL <- floor(nCores/nCross)
+} else
+{
+    R_CPL_NPARALLEL <- nCores
+}
 
 if(nCross>1 & nCores>1)
 {

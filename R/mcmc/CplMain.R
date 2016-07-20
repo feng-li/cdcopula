@@ -118,7 +118,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     cat("MCMC.Update:\n")
     print(unlist(MCMC.Update))
     cat(rep("-", getOption("width")-1), "\n", sep = "")
-
+    ## browser()
 ###----------------------------------------------------------------------------
 ### Parallel Setting up
 ###----------------------------------------------------------------------------
@@ -196,12 +196,29 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
     ## Assign the initial values
-    #Rprof()
+                                        #Rprof()
+
+
+    ## browser()
+
     initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
                           Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
                           Mdl.X = Mdl.X.training, Mdl.Y = Mdl.Y.training,
                           Mdl.parLink = Mdl.parLink, MCMC.Update = MCMC.Update,
                           MCMC.optimInit = MCMC.optimInit)
+
+
+    ## a <- logPriors(Mdl.X = Mdl.X,
+    ##                Mdl.parLink = Mdl.parLink,
+    ##                Mdl.beta = Mdl.beta,
+    ##                Mdl.betaIdx = Mdl.betaIdx,
+    ##                Mdl.varSelArgs = Mdl.varSelArgs,
+    ##                Mdl.priArgs = Mdl.priArgs,
+    ##                parUpdate = parUpdate)
+
+
+
+
     #Rprof(NULL)
     #summaryRprof()
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
@@ -283,7 +300,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           parUpdate = MCMC.Update,
                           MCMC.UpdateStrategy = MCMC.UpdateStrategy)
     staticCache <- Mdl.DryRun[["staticCache"]]
-    ## browser()
 
     cat("\nMEAN INITIAL VALUES FOR MODEL PARAMETERS:\n")
 

@@ -88,8 +88,8 @@ Mdl.X[[2]][["phi"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[2]][["df"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 Mdl.X[[2]][["lmd"]] <- cbind(1, X[[2]][Mdl.dataUsedIdx, 1:9])
 
-Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])[, 1, drop = FALSE]
-Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])[, 1, drop = FALSE]
+Mdl.X[[3]][["lambdaL"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])#[, 1, drop = FALSE]
+Mdl.X[[3]][["lambdaU"]] <- cbind(1, X[[1]][Mdl.dataUsedIdx, 1:9], X[[2]][Mdl.dataUsedIdx, 1:9])#[, 1, drop = FALSE]
 
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
@@ -121,15 +121,15 @@ Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
 Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
 Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 1000
+MCMC.nIter <- 10000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -214,7 +214,7 @@ MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps 
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
 
-nCross <- 1
+nCross <- 0
 Mdl.crossValidArgs <- list(N.subsets = nCross,
                        partiMethod = "time-series",
                        testRatio = 0.2)
