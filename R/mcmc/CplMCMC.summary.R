@@ -290,25 +290,31 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
                             par(mar = c(3, 4, 0, 0)+0.1)
 
                             hpd95 <- par.ts.hpd95[[i]][[j]][, ObsIdx4Plot, 1]
-                            ylim <- c(min(hpd95[1, ]), max(hpd95[2, ]))
-                            ## browser()
+                            ylim <- c(quantile(hpd95[1, ], 0.001), quantile(hpd95[2, ], 0.999))
+
                             ## Initial plot to draw the plot window
-                            plot(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1], type = "l",
-                                 lty = "solid", col = "blue",
+                            x <- as.Date(rownames(Mdl.X.training[[i]][[j]]))
+                            y <- par.ts.mean[[i]][[j]][ObsIdx4Plot, 1]
+                            plot(x = x, y = y, type = "l", lty = "solid", col = "white",
                                  ylim = ylim, ylab = j, xlab = "")
 
                             ## HPD Polygon
-                            hpd95.smoothL <- spline(1:length(ObsIdx4Plot), hpd95[1, ],
+                            hpd95.smoothL <- spline(x, hpd95[1, ],
                                                     n = length(ObsIdx4Plot)*10)
-                            hpd95.smoothU <- spline(1:length(ObsIdx4Plot), hpd95[2, ],
+                            hpd95.smoothU <- spline(x, hpd95[2, ],
                                                     n = length(ObsIdx4Plot)*10)
 
                             polygon(x = c(hpd95.smoothL$x, rev(hpd95.smoothU$x)),
                                     y = c(hpd95.smoothL$y, rev(hpd95.smoothU$y)),
                                     border = "grey", col = "grey")
 
+                            ## polygon(x = c(hpd95.smoothL$x, rev(hpd95.smoothU$x)),
+                            ##         y = c(hpd95.smoothL$y, rev(hpd95.smoothU$y)),
+                            ##         border = "grey", col = "grey")
+
+
                             ## Posterior Mean
-                            points(par.ts.mean[[i]][[j]][ObsIdx4Plot, 1],
+                            points(x = x, y = par.ts.mean[[i]][[j]][ObsIdx4Plot, 1],
                                    type = "l", lty = "solid", col = "blue", lwd = 2)
 
                             ## DGP (Only for DGP data)
@@ -316,7 +322,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
                             if(!(length(MdlDGP.par)  == 0 & is.null(MdlDGP.par)))
                             {
                                 ## Mdl.Idx.training <- OUT.MCMC[["Mdl.Idx.training"]]
-                                points(MdlDGP.par[[i]][[j]][ObsIdx4Plot],
+                                points(x = x, y = MdlDGP.par[[i]][[j]][ObsIdx4Plot],
                                        type = "l", lty = "dashed", col = "red", lwd = 2)
                                 legend.idx <- 1:3
                             } else
@@ -327,7 +333,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
                             ## Legend
                             legend("topright",ncol = length(legend.idx),
                                    lty = c("dotted", "solid", "dashed")[legend.idx],
-                                   lwd = c(30, 1, 1)[legend.idx],
+                                   lwd = c(20, 3, 3)[legend.idx],
                                    col = c("grey", "blue", "red")[legend.idx],
                                    legend = c("95% HPD", "Posterior mean", "DGP values")[legend.idx])
                         }
