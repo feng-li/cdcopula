@@ -253,7 +253,8 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
     if(!is.null(PredDens))
     {
         ## Residuals and the uncertainty
-        MCMC.residual <- mapply(FUN = function(x, y) {matrix(x, nrow(y), ncol(y), byrow = TRUE)-y},
+        MCMC.residual <- mapply(FUN = function(x, y) {
+            matrix(x, nrow(y), ncol(y), byrow = TRUE)-y},
                                 x = Mdl.Y.testing[names(Mdl.PredY)],
                                 y = lapply(Mdl.PredY, function(x) x[, ,"mean"]),
                                 SIMPLIFY = FALSE)
@@ -273,7 +274,7 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
     }
     out <- list(Mdl.logPredDens = Mdl.logPredDens,
                 Mdl.PredMVSK = MVSK,
-                Mdl.RredRESID = RESID
+                Mdl.PredRESID = RESID
                 # Mdl.PredY = Mdl.PredY # too big
                 )
     return(out)

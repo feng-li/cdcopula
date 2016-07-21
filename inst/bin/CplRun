@@ -200,8 +200,8 @@ LPDS <- OUT.FITTED[[1]][["LPDS"]]
      }
  }
 
- OUT.PRED.MVSK <- lapply(Mdl.PredLst, function(x) x[["MVSK"]])
- OUT.PRED.RESID <- lapply(Mdl.PredLst, function(x) x[["RESID"]])
+ OUT.PRED.MVSK <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredMVSK"]])
+ OUT.PRED.RESID <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredRESID"]])
  cat("done\n")
  print(OUT.PRED.LPDS)
 ###----------------------------------------------------------------------------
