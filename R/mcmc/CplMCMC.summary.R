@@ -209,7 +209,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
 
         out <- list(par.summary = MCMC.parSummary,
                     beta.mean = beta.mean,
-                    beta.median = beta.median,
+                    ## beta.median = beta.median,
                     beta.sd = beta.sd,
                     betaIdx.mean = betaIdx.mean,
                     beta.ineff = beta.ineff,

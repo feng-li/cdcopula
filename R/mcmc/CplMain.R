@@ -83,6 +83,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     MCMC.propArgs <- NA
     MCMC.optimInit <- NA
 
+    ForeignModelSpec <- NA
+
     source(MdlConfigFile, local = TRUE)
 
 ###----------------------------------------------------------------------------
