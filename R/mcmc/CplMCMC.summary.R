@@ -104,7 +104,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
         ## par <- list(...)
         MCMC.betaIdx <- OUT.MCMC[["MCMC.betaIdx"]]
         MCMC.beta <- OUT.MCMC[["MCMC.beta"]]
-        ## MCMC.par <- OUT.MCMC[["MCMC.par"]]
+        MCMC.par <- OUT.MCMC[["MCMC.par"]]
         MCMC.AccProb <- OUT.MCMC[["MCMC.AccProb"]]
         MCMC.Update <- OUT.MCMC[["MCMC.Update"]]
         ## MCMC.sampleProp <- OUT.MCMC[["MCMC.sampleProp"]]
@@ -119,12 +119,18 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
         MCMC.sampleIdx <- round(seq(n.burn+1, iIter,
                                     length.out = round((iIter-n.burn)*MCMC.sampleProp)))
 
-        ## Generate ``MCMC.par summary
-        MCMC.parSummary <- parCplMCMC(MCMC.beta = MCMC.beta,
-                                      Mdl.X = OUT.MCMC[["Mdl.X.training"]],
-                                      Mdl.parLink = OUT.MCMC[["Mdl.parLink"]],
-                                      MCMC.Update = MCMC.Update,
-                                      MCMC.sampleIdx = MCMC.sampleIdx)
+        ## Generate ``MCMC.par if not supplied
+        if(length(MCMC.par) == 0)
+        {
+            MCMC.par <- parCplMCMC(MCMC.beta = MCMC.beta,
+                                   Mdl.X = OUT.MCMC[["Mdl.X.training"]],
+                                   Mdl.parLink = OUT.MCMC[["Mdl.parLink"]],
+                                   MCMC.Update = MCMC.Update,
+                                   MCMC.sampleIdx = MCMC.sampleIdx)
+        }
+
+        MCMC.parSummary <- parCplMCMCSummary(MCMC.par)
+
         ## Plot Post Summary
         plotCplParTS(MCMC.Update = MCMC.Update,
                      MCMC.parSummary = MCMC.parSummary,

@@ -1,4 +1,10 @@
 ## This script plots the daily return of SP100 and SP600 data
+iCross <- 1
+MCMC.par <- parCplMCMC(MCMC.beta = OUT.FITTED[[iCross]][["MCMC.beta"]],
+                       Mdl.X = OUT.FITTED[[iCross]][["Mdl.X.training"]],
+                       Mdl.parLink = OUT.FITTED[[iCross]][["Mdl.parLink"]],
+                       MCMC.Update = OUT.FITTED[[iCross]][["MCMC.Update"]],
+                       MCMC.sampleIdx = MCMC.sampleIdx)
 
 
 ## Plot the empirical copula
@@ -11,10 +17,11 @@ u <- mesh.grid(u1)
 ##                          x = Y[[1]], y = Y[[2]]),
 ##                   nPoints)
 
-tau <- Mdl.par[[3]][["tau"]]
-lambdaL <- Mdl.par[[3]][["lambdaL"]]
-lambdaU <- as.vector(kendalltauInv(
-          CplNM = CplNM, parRepCpl = Mdl.par[[3]]))
+## tau <- MCMC.par[[3]][["tau"]]
+lambdaL <- MCMC.par[[3]][["lambdaL"]]
+lambdaU <- MCMC.par[[3]][["lambdaL"]]
+## lambdaU <- as.vector(kendalltauInv(
+##           CplNM = CplNM, parRepCpl = MCMC.par[[3]]))
 
       ## cat(lambdaL[1], lambdaU[1], tau[1], "\n")
       ## points( lambdaL[1], lambdaU[2], col = "red", pch = 20)

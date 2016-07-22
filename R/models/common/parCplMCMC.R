@@ -1,11 +1,10 @@
 parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleIdx)
 {
     MCMC.par <- list()
-    Mdl.X.training <- Mdl.X
 
     nMCMCSample <- length(MCMC.sampleIdx)
-    nTraining <- nrow(Mdl.X.training[[1]][[1]])
-    nTrainingNames <- rownames(Mdl.X.training[[1]][[1]])
+    nObs <- nrow(Mdl.X[[1]][[1]])
+    nObsNames <- rownames(Mdl.X[[1]][[1]])
 
     Mdl.MargisNM <- names(MCMC.Update)
 
@@ -15,9 +14,9 @@ parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleId
     {
         for(parCaller in names(MCMC.Update[[CompCaller]]))
         {
-            ncolX.ij <- ncol(Mdl.X.training[[CompCaller]][[parCaller]])
+            ncolX.ij <- ncol(Mdl.X[[CompCaller]][[parCaller]])
             nPar.ij <- Mdl.parLink[[CompCaller]][[parCaller]][["nPar"]]
-            namesX.ij <- rep(colnames(Mdl.X.training[[CompCaller]][[parCaller]]), nPar.ij)
+            namesX.ij <- rep(colnames(Mdl.X[[CompCaller]][[parCaller]]), nPar.ij)
 
 
             if((CompCaller %in% Mdl.MargisNM[length(Mdl.MargisNM)]) & nPar.ij != 1)
@@ -35,8 +34,8 @@ parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleId
             }
 
 
-            MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMCSample, nTraining, nPar.ij),
-                                                         dimnames = list(NULL, nTrainingNames, namesPar.ij))
+            MCMC.par[[CompCaller]][[parCaller]] <- array(NA, c(nMCMCSample, nObs, nPar.ij),
+                                                         dimnames = list(NULL, nObsNames, namesPar.ij))
         }
     }
 
@@ -60,7 +59,7 @@ parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleId
                                 idx = MCMC.sampleIdx[iMCMC.sampleIdx],
                                 how = "replace")
 
-        Mdl.par.curr <- parCplMeanFun(Mdl.X = Mdl.X.training,
+        Mdl.par.curr <- parCplMeanFun(Mdl.X = Mdl.X,
                                       Mdl.parLink = Mdl.parLink,
                                       Mdl.beta = Mdl.beta.curr,
                                       parUpdate = MCMC.Update)
@@ -73,10 +72,12 @@ parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleId
             }
         }
     }
+    return(MCMC.par)
+}
 
-
-    ## Summary of MCMC.par
-    subFun3 <- function(obj, fun, dim, ...)
+parCplMCMCSummary <- function(MCMC.par)
+{
+   subFun3 <- function(obj, fun, dim, ...)
     {
         if(any(is.na(obj)))
         {
@@ -99,7 +100,5 @@ parCplMCMC <- function(MCMC.beta, Mdl.X, Mdl.parLink, MCMC.Update, MCMC.sampleId
     out[["ts.sd"]] <- rapply(MCMC.par, subFun3, how = "replace", fun = sd, dim = c(2, 3))
     out[["ts.hpd95"]] <- rapply(MCMC.par, subFun3, how = "replace", fun = quantile,
                                 dim = c(2, 3), probs = c(0.025, 0.975))
-
-
-    return(out)
+   return(out)
 }

@@ -425,9 +425,11 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                               collapse = "")
 
 
-    rm("MCMC.par") # Remove big objects
+    ## Remove big objects
+    rm("MCMC.par")
     gc()
 
+    ## Collect the output objects
     out <- as.list(environment())
     return(out)
 }

@@ -96,10 +96,10 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
 
                         ## Legend
                         legend("topright",ncol = length(legend.idx),
-                               lty = c("dotted", "solid", "dashed")[legend.idx],
-                               lwd = c(20, 3, 3)[legend.idx],
-                               col = c("grey", "blue", "red")[legend.idx],
-                               legend = c("95% HPD", "Posterior mean", "DGP values")[legend.idx])
+                               lty = c("solid", "dotted", "dashed")[legend.idx],
+                               lwd = c(3, 20, 3)[legend.idx],
+                               col = c("blue", "grey", "red")[legend.idx],
+                               legend = c("Posterior mean", "95% HPD", "DGP values")[legend.idx])
                     }
                     else
                     {
