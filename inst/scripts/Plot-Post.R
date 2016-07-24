@@ -6,18 +6,55 @@ iCross <- 1
 ###----------------------------------------------------------------------------
 ### Plot of Time Series
 ###----------------------------------------------------------------------------
-par(mar = c(2, 4, 0, 0)+0.1, mfrow = c(2, 1))
 
 Mdl.Y <- OUT.FITTED[[iCross]][["Mdl.Y"]]
 ID <- as.Date(OUT.FITTED[[iCross]][["ID"]])
 
 ylim <- c(-5, 5)
+
+## Plot of returns
+par(mar = c(2, 4, 0, 0)+0.1, mfrow = c(2, 1))
+
 plot(ID, Mdl.Y[[1]], type = "l", col = "blue", ylab = "S&P 600", ylim = ylim)
+plot(ID, Mdl.Y[[2]], type = "l", col = "blue", ylab = "S&P 100", ylim = ylim)
+
+
+## Plot of fitted values and HPD
+par(mar = c(2, 4, 0, 0)+0.1, mfrow = c(2, 1))
+
+plot(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+       OUT.PRED.MVSK[[iCross]][["mean"]][[1]][, 1],
+       type = "l", col = "red", ylim = c(-1, 2))
 
 points(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
-       OUT.PRED.MVSK[[iCross]][["mean"]][[1]], col = "red")
+       OUT.PRED.MVSK[[iCross]][["HPDL"]][[1]][, 1],
+       type = "l", col = "grey")
+points(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+       OUT.PRED.MVSK[[iCross]][["HPDU"]][[1]][, 1],
+       type = "l", col = "grey")
 
-plot(ID, Mdl.Y[[2]], type = "l", col = "blue", ylab = "S&P 100", ylim = ylim)
+
+plot(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+       OUT.PRED.MVSK[[iCross]][["mean"]][[2]][, 1],
+       type = "l", col = "red", ylim = c(-1, 2))
+
+points(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+       OUT.PRED.MVSK[[iCross]][["HPDL"]][[2]][, 1],
+       type = "l", col = "grey")
+points(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+       OUT.PRED.MVSK[[iCross]][["HPDU"]][[2]][, 1],
+       type = "l", col = "grey")
+
+
+## Residual plot
+par(mar = c(2, 4, 0, 0)+0.1, mfrow = c(2, 1))
+plot(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+     OUT.PRED.RESID[[iCross]][["mean"]][[1]],
+     type = "l", col = "blue")
+plot(ID[Mdl.crossValidIdx[["testing"]][[iCross]]],
+     OUT.PRED.RESID[[iCross]][["mean"]][[2]],
+     type = "l", col = "blue")
+
 
 dev.copy2eps(file = "~/workspace/cdcopula/paper/SP100-SP600.eps")
 ###----------------------------------------------------------------------------
@@ -53,7 +90,5 @@ plotCplParTS(MCMC.Update = list("BB7" = list("tau" = TRUE)),
              MdlDGP.par = NULL, ObsIdx4Plot = NA)
 
 ###----------------------------------------------------------------------------
-### Plot the predictive summary
+### Plot the predictive summary for DGP data
 ###----------------------------------------------------------------------------
-
-plot(Mdl.Y[[1]], type = "l")

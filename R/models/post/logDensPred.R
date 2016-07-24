@@ -182,6 +182,8 @@ logDensPred <- function(CplFitted, Mdl.Idx.testing, Mdl.X.testing, Mdl.Y.testing
                                       Mdl.parLink = Mdl.parLink,
                                       Mdl.beta = Mdl.beta.curr,
                                       parUpdate = parUpdate)
+
+        ## mean, variance, skewness, kurtosis of Y
         Mdl.Y.pred.curr <- logCplPredict(Mdl.MargisType = Mdl.MargisType,
                                          Mdl.par = Mdl.par.curr)
 
