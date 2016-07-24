@@ -102,3 +102,31 @@ parCplMCMCSummary <- function(MCMC.par)
                                 dim = c(2, 3), probs = c(0.025, 0.975))
    return(out)
 }
+
+
+parCplMCMCSummary4Tau <- function(MCMC.par)
+{
+    MargisNM <- names(MCMC.par)
+    CplNM <- MargisNM[length(MargisNM)]
+
+    parCpl <- MCMC.par[[CplNM]]
+
+    if(tolower(CplNM)  == "bb7")
+    {
+        lambdaL <- MCMC.par[[CplNM]][["lambdaL"]]
+        lambdaU <- MCMC.par[[CplNM]][["lambdaU"]]
+
+        delta <- (-log(2)/log(lambdaL))
+        theta <- log(2)/log(2-lambdaU)
+
+        tau <- kendalltau(CplNM = CplNM, parCpl = list(delta = delta, theta = theta))
+    }
+
+
+    parCpl4Tau <- list()
+    parCpl4Tau[[CplNM]] <- list("tau" = tau)
+
+    out <- parCplMCMCSummary(parCpl4Tau)
+
+    return(out)
+}

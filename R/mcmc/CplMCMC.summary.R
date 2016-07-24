@@ -129,7 +129,7 @@ CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
                                    MCMC.sampleIdx = MCMC.sampleIdx)
         }
 
-        MCMC.parSummary <- parCplMCMCSummary(MCMC.par)
+        MCMC.parSummary <- parCplMCMCSummary((MCMC.par))
 
         ## Plot Post Summary
         plotCplParTS(MCMC.Update = MCMC.Update,

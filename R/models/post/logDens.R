@@ -119,7 +119,7 @@ logDens <- function(Mdl.MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
     if(evalCpl == TRUE)
     {
 
-        if(R_CPL_NPARALLEL>1)
+        if(!is.na(R_CPL_NPARALLEL) && R_CPL_NPARALLEL > 1)
         {
             logCplLikFUN.NM <- "logCplLikParallel"
         }

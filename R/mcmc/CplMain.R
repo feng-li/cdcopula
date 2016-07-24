@@ -124,7 +124,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 ###----------------------------------------------------------------------------
 ### Parallel Setting up
 ###----------------------------------------------------------------------------
-    if(as.numeric(R_CPL_NPARALLEL)>1)
+    if(!is.na(R_CPL_NPARALLEL) && R_CPL_NPARALLEL > 1)
     {
         require("parallel", quietly = TRUE)
         require("snow", quietly = TRUE)
@@ -411,7 +411,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     }
 
 
-    if(R_CPL_NPARALLEL>1)
+    if(!is.na(R_CPL_NPARALLEL) && R_CPL_NPARALLEL > 1)
     {
         stopCluster(cl4MCMC)
     }

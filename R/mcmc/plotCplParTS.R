@@ -4,7 +4,6 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
     has.Display <- (nchar(Sys.getenv("DISPLAY"))>0)
     par.ts.mean <- MCMC.parSummary[["ts.mean"]]
     par.ts.hpd95 <- MCMC.parSummary[["ts.hpd95"]]
-
     if(has.Display)
     {
         nPlot <- sum(sapply(MCMC.Update, function(x) any(unlist(x) == TRUE)))
@@ -18,8 +17,8 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
 
         if(any(is.na(ObsIdx4Plot)))
         {
-            nTraining <- nrow(par.ts.mean[[1]][[1]])
-            ObsIdx4Plot <- 1:nTraining
+            nObs <- nrow(par.ts.mean[[1]][[1]])
+            ObsIdx4Plot <- 1:nObs
         }
 
     }
@@ -51,7 +50,7 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
                     {
                         ## TODO: Add smoothing plot for polygon.
 
-                        par(mar = c(3, 4, 0, 0)+0.1)
+                        par(mar = c(2, 4, 0, 0)+0.1)
 
                         hpd95 <- par.ts.hpd95[[i]][[j]][, ObsIdx4Plot, 1] #2-by-nobs
                         ylim <- c(quantile(hpd95[1, ], 0.001), quantile(hpd95[2, ], 0.999))
@@ -95,7 +94,7 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
                         }
 
                         ## Legend
-                        legend("topright",ncol = length(legend.idx),
+                        legend("topleft",ncol = 1, # length(legend.idx),
                                lty = c("solid", "dotted", "dashed")[legend.idx],
                                lwd = c(3, 20, 3)[legend.idx],
                                col = c("blue", "grey", "red")[legend.idx],

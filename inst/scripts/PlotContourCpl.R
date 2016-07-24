@@ -19,7 +19,7 @@ u <- mesh.grid(u1)
 
 ## tau <- MCMC.par[[3]][["tau"]]
 lambdaL <- MCMC.par[[3]][["lambdaL"]]
-lambdaU <- MCMC.par[[3]][["lambdaL"]]
+lambdaU <- MCMC.par[[3]][["lambdaU"]]
 ## lambdaU <- as.vector(kendalltauInv(
 ##           CplNM = CplNM, parRepCpl = MCMC.par[[3]]))
 

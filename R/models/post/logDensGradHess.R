@@ -103,7 +103,7 @@ logDensGradHess <- function(Mdl.MargisType, Mdl.Y, Mdl.parLink, parUpdate,
         ## Gradient Fraction in the marginal component. n-by-1
         if("analytic" %in% tolower(gradMethods))
         {
-            if(R_CPL_NPARALLEL>1)
+            if(!is.na(R_CPL_NPARALLEL) && R_CPL_NPARALLEL > 1)
             {
                 MargiGradFUN.NM <- "MargiModelGradParallel"
             }
@@ -161,7 +161,7 @@ logDensGradHess <- function(Mdl.MargisType, Mdl.Y, Mdl.parLink, parUpdate,
     {
         if("analytic" %in% tolower(gradMethods))
         {
-            if(R_CPL_NPARALLEL>1)
+            if(!is.na(R_CPL_NPARALLEL) && R_CPL_NPARALLEL > 1)
             {
                 CplGradFUN.NM <- "logCplRepGradParallel"
             }
