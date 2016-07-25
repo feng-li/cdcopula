@@ -1,4 +1,4 @@
-## This script make the posterior plot
+## This script makes the posterior plot
 sourceDir("~/code/cdcopula/R", recursive = TRUE)
 load(file.path("~/running/", "^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross1MCMC.nIter1000twostage+20160522@23.11.c168ab.Rdata"))
 iCross <- 1
@@ -88,7 +88,3 @@ summary.tau <- parCplMCMCSummary4Tau(MCMC.par)
 plotCplParTS(MCMC.Update = list("BB7" = list("tau" = TRUE)),
              MCMC.parSummary = summary.tau,
              MdlDGP.par = NULL, ObsIdx4Plot = NA)
-
-###----------------------------------------------------------------------------
-### Plot the predictive summary for DGP data
-###----------------------------------------------------------------------------

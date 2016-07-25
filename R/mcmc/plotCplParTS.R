@@ -56,7 +56,17 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
                         ylim <- c(quantile(hpd95[1, ], 0.001), quantile(hpd95[2, ], 0.999))
 
                         ## Initial plot to draw the plot window
-                        x <- as.Date(colnames(hpd95))
+                        if(length(colnames(hpd95)) == 0)
+                        {
+                            ## No time stamp attributed,  use 1, 2, ...
+                            x <- 1:ncol(hpd95)
+                        }
+                        else
+                        {
+                            x <- as.Date(colnames(hpd95))
+                        }
+
+
                         y <- par.ts.mean[[i]][[j]][ObsIdx4Plot, 1]
                         plot(x = x, y = y, type = "l", lty = "solid", col = "white",
                              ylim = ylim, ylab = j, xlab = "")
