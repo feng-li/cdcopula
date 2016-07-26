@@ -36,7 +36,9 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
             }
             else
             {
-                par(mfrow = c(ceiling(npar/2), 2))
+                ## par(mfrow = c(ceiling(npar/2), 2))
+                par(mfrow = c(npar, 1))
+
             }
             jDev <- jDev+1
         }
@@ -68,8 +70,11 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
 
 
                         y <- par.ts.mean[[i]][[j]][ObsIdx4Plot, 1]
+
+
                         plot(x = x, y = y, type = "l", lty = "solid", col = "white",
-                             ylim = ylim, ylab = j, xlab = "")
+                             ylim = ylim, ylab = j, xlab = "",
+                             log = ifelse(j == "phi", "y", ""))
 
                         ## HPD Polygon
                         hpd95.smoothL <- spline(x, hpd95[1, ],

@@ -1,6 +1,9 @@
 ## This script makes the posterior plot
+load(file.path("~/running/", "JOB835.^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross0MCMC.nIter10000joint+20160720@14.44.5c1da7.Rdata"))
+
+
 sourceDir("~/code/cdcopula/R", recursive = TRUE)
-load(file.path("~/running/", "^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross1MCMC.nIter1000twostage+20160522@23.11.c168ab.Rdata"))
+
 iCross <- 1
 
 ###----------------------------------------------------------------------------
@@ -82,6 +85,10 @@ MCMC.par <- parCplMCMC(MCMC.beta = OUT.FITTED[[iCross]][["MCMC.beta"]],
                        Mdl.parLink = OUT.FITTED[[iCross]][["Mdl.parLink"]],
                        MCMC.Update = MCMC.Update,
                        MCMC.sampleIdx = MCMC.sampleIdx)
+
+plotCplParTS(MCMC.Update = MCMC.Update,
+             MCMC.parSummary = summary.Cpl[["par.summary"]],
+             MdlDGP.par = NULL, ObsIdx4Plot = NA)
 
 summary.tau <- parCplMCMCSummary4Tau(MCMC.par)
 
