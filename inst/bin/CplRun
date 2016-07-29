@@ -105,11 +105,6 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
 ### LOAD THE CODE LIBRARY AND INITIALIZE R ENVIRONMENT
 ###----------------------------------------------------------------------------
 
-## Load dependences
-## require("mvtnorm", quietly = TRUE)
-## require("optimx", quietly = TRUE)
-## require("Rmpfr", quietly = TRUE)
-
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
@@ -123,11 +118,7 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 
 ## Extract variables from configure files
 obj <- ls()
-
-sink("/dev/null")
 source(MdlConfigFile, local = TRUE)
-sink()
-
 ###----------------------------------------------------------------------------
 ### PRINT MODEL DESCRIPTION
 ###----------------------------------------------------------------------------

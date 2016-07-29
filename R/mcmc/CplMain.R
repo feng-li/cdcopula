@@ -85,7 +85,9 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
 
     ForeignModelSpec <- NA
 
+    sink("/dev/null")
     source(MdlConfigFile, local = TRUE)
+    sink()
     ## browser()
 ###----------------------------------------------------------------------------
 ### Parallel Setting up
