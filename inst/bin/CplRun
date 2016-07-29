@@ -27,7 +27,7 @@ ENVIRONMENT:
 
      The script depends on the environment variable R_CPL_LIB_ROOT_DIR which points to the
      location of the copula code to be set properly before running the MCMC. One may set
-     it in the .Renviron file under the $HOME directory.
+     it in the ``.Renviron'' file under the $HOME directory.
 
      Make sure the file is executable and is available under $PATH environment so that the
      computer can find it if you are at non-interactive mode.
@@ -39,11 +39,15 @@ DETAILS:
 
 VERSION:
 
-    Initial: Wed Jan 09 22:38:48 CET 2013 Current: Tue Jul 14 16:40:24 CST 2015
+    Initial: Wed Jan 09 22:38:48 CET 2013 Current: Fri Jul 29 22:00:43 CST 2016
 
 AUTHOR:
 
-    Feng Li, Central University of Finance and Economics
+    Feng Li,
+
+    Central University of Finance and Economics
+    http://feng.li/
+    feng.li@cufe.edu.cn
 
 ");q("no")}
 require("methods", quietly = TRUE)
@@ -128,9 +132,16 @@ rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx", "LPDS")))
 
 
 ## Set Parallel Computing environment
-if(nCross != 0)
+if(nCross > 1 & nCores >1)
 {
     R_CPL_NPARALLEL <- floor(nCores/nCross)
+
+    if(R_CPL_NPARALLEL<1)
+    {
+        stop("No sufficient many cores (",  nCores,  ") for running ",  nCross,
+             " cross-validations")
+    }
+
 } else
 {
     R_CPL_NPARALLEL <- nCores
@@ -142,6 +153,7 @@ if(nCross>1 & nCores>1)
     require("parallel", quietly = TRUE)
     require("snow", quietly = TRUE)
     cl4CV <- makeCluster(nCross, type = "MPI")
+    clusterExport(cl4CV, "R_CPL_NPARALLEL")
     ce4CV <- clusterEvalQ(cl4CV,{
         sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
                   byte.compile = 0,
