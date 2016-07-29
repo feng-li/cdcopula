@@ -86,40 +86,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
     ForeignModelSpec <- NA
 
     source(MdlConfigFile, local = TRUE)
-
-###----------------------------------------------------------------------------
-### Print model description
-###----------------------------------------------------------------------------
-    cat(rep("-", getOption("width")-1), "\n", sep = "")
-    cat("MODEL DESCRIPTION\n")
-    cat(rep("-", getOption("width")-1), "\n", sep = "")
-
-
-    cat("nObsRaw:", nObsRaw, "\n")
-    cat("nObsUsed:", length(Mdl.dataUsedIdx), "\n")
-
-    cat("MCMC.nIter: ", MCMC.nIter,   "\n")
-    cat("MCMC.burninProp:", MCMC.burninProp, "\n")
-    cat("MCMC.UpateStrategy: ", MCMC.UpdateStrategy, "\n")
-
-    # cat("nCross: ", nCross,  "\n")
-    cat("Mdl.crossValidArgs:\n")
-    print(unlist(Mdl.crossValidArgs))
-
-    ## cat("Mdl.MargisNM: ", Mdl.MargisNM,   "\n")
-    cat("Mdl.MargisType:\n")
-    print(Mdl.MargisType)
-
-    if(all(rapply(Mdl.X, class)  == "matrix"))
-    {
-        cat("No. of covariates used:\n")
-        print(rapply(Mdl.X, ncol))
-    }
-    cat("Mdl.varSelArgs:\n")
-    print(unlist(Mdl.varSelArgs))
-    cat("MCMC.Update:\n")
-    print(unlist(MCMC.Update))
-    cat(rep("-", getOption("width")-1), "\n", sep = "")
     ## browser()
 ###----------------------------------------------------------------------------
 ### Parallel Setting up
@@ -387,8 +353,8 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## MCMC.density[["u"]][, , iIter] <- staticCache[["Mdl.u"]]
         ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
 
-        ## MCMC trajectory
-        if(MCMC.track == TRUE && iInner == nInner)
+        ## MCMC trajectory if no-parallel
+        if(MCMC.track == TRUE && iInner == nInner && is.na(R_CPL_NPARALLEL))
         {
             ## ProgressBar only available in interactive mode
             if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
