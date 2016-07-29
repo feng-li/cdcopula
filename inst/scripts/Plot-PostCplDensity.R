@@ -1,5 +1,6 @@
 ## This script plots the daily return of SP100 and SP600 data
-load(file.path("~/running/", "^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross1MCMC.nIter1000twostage+20160522@23.11.c168ab.Rdata"))
+load(file.path("~/running/", "JOB835.^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross0MCMC.nIter10000joint+20160720@14.44.5c1da7.Rdata"))
+## load(file.path("~/running/", "^SML^OEX+SPLITTSPLITTBB7+nObs6557nCross1MCMC.nIter1000twostage+20160522@23.11.c168ab.Rdata"))
 
 sourceDir("~/code/cdcopula/R", recursive = TRUE)
 
@@ -10,18 +11,9 @@ MCMC.Update = OUT.FITTED[[iCross]][["MCMC.Update"]]
 MCMC.burninProp <- OUT.FITTED[[iCross]][["MCMC.burninProp"]]
 MCMC.sampleProp <- OUT.FITTED[[iCross]][["MCMC.sampleProp"]]
 MCMC.nIter <- OUT.FITTED[[iCross]][["MCMC.nIter"]]
-
+Mdl.Y <- OUT.FITTED[[iCross]][["Mdl.Y"]]
 CplNM <- names(MCMC.Update)[length(MCMC.Update)]
 
-
-## n.burn <- round(MCMC.nIter*MCMC.burninProp)
-## MCMC.sampleIdx <- round(seq(n.burn+1, MCMC.nIter,
-##                             length.out = round((MCMC.nIter-n.burn)*MCMC.sampleProp)))
-## MCMC.par <- parCplMCMC(MCMC.beta = OUT.FITTED[[iCross]][["MCMC.beta"]],
-##                        Mdl.X = OUT.FITTED[[iCross]][["Mdl.X.training"]],
-##                        Mdl.parLink = OUT.FITTED[[iCross]][["Mdl.parLink"]],
-##                        MCMC.Update = OUT.FITTED[[iCross]][["MCMC.Update"]],
-##                        MCMC.sampleIdx = MCMC.sampleIdx)
 
 
 summary.Cpl <- CplMCMC.summary(OUT.MCMC = OUT.FITTED[[iCross]])
@@ -39,54 +31,98 @@ u1 <- seq(0, 1, length.out = nPoints)
 u2 <- u1
 u <- mesh.grid(u1)
 
-
-delta <- -log(2)/log(lambdaL)
-theta <- log(2)/log(2-lambdaU)
-
 ##########################
 
-xlim <- c(0, 1)
-ylim <- c(0, 1)
 
-
+## Plot The Returns
+nObs <- length(lambdaL)
+nDataWindow <- 6
 nPlot <- 5
-par(mfrow = c(nPlot, 4), mar = c(4, 2, .5, .5))
-
-ad <- order(lambdaL, decreasing = T)
-
-## ID.cand <- cbind(ad[seq(1, 1000, length.out = nPlot)],
-##                  ad[seq(length(ad)-200, length(ad), length.out = nPlot)])
-normaldays <- c(1, 3, 5, 7, 9)
-## ID.card <- 3000:3500
-j <- 0
-for(i in as.vector(t(ID.cand)))
-  {
-    j <- j+1
-    theta1 <- theta[i]
-    delta1 <- delta[i]
-
-    empDist <- matrix(pCpl(u = u, CplNM = CplNM,
-                           parCpl = c(theta = theta1, delta = delta1)), nPoints)
-    empDens <- matrix(dCpl(u = u, CplNM = CplNM,
-                           parCpl = c(theta = theta1, delta = delta1)), nPoints)
-
-    if(j %in% normaldays)
-      {
-        col = "blue"
-      }
-    else
-      {
-        col = "red"
-      }
-
-    contour(as.matrix(u1),  as.matrix(u2),  empDist,  add  =  FALSE,
-            col  = col,  lwd  =  0.8,  lty  = "solid",
-            xlim  = xlim,  ylim  =  ylim,
-            xlab = "", ylab = "")
-    contour(as.matrix(u1),  as.matrix(u2),  empDens,  add  =  FALSE,
-            col  = col,  lwd  =  0.8,  lty  = "solid",
-            xlim  = xlim,  ylim  =  ylim,
-            xlab = "", ylab = "")
+nPoints <- 100
 
 
-  }
+par(mfrow = c(nDataWindow, nPlot), mar = c(2, 2, 0, 0)+0.1)
+ylim <- c(-4, 4)
+
+dataWindowIdx <- data.partition(nObs = nObs,
+                                args = list(partiMethod = "ordered",
+                                            N.subsets = nDataWindow))
+for(i in 1:nDataWindow)
+{
+
+    idx <- dataWindowIdx[[i]]
+    idx.order <- order(lambdaL[idx, ])
+
+    ID.cand <- idx[idx.order[seq(1, length(idx), length.out = nPlot)]]
+
+    ## normaldays <- c(1, 3, 5, 7, 9)
+    ## ID.card <- 3000:3500
+
+    ## print(lambdaL[ID.cand])
+
+    whichCol <- 0
+    for(j in ID.cand)
+    {
+
+        whichCol <- whichCol+1
+
+        if(whichCol == nPlot & i == 5)
+        {
+            ylim = c(-30, 20)
+            col = "red"
+        }
+        else if(whichCol == nPlot)
+        {
+            ylim = c(-4, 4)
+            col = "orange"
+
+        }
+        else
+        {
+            ylim = c(-2, 2)
+            if(i == 5)
+            {
+                col = "red"
+            }
+            else
+            {
+                col = "blue"
+            }
+        }
+
+
+
+        y1 <- matrix(seq(ylim[1], ylim[2], length.out = nPoints))
+        y2 <- y1
+        y <- mesh.grid(y1)
+
+
+        Mdl.Y.grid <- list(y1 = y[, 1, drop = FALSE],
+                           y2 = y[, 2, drop = FALSE])
+        names(Mdl.Y.grid) <- names(MCMC.Update[1:2])
+
+
+
+
+        Mdl.par.curr <- rapply(summary.Cpl[["par.summary"]][["ts.mean"]],
+                               function(x) x[j, drop = FALSE], how = "replace")
+        Mdl.ud <- logDens(Mdl.MargisType = OUT.FITTED[[iCross]][["Mdl.MargisType"]],
+                          Mdl.Y = Mdl.Y.grid,
+                          Mdl.par = Mdl.par.curr,
+                          parUpdate = OUT.FITTED[[iCross]][["MCMC.Update"]],
+                          MCMC.UpdateStrategy = OUT.FITTED[[iCross]][["MCMC.UpdateStrategy"]])
+
+        dens.grid <- matrix(exp(rowSums(Mdl.ud[["Mdl.d"]])), nPoints)
+
+
+        contour(as.matrix(y1),  as.matrix(y2),  dens.grid,  add  =  FALSE,
+                col  = col,  lwd  =  0.8,  lty  = "solid",
+                xlim  = ylim,  ylim  =  ylim,
+                xlab = "", ylab = "", drawlabels = TRUE)
+        legend("topleft", ncol = 1, bty = "n",
+               legend = c(paste("(", round(Mdl.par.curr[[CplNM]][["lambdaL"]], 2),", ",
+                                round(Mdl.par.curr[[CplNM]][["lambdaU"]], 2), ")", sep = "")))
+
+        legend("bottomright", ncol = 1, bty = "n", legend = paste(ID[j], "  ", sep = ""))
+    }
+}

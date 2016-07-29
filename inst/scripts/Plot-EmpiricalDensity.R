@@ -18,11 +18,8 @@ u <- mesh.grid(u1)
 
 nDataWindow <- 6
 
-xlim <- c(0, 1)
-ylim <- c(0, 1)
 
-
-par(mfrow = c(2, nDataWindow/2), mar = c(5, 2, .5, .5))
+par(mfrow = c(2, nDataWindow/2), mar = c(2, 2, .5, .5), cex = 0.8)
 
 dataWindowIdx <- data.partition(nObs = nObs,
                                 args = list(partiMethod = "ordered",
@@ -35,9 +32,10 @@ for(i in 1:nDataWindow)
     bivn.kde <- kde2d(Y[[1]][idx, ],  Y[[2]][idx, ],  n  =  nPoints)
 
     contour(bivn.kde, xlim = c(-2.2, 2.2), ylim = c(-2.2, 2.2),
-            xlab = paste("from ", ID[idx[1]]," to ",  ID[idx[length(idx)]], sep = ""),
             col = ifelse(i == 5, "red", "blue"))
 
+    legend("bottomright", bty = "n", cex = 0.8,
+           legend = paste("[", ID[idx[1]],",  ",  ID[idx[length(idx)]], "]   ", sep = ""))
 
     ## op <- par(fig  =  c(.06, .46, .53, .99), new  =  TRUE, cex = 0.6)
     ## empDist <- matrix(hatCpl(u = u[, 1], v = u[, 2],

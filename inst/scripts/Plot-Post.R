@@ -16,10 +16,10 @@ ID <- as.Date(OUT.FITTED[[iCross]][["ID"]])
 ylim <- c(-5, 5)
 
 ## Plot of returns
-par(mar = c(2, 4, 0, 0)+0.1, mfrow = c(2, 1))
+par(mar = c(4, 2, 0, 0)+0.1, mfrow = c(1, 2), cex = 0.7)
 
-plot(ID, Mdl.Y[[1]], type = "l", col = "blue", ylab = "S&P 600", ylim = ylim)
-plot(ID, Mdl.Y[[2]], type = "l", col = "blue", ylab = "S&P 100", ylim = ylim)
+plot(ID, Mdl.Y[[1]], type = "l", col = "blue", xlab = "S&P 600", ylab = "", ylim = ylim)
+plot(ID, Mdl.Y[[2]], type = "l", col = "blue", xlab = "S&P 100", ylab = "", ylim = ylim)
 
 
 ## Plot of fitted values and HPD
@@ -95,3 +95,16 @@ summary.tau <- parCplMCMCSummary4Tau(MCMC.par)
 plotCplParTS(MCMC.Update = list("BB7" = list("tau" = TRUE)),
              MCMC.parSummary = summary.tau,
              MdlDGP.par = NULL, ObsIdx4Plot = NA)
+
+
+###----------------------------------------------------------------------------
+### Print the Posterior summary with LaxTex marked
+###----------------------------------------------------------------------------
+
+options(width = 120)
+rapply(summary.Cpl[["beta.mean"]], function(x) round(x, 3), how = "replace")
+rapply(summary.Cpl[["betaIdx.mean"]], function(x) round(x, 2), how = "replace")
+
+
+mean(unlist(summary.Cpl[["beta.ineff"]]))
+mean(unlist(summary.Cpl[["accept.prob.mean"]]))
