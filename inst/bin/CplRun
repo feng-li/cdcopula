@@ -274,8 +274,18 @@ LPDS <- OUT.FITTED[[1]][["LPDS"]]
 ## Print warnings only in non-interactive mode
 if(!interactive() && exists("last.warning",  envir  =  baseenv())) warnings()
 
-## Quit
-if(!interactive())q("no")
+## Quit (with mpi_finalize check)
+if(!interactive())
+{
+    if(nCross>1 & nCores >1)
+    {
+        mpi.quit("no")
+    } else
+    {
+        q("no")
+    }
+}
+
 ###----------------------------------------------------------------------------
 ### THE END
 ###----------------------------------------------------------------------------
