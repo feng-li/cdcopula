@@ -180,6 +180,8 @@ if(nCross>1 & nCores>1)
     ## We have enough cores to do parallelized cross-validation
     require("parallel", quietly = TRUE)
     require("snow", quietly = TRUE)
+    require("Rmpi", quietly = TRUE) # mpi.quit("no")
+
     cl4CV <- makeCluster(nCross, type = "MPI")
     clusterExport(cl4CV, "R_CPL_NPARALLEL")
     ce4CV <- clusterEvalQ(cl4CV,{
