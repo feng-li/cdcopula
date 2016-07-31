@@ -143,7 +143,7 @@ print(Mdl.MargisType)
 
 if(all(rapply(Mdl.X, class)  == "matrix"))
 {
-    cat("No. of covariates used:\n")
+    cat("No. of covariates used (including intercept):\n")
     print(rapply(Mdl.X, ncol))
 }
 cat("Mdl.varSelArgs:\n")
