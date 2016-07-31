@@ -142,11 +142,11 @@ DGPCplRestrictPar <- function(MdlDGP.par, Mdl.parLink)
         {
             out[aM] <- a + (a - par[aM])
 
-            if(out[aM] == a)
+            a0 <- (out == a)
+            if(any(a0))
             {
-                out[aM] <- a + 1e-6
+                out[a0] <- a + 1e-6
             }
-
 
             warning(sum(aM) ,
                     " generated data points are outside parameter lower boundary. Corrected.")
@@ -155,12 +155,12 @@ DGPCplRestrictPar <- function(MdlDGP.par, Mdl.parLink)
         bP <- (par >= b)
         if (is.finite(b) && any(bP))
         {
-
             out[bP] <- b - (par[bP]-b)
 
-            if(out[bP] == b) # very special case
+            b0 <- (out  == b)
+            if(any(b0)) # very special case
             {
-                out[bP] <- b - 1e-6
+                out[b0] <- b - 1e-6
             }
 
             warning(sum(bP) ,
