@@ -53,8 +53,8 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 ## should be in the following structure:
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
-## set.seed(123) ## Seed for DGP
 
+set.seed(1234) ## Seed for DGP
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
                                  "inst/config/dgp/config.DGP.VS.R"
                                  ## "inst/config/dgp/config.DGP.Plain.R"

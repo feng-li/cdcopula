@@ -121,3 +121,56 @@ DGPCpl <- function(DGPconfigfile, export = "list")
         list2env(x = out, envir = sys.frame(sys.parent(1)))
     }
 }
+
+DGPCplRestrictPar <- function(MdlDGP.par, Mdl.parLink)
+{
+    ## Slightly modify the DGP DATA to avoid under/over flow in parLinkFun()
+    restricfun <- function(par, linkArgs)
+    {
+        ## Extract the lower and upper bounds
+        a <- linkArgs$a
+        b <- linkArgs$b
+
+        if(is.null(a)) a <- -Inf
+        if(is.null(b)) b <- Inf
+
+        ## No restrictions,  do nothing
+        out <- par
+
+        aM <- (par <=  a)
+        if (is.finite(a) && any(aM))
+        {
+            out[aM] <- a + (a - par[aM])
+
+            if(out[aM] == a)
+            {
+                out[aM] <- a + 1e-6
+            }
+
+
+            warning(sum(aM) ,
+                    " generated data points are outside parameter lower boundary. Corrected.")
+        }
+
+        bP <- (par >= b)
+        if (is.finite(b) && any(bP))
+        {
+
+            out[bP] <- b - (par[bP]-b)
+
+            if(out[bP] == b) # very special case
+            {
+                out[bP] <- b - 1e-6
+            }
+
+            warning(sum(bP) ,
+                    " generated data points are outside parameter upper boundary. Corrected.")
+        }
+        return(out)
+    }
+
+
+    out <- Map(function(i, j) Map(restricfun, i, j), MdlDGP.par, Mdl.parLink)
+
+    return(out)
+}

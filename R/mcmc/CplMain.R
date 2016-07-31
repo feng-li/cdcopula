@@ -165,11 +165,6 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                                  idx = Mdl.Idx.training, how = "replace")
     }
 
-    ## Assign the initial values
-                                        #Rprof()
-
-
-    ## browser()
 
     initParOut <- initPar(Mdl.varSelArgs = Mdl.varSelArgs, Mdl.priArgs = Mdl.priArgs,
                           Mdl.betaInit = Mdl.betaInit, Mdl.MargisType = Mdl.MargisType,
@@ -178,19 +173,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
                           MCMC.optimInit = MCMC.optimInit)
 
 
-    ## a <- logPriors(Mdl.X = Mdl.X,
-    ##                Mdl.parLink = Mdl.parLink,
-    ##                Mdl.beta = Mdl.beta,
-    ##                Mdl.betaIdx = Mdl.betaIdx,
-    ##                Mdl.varSelArgs = Mdl.varSelArgs,
-    ##                Mdl.priArgs = Mdl.priArgs,
-    ##                parUpdate = parUpdate)
 
-
-
-
-    #Rprof(NULL)
-    #summaryRprof()
     Mdl.betaIdx <- initParOut[["Mdl.betaIdx"]]
     Mdl.beta <- initParOut[["Mdl.beta"]]
 ###----------------------------------------------------------------------------

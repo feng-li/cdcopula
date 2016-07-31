@@ -39,8 +39,8 @@ CONFIG_FILE=config.BB7.LU.SPLITT.DGPDATA.R
 
 # CONFIG_FILE=config.MVGARCH.R
 
+## MPIRUN
 
-## RUN
 mpirun -np 1  ~/.bin/CplRun 4 ~/code/cdcopula/inst/config/${CONFIG_FILE}
 
 ## srun ~/.bin/CplRun  ~/code/cdcopula/inst/config/${CONFIG_FILE}
