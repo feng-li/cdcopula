@@ -128,7 +128,6 @@ logDens <- function(Mdl.MargisType, Mdl.Y,  Mdl.u, Mdl.d, Mdl.par,
             logCplLikFUN.NM <- "logCplLik"
         }
 
-
         Mdl.logLikCpl.caller <- call(logCplLikFUN.NM,
                                      u = Mdl.u,
                                      CplNM = CplNM,

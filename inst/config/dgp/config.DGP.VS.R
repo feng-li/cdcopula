@@ -22,9 +22,6 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 ## NO. OF OBSERVATIONS
 nObs <- 1000
 
-## SEED
-seed <- 123
-
 ## THE LINK FUNCTION USED IN THE MODEL
 Mdl.parLink <- MCMC.Update
 Mdl.parLink[[1]][["mu"]] <- list(type = "identity", nPar = 1)
@@ -63,8 +60,11 @@ MdlDGP.par[[2]][["df"]] <- matrix(rlnorm2(n = nObs, mean = 6, sd = 1), nObs, 1)
 MdlDGP.par[[2]][["lmd"]] <- matrix(rlnorm2(n = nObs, mean = 1, sd = 1), nObs, 1)
 
 ## The copula component
-MdlDGP.par[[3]][["lambdaL"]] <- matrix(rbeta2(n = nObs, mean = 0.7, sd = 0.1), nObs, 1)
-MdlDGP.par[[3]][["lambdaU"]] <- matrix(rbeta2(n = nObs, mean = 0.3, sd = 0.1), nObs, 1)
+MdlDGP.par[[3]][["lambdaL"]] <- matrix(rbeta2(n = nObs, mean = 0.9, sd = 0.1), nObs, 1)
+MdlDGP.par[[3]][["lambdaU"]] <- matrix(rbeta2(n = nObs, mean = 0.5, sd = 0.1), nObs, 1)
+
+## Special treatments for parameters under/over Mdl.parLink boundary
+MdlDGP.par <- DGPCplRestrictPar(MdlDGP.par = MdlDGP.par, Mdl.parLink = Mdl.parLink)
 
 ##------------------------------------------------------------------------------
 ## THE TRUE COVARIATE-DEPENDENT PARAMETER VALUES IN THE DGP

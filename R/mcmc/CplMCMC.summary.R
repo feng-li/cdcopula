@@ -9,9 +9,8 @@
 ##' @references NA
 ##' @author Feng Li, Department of Statistics, Stockholm University, Sweden.
 ##' @note Initial: Fri Feb 01 14:49:15 CET 2013; Current: Mon Mar 30 16:32:00 CST 2015.
-CplMCMC.summary <- function(MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
-                            MCMC.sampleProp, OUT.MCMC,
-                            maxcovprint = 20, ObsIdx4Plot = NA)
+CplMCMC.summary <- function(OUT.MCMC, MCMC.nIter, iIter, interval = 0.1, MCMC.burninProp,
+                            MCMC.sampleProp, maxcovprint = 20, ObsIdx4Plot = NA)
 {
     dev.width <- getOption("width")
 

@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
-#SBATCH -J FULLRUN_LU
-#SBATCH -n 1 # Number of cores
+#SBATCH -J BB7DGPVS
+#SBATCH -n 4 # Number of cores
 #SBATCH -p MCMC # Partition Used.
 #SBATCH -t 10-00:00 # Runtime in D-HH:MM
 #SBATCH -o JOB%j.out # File to which STDOUT will be written
@@ -12,7 +12,7 @@
 
 # CONFIG_FILE=config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R
 
-CONFIG_FILE=config.BB7.LU.SPLITT.SP100-SP600.R
+# CONFIG_FILE=config.BB7.LU.SPLITT.SP100-SP600.R
 # CONFIG_FILE=config.BB7.LU.GARCH.SP100-SP600.R
 # CONFIG_FILE=config.BB7.LU.STOCHVOL.SP100-SP600.R
 
@@ -35,16 +35,15 @@ CONFIG_FILE=config.BB7.LU.SPLITT.SP100-SP600.R
 # CONFIG_FILE=config.MVT3.DF.SPLITT.SP100-SP400-SP600.R
 # CONFIG_FILE=config.MVT3.SPLITT.SP100-SP400-SP600.R
 
-# CONFIG_FILE=config.BB7.LU.SPLITT.JOINT.DGPDATA.R
-# CONFIG_FILE=config.BB7.LU.SPLITT.TWOSTAGE.DGPDATA.R
+CONFIG_FILE=config.BB7.LU.SPLITT.DGPDATA.R
 
 # CONFIG_FILE=config.MVGARCH.R
 
+## MPIRUN
 
-## RUN
-## mpirun -np 1  ~/.bin/CplRun 16 ~/code/cdcopula/inst/config/${CONFIG_FILE}
+mpirun -np 1  ~/.bin/CplRun 4 ~/code/cdcopula/inst/config/${CONFIG_FILE}
 
-srun ~/.bin/CplRun  ~/code/cdcopula/inst/config/${CONFIG_FILE}
+## srun ~/.bin/CplRun  ~/code/cdcopula/inst/config/${CONFIG_FILE}
 
 ## SEND RESULTS
 cat JOB${SLURM_JOB_ID}.out JOB${SLURM_JOB_ID}.err |\

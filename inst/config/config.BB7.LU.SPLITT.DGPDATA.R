@@ -53,11 +53,18 @@ names(Mdl.MargisType) <-  Mdl.MargisNM
 ## should be in the following structure:
 ## Mdl.X: "list" each list contains the covariates in each margin or copula.
 ## Mdl.Y: "list" each list contains the response variable of that margin.
-set.seed(123)
+
+set.seed(1234) ## Seed for DGP
 DGPCpl(DGPconfigfile = file.path(R_CPL_LIB_ROOT_DIR,
-                                 ## "inst/config/dgp/config.DGP.VS.R"
-                                 "inst/config/dgp/config.DGP.Plain.R"
+                                 "inst/config/dgp/config.DGP.VS.R"
+                                 ## "inst/config/dgp/config.DGP.Plain.R"
                                  ), export = "parent.env")
+
+## Modification of DGP variables
+## Mdl.X[["BB7"]][["lambdaL"]] <- Mdl.X[["BB7"]][["lambdaL"]][, 1, drop = FALSE]
+## Mdl.X[["BB7"]][["lambdaU"]] <- Mdl.X[["BB7"]][["lambdaU"]][, 1, drop = FALSE]
+
+## Seed for MCMC
 set.seed(as.numeric(Sys.time()))
 
 ## No. of Total Observations
@@ -84,25 +91,28 @@ Mdl.dataUsedIdx <- (1 + nObsRaw-nObsRaw):nObsRaw
 ## covariates. ("all-in", "all-out", "random", or user-input)
 
 Mdl.varSelArgs <- MCMC.Update
-Mdl.varSelArgs[[1]][["mu"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[1]][["phi"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[1]][["df"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[1]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[1]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[2]][["mu"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[2]][["phi"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[2]][["df"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[2]][["mu"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["phi"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["df"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[2]][["lmd"]] <- list(cand = "2:end", init = "all-in")
 
-Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
-Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = "2:end", init = "all-in")
+Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = "2:end", init = "all-in")
+
+## Mdl.varSelArgs[[3]][["lambdaL"]] <- list(cand = NULL, init = "all-in")
+## Mdl.varSelArgs[[3]][["lambdaU"]] <- list(cand = NULL, init = "all-in")
 
 ###----------------------------------------------------------------------------
 ### THE MCMC CONFIGURATION
 ###----------------------------------------------------------------------------
 
 ## NUMBER OF MCMC ITERATIONS
-MCMC.nIter <- 5000
+MCMC.nIter <- 1000
 
 ## SAVE OUTPUT PATH
 ##-----------------------------------------------------------------------------
@@ -140,7 +150,9 @@ MCMC.UpdateOrder[[3]][[2]] <- 10
 ## density. A variable "MCMC.density[["u"]]" must provide. "MCMC.density" consists of CDF of
 ## margins (i.e. u1,  u2, ...)
 
+## MCMC.UpdateStrategy <- "twostage"
 MCMC.UpdateStrategy <- "joint"
+
 
 ## THE METROPOLIS-HASTINGS ALGORITHM PROPOSAL ARGUMENTS
 MCMC.propArgs <- MCMC.Update
@@ -187,8 +199,9 @@ MCMC.propArgs[[3]][[2]] <- list("algorithm" = list(type = "GNewtonMove", ksteps 
 ## percent is used if partiMethod is "time-series". (use the old data to
 ## predict the new interval)
 
-nCross <- 1
-Mdl.crossValidArgs <- list(N.subsets = 0, partiMethod = "time-series", testRatio = 0.2)
+nCross <- 4
+Mdl.crossValidArgs <- list(N.subsets = nCross, partiMethod = "systematic", testRatio = 0.2)
+## Mdl.crossValidArgs <- list(N.subsets = nCross, partiMethod = "time-series", testRatio = 0.2)
 
 ## Indices for training and testing sample according to cross-validation
 Mdl.crossValidIdx <- set.crossvalid(length(Mdl.dataUsedIdx),Mdl.crossValidArgs)

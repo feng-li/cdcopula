@@ -27,7 +27,7 @@ ENVIRONMENT:
 
      The script depends on the environment variable R_CPL_LIB_ROOT_DIR which points to the
      location of the copula code to be set properly before running the MCMC. One may set
-     it in the .Renviron file under the $HOME directory.
+     it in the ``.Renviron'' file under the $HOME directory.
 
      Make sure the file is executable and is available under $PATH environment so that the
      computer can find it if you are at non-interactive mode.
@@ -39,11 +39,15 @@ DETAILS:
 
 VERSION:
 
-    Initial: Wed Jan 09 22:38:48 CET 2013 Current: Tue Jul 14 16:40:24 CST 2015
+    Initial: Wed Jan 09 22:38:48 CET 2013 Current: Fri Jul 29 22:00:43 CST 2016
 
 AUTHOR:
 
-    Feng Li, Central University of Finance and Economics
+    Feng Li,
+
+    Central University of Finance and Economics
+    http://feng.li/
+    feng.li@cufe.edu.cn
 
 ");q("no")}
 require("methods", quietly = TRUE)
@@ -62,7 +66,7 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
     { ## PASS INTERNALLY
         ## PATH TO THE MODEL CONFIGURATION FILE
         MdlConfigFile <- file.path(R_CPL_LIB_ROOT_DIR,
-                                   "inst/config/config.BB7.SPLITT.SP100-SP600.R"
+                                   ## "inst/config/config.BB7.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.GARCH.SP100-SP600.R"
                                    ## "inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
@@ -74,8 +78,7 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
                                    ## "inst/config/config.MVT2.SPLITT.SP100-SP600.R"
                                    ## "inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
                                    ##  "inst/config/config.MVGARCH.R"
-                                   ## "inst/config/config.BB7.LU.SPLITT.JOINT.DGPDATA.R"
-                                   ## "inst/config/config.BB7.LU.SPLITT.TWOSTAGE.DGPDATA.R"
+                                   "inst/config/config.BB7.LU.SPLITT.DGPDATA.R"
                                    )
         nCores <- 1 # Set to 1 for no parallelism
     }
@@ -101,11 +104,6 @@ if(nchar(R_CPL_LIB_ROOT_DIR) == 0L)
 ### LOAD THE CODE LIBRARY AND INITIALIZE R ENVIRONMENT
 ###----------------------------------------------------------------------------
 
-## Load dependences
-## require("mvtnorm", quietly = TRUE)
-## require("optimx", quietly = TRUE)
-## require("Rmpfr", quietly = TRUE)
-
 ## Load the sourceDir tool
 sys.source(file.path(R_CPL_LIB_ROOT_DIR, "R/flutils/sourceDir.R"),
            envir = .GlobalEnv)
@@ -119,18 +117,58 @@ Cpl.source <- sourceDir(file.path(R_CPL_LIB_ROOT_DIR, "R"),
 
 ## Extract variables from configure files
 obj <- ls()
-
-sink("/dev/null")
 source(MdlConfigFile, local = TRUE)
-sink()
+###----------------------------------------------------------------------------
+### PRINT MODEL DESCRIPTION
+###----------------------------------------------------------------------------
+cat(rep("-", getOption("width")-1), "\n", sep = "")
+cat("MODEL DESCRIPTION\n")
+cat(rep("-", getOption("width")-1), "\n", sep = "")
 
-rm(list = setdiff(setdiff(ls(), obj), c("nCross", "Mdl.crossValidIdx", "LPDS")))
 
+cat("nObsRaw:", nObsRaw, "\n")
+cat("nObsUsed:", length(Mdl.dataUsedIdx), "\n")
 
-## Set Parallel Computing environment
-if(nCross != 0)
+cat("MCMC.nIter: ", MCMC.nIter,   "\n")
+cat("MCMC.burninProp:", MCMC.burninProp, "\n")
+cat("MCMC.UpateStrategy: ", MCMC.UpdateStrategy, "\n")
+
+                                        # cat("nCross: ", nCross,  "\n")
+cat("Mdl.crossValidArgs:\n")
+print(unlist(Mdl.crossValidArgs))
+
+## cat("Mdl.MargisNM: ", Mdl.MargisNM,   "\n")
+cat("Mdl.MargisType:\n")
+print(Mdl.MargisType)
+
+if(all(rapply(Mdl.X, class)  == "matrix"))
+{
+    cat("No. of covariates used (including intercept):\n")
+    print(rapply(Mdl.X, ncol))
+}
+cat("Mdl.varSelArgs:\n")
+print(unlist(Mdl.varSelArgs))
+cat("MCMC.Update:\n")
+print(unlist(MCMC.Update))
+cat(rep("-", getOption("width")-1), "\n", sep = "")
+
+## Remove unneeded variables
+rm(list = setdiff(setdiff(ls(), obj),
+                  c("nCross", "Mdl.crossValidIdx", "LPDS", "CplMCMC.summary")))
+
+###----------------------------------------------------------------------------
+### SETUP PARALLEL COMPUTING ENVIRONMENT
+###----------------------------------------------------------------------------
+if(nCross > 1 & nCores >1)
 {
     R_CPL_NPARALLEL <- floor(nCores/nCross)
+
+    if(R_CPL_NPARALLEL<1)
+    {
+        stop("No sufficient many cores (",  nCores,  ") for running ",  nCross,
+             " cross-validations")
+    }
+
 } else
 {
     R_CPL_NPARALLEL <- nCores
@@ -141,7 +179,10 @@ if(nCross>1 & nCores>1)
     ## We have enough cores to do parallelized cross-validation
     require("parallel", quietly = TRUE)
     require("snow", quietly = TRUE)
+    require("Rmpi", quietly = TRUE) # mpi.quit("no")
+
     cl4CV <- makeCluster(nCross, type = "MPI")
+    clusterExport(cl4CV, "R_CPL_NPARALLEL")
     ce4CV <- clusterEvalQ(cl4CV,{
         sourceDir(file.path(Sys.getenv("R_CPL_LIB_ROOT_DIR"), "R"),
                   byte.compile = 0,
@@ -154,7 +195,7 @@ if(nCross>1 & nCores>1)
     Sys.setenv(R_CPL_NPARALLEL = R_CPL_NPARALLEL)
 }
 ###----------------------------------------------------------------------------
-### MCMC
+### RUN MCMC
 ###----------------------------------------------------------------------------
 ## Recording starting time
 Starting.time <- Sys.time()
@@ -173,55 +214,79 @@ if(nCross>1 & nCores>1)
 }
 
 ###----------------------------------------------------------------------------
-### POSTERIOR INFERENCE, PREDICTION ETC
+### POSTERIOR INFERENCE, PREDICTION ETC.
 ###----------------------------------------------------------------------------
+
+## Final Summary of MCMC when paralleled.
+if(nCross>1 & nCores >1)
+{
+    summary.Cpl <- list()
+    for(iCross in 1:nCross)
+    {   ## TODO: change the loop
+        cat("iCross: ", iCross, "\n")
+        summary.Cpl[[iCross]] <- CplMCMC.summary(OUT.FITTED[[iCross]])
+    }
+}
+
+
 ## Calculate the LPDS
 cat("Calculating predictions......")
 OUT.PRED.LPDS <- list()
 LPDS <- OUT.FITTED[[1]][["LPDS"]]
-{if(nCross>1 & nCores >1)
- {
-     Mdl.PredLst <- clusterMap(cl = cl4CV,
-                               fun = logDensPred,
-                               CplFitted = OUT.FITTED,
-                               Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
- } else
- {
-     Mdl.PredLst <- mapply(FUN = logDensPred,
-                           CplFitted = OUT.FITTED,
-                           Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
-                           SIMPLIFY = FALSE)
- }
- if(length(LPDS)>1 || !is.null(LPDS))
- {
-     for(iLPDS in LPDS)
-     {
-         OUT.PRED.LPDS[[iLPDS]] <- logPredDensScore(lapply(Mdl.PredLst, function(x) x[["Mdl.logPredDens"]][, iLPDS, drop = FALSE]))
-     }
- }
+{
+    if(nCross>1 & nCores >1)
+    {
+        Mdl.PredLst <- clusterMap(cl = cl4CV,
+                                  fun = logDensPred,
+                                  CplFitted = OUT.FITTED,
+                                  Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]])
+    } else
+    {
+        Mdl.PredLst <- mapply(FUN = logDensPred,
+                              CplFitted = OUT.FITTED,
+                              Mdl.Idx.testing = Mdl.crossValidIdx[["testing"]],
+                              SIMPLIFY = FALSE)
+    }
+    if(length(LPDS)>1 || !is.null(LPDS))
+    {
+        for(iLPDS in LPDS)
+        {   ## TODO: parallel
+            OUT.PRED.LPDS[[iLPDS]] <- logPredDensScore(
+                lapply(Mdl.PredLst, function(x) x[["Mdl.logPredDens"]][, iLPDS, drop = FALSE]))
+        }
+    }
 
- OUT.PRED.MVSK <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredMVSK"]])
- OUT.PRED.RESID <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredRESID"]])
- cat("done\n")
- print(OUT.PRED.LPDS)
+    OUT.PRED.MVSK <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredMVSK"]])
+    OUT.PRED.RESID <- lapply(Mdl.PredLst, function(x) x[["Mdl.PredRESID"]])
+    cat("done\n")
+    print(OUT.PRED.LPDS)
 ###----------------------------------------------------------------------------
 ### FINISH THE WORK AND SAVE THE OUTPUT
 ###----------------------------------------------------------------------------
-
- ## Stop the parallel environment
- if(nCross>1 & nCores >1)
- {
-     stopCluster(cl4CV)
- }
- save.all(save.output = OUT.FITTED[[1]][["save.output"]],
-          ModelDescription = OUT.FITTED[[1]][["ModelDescription"]])
+    ## Stop the parallel environment
+    if(nCross>1 & nCores >1)
+    {
+        stopCluster(cl4CV)
+    }
+    save.all(save.output = OUT.FITTED[[1]][["save.output"]],
+             ModelDescription = OUT.FITTED[[1]][["ModelDescription"]])
 }
 
 ## Print warnings only in non-interactive mode
 if(!interactive() && exists("last.warning",  envir  =  baseenv())) warnings()
 
-## Quit
-if(!interactive())q("no")
+## Quit (with mpi_finalize check)
+if(!interactive())
+{
+    if(nCross>1 & nCores >1)
+    {
+        mpi.quit("no")
+    } else
+    {
+        q("no")
+    }
+}
+
 ###----------------------------------------------------------------------------
 ### THE END
 ###----------------------------------------------------------------------------

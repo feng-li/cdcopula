@@ -7,6 +7,10 @@
     Central University of Finance and Economics
     http://feng.li/
 
+## Cite the package
+
+* _Li (2016) Modeling covariate-contingent correlation and tail-dependence with copulas_
+
 ## Preparations
 
 ### Environment requirements
@@ -25,13 +29,15 @@
 
           * `rugarch` `rmgarch`  `fGarch` `stochvol`
 
-      * Optional R packages: `compiler`, `parallel`.
+      * Optional R packages: `compiler`, `parallel`, `snow`, `Rmpi`
 
 ### Installations
 
 #### Clone the repository and submodules
 
     git clone git@bitbucket.org:fli/cdcopula.git
+    cd cdcopula
+    git checkout master
 
 #### Load the package to R
 
@@ -62,6 +68,14 @@
 * Within R, use
 
         R> source("inst/bin/CplRun")
+
+* Parallelization
+
+        $ mpirun -np 1  inst/bin/CplRun 4 inst/config/${CONFIG_FILE}
+
+* Run with SLURM cluster
+
+        $ sbatch inst/config/slurm.sh
 
 command will invoke the default setting and run the default model.
 
