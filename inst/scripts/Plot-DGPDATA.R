@@ -17,9 +17,18 @@ iCross <- 1
 
 ## The basic model plot summary
 summary.Cpl <- CplMCMC.summary(OUT.MCMC = OUT.FITTED[[iCross]],
-                               ObsIdx4Plot = 301:350)
+                               ObsIdx4Plot = 1:100)
+
+plotCplParTS(MCMC.Update = MCMC.Update,
+             MCMC.parSummary = summary.Cpl,
+             MdlDGP.par = NULL, ObsIdx4Plot = 1:100)
 
 
+## Hard coded for static model posterior plugin
+## abline(h = 0.682, col = "black", lwd = 1)
+## abline(h = 0.682+0.05, col = "black", lty = "dashed", lwd = 1)
+## abline(h = 0.682-0.05, col = "black", lty = "dashed", lwd = 1)
+## legend("bottomright", ncol = 2, legend = c("Posterior mean (No covariate-dependent)", "95% HPD"), lty = c("solid", "dashed"), col = "black", lwd = 2)
 
 MCMC.Update = OUT.FITTED[[iCross]][["MCMC.Update"]]
 MCMC.burninProp <- OUT.FITTED[[iCross]][["MCMC.burninProp"]]
