@@ -95,6 +95,11 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
                         points(x = x, y = par.ts.mean[[i]][[j]][ObsIdx4Plot, 1],
                                type = "l", lty = "solid", col = "blue", lwd = 2)
 
+                        ## Hard code
+                        ## browser()
+                        ## abline(v = 0.6556)
+                        ## abline(v = 0.682)
+
                         ## DGP (Only for DGP data)
                         ## MdlDGP.par <- OUT.MCMC[["MdlDGP.par"]]
                         if(!(length(MdlDGP.par)  == 0 & is.null(MdlDGP.par)))
@@ -109,7 +114,7 @@ plotCplParTS <- function(MCMC.Update, MCMC.parSummary, MdlDGP.par = NULL, ObsIdx
                         }
 
                         ## Legend
-                        legend("topleft",ncol = 1, # length(legend.idx),
+                        legend("topleft",ncol = 3, # length(legend.idx),
                                lty = c("solid", "dotted", "dashed")[legend.idx],
                                lwd = c(3, 20, 3)[legend.idx],
                                col = c("blue", "grey", "red")[legend.idx],
