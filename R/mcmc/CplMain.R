@@ -339,7 +339,7 @@ CplMain <- function(Mdl.Idx.training, MdlConfigFile)
         ## MCMC.density[["d"]][, , iIter] <- staticCache[["Mdl.d"]]
 
         ## MCMC trajectory if no-parallel
-        if(MCMC.track == TRUE && iInner == nInner && is.na(R_CPL_NPARALLEL))
+        if(MCMC.track == TRUE && iInner == nInner && (is.na(R_CPL_NPARALLEL) || R_CPL_NPARALLEL = 1))
         {
             ## ProgressBar only available in interactive mode
             if(interactive()) progressbar(iIter = iIter, nIter = MCMC.nIter)
