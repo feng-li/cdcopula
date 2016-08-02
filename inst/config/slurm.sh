@@ -2,7 +2,7 @@
 
 #SBATCH -J BB7DGPVS
 #SBATCH -n 4 # Number of cores
-#SBATCH -p MCMC # Partition Used.
+#SBATCH -p DEBUG # Partition Used.
 #SBATCH -t 10-00:00 # Runtime in D-HH:MM
 #SBATCH -o JOB%j.out # File to which STDOUT will be written
 #SBATCH -e JOB%j.err # File to which STDERR will be written

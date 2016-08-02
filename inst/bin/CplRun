@@ -230,7 +230,7 @@ if(nCross>1 & nCores >1)
 
 
 ## Calculate the LPDS
-cat("Calculating predictions......")
+cat("Calculating predictions...")
 OUT.PRED.LPDS <- list()
 LPDS <- OUT.FITTED[[1]][["LPDS"]]
 {
