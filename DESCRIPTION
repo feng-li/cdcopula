@@ -1,7 +1,7 @@
 Package: CDCopula
 Type: Package
 Title: Covariate-Dependent Copula Models
-Version: 0.1
+Version: 0.2
 Date: 2016-07-01
 Author: Feng Li
 Maintainer: Feng Li <m@feng.li>
