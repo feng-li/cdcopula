@@ -202,10 +202,13 @@ Starting.time <- Sys.time()
 
 if(nCross>1 & nCores>1)
 {
+    sink.parallel(cl = cl4CV)
     OUT.FITTED <- parLapply(cl4CV,
                             Mdl.crossValidIdx[["training"]],
                             CplMain,
                             MdlConfigFile = MdlConfigFile)
+    sink.parallel(cl = cl4CV, file = NULL)
+
 } else
 {
     OUT.FITTED <- lapply(X = Mdl.crossValidIdx[["training"]],
