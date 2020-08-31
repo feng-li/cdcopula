@@ -1,0 +1,128 @@
+#! /usr/bin/env Rscript
+cmdargs <- commandArgs(TRUE);if(!interactive()&&("--help" %in% cmdargs)){cat("
+NAME: CplRun - Run the covariate-dependent copula model
+
+DESCRIPTION:
+
+    An R script that performs the MCMC and cross-validation for covariate-dependent copula
+    model.
+
+USAGE:
+
+    CplRun <nCores> <Mdl.ConfigEnv.R> <CDCOPULA_LIB_ROOT_DIR>
+
+    CplRun --help
+
+ARGUMENTS:
+
+    <Mdl.ConfigFile.R>: The copula configuration file. See example files under
+    inst/config/.
+
+    <nCores>: Optional. Default is 1. Number of total parallel processors used. The
+    default value is one, i.e.  using serial code.
+
+    <CDCOPULA_LIB_ROOT_DIR> Optional, default is the system file path of the cdcopula
+    package. The script depends on the variable CDCOPULA_LIB_ROOT_DIR which points to the
+    location of the cdcopula code to be set properly before running the MCMC.
+
+     --help: Show the help file.
+
+DETAILS:
+
+    The code are parallelized with `parallel`  and `snow` packages and not designed for
+    Windows machines.
+
+AUTHOR:
+
+    Feng Li,
+
+    Central University of Finance and Economics
+    http://feng.li/
+    feng.li@cufe.edu.cn
+
+");q("no")}
+require("methods", quietly = TRUE)
+###----------------------------------------------------------------------------
+### MODEL CONFIGURE PATH
+###----------------------------------------------------------------------------
+
+if(interactive())
+{ ## PASS INTERNALLY
+    ## MANUALLY SET PATH TO THE MODEL CONFIGURATION FILE
+    CDCOPULA_LIB_ROOT_DIR = "~/code/cdcopula"
+    Mdl.ConfigFile <- file.path(CDCOPULA_LIB_ROOT_DIR,
+                                ## "inst/config/config.CLAYTON.SPLITT.JD-ALI.R"
+                                ## "inst/config/config.BB7.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.BB7.LU.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.BB7.LU.BetaPri.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.subsampling.BB7.LU.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.BB7.LU.GARCH.SP100-SP600.R"
+                                ## "inst/config/config.BB7.LU.SPLITTPOISSON.BABA-TEXTS.R"
+                                ## "inst/config/config.GUMBEL.GARCH.SP100-SP600.R"
+                                ## "inst/config/config.GUMBEL.STOCHVOL.SP100-SP600.R"
+                                ## "inst/config/config.GUMBEL.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.GUMBEL.SPLITT.RISK-CONTAGION.R"
+                                ## "inst/config/config.CLAYTON.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.CLAYTON.SPLITT.RISK-CONTAGION.R"
+                                ## "inst/config/config.MVT3.SPLITT.SP100-SP400-SP600.R"
+                                ## "inst/config/config.MVT2.SPLITT.SP100-SP600.R"
+                                ## "inst/config/config.MVT3.DF.SPLITT.SP100-SP400-SP600.R"
+                                ## "inst/config/config.MVForeignModels.R"
+                                ## "inst/config/config.BB7.LU.SPLITT.DGPDATA.R"
+                                ## "inst/config/config.BB7.LU.SPLITT.RISK-CONTAGION.R"
+                                ## "inst/config/config.BB7.LU.TEIGEN.RISK-CONTAGION.R"
+                                "inst/config/config.BB7.LU.TEIGEN.CNSTOCKS.R"
+                                ## "inst/config/config.SJC.LU.SPLITT.RISK-CONTAGION.R"
+                                ## "inst/config/config.BB7.LU.SPLITT.NPLS.R"
+                                ## "inst/config/config.BB7.LU.GARCH.Market-Integration.R"
+                                )
+    nCores <- 1 # Set to 1 for no parallelism
+} else {
+    ## Pass via command argument
+    if((length(cmdargs) == 1L)) {
+        Mdl.ConfigFile <- cmdargs
+        CDCOPULA_LIB_ROOT_DIR = system.file(package = "cdcopula")
+        nCores <- 1
+    } else if ((length(cmdargs) == 2L)) {
+        Mdl.ConfigFile <- cmdargs[2]
+        CDCOPULA_LIB_ROOT_DIR = system.file(package = "cdcopula")
+        nCores <- as.integer(cmdargs[1])
+    } else if ((length(cmdargs) == 3L)) {
+        CDCOPULA_LIB_ROOT_DIR = cmdargs[3]
+        Mdl.ConfigFile <- cmdargs[2]
+        nCores <- as.integer(cmdargs[1])
+    } else {
+        stop("Model configuration file required. Try the command with `--help` option.")
+    }
+}
+
+
+if(CDCOPULA_LIB_ROOT_DIR == system.file(package = "cdcopula")) {
+    require("cdcopula")
+} else {
+    source(file.path(CDCOPULA_LIB_ROOT_DIR, "R/mcmc/CplRun.R"))
+}
+
+## The cdcopula main function
+CplRun(Mdl.ConfigFile = Mdl.ConfigFile,
+       CDCOPULA_LIB_ROOT_DIR = CDCOPULA_LIB_ROOT_DIR,
+       nCores = nCores)
+
+## Print warnings only in non-interactive mode
+if(!interactive() && exists("last.warning",  envir  =  baseenv())) warnings()
+
+## Quit (with mpi_finalize check)
+if(!interactive())
+{
+    if(nCross>1 & nCores >1)
+    {
+        q("no")
+        ## mpi.quit("no")
+    } else
+    {
+        q("no")
+    }
+}
+###----------------------------------------------------------------------------
+### THE END
+###----------------------------------------------------------------------------

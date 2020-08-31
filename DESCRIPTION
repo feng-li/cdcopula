@@ -1,0 +1,20 @@
+Package: cdcopula
+Type: Package
+Title: Covariate-Dependent Copula Models
+Version: 0.2.2
+Date: 2019-01-27
+Author: Feng Li
+Maintainer: Feng Li <feng.li@cufe.edu.cn>
+Description: Bayesian Modeling of Covariate-Dependent Copulas
+License: GPL (>=2.0)
+Depends:
+    R (>= 3.1.0)
+LinkingTo: VineCopula
+Imports: VineCopula,
+         dng,
+         flutils,
+         mvtnorm,
+         Rmpfr
+LazyLoad: yes
+RoxygenNote: 6.1.1
+Encoding: UTF-8
