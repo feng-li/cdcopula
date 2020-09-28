@@ -41,7 +41,7 @@ R package. Please follow the following instructions to "load" the functionality.
 - This package depends on [`flutils`](https://github.com/feng-li/flutils) package. Install it with `devtools`
 
 ``` r
-devtools::install_github(feng-li/flutils)
+devtools::install_github("feng-li/flutils")
 ```
 
 ``` r
