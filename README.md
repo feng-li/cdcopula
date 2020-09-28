@@ -44,10 +44,8 @@ R package. Please follow the following instructions to "load" the functionality.
 devtools::install_github(feng-li/flutils)
 ```
 
-- Clone the `cdcopula` pacakge into a folder, e.g. `~/code/cdcopula`
-
 ``` r
-devtools::install_local("~/code/cdcopula")
+devtools::install_github("feng-li/cdcopula")
 ```
 
 
